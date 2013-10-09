@@ -87,7 +87,6 @@
             android:layout_gravity="bottom"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:drawSelectorOnTop="true"
-            android:visibility="gone"
         />
 
     </com.android.musicfx.widget.InterceptableLinearLayout>

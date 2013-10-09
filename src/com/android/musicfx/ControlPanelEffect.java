@@ -115,7 +115,7 @@ public class ControlPanelEffect {
     private final static int VIRTUALIZER_STRENGTH_DEFAULT = 1000;
     private final static boolean BASS_BOOST_ENABLED_DEFAULT = true;
     private final static int BASS_BOOST_STRENGTH_DEFAULT = 667;
-    private final static boolean PRESET_REVERB_ENABLED_DEFAULT = false;
+    private final static boolean PRESET_REVERB_ENABLED_DEFAULT = true;
     private final static int PRESET_REVERB_CURRENT_PRESET_DEFAULT = 0; // None
     private static int mPrevBassBoostStrength = 0;
     private static int mPrevVirtStrength = 0;
@@ -403,12 +403,11 @@ public class ControlPanelEffect {
                         }
                         // XXX: Preset Reverb not used for the moment, so commented out the effect
                         // creation to not use MIPS
-                        // final PresetReverb presetReverbEffect =
-                        // getPresetReverbEffect(audioSession);
-                        // if (presetReverbEffect != null) {
-                        // presetReverbEffect.setEnabled(prefs.getBoolean(
-                        // Key.pr_enabled.toString(), PRESET_REVERB_ENABLED_DEFAULT));
-                        // }
+                        final PresetReverb presetReverbEffect = getPresetReverbEffect(audioSession);
+                        if (presetReverbEffect != null) {
+                            presetReverbEffect.setEnabled(prefs.getBoolean(Key.pr_enabled.toString(),
+                                    PRESET_REVERB_ENABLED_DEFAULT));
+                        }
                     }
 
                     processingEnabled = true;
@@ -437,11 +436,12 @@ public class ControlPanelEffect {
                         }
                         // XXX: Preset Reverb not used for the moment, so commented out the effect
                         // creation to not use MIPS
-                        // final PresetReverb presetReverbEffect =
-                        // getPresetReverbEffect(audioSession);
-                        // if (presetReverbEffect != null) {
-                        // presetReverbEffect.setEnabled(false);
-                        // }
+                        final PresetReverb presetReverbEffect = getPresetReverbEffect(audioSession);
+                        if (presetReverbEffect != null) {
+                            mPresetReverbInstances.remove(audioSession, presetReverbEffect);
+                            presetReverbEffect.setEnabled(false);
+                            presetReverbEffect.release();
+                        }
                     }
 
                     processingEnabled = false;
@@ -502,12 +502,11 @@ public class ControlPanelEffect {
                     case pr_enabled:
                         // XXX: Preset Reverb not used for the moment, so commented out the effect
                         // creation to not use MIPS
-                        // final PresetReverb presetReverbEffect =
-                        // getPresetReverbEffect(audioSession);
-                        // if (presetReverbEffect != null) {
-                        // presetReverbEffect.setEnabled(value);
-                        // enabled = presetReverbEffect.getEnabled();
-                        // }
+                        final PresetReverb presetReverbEffect = getPresetReverbEffect(audioSession);
+                        if (presetReverbEffect != null) {
+                            presetReverbEffect.setEnabled(value);
+                            enabled = presetReverbEffect.getEnabled();
+                        }
                         break;
 
                     default:
@@ -687,11 +686,11 @@ public class ControlPanelEffect {
                 case pr_current_preset:
                     // XXX: Preset Reverb not used for the moment, so commented out the effect
                     // creation to not use MIPS
-                    // final PresetReverb presetReverbEffect = getPresetReverbEffect(audioSession);
-                    // if (presetReverbEffect != null) {
-                    // presetReverbEffect.setPreset((short) value);
-                    // value = presetReverbEffect.getPreset();
-                    // }
+                    final PresetReverb presetReverbEffect = getPresetReverbEffect(audioSession);
+                    if (presetReverbEffect != null) {
+                        presetReverbEffect.setPreset((short) value);
+                        value = presetReverbEffect.getPreset();
+                    }
                     break;
                 default:
                     Log.e(TAG, "setParameterInt: Unknown/unsupported key " + key);
@@ -1254,42 +1253,39 @@ public class ControlPanelEffect {
         // use MIPS left in the code for (future) reference.
         // Preset reverb
         // create effect
-        // final PresetReverb presetReverbEffect = getPresetReverbEffect(audioSession);
-        // {
-        // final String errorTag = methodTag + "PresetReverb error: ";
-        //
-        // try {
-        // // read parameters
-        // final boolean isEnabled = prefs.getBoolean(Key.pr_enabled.toString(),
-        // PRESET_REVERB_ENABLED_DEFAULT);
-        // final short preset = (short) prefs.getInt(Key.pr_current_preset.toString(),
-        // PRESET_REVERB_CURRENT_PRESET_DEFAULT);
-        //
-        // // init settings
-        // PresetReverb.Settings settings = new PresetReverb.Settings("PresetReverb;preset="
-        // + preset);
-        //
-        // // read/update preferences
-        // presetReverbEffect.setProperties(settings);
-        //
-        // // set parameters
-        // if (isGlobalEnabled == true) {
-        // presetReverbEffect.setEnabled(isEnabled);
-        // } else {
-        // presetReverbEffect.setEnabled(false);
-        // }
-        //
-        // // get parameters
-        // settings = presetReverbEffect.getProperties();
-        // Log.v(TAG, "Parameters: " + settings.toString() + ";enabled=" + isEnabled);
-        //
-        // // update preferences
-        // editor.putBoolean(Key.pr_enabled.toString(), isEnabled);
-        // editor.putInt(Key.pr_current_preset.toString(), settings.preset);
-        // } catch (final RuntimeException e) {
-        // Log.e(TAG, errorTag + e);
-        // }
-        // }
+        final PresetReverb presetReverbEffect = getPresetReverbEffect(audioSession);
+        {
+            final String errorTag = methodTag + "PresetReverb error: ";
+
+            try {
+                // read parameters
+                final boolean isEnabled = prefs.getBoolean(Key.pr_enabled.toString(), PRESET_REVERB_ENABLED_DEFAULT);
+                final short preset = (short) prefs.getInt(Key.pr_current_preset.toString(), PRESET_REVERB_CURRENT_PRESET_DEFAULT);
+
+                // init settings
+                PresetReverb.Settings settings = new PresetReverb.Settings("PresetReverb;preset=" + preset);
+
+                // read/update preferences
+                presetReverbEffect.setProperties(settings);
+
+                // set parameters
+                if (isGlobalEnabled == true) {
+                    presetReverbEffect.setEnabled(isEnabled);
+                } else {
+                    presetReverbEffect.setEnabled(false);
+                }
+
+                // get parameters
+                settings = presetReverbEffect.getProperties();
+                Log.v(TAG, "Parameters: " + settings.toString() + ";enabled=" + isEnabled);
+
+                // update preferences
+                editor.putBoolean(Key.pr_enabled.toString(), isEnabled);
+                editor.putInt(Key.pr_current_preset.toString(), settings.preset);
+            } catch (final RuntimeException e) {
+                Log.e(TAG, errorTag + e);
+            }
+        }
         editor.commit();
     }
 
@@ -1446,33 +1442,33 @@ public class ControlPanelEffect {
 
     // XXX: Preset Reverb not used for the moment, so commented out the effect creation to not
     // use MIPS
-    // /**
-    // * Gets the preset reverb effect for the given audio session. If the effect on the session
-    // * doesn't exist yet, create it and add to collection.
-    // *
-    // * @param audioSession
-    // * System wide unique audio session identifier.
-    // * @return presetReverbEffect
-    // */
-    // private static PresetReverb getPresetReverbEffect(final int audioSession) {
-    // PresetReverb presetReverbEffect = mPresetReverbInstances.get(audioSession);
-    // if (presetReverbEffect == null) {
-    // try {
-    // final PresetReverb newPresetReverbEffect = new PresetReverb(PRIORITY, audioSession);
-    // presetReverbEffect = mPresetReverbInstances.putIfAbsent(audioSession,
-    // newPresetReverbEffect);
-    // if (presetReverbEffect == null) {
-    // // put succeeded, use new value
-    // presetReverbEffect = newPresetReverbEffect;
-    // }
-    // } catch (final IllegalArgumentException e) {
-    // Log.e(TAG, "PresetReverb: " + e);
-    // } catch (final UnsupportedOperationException e) {
-    // Log.e(TAG, "PresetReverb: " + e);
-    // } catch (final RuntimeException e) {
-    // Log.e(TAG, "PresetReverb: " + e);
-    // }
-    // }
-    // return presetReverbEffect;
-    // }
+    /**
+    * Gets the preset reverb effect for the given audio session. If the effect on the session
+    * doesn't exist yet, create it and add to collection.
+    *
+    * @param audioSession
+    * System wide unique audio session identifier.
+    * @return presetReverbEffect
+    */
+    private static PresetReverb getPresetReverbEffect(final int audioSession) {
+        PresetReverb presetReverbEffect = mPresetReverbInstances.get(audioSession);
+        if (presetReverbEffect == null) {
+            try {
+                final PresetReverb newPresetReverbEffect = new PresetReverb(PRIORITY, audioSession);
+                presetReverbEffect = mPresetReverbInstances.putIfAbsent(audioSession,
+                newPresetReverbEffect);
+                if (presetReverbEffect == null) {
+                    // put succeeded, use new value
+                    presetReverbEffect = newPresetReverbEffect;
+                }
+            } catch (final IllegalArgumentException e) {
+                Log.e(TAG, "PresetReverb: " + e);
+            } catch (final UnsupportedOperationException e) {
+                Log.e(TAG, "PresetReverb: " + e);
+            } catch (final RuntimeException e) {
+                Log.e(TAG, "PresetReverb: " + e);
+            }
+        }
+        return presetReverbEffect;
+    }
 }
