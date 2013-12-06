@@ -34,7 +34,8 @@
         <activity
             android:name=".ActivityMusic"
             android:theme="@android:style/Theme.Holo"
-            android:label="@string/eq_dialog_title">
+            android:label="@string/eq_dialog_title"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action
                     android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL" />

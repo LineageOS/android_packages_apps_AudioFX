@@ -247,10 +247,10 @@ public abstract class AbsSeekBar extends ProgressBar {
             float scale = max > 0 ? (float) getProgress() / (float) max : 0;
 
             if (thumbWidth > trackWidth) {
-                if (thumb != null) {
-                    setThumbPos(w, h, thumb, scale, 0);
-                }
                 int gapForCenteringTrack = (thumbWidth - trackWidth) / 2;
+                if (thumb != null) {
+                    setThumbPos(w, h, thumb, scale, -gapForCenteringTrack);
+                }
                 if (d != null) {
                     // Canvas will be translated by the padding, so 0,0 is where we start drawing
                     d.setBounds(gapForCenteringTrack, 0,
