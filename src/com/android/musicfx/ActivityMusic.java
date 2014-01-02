@@ -221,8 +221,8 @@ public class ActivityMusic extends Activity {
             if (effect.type.equals(AudioEffect.EFFECT_TYPE_VIRTUALIZER)) {
                 mVirtualizerSupported = true;
                 if (effect.uuid.equals(UUID.fromString("1d4033c0-8557-11df-9f2d-0002a5d5c51b"))
-                        || effect.uuid.equals(UUID.fromString(
-                                "e6c98a16-22a3-11e2-b87b-f23c91aec05e"))) {
+                    || effect.uuid.equals(UUID.fromString("e6c98a16-22a3-11e2-b87b-f23c91aec05e"))
+                    || effect.uuid.equals(UUID.fromString("d3467faa-acc7-4d34-acaf-0002a5d5c51b"))) {
                     mVirtualizerIsHeadphoneOnly = true;
                 }
             } else if (effect.type.equals(AudioEffect.EFFECT_TYPE_BASS_BOOST)) {
