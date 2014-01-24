@@ -285,21 +285,19 @@ public class ControlPanelEffect {
                 editor.putInt(Key.eq_current_preset.toString(), eQPreset);
                 final short[] bandLevel = new short[mEQNumBands];
                 for (short band = 0; band < mEQNumBands; band++) {
-                    if (controlMode == ControlMode.CONTROL_PREFERENCES) {
-                        if (eQPreset < mEQNumPresets) {
-                            // OpenSL ES effect presets
-                            bandLevel[band] = mEQPresetOpenSLESBandLevel[eQPreset][band];
-                        } else if (eQPreset == mEQNumPresets) {
-                            // CI EXTREME
-                            bandLevel[band] = eQPresetCIExtremeBandLevel[band];
-                        } else {
-                            // User
-                            bandLevel[band] = (short) prefs.getInt(
-                                    Key.eq_preset_user_band_level.toString() + band,
-                                    eQPresetUserBandLevelDefault[band]);
-                        }
-                        editor.putInt(Key.eq_band_level.toString() + band, bandLevel[band]);
+                    if (eQPreset < mEQNumPresets) {
+                        // OpenSL ES effect presets
+                        bandLevel[band] = mEQPresetOpenSLESBandLevel[eQPreset][band];
+                    } else if (eQPreset == mEQNumPresets) {
+                        // CI EXTREME
+                        bandLevel[band] = eQPresetCIExtremeBandLevel[band];
+                    } else {
+                        // User
+                        bandLevel[band] = (short) prefs.getInt(
+                                Key.eq_preset_user_band_level.toString() + band,
+                                eQPresetUserBandLevelDefault[band]);
                     }
+                    editor.putInt(Key.eq_band_level.toString() + band, bandLevel[band]);
                     editor.putInt(Key.eq_center_freq.toString() + band, mEQCenterFreq[band]);
                     editor.putInt(Key.eq_preset_ci_extreme_band_level.toString() + band,
                             eQPresetCIExtremeBandLevel[band]);
@@ -377,16 +375,28 @@ public class ControlPanelEffect {
                             int defaultstrength = virtualizerEffect.getRoundedStrength();
                             final int vIStrength = prefs.getInt(Key.virt_strength.toString(),
                                     defaultstrength);
-                            setParameterInt(context, packageName,
-                                    audioSession, Key.virt_strength, vIStrength);
+                            boolean on = prefs.getBoolean(Key.virt_enabled.toString(), VIRTUALIZER_ENABLED_DEFAULT);
+                            if (on) {
+                                setParameterInt(context, packageName,
+                                        audioSession, Key.virt_strength, vIStrength);
+                            } else {
+                                mPrevVirtStrength = vIStrength;
+                                virtualizerEffect.setStrength((short) 0);
+                            }
                         }
                         final BassBoost bassBoostEffect = getBassBoostEffect(audioSession);
                         if (bassBoostEffect != null) {
                             bassBoostEffect.setEnabled(true);
                             final int bBStrength = prefs.getInt(Key.bb_strength.toString(),
                                     BASS_BOOST_STRENGTH_DEFAULT);
-                            setParameterInt(context, packageName,
-                                    audioSession, Key.bb_strength, bBStrength);
+                            boolean on = prefs.getBoolean(Key.bb_enabled.toString(), BASS_BOOST_ENABLED_DEFAULT);
+                            if (on) {
+                                setParameterInt(context, packageName,
+                                        audioSession, Key.bb_strength, bBStrength);
+                            } else {
+                                mPrevBassBoostStrength = bBStrength;
+                                bassBoostEffect.setStrength((short) 0);
+                            }
                         }
                         final Equalizer equalizerEffect = getEqualizerEffect(audioSession);
                         if (equalizerEffect != null) {
@@ -583,7 +593,8 @@ public class ControlPanelEffect {
                 // Virtualizer
                 case virt_strength: {
                     final Virtualizer virtualizerEffect = getVirtualizerEffect(audioSession);
-                    if (virtualizerEffect != null) {
+                    boolean on = prefs.getBoolean(Key.virt_enabled.toString(), VIRTUALIZER_ENABLED_DEFAULT);
+                    if ((virtualizerEffect != null) && on) {
                         virtualizerEffect.setStrength((short) value);
                         value = virtualizerEffect.getRoundedStrength();
                     }
@@ -592,7 +603,8 @@ public class ControlPanelEffect {
                     // BassBoost
                 case bb_strength: {
                     final BassBoost bassBoostEffect = getBassBoostEffect(audioSession);
-                    if (bassBoostEffect != null) {
+                    boolean on = prefs.getBoolean(Key.bb_enabled.toString(), BASS_BOOST_ENABLED_DEFAULT);
+                    if ((bassBoostEffect != null) && on) {
                         bassBoostEffect.setStrength((short) value);
                         value = bassBoostEffect.getRoundedStrength();
                     }
