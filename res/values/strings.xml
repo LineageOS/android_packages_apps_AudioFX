@@ -42,6 +42,14 @@
     <string name="ci_extreme">Electronic</string>
     <string name="user">Custom</string>
 
+    <string name="none">None</string>
+    <string name="smallroom">SmallRoom</string>
+    <string name="mediumroom">MediumRoom</string>
+    <string name="largeroom">LargeRoom</string>
+    <string name="mediumhall">MediumHall</string>
+    <string name="largehall">LargeHall</string>
+    <string name="plate">Plate</string>
+
     <string name="eq_custom">To customize, select “Custom”</string>
     <string name="power_on_prompt">Press the power button on the top-right.</string>
 

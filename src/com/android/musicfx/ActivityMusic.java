@@ -106,6 +106,7 @@ public class ActivityMusic extends Activity {
     private int mEQPreset;
     private int[] mEQPresetUserBandLevelsPrev;
     private String[] mEQPresetNames;
+    private String[] mReverbPresetNames;
 
     private int mPRPreset;
     private int mPRPresetPrevious;
@@ -118,10 +119,12 @@ public class ActivityMusic extends Activity {
 
     // Preset Reverb fields
     /**
-     * Array containing the PR preset names.
+     * Array containing RSid of preset reverb names.
      */
-    private static final String[] PRESETREVERBPRESETSTRINGS = { "None", "SmallRoom", "MediumRoom",
-            "LargeRoom", "MediumHall", "LargeHall", "Plate" };
+    private static final int[] mReverbPresetRSids = {
+        R.string.none, R.string.smallroom, R.string.mediumroom, R.string.largeroom,
+        R.string.mediumhall, R.string.largehall, R.string.plate
+    };
 
     /**
      * Context field
@@ -251,6 +254,12 @@ public class ActivityMusic extends Activity {
         mEQPresetNames[numPresets] = getString(R.string.ci_extreme);
         mEQPresetNames[numPresets + 1] = getString(R.string.user);
         mEQPresetUserPos = numPresets + 1;
+
+        // Load string resource of reverb presets
+        mReverbPresetNames = new String[mReverbPresetRSids.length];
+        for (short i = 0; i < mReverbPresetRSids.length; ++i) {
+            mReverbPresetNames[i] = getString(mReverbPresetRSids[i]);
+        }
 
         // Watch for button clicks and initialization.
         if ((mVirtualizerSupported) || (mBassBoostSupported) || (mEqualizerSupported)
@@ -450,7 +459,7 @@ public class ActivityMusic extends Activity {
 
     private void reverbSpinnerInit(Spinner spinner) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, PRESETREVERBPRESETSTRINGS);
+                android.R.layout.simple_spinner_item, mReverbPresetNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
