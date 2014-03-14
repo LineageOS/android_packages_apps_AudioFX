@@ -76,7 +76,7 @@
                 android:id="@+id/vIStrengthKnob"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dip"
+                android:layout_marginStart="10dip"
                 custom:label="@string/virtualizer_strength"
                 custom:foreground="@drawable/knob" />
         </LinearLayout>
