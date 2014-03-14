@@ -65,8 +65,9 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             android:visibility="gone" />
         <TextView
             android:id="@+id/knob_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:textAlignment="center"
             android:ellipsize="marquee"
             android:visibility="gone" />
     </LinearLayout>

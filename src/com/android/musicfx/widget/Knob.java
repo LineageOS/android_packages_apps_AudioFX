@@ -42,6 +42,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.lang.Math;
 
@@ -53,6 +54,7 @@ public class Knob extends FrameLayout {
     private static final float TEXT_PADDING = 0.31f;
     private static final float LABEL_PADDING = 0.05f;
     private static final float LABEL_SIZE = 0.09f;
+    private static final float LABEL_WIDTH = 0.80f;
     private static final float INDICATOR_RADIUS = 0.38f;
 
     public interface OnKnobChangeListener {
@@ -242,6 +244,8 @@ public class Knob extends FrameLayout {
         mProgressTV.setVisibility(View.VISIBLE);
         mLabelTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * LABEL_SIZE);
         mLabelTV.setPadding(0, (int) (size * LABEL_PADDING), 0, 0);
+        mLabelTV.setLayoutParams(new LinearLayout.LayoutParams((int) (w * LABEL_WIDTH),
+                    LayoutParams.WRAP_CONTENT));
         mLabelTV.setVisibility(View.VISIBLE);
     }
 
