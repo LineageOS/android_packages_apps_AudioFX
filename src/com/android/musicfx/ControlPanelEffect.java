@@ -417,6 +417,10 @@ public class ControlPanelEffect {
                         if (presetReverbEffect != null) {
                             presetReverbEffect.setEnabled(prefs.getBoolean(Key.pr_enabled.toString(),
                                     PRESET_REVERB_ENABLED_DEFAULT));
+                            final short presetPR = (short) prefs.getInt(Key.pr_current_preset.toString(),
+                                    PRESET_REVERB_CURRENT_PRESET_DEFAULT);
+                            setParameterInt(context, packageName,
+                                    audioSession, Key.pr_current_preset, presetPR);
                         }
                     }
 
