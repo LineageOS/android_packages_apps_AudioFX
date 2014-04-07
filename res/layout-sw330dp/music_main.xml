@@ -42,7 +42,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="48dip">
 
-        <include layout="@layout/music_eq"
+        <include layout="@layout/equalizer"
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="26" />

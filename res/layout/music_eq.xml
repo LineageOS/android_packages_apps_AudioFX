@@ -22,33 +22,4 @@
     android:orientation="horizontal"
     android:gravity="center_horizontal">
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dip"
-        android:layout_marginBottom="32dip"
-        android:layout_marginStart="3dip">
-
-        <TextView
-            android:id="@+id/maxLevelText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_alignParentTop="true"
-        />
-        <TextView
-            android:id="@+id/centerLevelText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_centerVertical="true"
-        />
-        <TextView
-            android:id="@+id/minLevelText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_alignParentBottom="true"
-        />
-    </RelativeLayout>
 </LinearLayout>

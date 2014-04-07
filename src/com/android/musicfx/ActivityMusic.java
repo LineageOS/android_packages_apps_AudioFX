@@ -18,6 +18,7 @@ package com.android.musicfx;
 
 import com.android.audiofx.OpenSLESConstants;
 import com.android.musicfx.seekbar.SeekBar;
+import com.android.musicfx.widget.EqualizerSurface;
 import com.android.musicfx.widget.Gallery;
 import com.android.musicfx.widget.InterceptableLinearLayout;
 import com.android.musicfx.widget.Knob;
@@ -99,9 +100,7 @@ public class ActivityMusic extends Activity {
     private boolean mPresetReverbSupported;
 
     // Equalizer fields
-    private final Visualizer[] mEqualizerVisualizer = new Visualizer[EQUALIZER_MAX_BANDS];
     private int mNumberEqualizerBands;
-    private int mEqualizerMinBandLevel;
     private int mEQPresetUserPos = 1;
     private int mEQPreset;
     private int[] mEQPresetUserBandLevelsPrev;
@@ -358,7 +357,7 @@ public class ActivityMusic extends Activity {
                     mEQPreset = 0;
                 }
                 equalizerPresetsInit((Gallery)findViewById(R.id.eqPresets));
-                equalizerBandsInit((LinearLayout)findViewById(R.id.eqcontainer));
+                equalizerBandsInit();
             }
 
             // Initialize the Preset Reverb elements.
@@ -488,7 +487,6 @@ public class ActivityMusic extends Activity {
             @Override
             public void onItemSelected(int position) {
                 mEQPreset = position;
-                showSeekBar(position == mEQPresetUserPos);
                 equalizerSetPreset(position);
             }
         });
@@ -507,7 +505,7 @@ public class ActivityMusic extends Activity {
         final int count = viewGroup.getChildCount();
         final View bb = findViewById(R.id.bBStrengthKnob);
         final View virt = findViewById(R.id.vIStrengthKnob);
-        final View eq = findViewById(R.id.eqcontainer);
+        final View eq = findViewById(R.id.frequencyResponse);
         boolean on = true;
 
         for (int i = 0; i < count; i++) {
@@ -526,7 +524,6 @@ public class ActivityMusic extends Activity {
                         mAudioSession, ControlPanelEffect.Key.bb_enabled);
                 view.setEnabled(on);
             } else if (enabled && view == eq) {
-                showSeekBar(mEQPreset == mEQPresetUserPos);
                 view.setEnabled(true);
             } else {
                 view.setEnabled(enabled);
@@ -619,7 +616,7 @@ public class ActivityMusic extends Activity {
     /**
      * Initializes the equalizer elements. Set the SeekBars and Spinner listeners.
      */
-    private void equalizerBandsInit(LinearLayout eqcontainer) {
+    private void equalizerBandsInit() {
         // Initialize the N-Band Equalizer elements.
         mNumberEqualizerBands = ControlPanelEffect.getParameterInt(mContext, mCallingPackageName,
                 mAudioSession, ControlPanelEffect.Key.eq_num_bands);
@@ -630,8 +627,27 @@ public class ActivityMusic extends Activity {
                 mCallingPackageName, mAudioSession, ControlPanelEffect.Key.eq_center_freq);
         final int[] bandLevelRange = ControlPanelEffect.getParameterIntArray(mContext,
                 mCallingPackageName, mAudioSession, ControlPanelEffect.Key.eq_level_range);
-        mEqualizerMinBandLevel = bandLevelRange[0];
-        final int mEqualizerMaxBandLevel = bandLevelRange[1];
+        final EqualizerSurface eq = (EqualizerSurface)findViewById(R.id.frequencyResponse);
+        float[] centerFreqsKHz = new float[centerFreqs.length];
+        for (int i = 0; i < centerFreqs.length; i++) {
+            centerFreqsKHz[i] = (float)centerFreqs[i] / 1000.0f;
+        }
+        eq.setCenterFreqs(centerFreqsKHz);
+        eq.setBandLevelRange(bandLevelRange[0] / 100, bandLevelRange[1] / 100);
+
+        final EqualizerSurface.BandUpdatedListener listener = new EqualizerSurface.BandUpdatedListener() {
+            @Override
+            public void onBandUpdated(int band, float dB) {
+                if (mEQPreset != mEQPresetUserPos) {
+
+                }
+                equalizerBandUpdate(band, (int)(dB * 100));
+
+            }
+        };
+        eq.registerBandUpdatedListener(listener);
+
+        /*
         final OnSeekBarChangeListener listener = new OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(final Visualizer v, final int progress,
@@ -656,7 +672,6 @@ public class ActivityMusic extends Activity {
                 equalizerUpdateDisplay();
             }
         };
-
         final OnTouchListener tl = new OnTouchListener() {
             @Override
             public boolean onTouch(final View v, final MotionEvent event) {
@@ -709,18 +724,13 @@ public class ActivityMusic extends Activity {
         tv = (TextView) findViewById(R.id.minLevelText);
         tv.setText("-15 dB");
         equalizerUpdateDisplay();
+        */
     }
 
     private String format(String format, Object... args) {
         mFormatBuilder.setLength(0);
         mFormatter.format(format, args);
         return mFormatBuilder.toString();
-    }
-
-    private void showSeekBar(boolean show) {
-        for (int i = 0; i < mNumberEqualizerBands; ++i) {
-            mEqualizerVisualizer[i].setShowSeekBar(show);
-        }
     }
 
     /**
@@ -730,10 +740,10 @@ public class ActivityMusic extends Activity {
         // Update and show the active N-Band Equalizer bands.
         final int[] bandLevels = ControlPanelEffect.getParameterIntArray(mContext,
                 mCallingPackageName, mAudioSession, ControlPanelEffect.Key.eq_band_level);
+        EqualizerSurface eq = (EqualizerSurface)findViewById(R.id.frequencyResponse);
         for (short band = 0; band < mNumberEqualizerBands; band++) {
             final int level = bandLevels[band];
-            final int progress = level - mEqualizerMinBandLevel;
-            mEqualizerVisualizer[band].setProgress(progress);
+            eq.setBand(band, (float)level / 100.0f);
         }
     }
 
