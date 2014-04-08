@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package com.android.musicfx;
+package org.cyanogenmod.audiofx;
 
-import com.android.audiofx.OpenSLESConstants;
-import com.android.musicfx.seekbar.SeekBar;
-import com.android.musicfx.widget.EqualizerSurface;
-import com.android.musicfx.widget.Gallery;
-import com.android.musicfx.widget.InterceptableLinearLayout;
-import com.android.musicfx.widget.Knob;
-import com.android.musicfx.widget.Knob.OnKnobChangeListener;
-import com.android.musicfx.widget.Visualizer;
-import com.android.musicfx.widget.Visualizer.OnSeekBarChangeListener;
+import org.cyanogenmod.audiofx.widget.EqualizerSurface;
+import org.cyanogenmod.audiofx.widget.Gallery;
+import org.cyanogenmod.audiofx.widget.InterceptableLinearLayout;
+import org.cyanogenmod.audiofx.widget.Knob;
+import org.cyanogenmod.audiofx.widget.Knob.OnKnobChangeListener;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -61,6 +57,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -74,7 +71,7 @@ import java.util.UUID;
  *
  */
 public class ActivityMusic extends Activity {
-    private final static String TAG = "MusicFXActivityMusic";
+    private final static String TAG = "AudioFXActivityMusic";
 
     /**
      * Max number of EQ bands supported
@@ -111,7 +108,7 @@ public class ActivityMusic extends Activity {
     private int mPRPresetPrevious;
 
     private boolean mIsHeadsetOn = false;
-    private ToggleButton mToggleSwitch;
+    private Switch mToggleSwitch;
 
     private StringBuilder mFormatBuilder = new StringBuilder();
     private Formatter mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
@@ -176,8 +173,7 @@ public class ActivityMusic extends Activity {
     };
 
     /*
-     * Declares and initializes all objects and widgets in the layouts and the CheckBox and SeekBar
-     * onchange methods on creation.
+     * Declares and initializes all objects and widgets in the layouts
      *
      * (non-Javadoc)
      *
@@ -266,16 +262,14 @@ public class ActivityMusic extends Activity {
             // Set the listener for the main enhancements toggle button.
             // Depending on the state enable the supported effects if they were
             // checked in the setup tab.
-            mToggleSwitch = new ToggleButton(this);
-            mToggleSwitch.setBackgroundResource(R.drawable.switch_thumb_off);
-            mToggleSwitch.setTextOn("");
-            mToggleSwitch.setTextOff("");
+            mToggleSwitch = new Switch(this);
+            final int padding = getResources().getDimensionPixelSize(
+                    R.dimen.action_bar_switch_padding);
+            mToggleSwitch.setPaddingRelative(0, 0, padding, 0);
             mToggleSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(final CompoundButton buttonView,
                         final boolean isChecked) {
-                    buttonView.setBackgroundResource(isChecked ?
-                        R.drawable.switch_thumb_activated : R.drawable.switch_thumb_off);
                     // set parameter and state
                     ControlPanelEffect.setParameterBoolean(mContext, mCallingPackageName,
                             mAudioSession, ControlPanelEffect.Key.global_enabled, isChecked);
@@ -289,7 +283,6 @@ public class ActivityMusic extends Activity {
             });
 
             // Initialize the Virtualizer elements.
-            // Set the SeekBar listener.
             if (mVirtualizerSupported) {
                 final Knob knob = (Knob) findViewById(R.id.vIStrengthKnob);
                 knob.setMax(OpenSLESConstants.VIRTUALIZER_MAX_STRENGTH -
@@ -319,7 +312,6 @@ public class ActivityMusic extends Activity {
             }
 
             // Initialize the Bass Boost elements.
-            // Set the SeekBar listener.
             if (mBassBoostSupported) {
                 final Knob knob = (Knob) findViewById(R.id.bBStrengthKnob);
                 knob.setMax(OpenSLESConstants.BASSBOOST_MAX_STRENGTH
@@ -376,15 +368,12 @@ public class ActivityMusic extends Activity {
 
         ActionBar ab = getActionBar();
         final ActionBar.LayoutParams params = new ActionBar.LayoutParams(
-                getResources().getDimensionPixelSize(R.dimen.action_bar_button_width),
-                getResources().getDimensionPixelSize(R.dimen.action_bar_button_height),
-                Gravity.CENTER_VERTICAL | Gravity.RIGHT);
-        final int margin = getResources().getDimensionPixelSize(R.dimen.action_bar_switch_padding);
-        params.setMargins(0, 0, margin, 0);
-        ab.setBackgroundDrawable(getResources().getDrawable(R.drawable.ab_transparent_dark_holo));
-        ab.setCustomView(mToggleSwitch, params);
+                ActionBar.LayoutParams.WRAP_CONTENT,
+                ActionBar.LayoutParams.WRAP_CONTENT,
+                Gravity.CENTER_VERTICAL | Gravity.END);
         ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM
                 | ActionBar.DISPLAY_HOME_AS_UP);
+        ab.setCustomView(mToggleSwitch, params);
     }
 
     private final String localizePresetName(final String name) {
@@ -646,85 +635,6 @@ public class ActivityMusic extends Activity {
             }
         };
         eq.registerBandUpdatedListener(listener);
-
-        /*
-        final OnSeekBarChangeListener listener = new OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(final Visualizer v, final int progress,
-                    final boolean fromUser) {
-                for (short band = 0; band < mNumberEqualizerBands; ++band) {
-                    if (mEqualizerVisualizer[band] == v) {
-                        final short level = (short) (progress + mEqualizerMinBandLevel);
-                        if (fromUser) {
-                            equalizerBandUpdate(band, level);
-                        }
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(final Visualizer v) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(final Visualizer v) {
-                equalizerUpdateDisplay();
-            }
-        };
-        final OnTouchListener tl = new OnTouchListener() {
-            @Override
-            public boolean onTouch(final View v, final MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        if (mEQPreset != mEQPresetUserPos) {
-                            final Toast toast = Toast.makeText(mContext,
-                                    getString(R.string.eq_custom), Toast.LENGTH_SHORT);
-                            toast.setGravity(Gravity.TOP | Gravity.CENTER, 0,
-                                    toast.getYOffset() * 2);
-                            toast.show();
-                            return true;
-                        }
-                        return false;
-                    default:
-                        return false;
-                }
-            }
-        };
-
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        final int pixels = (int) (metrics.widthPixels / (mNumberEqualizerBands + 1.5f));
-        final LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                pixels, ViewGroup.LayoutParams.MATCH_PARENT);
-        for (int band = 0; band < mNumberEqualizerBands; band++) {
-            // Unit conversion from mHz to Hz and use k prefix if necessary to display
-            final int centerFreq = centerFreqs[band] / 1000;
-            float centerFreqHz = centerFreq;
-            String unitPrefix = "";
-            if (centerFreqHz >= 1000) {
-                centerFreqHz = centerFreqHz / 1000;
-                unitPrefix = "k";
-            }
-
-            final Visualizer v = new Visualizer(mContext);
-            v.setText(format("%.0f", centerFreqHz) + unitPrefix);
-            v.setMax(mEqualizerMaxBandLevel - mEqualizerMinBandLevel);
-            v.setOnSeekBarChangeListener(listener);
-            v.setOnTouchListener(tl);
-            eqcontainer.addView(v, lp);
-            mEqualizerVisualizer[band] = v;
-        }
-
-        // TODO: get the actual values from somewhere
-        TextView tv = (TextView) findViewById(R.id.maxLevelText);
-        tv.setText("+15 dB");
-        tv = (TextView) findViewById(R.id.centerLevelText);
-        tv.setText("0 dB");
-        tv = (TextView) findViewById(R.id.minLevelText);
-        tv.setText("-15 dB");
-        equalizerUpdateDisplay();
-        */
     }
 
     private String format(String format, Object... args) {

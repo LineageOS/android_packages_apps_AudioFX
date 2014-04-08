@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center">
 
-    <com.android.musicfx.widget.EqualizerSurface
+    <org.cyanogenmod.audiofx.widget.EqualizerSurface
         android:id="@+id/frequencyResponse"
         android:layout_height="match_parent"
         android:layout_width="match_parent" />

@@ -26,7 +26,7 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.android.musicfx.widget;
+package org.cyanogenmod.audiofx.widget;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -46,7 +46,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.lang.Math;
 
-import com.android.musicfx.R;
+import org.cyanogenmod.audiofx.R;
 
 public class Knob extends FrameLayout {
     private static final int STROKE_WIDTH = 6;

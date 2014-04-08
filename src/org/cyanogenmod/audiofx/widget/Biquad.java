@@ -1,4 +1,4 @@
-package com.android.musicfx.widget;
+package org.cyanogenmod.audiofx.widget;
 
 /**
  * Evaluate transfer functions of biquad filters in direct form 1.

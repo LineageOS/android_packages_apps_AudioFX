@@ -15,12 +15,12 @@
 -->
 
 <resources>
-    <string name="app_name">MusicFX</string>
+    <string name="app_name">AudioFX</string>
 
     <!-- ControlPanelMusic strings -->
     <string name="no_effects">Effects not available.</string>
     <string name="main_toggle_effects_title">Audio effects</string>
-    <string name="eq_dialog_title">CyanogenAudio</string>
+    <string name="eq_dialog_title">AudioFX</string>
     <string name="headset_plug">Plug in headphones for these effects.</string>
     <string name="bass_boost_strength">Bass boost</string>
     <string name="virtualizer_strength">Surround sound</string>

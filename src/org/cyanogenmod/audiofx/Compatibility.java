@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.musicfx;
+package org.cyanogenmod.audiofx;
 
 import android.app.Activity;
 import android.app.IntentService;
@@ -45,8 +45,8 @@ import java.util.List;
  */
 public class Compatibility {
 
-    private final static String TAG = "MusicFXCompat";
-    // run "setprop log.tag.MusicFXCompat DEBUG" to turn on logging
+    private final static String TAG = "AudioFXCompat";
+    // run "setprop log.tag.AudioFXCompat DEBUG" to turn on logging
     private final static boolean LOG = Log.isLoggable(TAG, Log.DEBUG);
 
 

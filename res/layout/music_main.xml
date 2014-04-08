@@ -16,7 +16,7 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res/com.android.musicfx"
+    xmlns:custom="http://schemas.android.com/apk/res/org.cyanogenmod.audiofx"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -35,7 +35,7 @@
         android:layout_weight="1"
         android:visibility="gone" />
 
-    <com.android.musicfx.widget.InterceptableLinearLayout
+    <org.cyanogenmod.audiofx.widget.InterceptableLinearLayout
         android:id="@+id/contentSoundEffects"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -47,7 +47,7 @@
             android:layout_height="0dip"
             android:layout_weight="26" />
 
-        <com.android.musicfx.widget.Gallery
+        <org.cyanogenmod.audiofx.widget.Gallery
             android:id="@+id/eqPresets"
             android:layout_width="match_parent"
             android:layout_height="0dip"
@@ -65,14 +65,14 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <com.android.musicfx.widget.Knob
+            <org.cyanogenmod.audiofx.widget.Knob
                 android:id="@+id/bBStrengthKnob"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 custom:label="@string/bass_boost_strength"
                 custom:foreground="@drawable/knob" />
 
-            <com.android.musicfx.widget.Knob
+            <org.cyanogenmod.audiofx.widget.Knob
                 android:id="@+id/vIStrengthKnob"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -89,5 +89,5 @@
             android:drawSelectorOnTop="true"
         />
 
-    </com.android.musicfx.widget.InterceptableLinearLayout>
+    </org.cyanogenmod.audiofx.widget.InterceptableLinearLayout>
 </LinearLayout>

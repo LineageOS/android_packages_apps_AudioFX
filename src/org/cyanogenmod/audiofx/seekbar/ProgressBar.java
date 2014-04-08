@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.musicfx.seekbar;
+package org.cyanogenmod.audiofx.seekbar;
 
 import com.android.internal.R;
 

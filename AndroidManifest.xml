@@ -15,7 +15,7 @@
 -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.android.musicfx"
+    package="org.cyanogenmod.audiofx"
     android:installLocation="auto"
     android:versionName="1.4" android:versionCode="10400">
     

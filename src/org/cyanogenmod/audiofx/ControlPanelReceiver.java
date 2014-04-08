@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.musicfx;
+package org.cyanogenmod.audiofx;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,7 +27,7 @@ import java.util.HashMap;
 
 public class ControlPanelReceiver extends BroadcastReceiver {
 
-    private final static String TAG = "MusicFXControlPanelReceiver";
+    private final static String TAG = "AudioFXControlPanelReceiver";
 
     @Override
     public void onReceive(final Context context, final Intent intent) {

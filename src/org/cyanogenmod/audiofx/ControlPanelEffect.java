@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.musicfx;
+package org.cyanogenmod.audiofx;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ControlPanelEffect {
 
-    private final static String TAG = "MusicFXControlPanelEffect";
+    private final static String TAG = "AudioFXControlPanelEffect";
 
     /**
      * Audio session priority

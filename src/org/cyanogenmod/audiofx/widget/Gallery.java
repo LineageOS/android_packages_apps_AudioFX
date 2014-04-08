@@ -26,7 +26,7 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.android.musicfx.widget;
+package org.cyanogenmod.audiofx.widget;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -36,7 +36,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-import com.android.musicfx.R;
+import org.cyanogenmod.audiofx.R;
 
 public class Gallery extends android.widget.Gallery {
     public interface OnItemSelectedListener {

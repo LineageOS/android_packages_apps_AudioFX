@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.android.musicfx;
+package org.cyanogenmod.audiofx;
 
 import com.android.internal.app.AlertActivity;
 import com.android.internal.app.AlertController;
 import com.android.internal.app.AlertController.AlertParams.OnPrepareListViewListener;
-import com.android.musicfx.Compatibility.Service;
+import org.cyanogenmod.audiofx.Compatibility.Service;
 
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;

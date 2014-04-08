@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.audiofx;
+package org.cyanogenmod.audiofx;
 
 /**
  * OpenSL ES constants class

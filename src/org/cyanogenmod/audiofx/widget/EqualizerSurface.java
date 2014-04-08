@@ -17,7 +17,7 @@
  * - Modified extensively by cyanogen for multi-band support
  */
 
-package com.android.musicfx.widget;
+package org.cyanogenmod.audiofx.widget;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -34,8 +34,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 
-import com.android.musicfx.R;
-import com.android.musicfx.widget.EqualizerSurface.BandUpdatedListener;
+import org.cyanogenmod.audiofx.R;
+import org.cyanogenmod.audiofx.widget.EqualizerSurface.BandUpdatedListener;
 
 import java.util.Arrays;
 

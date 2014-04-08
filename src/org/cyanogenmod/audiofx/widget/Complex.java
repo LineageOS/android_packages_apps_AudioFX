@@ -1,4 +1,4 @@
-package com.android.musicfx.widget;
+package org.cyanogenmod.audiofx.widget;
 
 /**
  * Java support for complex numbers.
