@@ -109,9 +109,11 @@ public class EqualizerSurface extends SurfaceView {
 
     /**
      * Listener for bands being modified via touch events
-     * 
+     *
      * Invoked with the index of the modified band, and the
-     * new value in dB.
+     * new value in dB. If the widget is read-only, will set
+     * changed = false.
+     *
      */
     public interface BandUpdatedListener {
         public void onBandUpdated(int band, float dB);
@@ -129,6 +131,17 @@ public class EqualizerSurface extends SurfaceView {
         System.arraycopy(centerFreqsKHz, 0, mCenterFreqs, 0, mNumBands);
         mMinFreq = mCenterFreqs[0] / 2;
         mMaxFreq = (float) Math.pow(mCenterFreqs[mNumBands - 1], 2) / mCenterFreqs[mNumBands -2] / 2; 
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        mReadOnly = enabled;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return mReadOnly;
     }
 
     /*
@@ -328,9 +341,10 @@ public class EqualizerSurface extends SurfaceView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        if (mReadOnly)
-            return false;
-        
+        if (mReadOnly) {
+           return false;
+        }
+
         float x = event.getX();
         float y = event.getY();
 

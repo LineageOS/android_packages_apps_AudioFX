@@ -107,6 +107,11 @@ public class ActivityMusic extends Activity {
     private int mPRPreset;
     private int mPRPresetPrevious;
 
+    private boolean mEQAnimatingToUserPos = false;
+
+    private EqualizerSurface mEqualizerSurface;
+    private Gallery mGallery;
+
     private boolean mIsHeadsetOn = false;
     private Switch mToggleSwitch;
 
@@ -343,12 +348,15 @@ public class ActivityMusic extends Activity {
 
             // Initialize the Equalizer elements.
             if (mEqualizerSupported) {
+                mEqualizerSurface = (EqualizerSurface)findViewById(R.id.frequencyResponse);
+                mGallery = (Gallery)findViewById(R.id.eqPresets);
+
                 mEQPreset = ControlPanelEffect.getParameterInt(mContext, mCallingPackageName,
                         mAudioSession, ControlPanelEffect.Key.eq_current_preset);
                 if (mEQPreset >= mEQPresetNames.length) {
                     mEQPreset = 0;
                 }
-                equalizerPresetsInit((Gallery)findViewById(R.id.eqPresets));
+                equalizerPresetsInit();
                 equalizerBandsInit();
             }
 
@@ -466,22 +474,6 @@ public class ActivityMusic extends Activity {
         });
         spinner.setSelection(mPRPreset);
     }
-
-    private void equalizerPresetsInit(Gallery gallery) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.equalizer_presets,
-                mEQPresetNames);
-
-        gallery.setAdapter(adapter);
-        gallery.setOnItemSelectedListener(new Gallery.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(int position) {
-                mEQPreset = position;
-                equalizerSetPreset(position);
-            }
-        });
-        gallery.setSelection(mEQPreset);
-    }
-
 
     /**
      * En/disables all children for a given view. For linear and relative layout children do this
@@ -602,8 +594,27 @@ public class ActivityMusic extends Activity {
         }
     }
 
+    private void equalizerPresetsInit() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.equalizer_presets,
+                mEQPresetNames);
+
+        mGallery.setAdapter(adapter);
+        mGallery.setOnItemSelectedListener(new Gallery.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(int position) {
+                mEQPreset = position;
+                if (!mEQAnimatingToUserPos) {
+                    equalizerSetPreset(position);
+                } else if (mEQAnimatingToUserPos && mEQPreset == mEQPresetUserPos) {
+                    mEQAnimatingToUserPos = false;
+                }
+            }
+        });
+        mGallery.setSelection(mEQPreset);
+    }
+
     /**
-     * Initializes the equalizer elements. Set the SeekBars and Spinner listeners.
+     * Initializes the equalizer elements.
      */
     private void equalizerBandsInit() {
         // Initialize the N-Band Equalizer elements.
@@ -616,25 +627,28 @@ public class ActivityMusic extends Activity {
                 mCallingPackageName, mAudioSession, ControlPanelEffect.Key.eq_center_freq);
         final int[] bandLevelRange = ControlPanelEffect.getParameterIntArray(mContext,
                 mCallingPackageName, mAudioSession, ControlPanelEffect.Key.eq_level_range);
-        final EqualizerSurface eq = (EqualizerSurface)findViewById(R.id.frequencyResponse);
         float[] centerFreqsKHz = new float[centerFreqs.length];
         for (int i = 0; i < centerFreqs.length; i++) {
             centerFreqsKHz[i] = (float)centerFreqs[i] / 1000.0f;
         }
-        eq.setCenterFreqs(centerFreqsKHz);
-        eq.setBandLevelRange(bandLevelRange[0] / 100, bandLevelRange[1] / 100);
+        mEqualizerSurface.setCenterFreqs(centerFreqsKHz);
+        mEqualizerSurface.setBandLevelRange(bandLevelRange[0] / 100, bandLevelRange[1] / 100);
 
         final EqualizerSurface.BandUpdatedListener listener = new EqualizerSurface.BandUpdatedListener() {
+
             @Override
             public void onBandUpdated(int band, float dB) {
-                if (mEQPreset != mEQPresetUserPos) {
-
+                if (mEQPreset != mEQPresetUserPos && !mEQAnimatingToUserPos) {
+                    equalizerCopyToCustom();
+                    mEQAnimatingToUserPos = true;
+                    mGallery.setAnimationDuration(1000);
+                    mGallery.setSelection(mEQPresetUserPos, true);
+                } else {
+                    equalizerBandUpdate(band, (int)(dB * 100));
                 }
-                equalizerBandUpdate(band, (int)(dB * 100));
-
             }
         };
-        eq.registerBandUpdatedListener(listener);
+        mEqualizerSurface.registerBandUpdatedListener(listener);
     }
 
     private String format(String format, Object... args) {
@@ -650,13 +664,23 @@ public class ActivityMusic extends Activity {
         // Update and show the active N-Band Equalizer bands.
         final int[] bandLevels = ControlPanelEffect.getParameterIntArray(mContext,
                 mCallingPackageName, mAudioSession, ControlPanelEffect.Key.eq_band_level);
-        EqualizerSurface eq = (EqualizerSurface)findViewById(R.id.frequencyResponse);
         for (short band = 0; band < mNumberEqualizerBands; band++) {
             final int level = bandLevels[band];
-            eq.setBand(band, (float)level / 100.0f);
+            mEqualizerSurface.setBand(band, (float)level / 100.0f);
         }
     }
 
+    /**
+     * Write all current EQ values to the user preset.
+     */
+    private void equalizerCopyToCustom() {
+        for (short band = 0; band < mNumberEqualizerBands; band++) {
+            final float level = mEqualizerSurface.getBand(band);
+            ControlPanelEffect.setParameterInt(mContext, mCallingPackageName, mAudioSession,
+                    ControlPanelEffect.Key.eq_band_level, (int)(level * 100), band);
+        }
+
+    }
     /**
      * Updates/sets a given EQ band level.
      *
@@ -668,6 +692,7 @@ public class ActivityMusic extends Activity {
     private void equalizerBandUpdate(final int band, final int level) {
         ControlPanelEffect.setParameterInt(mContext, mCallingPackageName, mAudioSession,
                 ControlPanelEffect.Key.eq_band_level, level, band);
+        equalizerUpdateDisplay();
     }
 
     /**
