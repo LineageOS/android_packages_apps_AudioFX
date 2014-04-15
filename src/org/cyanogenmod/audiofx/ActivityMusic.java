@@ -115,6 +115,8 @@ public class ActivityMusic extends Activity {
 
     private VisualizerView mVisualizer;
 
+    private boolean mStandalone = false;
+
     // Preset Reverb fields
     /**
      * Array containing RSid of preset reverb names.
@@ -167,6 +169,14 @@ public class ActivityMusic extends Activity {
                         || (deviceClass == BluetoothClass.Device.AUDIO_VIDEO_WEARABLE_HEADSET)) {
                     mIsHeadsetOn = audioManager.isWiredHeadsetOn();
                 }
+            } else if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
+                // handle a session change
+                if (mStandalone) {
+                    mAudioSession = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION,
+                            AudioEffect.ERROR_BAD_VALUE);
+                    mCallingPackageName = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
+                    updateUI();
+                }
             }
             if (isHeadsetOnPrev != mIsHeadsetOn) {
                 updateUIHeadset(true);
@@ -199,10 +209,12 @@ public class ActivityMusic extends Activity {
 
         // check for errors
         if (mCallingPackageName == null) {
-            Log.e(TAG, "Package name is null");
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
+            Log.w(TAG, "Invoked without package, using last seen package");
+            mCallingPackageName = ControlPanelEffect.getMostRecentPackage(this);
+            mAudioSession = ControlPanelEffect.getSessionForPackage(mCallingPackageName);
+            mStandalone = true;
+        } else {
+            mStandalone = false;
         }
         setResult(RESULT_OK);
 
@@ -379,8 +391,7 @@ public class ActivityMusic extends Activity {
                 ActionBar.LayoutParams.WRAP_CONTENT,
                 ActionBar.LayoutParams.WRAP_CONTENT,
                 Gravity.CENTER_VERTICAL | Gravity.END);
-        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM
-                | ActionBar.DISPLAY_HOME_AS_UP);
+        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
         ab.setCustomView(mToggleSwitch, params);
     }
 
@@ -427,12 +438,24 @@ public class ActivityMusic extends Activity {
             intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
             intentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
             intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+            intentFilter.addAction(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
             registerReceiver(mReceiver, intentFilter);
 
             // Check if wired or Bluetooth headset is connected/on
             final AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             mIsHeadsetOn = (audioManager.isWiredHeadsetOn() || audioManager.isBluetoothA2dpOn());
             Log.v(TAG, "onResume: mIsHeadsetOn : " + mIsHeadsetOn);
+
+            if (mCallingPackageName == null || mAudioSession == -1) {
+                Log.w(TAG, "Invoked without package, using last seen package");
+                mCallingPackageName = ControlPanelEffect.getMostRecentPackage(this);
+                mAudioSession = ControlPanelEffect.getSessionForPackage(mCallingPackageName);
+                mStandalone = true;
+            } else {
+                mStandalone = false;
+            }
+
+            getActionBar().setDisplayHomeAsUpEnabled(!mStandalone);
 
             // Update UI
             updateUI();
