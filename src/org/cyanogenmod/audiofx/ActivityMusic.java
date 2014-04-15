@@ -16,36 +16,25 @@
 
 package org.cyanogenmod.audiofx;
 
-import org.cyanogenmod.audiofx.widget.EqualizerSurface;
-import org.cyanogenmod.audiofx.widget.Gallery;
-import org.cyanogenmod.audiofx.widget.InterceptableLinearLayout;
-import org.cyanogenmod.audiofx.widget.Knob;
-import org.cyanogenmod.audiofx.widget.Knob.OnKnobChangeListener;
-
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.media.AudioManager;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.AudioEffect.Descriptor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -54,14 +43,20 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
-import android.util.DisplayMetrics;
+
+import com.pheelicks.visualizer.VisualizerView;
+import com.pheelicks.visualizer.renderer.LineRenderer;
+
+import org.cyanogenmod.audiofx.widget.EqualizerSurface;
+import org.cyanogenmod.audiofx.widget.Gallery;
+import org.cyanogenmod.audiofx.widget.InterceptableLinearLayout;
+import org.cyanogenmod.audiofx.widget.Knob;
+import org.cyanogenmod.audiofx.widget.Knob.OnKnobChangeListener;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -117,6 +112,8 @@ public class ActivityMusic extends Activity {
 
     private StringBuilder mFormatBuilder = new StringBuilder();
     private Formatter mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
+
+    private VisualizerView mVisualizer;
 
     // Preset Reverb fields
     /**
@@ -260,6 +257,9 @@ public class ActivityMusic extends Activity {
         for (short i = 0; i < mReverbPresetRSids.length; ++i) {
             mReverbPresetNames[i] = getString(mReverbPresetRSids[i]);
         }
+
+        mVisualizer = (VisualizerView) findViewById(R.id.visualizerView);
+        mVisualizer.addLineRenderer();
 
         // Watch for button clicks and initialization.
         if ((mVirtualizerSupported) || (mBassBoostSupported) || (mEqualizerSupported)
@@ -451,6 +451,8 @@ public class ActivityMusic extends Activity {
         // Unregister for broadcast intents. (These affect the visible UI,
         // so we only care about them while we're in the foreground.)
         unregisterReceiver(mReceiver);
+
+        mVisualizer.unlink();
     }
 
     private void reverbSpinnerInit(Spinner spinner) {
@@ -549,6 +551,8 @@ public class ActivityMusic extends Activity {
                                     ControlPanelEffect.Key.pr_current_preset);
             ((Spinner)findViewById(R.id.prSpinner)).setSelection(reverb);
         }
+
+        mVisualizer.link(mAudioSession);
 
         setInterception(isEnabled);
     }

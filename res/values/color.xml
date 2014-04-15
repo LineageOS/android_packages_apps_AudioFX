@@ -31,8 +31,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <resources>
     <color name="highlight">@android:color/holo_blue_light</color>
     <color name="lowlight">@android:color/holo_blue_dark</color>
-    <color name="grey">#e7e7e7</color>
-    <color name="disabled">#525252</color>
+    <color name="grey">#80e7e7e7</color>
+    <color name="disabled">#80525252</color>
     <color name="disabled_gallery">#888888</color>
     <color name="disabled_knob">#575757</color>
 
