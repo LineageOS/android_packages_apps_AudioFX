@@ -53,9 +53,7 @@ public class EqualizerSurface extends SurfaceView {
     private float mMaxDB = 15;
     
     private int mNumBands = 5;
-    
-    private boolean mReadOnly = false;
-    
+        
     private float[] mLevels = new float[mNumBands];
     private float[] mCenterFreqs = new float[mNumBands];
     private final Paint mWhite, mGridLines, mControlBarText, mControlBar;
@@ -131,17 +129,6 @@ public class EqualizerSurface extends SurfaceView {
         System.arraycopy(centerFreqsKHz, 0, mCenterFreqs, 0, mNumBands);
         mMinFreq = mCenterFreqs[0] / 2;
         mMaxFreq = (float) Math.pow(mCenterFreqs[mNumBands - 1], 2) / mCenterFreqs[mNumBands -2] / 2; 
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        mReadOnly = enabled;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return mReadOnly;
     }
 
     /*
@@ -341,7 +328,7 @@ public class EqualizerSurface extends SurfaceView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        if (mReadOnly) {
+        if (!isEnabled()) {
            return false;
         }
 
