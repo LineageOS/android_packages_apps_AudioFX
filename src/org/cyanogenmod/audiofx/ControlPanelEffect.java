@@ -164,14 +164,14 @@ public class ControlPanelEffect {
         final SharedPreferences.Editor editor = prefs.edit();
         final ControlMode controlMode = getControlMode(audioSession);
 
+        // init global on/off switch
+        final boolean isGlobalEnabled = prefs.getBoolean(Key.global_enabled.toString(),
+                GLOBAL_ENABLED_DEFAULT);
+        editor.putBoolean(Key.global_enabled.toString(), isGlobalEnabled);
+        Log.v(TAG, "isGlobalEnabled = " + isGlobalEnabled);
+
         // init preferences
         try {
-            // init global on/off switch
-            final boolean isGlobalEnabled = prefs.getBoolean(Key.global_enabled.toString(),
-                    GLOBAL_ENABLED_DEFAULT);
-            editor.putBoolean(Key.global_enabled.toString(), isGlobalEnabled);
-            Log.v(TAG, "isGlobalEnabled = " + isGlobalEnabled);
-
             // Virtualizer
             final boolean isVIEnabled = prefs.getBoolean(Key.virt_enabled.toString(),
                     VIRTUALIZER_ENABLED_DEFAULT);
@@ -197,7 +197,11 @@ public class ControlPanelEffect {
                     mediaPlayer.release();
                 }
             }
+        } catch (final RuntimeException e) {
+            Log.e(TAG, "initEffectsPreferences: processingEnabled: " + e);
+        }
 
+        try {
             // BassBoost
             final boolean isBBEnabled = prefs.getBoolean(Key.bb_enabled.toString(),
                     BASS_BOOST_ENABLED_DEFAULT);
@@ -205,7 +209,11 @@ public class ControlPanelEffect {
                     BASS_BOOST_STRENGTH_DEFAULT);
             editor.putBoolean(Key.bb_enabled.toString(), isBBEnabled);
             editor.putInt(Key.bb_strength.toString(), bBStrength);
+        } catch (final RuntimeException e) {
+            Log.e(TAG, "initEffectsPreferences: processingEnabled: " + e);
+        }
 
+        try {
             // Equalizer
             synchronized (mEQInitLock) {
                 // If EQ is not initialized already create "dummy" audio session created by
@@ -315,7 +323,11 @@ public class ControlPanelEffect {
             final boolean isEQEnabled = prefs.getBoolean(Key.eq_enabled.toString(),
                     EQUALIZER_ENABLED_DEFAULT);
             editor.putBoolean(Key.eq_enabled.toString(), isEQEnabled);
+        } catch (final RuntimeException e) {
+            Log.e(TAG, "initEffectsPreferences: processingEnabled: " + e);
+        }
 
+        try {
             // Preset reverb
             final boolean isEnabledPR = prefs.getBoolean(Key.pr_enabled.toString(),
                     PRESET_REVERB_ENABLED_DEFAULT);
