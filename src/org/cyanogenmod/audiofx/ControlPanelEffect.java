@@ -1514,6 +1514,6 @@ public class ControlPanelEffect {
 
     public static String getMostRecentPackage(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("global", Context.MODE_PRIVATE);
-        return prefs.getString("current_package", null);
+        return prefs.getString("current_package", "default");
     }
 }
