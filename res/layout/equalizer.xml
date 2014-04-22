@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center">
+    android:layout_gravity="center"
+    android:paddingBottom="18dp">
 
     <org.cyanogenmod.audiofx.widget.EqualizerSurface
         android:id="@+id/frequencyResponse"

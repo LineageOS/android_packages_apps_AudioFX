@@ -15,6 +15,9 @@
 -->
 
 <resources>
+    <style name="AppTheme" parent="android:Theme.Holo">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
     <style name="Widget.Holo.SeekBar.Vertical" parent="@android:Widget.Holo.SeekBar">
         <item name="android:indeterminateOnly">false</item>
         <item name="android:progressDrawable">@drawable/scrubber_progress_vertical_holo_dark</item>

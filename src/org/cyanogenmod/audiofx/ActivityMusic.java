@@ -391,8 +391,16 @@ public class ActivityMusic extends Activity {
                 ActionBar.LayoutParams.WRAP_CONTENT,
                 ActionBar.LayoutParams.WRAP_CONTENT,
                 Gravity.CENTER_VERTICAL | Gravity.END);
-        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_SHOW_CUSTOM);
+
         ab.setCustomView(mToggleSwitch, params);
+        ab.setHomeButtonEnabled(true);
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
+                        | ActionBar.DISPLAY_SHOW_CUSTOM
+                        | ActionBar.DISPLAY_SHOW_TITLE
+                        | ActionBar.DISPLAY_SHOW_HOME
+                        | ActionBar.DISPLAY_USE_LOGO
+        );
     }
 
     private final String localizePresetName(final String name) {
@@ -631,6 +639,7 @@ public class ActivityMusic extends Activity {
             public void onItemSelected(int position) {
                 mEQPreset = position;
                 if (!mEQAnimatingToUserPos) {
+                    Log.e("ROMAN", "equilizerSetPreset()");
                     equalizerSetPreset(position);
                 } else if (mEQAnimatingToUserPos && mEQPreset == mEQPresetUserPos) {
                     mEQAnimatingToUserPos = false;
@@ -693,7 +702,7 @@ public class ActivityMusic extends Activity {
                 mCallingPackageName, mAudioSession, ControlPanelEffect.Key.eq_band_level);
         for (short band = 0; band < mNumberEqualizerBands; band++) {
             final int level = bandLevels[band];
-            mEqualizerSurface.setBand(band, (float)level / 100.0f);
+            mEqualizerSurface.setBand(band, (float) level / 100.0f);
         }
     }
 

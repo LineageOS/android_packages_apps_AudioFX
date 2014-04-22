@@ -49,12 +49,12 @@ import java.lang.Math;
 import org.cyanogenmod.audiofx.R;
 
 public class Knob extends FrameLayout {
-    private static final int STROKE_WIDTH = 6;
+    private static final int STROKE_WIDTH = 35;
     private static final float TEXT_SIZE = 0.20f;
     private static final float TEXT_PADDING = 0.31f;
-    private static final float LABEL_PADDING = 0.05f;
-    private static final float LABEL_SIZE = 0.09f;
-    private static final float LABEL_WIDTH = 0.80f;
+    private static final float LABEL_PADDING = 0.02f;
+    private static final float LABEL_SIZE = 0.08f;
+    private static final float LABEL_WIDTH = 0.45f;
     private static final float INDICATOR_RADIUS = 0.38f;
 
     public interface OnKnobChangeListener {
@@ -113,7 +113,8 @@ public class Knob extends FrameLayout {
         mLowlightColor = res.getColor(R.color.lowlight);
         mDisabledColor = res.getColor(R.color.disabled_knob);
 
-        ((ImageView) findViewById(R.id.knob_foreground)).setImageResource(foreground);
+        ImageView fg = (ImageView) findViewById(R.id.knob_foreground);
+        fg.setImageResource(R.drawable.knob);
 
         mLabelTV = (TextView) findViewById(R.id.knob_label);
         mLabelTV.setText(label);
@@ -124,9 +125,10 @@ public class Knob extends FrameLayout {
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(mHighlightColor);
-        mPaint.setStrokeWidth(STROKE_WIDTH);
-        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setStrokeWidth(65);
+        mPaint.setStrokeCap(Paint.Cap.BUTT);
         mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setShadowLayer(2, 1, -2, getResources().getColor(R.color.black));
 
         setWillNotDraw(false);
     }

@@ -18,7 +18,7 @@
     package="org.cyanogenmod.audiofx"
     android:installLocation="auto"
     android:versionName="1.4" android:versionCode="10400">
-    
+    <uses-sdk android:minSdkVersion="19"/>
     <uses-permission
         android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE" />
     <uses-permission
@@ -36,7 +36,7 @@
         android:theme="@android:style/Theme.NoTitleBar">
         <activity
             android:name=".ActivityMusic"
-            android:theme="@android:style/Theme.Holo"
+            android:theme="@style/AppTheme"
             android:label="@string/eq_dialog_title"
             android:screenOrientation="portrait">
             <intent-filter>

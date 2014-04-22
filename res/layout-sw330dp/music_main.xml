@@ -19,8 +19,7 @@
     xmlns:custom="http://schemas.android.com/apk/res/org.cyanogenmod.audiofx"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#2e2e2f">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/noEffectsTextView"
@@ -42,22 +41,17 @@
         android:layout_height="match_parent"
         android:layout_marginTop="48dip">
 
+        <org.cyanogenmod.audiofx.widget.Gallery
+            android:id="@+id/eqPresets"
+            android:layout_width="match_parent"
+            android:layout_height="48dip"
+            android:padding="0dip"
+            android:gravity="center_vertical" />
 
         <include layout="@layout/equalizer"
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="26" />
-
-        <org.cyanogenmod.audiofx.widget.Gallery
-            android:id="@+id/eqPresets"
-            android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_weight="8"
-            android:padding="0dip"
-            android:fadingEdgeLength="100dip"
-            android:requiresFadingEdge="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/preset_bar" />
 
         <FrameLayout
             android:layout_width="match_parent"

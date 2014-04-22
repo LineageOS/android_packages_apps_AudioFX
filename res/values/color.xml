@@ -29,8 +29,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <resources>
-    <color name="highlight">@android:color/holo_blue_light</color>
-    <color name="lowlight">@android:color/holo_blue_dark</color>
+    <color name="highlight">@android:color/white</color>
+    <color name="lowlight">#ccf4fcff</color>
     <color name="grey">#80e7e7e7</color>
     <color name="disabled">#80525252</color>
     <color name="disabled_gallery">#888888</color>
@@ -39,14 +39,17 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <color name="white">#90dedede</color>
     <color name="black">#ff000000</color>
     <color name="grid_lines">#22ffffff</color>
-    <color name="cb">#8880dede</color>
+    <color name="cb">#88ffffff</color>
     <color name="freq_hl">#2000ddff</color>
     <color name="freq_hl2">#4033b5e5</color>
     <color name="eq_red">#80ff0000</color>
+    <color name="eq_green">#80aaeaaa</color>
     <color name="eq_yellow">#80f0ff00</color>
     <color name="eq_holo_bright">#8000ddff</color>
     <color name="eq_holo_blue">#8033b5e5</color>
     <color name="eq_holo_dark">#800099cc</color>
-    <color name="cb_shader">#ff88ffff</color>
-    <color name="cb_shader_alpha">#2288ffff</color>
+    <color name="cb_shader">#ffffffff</color>
+    <color name="cb_shader_alpha">#22ffffff</color>
+
+    <color name="window_background">#ff000000</color>
 </resources>
