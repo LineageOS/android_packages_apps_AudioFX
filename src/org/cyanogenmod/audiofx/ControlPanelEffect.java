@@ -657,8 +657,8 @@ public class ControlPanelEffect {
                 }
                 case eq_current_preset: {
                     final Equalizer equalizerEffect = getEqualizerEffect(audioSession);
+                    final short preset = (short) value;
                     if (equalizerEffect != null) {
-                        final short preset = (short) value;
                         final int numBands = prefs.getInt(Key.eq_num_bands.toString(),
                                 EQUALIZER_NUMBER_BANDS_DEFAULT);
                         final int numPresets = prefs.getInt(Key.eq_num_presets.toString(),
@@ -696,6 +696,9 @@ public class ControlPanelEffect {
                             final short level = equalizerEffect.getBandLevel(band);
                             editor.putInt(Key.eq_band_level.toString() + band, level);
                         }
+                    } else {
+                        // just save
+                        savePresetToPrefs(preset, prefs);
                     }
                     break;
                 }
@@ -759,38 +762,7 @@ public class ControlPanelEffect {
                     break;
                 }
                 case eq_current_preset: {
-                    final short preset = (short) value;
-                    final int numBands = prefs.getInt(Key.eq_num_bands.toString(),
-                            EQUALIZER_NUMBER_BANDS_DEFAULT);
-                    final int numPresets = prefs.getInt(Key.eq_num_presets.toString(),
-                            EQUALIZER_NUMBER_PRESETS_DEFAULT);
-
-                    final short[][] eQPresetOpenSLESBandLevelDefault = Arrays.copyOf(
-                            EQUALIZER_PRESET_OPENSL_ES_BAND_LEVEL_DEFAULT, numBands);
-                    final short[] eQPresetCIExtremeBandLevelDefault = Arrays.copyOf(
-                            EQUALIZER_PRESET_CIEXTREME_BAND_LEVEL, numBands);
-                    final short[] eQPresetUserBandLevelDefault = Arrays.copyOf(
-                            EQUALIZER_PRESET_USER_BAND_LEVEL_DEFAULT, numBands);
-                    for (short band = 0; band < numBands; band++) {
-                        short bandLevel = 0;
-                        if (preset < numPresets) {
-                            // OpenSL ES EQ Effect presets
-                            bandLevel = (short) prefs.getInt(
-                                    Key.eq_preset_opensl_es_band_level.toString() + preset + "_"
-                                            + band, eQPresetOpenSLESBandLevelDefault[preset][band]);
-                        } else if (preset == numPresets) {
-                            // CI EXTREME
-                            bandLevel = (short) prefs.getInt(
-                                    Key.eq_preset_ci_extreme_band_level.toString() + band,
-                                    eQPresetCIExtremeBandLevelDefault[band]);
-                        } else {
-                            // User
-                            bandLevel = (short) prefs.getInt(
-                                    Key.eq_preset_user_band_level.toString() + band,
-                                    eQPresetUserBandLevelDefault[band]);
-                        }
-                        editor.putInt(Key.eq_band_level.toString() + band, bandLevel);
-                    }
+                    savePresetToPrefs((short) value, prefs);
                     break;
                 }
                 case eq_preset_user_band_level:
@@ -822,6 +794,42 @@ public class ControlPanelEffect {
             Log.e(TAG, "setParameterInt: " + key + "; " + arg0 + "; " + arg1 + "; " + e);
         }
 
+    }
+
+    private static void savePresetToPrefs(final short preset, SharedPreferences prefs) {
+        SharedPreferences.Editor editor = prefs.edit();
+
+        final int numBands = prefs.getInt(Key.eq_num_bands.toString(),
+                EQUALIZER_NUMBER_BANDS_DEFAULT);
+        final int numPresets = prefs.getInt(Key.eq_num_presets.toString(),
+                EQUALIZER_NUMBER_PRESETS_DEFAULT);
+
+        final short[] eQPresetCIExtremeBandLevelDefault = Arrays.copyOf(
+                EQUALIZER_PRESET_CIEXTREME_BAND_LEVEL, numBands);
+        final short[] eQPresetUserBandLevelDefault = Arrays.copyOf(
+                EQUALIZER_PRESET_USER_BAND_LEVEL_DEFAULT, numBands);
+        for (short band = 0; band < numBands; band++) {
+            short bandLevel = 0;
+            if (preset < numPresets) {
+                // OpenSL ES EQ Effect presets
+                bandLevel = (short) prefs.getInt(
+                        Key.eq_preset_opensl_es_band_level.toString() + preset + "_"
+                                + band, mEQPresetOpenSLESBandLevel[preset][band]);
+            } else if (preset == numPresets) {
+                // CI EXTREME
+                bandLevel = (short) prefs.getInt(
+                        Key.eq_preset_ci_extreme_band_level.toString() + band,
+                        eQPresetCIExtremeBandLevelDefault[band]);
+            } else {
+                // User
+                bandLevel = (short) prefs.getInt(
+                        Key.eq_preset_user_band_level.toString() + band,
+                        eQPresetUserBandLevelDefault[band]);
+            }
+            editor.putInt(Key.eq_band_level.toString() + band, bandLevel);
+        }
+        editor.putInt(Key.eq_current_preset.toString(), preset);
+        editor.commit();
     }
 
     /**
