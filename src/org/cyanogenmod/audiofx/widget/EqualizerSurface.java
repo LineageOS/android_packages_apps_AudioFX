@@ -52,7 +52,7 @@ public class EqualizerSurface extends SurfaceView {
     private float mMinDB = -15;
     private float mMaxDB = 15;
     
-    private int mNumBands = 5;
+    private int mNumBands = 6;
         
     private float[] mLevels = new float[mNumBands];
     private float[] mCenterFreqs = new float[mNumBands];

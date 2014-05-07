@@ -43,11 +43,11 @@
     <string name="user">Custom</string>
 
     <string name="none">None</string>
-    <string name="smallroom">SmallRoom</string>
-    <string name="mediumroom">MediumRoom</string>
-    <string name="largeroom">LargeRoom</string>
-    <string name="mediumhall">MediumHall</string>
-    <string name="largehall">LargeHall</string>
+    <string name="smallroom">Small room</string>
+    <string name="mediumroom">Medium room</string>
+    <string name="largeroom">Large room</string>
+    <string name="mediumhall">Medium hall</string>
+    <string name="largehall">Large hall</string>
     <string name="plate">Plate</string>
 
     <string name="eq_custom">To customize, select “Custom”</string>
@@ -55,4 +55,5 @@
 
     <!-- title of control panel picker dialog [CHAR LIMIT=30] -->
     <string name="picker_title">Music effects control panel"</string>
+    <string name="reverb">Reverb</string>
 </resources>
