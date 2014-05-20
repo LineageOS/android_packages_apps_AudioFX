@@ -99,7 +99,7 @@ public class ActivityMusic extends Activity {
     private boolean mIsHeadsetOn = false;
     private Switch mToggleSwitch;
 
-    private VisualizerView mVisualizer;
+//    private VisualizerView mVisualizer;
 
     private boolean mStandalone = false;
     private boolean mStateChangeUpdate = false;
@@ -215,6 +215,7 @@ public class ActivityMusic extends Activity {
 
         mContentEffectsViewGroup = (ViewGroup) findViewById(R.id.contentSoundEffects);
 
+        // setup actionbar on off switch
         mToggleSwitch = new Switch(this);
         final int padding = getResources().getDimensionPixelSize(
                 R.dimen.action_bar_switch_padding);
@@ -236,8 +237,13 @@ public class ActivityMusic extends Activity {
         });
 
         // setup action bar
+        String[] navigationBarDevices = new String[HeadsetService.DEFAULT_AUDIO_DEVICES.length];
+        for (int i = 0; i < navigationBarDevices.length; i++) {
+            navigationBarDevices[i] = localizeDevice(HeadsetService.DEFAULT_AUDIO_DEVICES[i]);
+        }
+
         mNavBarDeviceAdapter = new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_spinner_dropdown_item,
-                HeadsetService.DEFAULT_AUDIO_DEVICES);
+                navigationBarDevices);
         ActionBar.OnNavigationListener navigationListener = new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
@@ -277,7 +283,7 @@ public class ActivityMusic extends Activity {
         mEqualizerSurface = (EqualizerSurface) findViewById(R.id.frequencyResponse);
         mEqGallery = (Gallery) findViewById(R.id.eqPresets);
         mReverbGallery = (Gallery) findViewById(R.id.reverb_gallery);
-        mVisualizer = (VisualizerView) findViewById(R.id.visualizerView);
+//        mVisualizer = (VisualizerView) findViewById(R.id.visualizerView);
         mVirtualizerKnob = (Knob) findViewById(R.id.vIStrengthKnob);
         mBassKnob = (Knob) findViewById(R.id.bBStrengthKnob);
 
@@ -412,7 +418,7 @@ public class ActivityMusic extends Activity {
         });
         mReverbGallery.setSelection(mPRPreset);
 
-        mVisualizer.addLineRenderer();
+//        mVisualizer.addLineRenderer();
     }
 
     private SharedPreferences getPrefs() {
@@ -438,6 +444,10 @@ public class ActivityMusic extends Activity {
             }
         }
         return name;
+    }
+
+    private final String localizeDevice(String device) {
+        return getString(mContext.getResources().getIdentifier("device_" + device, "string", getPackageName()));
     }
 
     @Override
@@ -500,7 +510,7 @@ public class ActivityMusic extends Activity {
         // so we only care about them while we're in the foreground.)
 //        unregisterReceiver(mReceiver);
 
-        mVisualizer.unlink();
+//        mVisualizer.unlink();
     }
 
     /**
@@ -586,11 +596,11 @@ public class ActivityMusic extends Activity {
             mReverbGallery.setSelection(mPRPreset, true);
         }
 
-        if (mAudioSession != AudioEffect.ERROR_BAD_VALUE && mAudioSession != 0) {
-            mVisualizer.link(mAudioSession);
-        } else {
-            mVisualizer.unlink();
-        }
+//        if (mAudioSession != AudioEffect.ERROR_BAD_VALUE && mAudioSession != 0) {
+//            mVisualizer.link(mAudioSession);
+//        } else {
+//            mVisualizer.unlink();
+//        }
 
         setInterception(isEnabled);
     }

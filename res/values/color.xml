@@ -29,7 +29,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <resources>
-    <color name="highlight">#cc797979</color>
+    <color name="highlight">#cc8f8f8f</color>
     <color name="lowlight">#ccf4fcff</color>
     <color name="grey">#80e7e7e7</color>
     <color name="disabled">#80525252</color>

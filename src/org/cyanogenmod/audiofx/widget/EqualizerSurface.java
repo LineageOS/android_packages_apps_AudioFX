@@ -264,7 +264,7 @@ public class EqualizerSurface extends SurfaceView {
             /* Magnitude response, dB */
             double dB = lin2dB(lin);
             float x = projectX(freq) * mWidth;
-            float y = projectY(dB) * (mHeight - mTextSize);
+            float y = projectY(dB) * (mHeight);
 
             /* Set starting point at first point */
             if (i == 0) {
@@ -277,8 +277,8 @@ public class EqualizerSurface extends SurfaceView {
         Path freqResponseBg = new Path();
         freqResponseBg.addPath(freqResponse);
         freqResponseBg.offset(0, -4);
-        freqResponseBg.lineTo(mWidth, mHeight - mTextSize);
-        freqResponseBg.lineTo(0, mHeight - mTextSize);
+        freqResponseBg.lineTo(mWidth, mHeight);
+        freqResponseBg.lineTo(0, mHeight);
         freqResponseBg.close();
         canvas.drawPath(freqResponseBg, mFrequencyResponseBg);
 
@@ -310,11 +310,11 @@ public class EqualizerSurface extends SurfaceView {
         for (int i = 0; i < mNumBands; i ++) {
             float freq = mCenterFreqs[i];
             float x = projectX(freq) * mWidth;
-            float y = projectY(mLevels[i]) * (mHeight - mTextSize);
+            float y = projectY(mLevels[i]) * (mHeight);
             String frequencyText = String.format(freq < 1000 ? "%.0f" : "%.0fk",
                     freq < 1000 ? freq : freq / 1000);
 
-            int targetHeight = (mHeight - mTextSize);
+            int targetHeight = (mHeight);
 
             int halfX = mBarWidth/2;
             if (y > targetHeight) {
@@ -325,7 +325,7 @@ public class EqualizerSurface extends SurfaceView {
             }
 
             canvas.drawText(frequencyText, x, mWhite.getTextSize(), mControlBarText);
-            canvas.drawText(String.format("%+1.1f", mLevels[i]), x, mHeight, mControlBarText);
+            canvas.drawText(String.format("%+1.1f", mLevels[i]), x, y-1, mControlBarText);
         }
     }
 

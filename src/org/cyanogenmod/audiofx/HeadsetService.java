@@ -12,6 +12,7 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p>This calls listen to events that affect DSP function and responds to them.</p>
@@ -29,7 +30,6 @@ public class HeadsetService extends Service {
     public static final String[] DEFAULT_AUDIO_DEVICES = new String[]{
             "headset", "speaker", "usb", "bluetooth"
     };
-
 
     /**
      * Helper class representing the full complement of effects attached to one
@@ -98,7 +98,7 @@ public class HeadsetService extends Service {
     /**
      * Known audio sessions and their associated audioeffect suites.
      */
-    protected final Map<Integer, EffectSet> mAudioSessions = new HashMap<Integer, EffectSet>();
+    protected final ConcurrentHashMap<Integer, EffectSet> mAudioSessions = new ConcurrentHashMap<Integer, EffectSet>();
 
     /**
      * Is a wired headset plugged in?
@@ -211,6 +211,11 @@ public class HeadsetService extends Service {
                 new IntentFilter(ACTION_UPDATE_PREFERENCES));
 
         saveDefaults();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
     }
 
     @Override
@@ -329,8 +334,17 @@ public class HeadsetService extends Service {
         }
         presetNames.deleteCharAt(presetNames.length() - 1);
         prefs.edit().putString("equalizer.preset_names", presetNames.toString()).apply();
-
         temp.release();
+
+        // add ci-extreme
+        StringBuilder ciExtremeBuilder = new StringBuilder("0;800;400;100;1000");
+        if (numBands > 5) {
+            int extraBands = numBands - 5;
+            for (int i = 0; i < extraBands; i++) {
+                ciExtremeBuilder.insert(0, "0;");
+            }
+        }
+        prefs.edit().putString("equalizer.preset." + numPresets, ciExtremeBuilder.toString()).apply();
     }
 
     /**

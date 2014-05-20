@@ -50,10 +50,16 @@
     <string name="largehall">Large hall</string>
     <string name="plate">Plate</string>
 
+    <string name="device_headset">Headset</string>
+    <string name="device_speaker">Speaker</string>
+    <string name="device_usb">USB</string>
+    <string name="device_bluetooth">Bluetooth</string>
+
     <string name="eq_custom">To customize, select “Custom”</string>
     <string name="power_on_prompt">Press the power button on the top-right.</string>
 
     <!-- title of control panel picker dialog [CHAR LIMIT=30] -->
     <string name="picker_title">Music effects control panel"</string>
-    <string name="reverb">Reverb</string>
+    <string name="reverb">- Reverb -</string>
+    <string name="eq_preset">- Equalizer Preset- </string>
 </resources>
