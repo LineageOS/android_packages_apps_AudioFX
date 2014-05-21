@@ -106,7 +106,7 @@ public class ActivityMusic extends Activity {
 
     HeadsetService mService;
 
-    private String mCurrentDevice;
+    private String mCurrentDevice = "speaker"; // the sensible default
 
     private static final int[] mReverbPresetRSids = {
             R.string.none, R.string.smallroom, R.string.mediumroom, R.string.largeroom,
@@ -156,7 +156,7 @@ public class ActivityMusic extends Activity {
     private ArrayAdapter<String> mNavBarDeviceAdapter;
 
     private float[] mEQValues;
-    private boolean mCurrentDeviceOverride;
+    private boolean mCurrentDeviceOverride = false;
 
     /*
      * Declares and initializes all objects and widgets in the layouts
@@ -251,11 +251,11 @@ public class ActivityMusic extends Activity {
                     mCurrentDevice = HeadsetService.DEFAULT_AUDIO_DEVICES[itemPosition];
                     mCurrentDeviceOverride = true;
                     updateUI();
-
-                    // forcefully reset the preset to reload custom eq if there is one
-                    equalizerSetPreset(mEQPreset);
-                    equalizerUpdateDisplay();
                 }
+
+                // forcefully reset the preset to reload custom eq if there is one
+                equalizerSetPreset(mEQPreset);
+                equalizerUpdateDisplay();
                 return true;
             }
         };
@@ -269,6 +269,7 @@ public class ActivityMusic extends Activity {
         ab.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         ab.setListNavigationCallbacks(mNavBarDeviceAdapter, navigationListener);
         ab.setBackgroundDrawable(new ColorDrawable(0xFF2E2E2E));
+        ab.setSelectedNavigationItem(getCurrentDeviceIndex());
 
         ab.setCustomView(mToggleSwitch, params);
         ab.setHomeButtonEnabled(true);
@@ -556,16 +557,13 @@ public class ActivityMusic extends Activity {
             // don't reset current device.
         } else if (mService != null) {
             mCurrentDevice = mService.getAudioOutputRouting();
-            mStateChangeUpdate = true;
-            getActionBar().setSelectedNavigationItem(mNavBarDeviceAdapter.getPosition(mCurrentDevice));
-            mStateChangeUpdate = false;
-        } else {
-            mCurrentDevice = "speaker";
-
-            mStateChangeUpdate = true;
-            getActionBar().setSelectedNavigationItem(mNavBarDeviceAdapter.getPosition(mCurrentDevice));
-            mStateChangeUpdate = false;
         }
+
+        // update device
+        mStateChangeUpdate = true;
+        getActionBar().setSelectedNavigationItem(getCurrentDeviceIndex());
+        mStateChangeUpdate = false;
+
         mIsHeadsetOn = mCurrentDevice.equals("headset");
         final boolean isEnabled = getPrefs().getBoolean("audiofx.global.enable", false);
 
@@ -603,6 +601,15 @@ public class ActivityMusic extends Activity {
 //        }
 
         setInterception(isEnabled);
+    }
+
+    private int getCurrentDeviceIndex() {
+        for (int i = 0; i < HeadsetService.DEFAULT_AUDIO_DEVICES.length; i++) {
+            if (HeadsetService.DEFAULT_AUDIO_DEVICES[i].equals(mCurrentDevice)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     private void setInterception(boolean isEnabled) {
