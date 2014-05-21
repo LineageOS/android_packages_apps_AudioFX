@@ -9,6 +9,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -30,6 +31,15 @@ public class HeadsetService extends Service {
     public static final String[] DEFAULT_AUDIO_DEVICES = new String[]{
             "headset", "speaker", "usb", "bluetooth"
     };
+
+    static String getZeroedBandsString(int length) {
+        StringBuffer buff = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            buff.append("0;");
+        }
+        buff.deleteCharAt(buff.length() - 1);
+        return buff.toString();
+    }
 
     /**
      * Helper class representing the full complement of effects attached to one
@@ -186,6 +196,9 @@ public class HeadsetService extends Service {
                     || prevUseBluetooth != mUseBluetooth
                     || prevUseUSB != mUseUSB) {
                 update();
+
+                Intent i = new Intent(ACTION_UPDATE_PREFERENCES);
+                context.sendBroadcast(i);
             }
         }
     };
@@ -363,10 +376,10 @@ public class HeadsetService extends Service {
     }
 
     private void updateDsp(SharedPreferences prefs, EffectSet session) {
-        final boolean globalEnabled = prefs.getBoolean("audiofx.global.enabled", false);
+        final boolean globalEnabled = prefs.getBoolean("audiofx.global.enable", false);
 
         try {
-            session.mCompression.setEnabled(globalEnabled ? false : prefs.getBoolean("audiofx.compression.enable", false));
+            session.mCompression.setEnabled(globalEnabled ? prefs.getBoolean("audiofx.compression.enable", false) : false);
             session.mCompression.setParameter(session.mCompression.intToByteArray(0),
                     session.mCompression.shortToByteArray(
                             Short.valueOf(prefs.getString("audiofx.compression.mode", "0")))
@@ -376,7 +389,7 @@ public class HeadsetService extends Service {
         }
 
         try {
-            session.mBassBoost.setEnabled(globalEnabled ? false : prefs.getBoolean("audiofx.bass.enable", false));
+            session.mBassBoost.setEnabled(globalEnabled ?  prefs.getBoolean("audiofx.bass.enable", false) : false);
             session.mBassBoost.setStrength(Short.valueOf(prefs.getString("audiofx.bass.mode", "0")));
         } catch (Exception e) {
             Log.e(TAG, "Error enabling bass boost!", e);
@@ -392,17 +405,34 @@ public class HeadsetService extends Service {
         }
 
         try {
-            session.mEqualizer.setEnabled(globalEnabled ? false : prefs.getBoolean("audiofx.eq.enable", false));
+            session.mEqualizer.setEnabled(globalEnabled);
+
+            final int customPresetPos = session.mEqualizer.getNumberOfPresets() + 1;
+            final int preset = Integer.valueOf(prefs.getString("audiofx.eq.preset", String.valueOf(customPresetPos)));
+            final int bands = session.mEqualizer.getNumberOfBands();
 
             /* Equalizer state is in a single string preference with all values separated by ; */
-            String[] levels = prefs.getString("audiofx.eq.bandlevels", "0;0;0;0;0").split(";");
+            String[] levels;
+
+            if (preset == customPresetPos) {
+                Log.e(TAG, "loading custom band levels");
+                levels = prefs.getString("audiofx.eq.bandlevels.custom", getZeroedBandsString(bands)).split(";");
+            } else {
+                Log.e(TAG, "loading preset band levels");
+                levels = getSharedPreferences("global", 0).getString("equalizer.preset." + preset, getZeroedBandsString(bands)).split(";");
+
+            }
+            Log.e(TAG, "band levels applied: " + Arrays.toString(levels));
+
             float[] equalizerLevels = new float[levels.length];
             for (int i = 0; i < levels.length; i++) {
                 equalizerLevels[i] = Float.valueOf(levels[i]);
             }
 
             for (short i = 0; i < equalizerLevels.length; i++) {
-                session.mEqualizer.setBandLevel(i, (short) Math.round(equalizerLevels[i] * 100));
+                short level =  (short) Math.round(equalizerLevels[i]);
+                session.mEqualizer.setBandLevel(i, level);
+                Log.e(TAG, "setBandLevel(" + i + ", " + level + ")");
             }
             session.mEqualizer.setParameter(session.mEqualizer.intToByteArray(1000),
                     session.mEqualizer.shortToByteArray(
@@ -413,7 +443,7 @@ public class HeadsetService extends Service {
         }
 
         try {
-            session.mVirtualizer.setEnabled(globalEnabled ? false : prefs.getBoolean("audiofx.virtualizer.enable", false));
+            session.mVirtualizer.setEnabled(globalEnabled ? prefs.getBoolean("audiofx.virtualizer.enable", false) : false);
             session.mVirtualizer.setStrength(
                     Short.valueOf(prefs.getString("audiofx.virtualizer.strength", "0")));
         } catch (Exception e) {
