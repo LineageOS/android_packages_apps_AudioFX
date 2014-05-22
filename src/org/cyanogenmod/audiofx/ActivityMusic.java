@@ -257,12 +257,12 @@ public class ActivityMusic extends Activity {
                 } else {
                     mCurrentDeviceOverride = true;
                     mCurrentDevice = HeadsetService.DEFAULT_AUDIO_DEVICES[itemPosition];
-
-                    // forcefully reset the preset to reload custom eq if there is one
                 }
                 updateUI(true);
                 equalizerSetPreset(mEQPreset);
                 equalizerUpdateDisplay(true);
+                refreshKnob(mVirtualizerKnob, "audiofx.virtualizer.strength");
+                refreshKnob(mBassKnob, "audiofx.bass.strength");
                 return true;
             }
         };
@@ -278,7 +278,6 @@ public class ActivityMusic extends Activity {
         ab.setBackgroundDrawable(new ColorDrawable(0xFF2E2E2E));
         mStateChangeUpdate = true;
         ab.setSelectedNavigationItem(getCurrentDeviceIndex());
-//        mStateChangeUpdate = false;
 
         ab.setCustomView(mToggleSwitch, params);
         ab.setHomeButtonEnabled(true);
@@ -363,7 +362,7 @@ public class ActivityMusic extends Activity {
                 if (fromUser) {
                     // set parameter and state
                     getPrefs().edit().putString("audiofx.virtualizer.strength", String.valueOf(value)).apply();
-                    updateService();
+                    mHandler.sendEmptyMessage(MSG_UPDATE_SERVICE);
                 }
             }
 
@@ -373,9 +372,17 @@ public class ActivityMusic extends Activity {
                     showHeadsetMsg();
                     return false;
                 }
-                getPrefs().edit().putBoolean("audiofx.virtualizer.enable", on).apply();
+                if (on) {
+                    refreshKnob(knob, "audiofx.virtualizer.strength");
+                }
                 updateService();
                 return true;
+            }
+
+            @Override
+            public void onAnimationFinished(float endValue) {
+                getPrefs().edit().putBoolean("audiofx.virtualizer.enable", endValue != 0).apply();
+
             }
         });
 
@@ -391,7 +398,7 @@ public class ActivityMusic extends Activity {
                 if (fromUser) {
                     // set parameter and state
                     getPrefs().edit().putString("audiofx.bass.strength", String.valueOf(value)).apply();
-                    updateService();
+                    mHandler.sendEmptyMessage(MSG_UPDATE_SERVICE);
                 }
             }
 
@@ -401,11 +408,20 @@ public class ActivityMusic extends Activity {
                     showHeadsetMsg();
                     return false;
                 }
-                getPrefs().edit().putBoolean("audiofx.bass.enable", on).apply();
+                if (on) {
+                    refreshKnob(knob, "audiofx.bass.strength");
+                }
                 updateService();
                 return true;
             }
+
+            @Override
+            public void onAnimationFinished(float endValue) {
+                getPrefs().edit().putBoolean("audiofx.bass.enable", endValue != 0).apply();
+                updateService();
+            }
         });
+
 
         // setup reverb presets
         mReverbPresetNames = new String[mReverbPresetRSids.length];
@@ -431,6 +447,11 @@ public class ActivityMusic extends Activity {
             }
         });
         mReverbGallery.setSelection(mPRPreset);
+    }
+
+    private void refreshKnob(Knob knob, String value) {
+        int strength = Integer.valueOf(getPrefs().getString(value, "0"));
+        knob.setValue(strength, true);
     }
 
 
@@ -530,7 +551,9 @@ public class ActivityMusic extends Activity {
             int strength = Integer.valueOf(getPrefs().getString("audiofx.virtualizer.strength", "0"));
             mVirtualizerKnob.setValue(strength);
             mVirtualizerKnob.setEnabled(mKnobsAvailable);
-            mVirtualizerKnob.setOn(getPrefs().getBoolean("audiofx.virtualizer.enable", true));
+            if (!fromNavbar) {
+                mVirtualizerKnob.setOn(getPrefs().getBoolean("audiofx.virtualizer.enable", true));
+            }
 
         } else {
             mVirtualizerKnob.setVisibility(View.GONE);
@@ -538,7 +561,9 @@ public class ActivityMusic extends Activity {
         if (mBassBoostSupported) {
             mBassKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.bass.strength", "0")));
             mBassKnob.setEnabled(mKnobsAvailable);
-            mBassKnob.setOn(getPrefs().getBoolean("audiofx.bass.enable", true));
+            if (!fromNavbar) {
+                mBassKnob.setOn(getPrefs().getBoolean("audiofx.bass.enable", true));
+            }
         } else {
             mBassKnob.setVisibility(View.GONE);
         }
@@ -560,9 +585,6 @@ public class ActivityMusic extends Activity {
         setInterception(isEnabled);
     }
 
-    /**
-     * Updates UI (checkbox, seekbars, enabled states) according to the current stored preferences.
-     */
     private void updateUI() {
         updateUI(false);
     }
@@ -628,7 +650,6 @@ public class ActivityMusic extends Activity {
     }
 
     private void equalizerUpdateDisplayInternal(boolean animate) {
-        // Update and show the active N-Band Equalizer bands.
         String levelsString = null;
         float[] floats;
 
@@ -640,7 +661,6 @@ public class ActivityMusic extends Activity {
                 for (int band = 0; band < floats.length; band++) {
                     final float level = mEQValues[band];
                     floats[band] = level / 100.0f;
-//                mEqualizerSurface.setBand(band, (float) level / 100.0f);
                 }
                 mEqualizerSurface.setBands(floats);
             } else {

@@ -28,6 +28,10 @@
  */
 package org.cyanogenmod.audiofx.widget;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -36,6 +40,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -44,6 +49,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import java.lang.Math;
 
 import org.cyanogenmod.audiofx.R;
@@ -56,15 +62,20 @@ public class Knob extends FrameLayout {
     private static final float LABEL_SIZE = 0.08f;
     private static final float LABEL_WIDTH = 0.45f;
     private static final float INDICATOR_RADIUS = 0.38f;
+    private ValueAnimator mAnimator;
 
     public interface OnKnobChangeListener {
         void onValueChanged(Knob knob, int value, boolean fromUser);
+
         boolean onSwitchChanged(Knob knob, boolean on);
+
+        void onAnimationFinished(float endValue);
     }
 
     private OnKnobChangeListener mOnKnobChangeListener = null;
 
     private float mProgress = 0.0f;
+    private float mPreviousProgress = 0.0f;
     private int mMax = 100;
     private boolean mOn = false;
     private boolean mEnabled = false;
@@ -151,6 +162,12 @@ public class Knob extends FrameLayout {
         }
     }
 
+    public void setValue(int value, boolean fromUser) {
+        if (mMax != 0) {
+            setProgress(((float) value) / mMax, fromUser);
+        }
+    }
+
     public void setProgress(float progress) {
         setProgress(progress, false);
     }
@@ -163,7 +180,7 @@ public class Knob extends FrameLayout {
         }
     }
 
-    private void setProgress(float progress, boolean fromUser) {
+    public void setProgress(float progress, boolean fromUser) {
         if (progress > 1.0f) {
             progress = 1.0f;
         }
@@ -171,7 +188,7 @@ public class Knob extends FrameLayout {
             progress = 0.0f;
         }
         mProgress = progress;
-        setProgressText(mOn && mEnabled);
+        setProgressText(mEnabled);
 
         invalidate();
 
@@ -190,7 +207,7 @@ public class Knob extends FrameLayout {
 
     private void drawIndicator() {
         float r = mWidth * INDICATOR_RADIUS;
-        ImageView view = mOn ? mKnobOn : mKnobOff;
+        ImageView view = mEnabled ? mKnobOn : mKnobOff;
         view.setTranslationX((float) Math.sin(mProgress * 2 * Math.PI) * r - mIndicatorWidth / 2);
         view.setTranslationY((float) -Math.cos(mProgress * 2 * Math.PI) * r - mIndicatorWidth / 2);
     }
@@ -201,25 +218,72 @@ public class Knob extends FrameLayout {
         setOn(enabled);
     }
 
-    public void setOn(boolean on) {
+    public void setOn(final boolean on) {
         if (on != mOn) {
             mOn = on;
         }
-        on = on && mEnabled;
-        mLabelTV.setTextColor(on ? mHighlightColor : mDisabledColor);
-        mProgressTV.setTextColor(on ? mHighlightColor : mDisabledColor);
-        setProgressText(on);
-        mPaint.setColor(on ? mHighlightColor : mDisabledColor);
-        mKnobOn.setVisibility(on ? View.VISIBLE : View.GONE);
-        mKnobOff.setVisibility(on ? View.GONE : View.VISIBLE);
-        invalidate();
+        if (mAnimator != null) {
+            mAnimator.cancel();
+            mAnimator = null;
+        }
+
+        final float targetProgress = mProgress;
+        if (on) {
+            mAnimator = ValueAnimator.ofFloat(0f, targetProgress);
+        } else {
+            mAnimator = ValueAnimator.ofFloat(targetProgress, 0f);
+        }
+//            mAnimator = ValueAnimator.ofFloat(on ? targetProgress : 0f);
+        mAnimator.setDuration(500);
+        mAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                if (mOnKnobChangeListener != null) {
+                    mOnKnobChangeListener.onAnimationFinished(on ? mProgress : 0f);
+                }
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                final boolean onn = mEnabled && mOn;
+                mLabelTV.setTextColor(onn ? mHighlightColor : mDisabledColor);
+                mProgressTV.setTextColor(onn ? mHighlightColor : mDisabledColor);
+                mPaint.setColor(onn ? mHighlightColor : mDisabledColor);
+                mKnobOn.setVisibility(onn ? View.VISIBLE : View.GONE);
+                mKnobOff.setVisibility(onn ? View.GONE : View.VISIBLE);
+                mAnimator = null;
+                setProgressText(onn);
+                invalidate();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float progress = (Float) animation.getAnimatedValue();
+                setProgress(progress, false);
+//                setProgressText(true);
+//                invalidate();
+            }
+        });
+        mAnimator.start();
+
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         drawIndicator();
-        if (mOn && mEnabled) {
+        if (mEnabled) {
             canvas.drawArc(mRectF, -90, mProgress * 360, false, mPaint);
         }
     }
@@ -247,7 +311,7 @@ public class Knob extends FrameLayout {
         mLabelTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * LABEL_SIZE);
         mLabelTV.setPadding(0, (int) (size * LABEL_PADDING), 0, 0);
         mLabelTV.setLayoutParams(new LinearLayout.LayoutParams((int) (w * LABEL_WIDTH),
-                    LayoutParams.WRAP_CONTENT));
+                LayoutParams.WRAP_CONTENT));
         mLabelTV.setVisibility(View.VISIBLE);
     }
 
