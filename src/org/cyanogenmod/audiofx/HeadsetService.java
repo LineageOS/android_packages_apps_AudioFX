@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothA2dp;
 import android.content.*;
 import android.media.AudioManager;
 import android.media.audiofx.*;
+import android.net.NetworkInfo;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -29,7 +31,7 @@ public class HeadsetService extends Service {
 
     public static final String ACTION_UPDATE_PREFERENCES = "org.cyanogenmod.audiofx.UPDATE_PREFS";
     public static final String[] DEFAULT_AUDIO_DEVICES = new String[]{
-            "headset", "speaker", "usb", "bluetooth"
+            "headset", "speaker", "usb", "bluetooth","wireless"
     };
 
     static String getZeroedBandsString(int length) {
@@ -196,6 +198,8 @@ public class HeadsetService extends Service {
      */
     protected boolean mUseUSB;
 
+    protected boolean mUseWifiDisplay;
+
     /**
      * Has DSPManager assumed control of equalizer levels?
      */
@@ -249,6 +253,7 @@ public class HeadsetService extends Service {
             final boolean prevUseHeadset = mUseHeadset;
             final boolean prevUseBluetooth = mUseBluetooth;
             final boolean prevUseUSB = mUseUSB;
+            final boolean prevUseWireless = mUseWifiDisplay;
 
             if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
                 mUseHeadset = intent.getIntExtra("state", 0) == 1;
@@ -259,13 +264,18 @@ public class HeadsetService extends Service {
             } else if (action.equals(Intent.ACTION_ANALOG_AUDIO_DOCK_PLUG) ||
                     action.equals(Intent.ACTION_DIGITAL_AUDIO_DOCK_PLUG)) {
                 mUseUSB = intent.getIntExtra("state", 0) == 1;
+            } else if (action.equals(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)) {
+                NetworkInfo networkInfo = (NetworkInfo) intent
+                        .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+                mUseWifiDisplay = networkInfo.isConnected();
             }
 
             Log.i(TAG, "Headset=" + mUseHeadset + "; Bluetooth="
                     + mUseBluetooth + " ; USB=" + mUseUSB);
             if (prevUseHeadset != mUseHeadset
                     || prevUseBluetooth != mUseBluetooth
-                    || prevUseUSB != mUseUSB) {
+                    || prevUseUSB != mUseUSB
+                    || prevUseWireless != mUseWifiDisplay) {
                 update();
 
                 Intent i = new Intent(ACTION_UPDATE_PREFERENCES);
@@ -289,6 +299,7 @@ public class HeadsetService extends Service {
         intentFilter.addAction(Intent.ACTION_ANALOG_AUDIO_DOCK_PLUG);
         intentFilter.addAction(Intent.ACTION_DIGITAL_AUDIO_DOCK_PLUG);
         intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         registerReceiver(mRoutingReceiver, intentFilter);
 
         registerReceiver(mPreferenceUpdateReceiver,
@@ -363,6 +374,9 @@ public class HeadsetService extends Service {
         }
         if (mUseUSB) {
             return "usb";
+        }
+        if (mUseWifiDisplay) {
+            return "wireless";
         }
         return "speaker";
     }
