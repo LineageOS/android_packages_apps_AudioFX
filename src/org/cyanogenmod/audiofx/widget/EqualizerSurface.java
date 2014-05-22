@@ -19,6 +19,9 @@
 
 package org.cyanogenmod.audiofx.widget;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -35,11 +38,14 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
 
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import org.cyanogenmod.audiofx.R;
 
 import java.util.Arrays;
 
-public class EqualizerSurface extends SurfaceView {
+public class EqualizerSurface extends SurfaceView implements ValueAnimator.AnimatorUpdateListener {
 
     private static int SAMPLING_RATE = 44100;
 
@@ -55,6 +61,7 @@ public class EqualizerSurface extends SurfaceView {
     private int mNumBands = 6;
         
     private float[] mLevels = new float[mNumBands];
+    private float[] mTargetLevels = new float[mNumBands];
     private float[] mCenterFreqs = new float[mNumBands];
     private final Paint mWhite, mControlBarText, mControlBar;
     private final Paint mFrequencyResponseBg;
@@ -63,7 +70,8 @@ public class EqualizerSurface extends SurfaceView {
     private BandUpdatedListener mBandUpdatedListener;
     int mBarWidth;
     int mTextSize;
-    
+    private ValueAnimator mAnimation;
+
     public EqualizerSurface(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         setWillNotDraw(false);
@@ -215,6 +223,71 @@ public class EqualizerSurface extends SurfaceView {
 //                barColors, barPositions, Shader.TileMode.CLAMP));
     }
 
+    int mPasses = 140;
+    float[] mStartLevels;
+    float[] mDeltas;
+    public void setBands(float[] bands) {
+        if (mAnimation != null) {
+            mAnimation.cancel();
+            mAnimation = null;
+        }
+        mTargetLevels = bands;
+
+        mStartLevels = new float[mLevels.length];
+        mDeltas = new float[mLevels.length];
+        for (int i = 0; i < mStartLevels.length; i++) {
+            mStartLevels[i] = mLevels[i];
+
+            mDeltas[i] = mTargetLevels[i] - mStartLevels[i];
+        }
+
+        mAnimation = ValueAnimator.ofFloat(0f,1f);
+        mAnimation.addUpdateListener(this);
+        mAnimation.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mPasses = 35;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mPasses = 140;
+                mLevels = mTargetLevels;
+                animation.removeAllListeners();
+                mAnimation = null;
+                invalidate();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        mAnimation.setDuration(1000);
+//        mAnimation.setStartDelay(100);
+        mAnimation.setInterpolator(new DecelerateInterpolator());
+        mAnimation.start();
+
+    }
+
+    @Override
+    public void onAnimationUpdate(ValueAnimator animation) {
+        final float fraction = (Float) animation.getAnimatedFraction();
+//        final float fraction = ((Float) (animation.getAnimatedValue())).floatValue();
+
+        for (int i = 0; i < mNumBands; i++) {
+//            float delta = mTargetLevels[i] - mLevels[i];
+            float newValue = mDeltas[i] * fraction;
+            mLevels[i] = mStartLevels[i] + newValue;
+        }
+        invalidate();
+    }
+
     public void setBand(int i, float value) {
         mLevels[i] = value;
         postInvalidate();
@@ -247,9 +320,9 @@ public class EqualizerSurface extends SurfaceView {
 
         Path freqResponse = new Path();
         Complex[] zn = new Complex[biquads.length];
-        int passes = 140;
-        for (int i = 0; i < passes+1; i ++) {
-            double freq = reverseProjectX(i / (float)passes);
+//        final int passes = 140;
+        for (int i = 0; i < mPasses+1; i ++) {
+            double freq = reverseProjectX(i / (float)mPasses);
             double omega = freq / SAMPLING_RATE * Math.PI * 2;
             Complex z = new Complex(Math.cos(omega), Math.sin(omega));
 

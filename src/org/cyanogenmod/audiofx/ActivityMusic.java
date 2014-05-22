@@ -117,6 +117,7 @@ public class ActivityMusic extends Activity {
 
     private static final int MSG_UPDATE_EQ = 1;
     private static final int MSG_UPDATE_SERVICE = 2;
+    private static final int MSG_UPDATE_EQ_ANIMATE = 3;
     Handler mHandler = new Handler() {
 
         @Override
@@ -124,11 +125,16 @@ public class ActivityMusic extends Activity {
             super.handleMessage(msg);
             switch (msg.what) {
                 case MSG_UPDATE_EQ:
-                    equalizerUpdateDisplayInternal();
+                    equalizerUpdateDisplayInternal(false);
+                    break;
                 case MSG_UPDATE_SERVICE:
                     if (mService != null) {
                         mService.update();
                     }
+                    break;
+                case MSG_UPDATE_EQ_ANIMATE:
+                    equalizerUpdateDisplayInternal(true);
+                    break;
             }
         }
     };
@@ -147,7 +153,11 @@ public class ActivityMusic extends Activity {
 
                 }
 
-                updateUI();
+                updateUI(true);
+                mStateChangeUpdate = true;
+                getActionBar().setSelectedNavigationItem(getCurrentDeviceIndex());
+                equalizerSetPreset(mEQPreset);
+                equalizerUpdateDisplay(true);
             }
         }
     };
@@ -249,10 +259,10 @@ public class ActivityMusic extends Activity {
                     mCurrentDevice = HeadsetService.DEFAULT_AUDIO_DEVICES[itemPosition];
 
                     // forcefully reset the preset to reload custom eq if there is one
-                    equalizerSetPreset(mEQPreset);
                 }
-
                 updateUI(true);
+                equalizerSetPreset(mEQPreset);
+                equalizerUpdateDisplay(true);
                 return true;
             }
         };
@@ -472,7 +482,10 @@ public class ActivityMusic extends Activity {
                     if (!mCurrentDeviceOverride) {
                         mCurrentDevice = mService.getAudioOutputRouting();
                     }
-                    updateUI();
+                    updateUI(true);
+
+                    mStateChangeUpdate = true;
+                    getActionBar().setSelectedNavigationItem(getCurrentDeviceIndex());
                 }
 
                 @Override
@@ -488,7 +501,7 @@ public class ActivityMusic extends Activity {
         intentFilter.addAction(HeadsetService.ACTION_UPDATE_PREFERENCES);
         registerReceiver(mReceiver, intentFilter);
 
-        updateUI();
+        equalizerUpdateDisplay(true);
     }
 
     @Override
@@ -534,7 +547,9 @@ public class ActivityMusic extends Activity {
             mEqGallery.setSelection(mEQPreset);
             mEqGallery.setEnabled(isEnabled);
 
-            equalizerUpdateDisplay();
+            if (!fromNavbar) {
+                equalizerUpdateDisplay(false);
+            }
         }
         if (mPresetReverbSupported) {
             mPRPreset = Integer.valueOf(getPrefs().getString("audiofx.reverb.preset", "0"));
@@ -607,31 +622,48 @@ public class ActivityMusic extends Activity {
     /**
      * Updates the EQ by getting the parameters.
      */
-    private void equalizerUpdateDisplay() {
-        mHandler.removeMessages(MSG_UPDATE_EQ);
-        mHandler.sendEmptyMessageDelayed(MSG_UPDATE_EQ, 100);
+    private void equalizerUpdateDisplay(boolean animate) {
+        mHandler.removeMessages(animate ? MSG_UPDATE_EQ_ANIMATE : MSG_UPDATE_EQ);
+        mHandler.sendEmptyMessageDelayed(animate ? MSG_UPDATE_EQ_ANIMATE : MSG_UPDATE_EQ, 100);
     }
 
-    private void equalizerUpdateDisplayInternal() {
+    private void equalizerUpdateDisplayInternal(boolean animate) {
         // Update and show the active N-Band Equalizer bands.
         String levelsString = null;
+        float[] floats;
 
         if (mEQPreset == mEQCustomPresetPosition) {
             // load custom preset for current device
             // here mEQValues needs to be pre-populated with the user's preset values.
-            for (int band = 0; band < mNumberEqualizerBands; band++) {
-                mEqualizerSurface.setBand(band, (float) mEQValues[band] / 100.0f);
+            if (animate) {
+                floats = new float[mEQValues.length];
+                for (int band = 0; band < floats.length; band++) {
+                    final float level = mEQValues[band];
+                    floats[band] = level / 100.0f;
+//                mEqualizerSurface.setBand(band, (float) level / 100.0f);
+                }
+                mEqualizerSurface.setBands(floats);
+            } else {
+                for (int band = 0; band < mNumberEqualizerBands; band++) {
+                    mEqualizerSurface.setBand(band, (float) mEQValues[band] / 100.0f);
+                }
             }
         } else {
             // try to load preset
             levelsString = getSharedPreferences("global", 0).getString("equalizer.preset." + mEQPreset, HeadsetService.getZeroedBandsString(mNumberEqualizerBands));
             String[] bandLevels = levelsString.split(";");
+            floats = new float[bandLevels.length];
             for (int band = 0; band < bandLevels.length; band++) {
-                final int level = (int) Double.parseDouble(bandLevels[band]);
-                mEqualizerSurface.setBand(band, (float) level / 100.0f);
+                final float level = Float.parseFloat(bandLevels[band]);
+                floats[band] = level / 100.0f;
+                if (!animate) {
+                    mEqualizerSurface.setBand(band, (float) level / 100.0f);
+                }
+            }
+            if (animate) {
+                mEqualizerSurface.setBands(floats);
             }
         }
-
     }
 
     private void equalizerCopyToCustom() {
@@ -654,7 +686,7 @@ public class ActivityMusic extends Activity {
 
         mEQValues[band] = level;
         if (DEBUG) Log.d(TAG, "new mEQValues: " + Arrays.toString(mEQValues));
-        equalizerUpdateDisplay();
+        equalizerUpdateDisplay(false);
 
         // save
         StringBuilder builder = new StringBuilder();
@@ -695,7 +727,7 @@ public class ActivityMusic extends Activity {
             newLevels = getSharedPreferences("global", 0).getString("equalizer.preset." + preset, HeadsetService.getZeroedBandsString(mNumberEqualizerBands));
         }
         getPrefs().edit().putString("audiofx.eq.bandlevels", newLevels).apply();
-        equalizerUpdateDisplay();
+        equalizerUpdateDisplay(true);
 
         updateService();
     }
