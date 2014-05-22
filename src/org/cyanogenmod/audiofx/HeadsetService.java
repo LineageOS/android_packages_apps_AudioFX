@@ -47,47 +47,118 @@ public class HeadsetService extends Service {
      *
      * @author alankila
      */
-    protected static class EffectSet {
-        private static final UUID EFFECT_TYPE_VOLUME =
-                UUID.fromString("09e8ede0-ddde-11db-b4f6-0002a5d5c51b");
-
-        /**
-         * Session-specific dynamic range compressor
-         */
-        public final AudioEffect mCompression;
+    private static class EffectSet {
         /**
          * Session-specific equalizer
          */
-        public final Equalizer mEqualizer;
+        private final Equalizer mEqualizer;
         /**
          * Session-specific bassboost
          */
-        public final BassBoost mBassBoost;
+        private final BassBoost mBassBoost;
         /**
          * Session-specific virtualizer
          */
-        public final Virtualizer mVirtualizer;
+        private final Virtualizer mVirtualizer;
 
-        public final PresetReverb mPresetReverb;
+        private final PresetReverb mPresetReverb;
 
-        protected EffectSet(int sessionId) {
-            try {
-                mCompression = new AudioEffect(EFFECT_TYPE_VOLUME,
-                        AudioEffect.EFFECT_TYPE_NULL, 0, sessionId);
-            } catch (IllegalArgumentException e) {
-                throw new RuntimeException(e);
-            } catch (UnsupportedOperationException e) {
-                throw new RuntimeException(e);
-            }
+        private short mEqNumPresets = -1;
+        private short mEqNumBands = -1;
 
+        public EffectSet(int sessionId) {
             mEqualizer = new Equalizer(0, sessionId);
             mBassBoost = new BassBoost(0, sessionId);
             mVirtualizer = new Virtualizer(0, sessionId);
             mPresetReverb = new PresetReverb(0, sessionId);
         }
 
-        protected void release() {
-            mCompression.release();
+        /*
+         * Take lots of care to not poke values that don't need
+         * to be poked- this can cause audible pops.
+         */
+
+        public void enableEqualizer(boolean enable) {
+            if (enable != mEqualizer.getEnabled()) {
+                if (!enable) {
+                    for (short i = 0; i < getNumEqualizerBands(); i++) {
+                        mEqualizer.setBandLevel(i, (short)0);
+                    }
+                }
+                mEqualizer.setEnabled(enable);
+            }
+        }
+
+        public void setEqualizerLevels(short[] levels) {
+            if (mEqualizer.getEnabled()) {
+                for (short i = 0; i < levels.length; i++) {
+                    if (mEqualizer.getBandLevel(i) != levels[i]) {
+                        mEqualizer.setBandLevel(i, levels[i]);
+                    }
+                }
+            }
+        }
+
+        public short getNumEqualizerBands() {
+            if (mEqNumBands < 0) {
+                mEqNumBands = mEqualizer.getNumberOfBands();
+            }
+            return mEqNumBands;
+        }
+
+        public short getNumEqualizerPresets() {
+            if (mEqNumPresets < 0) {
+                mEqNumPresets = mEqualizer.getNumberOfPresets();
+            }
+            return mEqNumPresets;
+        }
+
+        public void enableBassBoost(boolean enable) {
+            if (enable != mBassBoost.getEnabled()) {
+                if (!enable) {
+                    mBassBoost.setStrength((short)0);
+                }
+                mBassBoost.setEnabled(enable);
+            }
+        }
+
+        public void setBassBoostStrength(short strength) {
+            if (mBassBoost.getEnabled() && mBassBoost.getRoundedStrength() != strength) {
+                mBassBoost.setStrength(strength);
+            }
+        }
+
+        public void enableVirtualizer(boolean enable) {
+            if (enable != mVirtualizer.getEnabled()) {
+                if (!enable) {
+                    mVirtualizer.setStrength((short)0);
+                }
+                mVirtualizer.setEnabled(enable);
+            }
+        }
+
+        public void setVirtualizerStrength(short strength) {
+            if (mVirtualizer.getEnabled() && mVirtualizer.getRoundedStrength() != strength) {
+                mVirtualizer.setStrength(strength);
+            }
+        }
+
+        public void enableReverb(boolean enable) {
+            if (enable != mPresetReverb.getEnabled()) {
+                if (!enable) {
+                    mPresetReverb.setPreset((short)0);
+                }
+                mPresetReverb.setEnabled(enable);
+            }
+        }
+
+        public void setReverbPreset(short preset) {
+            if (mPresetReverb.getEnabled() && mPresetReverb.getPreset() != preset) {
+                mPresetReverb.setPreset(preset);
+            }
+        }
+
+        public void release() {
             mEqualizer.release();
             mBassBoost.release();
             mVirtualizer.release();
@@ -304,8 +375,8 @@ public class HeadsetService extends Service {
         EffectSet temp = new EffectSet(0);
         SharedPreferences prefs = getSharedPreferences("global", 0);
 
-        final int numBands = temp.mEqualizer.getNumberOfBands();
-        final int numPresets = temp.mEqualizer.getNumberOfPresets();
+        final int numBands = temp.getNumEqualizerBands();
+        final int numPresets = temp.getNumEqualizerPresets();
         prefs.edit().putString("equalizer.number_of_presets", String.valueOf(numPresets)).apply();
         prefs.edit().putString("equalizer.number_of_bands", String.valueOf(numBands)).apply();
 
@@ -379,73 +450,66 @@ public class HeadsetService extends Service {
         final boolean globalEnabled = prefs.getBoolean("audiofx.global.enable", false);
 
         try {
-            session.mCompression.setEnabled(globalEnabled ? prefs.getBoolean("audiofx.compression.enable", false) : false);
-            session.mCompression.setParameter(session.mCompression.intToByteArray(0),
-                    session.mCompression.shortToByteArray(
-                            Short.valueOf(prefs.getString("audiofx.compression.mode", "0")))
-            );
-        } catch (Exception e) {
-            Log.e(TAG, "Error enabling compression!", e);
-        }
+            session.enableBassBoost(globalEnabled && prefs.getBoolean("audiofx.bass.enable", false));
+            session.setBassBoostStrength(Short.valueOf(prefs
+                    .getString("audiofx.bass.strength", "0")));
 
-        try {
-            session.mBassBoost.setEnabled(globalEnabled ?  prefs.getBoolean("audiofx.bass.enable", false) : false);
-            session.mBassBoost.setStrength(Short.valueOf(prefs.getString("audiofx.bass.mode", "0")));
         } catch (Exception e) {
             Log.e(TAG, "Error enabling bass boost!", e);
         }
 
         try {
-            session.mPresetReverb.setPreset(Short.decode(
-                    globalEnabled
-                            ? String.valueOf(PresetReverb.PRESET_NONE)
-                            : prefs.getString("audiofx.reverb.preset", String.valueOf(PresetReverb.PRESET_NONE))));
+            short preset = Short.decode(prefs.getString("audiofx.reverb.preset",
+                    String.valueOf(PresetReverb.PRESET_NONE)));
+            session.enableReverb(globalEnabled && (preset > 0));
+            session.setReverbPreset(preset);
+
         } catch (Exception e) {
             Log.e(TAG, "Error enabling reverb preset", e);
         }
 
         try {
-            session.mEqualizer.setEnabled(globalEnabled);
+            session.enableEqualizer(globalEnabled);
+            final int customPresetPos = session.getNumEqualizerPresets() + 1;
+            final int preset = Integer.valueOf(prefs.getString("audiofx.eq.preset",
+                    String.valueOf(customPresetPos)));
+            final int bands = session.getNumEqualizerBands();
 
-            final int customPresetPos = session.mEqualizer.getNumberOfPresets() + 1;
-            final int preset = Integer.valueOf(prefs.getString("audiofx.eq.preset", String.valueOf(customPresetPos)));
-            final int bands = session.mEqualizer.getNumberOfBands();
-
-            /* Equalizer state is in a single string preference with all values separated by ; */
+            /*
+             * Equalizer state is in a single string preference with all values
+             * separated by ;
+             */
             String[] levels;
 
             if (preset == customPresetPos) {
                 Log.e(TAG, "loading custom band levels");
-                levels = prefs.getString("audiofx.eq.bandlevels.custom", getZeroedBandsString(bands)).split(";");
+                levels = prefs.getString("audiofx.eq.bandlevels.custom",
+                         getZeroedBandsString(bands)).split(";");
             } else {
                 Log.e(TAG, "loading preset band levels");
-                levels = getSharedPreferences("global", 0).getString("equalizer.preset." + preset, getZeroedBandsString(bands)).split(";");
+                levels = getSharedPreferences("global", 0).getString("equalizer.preset." + preset,
+                         getZeroedBandsString(bands)).split(";");
 
             }
             Log.e(TAG, "band levels applied: " + Arrays.toString(levels));
 
-            float[] equalizerLevels = new float[levels.length];
+            short[] equalizerLevels = new short[levels.length];
             for (int i = 0; i < levels.length; i++) {
-                equalizerLevels[i] = Float.valueOf(levels[i]);
+                equalizerLevels[i] = (short)(Float.parseFloat(levels[i]));
             }
 
-            for (short i = 0; i < equalizerLevels.length; i++) {
-                short level =  (short) Math.round(equalizerLevels[i]);
-                session.mEqualizer.setBandLevel(i, level);
-                Log.e(TAG, "setBandLevel(" + i + ", " + level + ")");
-            }
-            session.mEqualizer.setParameter(session.mEqualizer.intToByteArray(1000),
-                    session.mEqualizer.shortToByteArray(
-                            Short.valueOf(prefs.getString("audiofx.eq.loudness", "10000")))
-            );
+            session.setEqualizerLevels(equalizerLevels);
+
         } catch (Exception e) {
             Log.e(TAG, "Error enabling equalizer!", e);
         }
 
         try {
-            session.mVirtualizer.setEnabled(globalEnabled ? prefs.getBoolean("audiofx.virtualizer.enable", false) : false);
-            session.mVirtualizer.setStrength(
-                    Short.valueOf(prefs.getString("audiofx.virtualizer.strength", "0")));
+            session.enableVirtualizer(globalEnabled
+                    && prefs.getBoolean("audiofx.virtualizer.enable", false));
+            session.setVirtualizerStrength(Short.valueOf(prefs.getString(
+                    "audiofx.virtualizer.strength", "0")));
+
         } catch (Exception e) {
             Log.e(TAG, "Error enabling virtualizer!");
         }
