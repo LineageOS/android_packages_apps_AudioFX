@@ -123,6 +123,8 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
      */
     public interface BandUpdatedListener {
         public void onBandUpdated(int band, float dB);
+        public void onBandAnimating(int band, float dB);
+        public void onBandAnimationCompleted();
     }
     
     public void setBandLevelRange(float minDB, float maxDB) {
@@ -139,6 +141,13 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
         mMaxFreq = (float) Math.pow(mCenterFreqs[mNumBands - 1], 2) / mCenterFreqs[mNumBands -2] / 2; 
     }
 
+    public float[] softCopyLevels() {
+        float[] levels = new float[mNumBands];
+        for (int i = 0; i < levels.length; i++) {
+            levels[i] = mLevels[i];
+        }
+        return levels;
+    }
     /*
     @Override
     protected Parcelable onSaveInstanceState() {

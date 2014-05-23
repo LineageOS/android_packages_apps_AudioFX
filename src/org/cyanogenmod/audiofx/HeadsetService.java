@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2014 The CyanogenMod Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.cyanogenmod.audiofx;
 
 import android.app.Service;
@@ -31,7 +46,7 @@ public class HeadsetService extends Service {
 
     public static final String ACTION_UPDATE_PREFERENCES = "org.cyanogenmod.audiofx.UPDATE_PREFS";
     public static final String[] DEFAULT_AUDIO_DEVICES = new String[]{
-            "headset", "speaker", "usb", "bluetooth","wireless"
+            "headset", "speaker", "usb", "bluetooth", "wireless"
     };
 
     static String getZeroedBandsString(int length) {
@@ -84,7 +99,7 @@ public class HeadsetService extends Service {
             if (enable != mEqualizer.getEnabled()) {
                 if (!enable) {
                     for (short i = 0; i < getNumEqualizerBands(); i++) {
-                        mEqualizer.setBandLevel(i, (short)0);
+                        mEqualizer.setBandLevel(i, (short) 0);
                     }
                 }
                 mEqualizer.setEnabled(enable);
@@ -118,7 +133,7 @@ public class HeadsetService extends Service {
         public void enableBassBoost(boolean enable) {
             if (enable != mBassBoost.getEnabled()) {
                 if (!enable) {
-                    mBassBoost.setStrength((short)0);
+                    mBassBoost.setStrength((short) 0);
                 }
                 mBassBoost.setEnabled(enable);
             }
@@ -133,7 +148,7 @@ public class HeadsetService extends Service {
         public void enableVirtualizer(boolean enable) {
             if (enable != mVirtualizer.getEnabled()) {
                 if (!enable) {
-                    mVirtualizer.setStrength((short)0);
+                    mVirtualizer.setStrength((short) 0);
                 }
                 mVirtualizer.setEnabled(enable);
             }
@@ -148,7 +163,7 @@ public class HeadsetService extends Service {
         public void enableReverb(boolean enable) {
             if (enable != mPresetReverb.getEnabled()) {
                 if (!enable) {
-                    mPresetReverb.setPreset((short)0);
+                    mPresetReverb.setPreset((short) 0);
                 }
                 mPresetReverb.setEnabled(enable);
             }
@@ -420,11 +435,11 @@ public class HeadsetService extends Service {
 
             // populate preset band values
             StringBuilder presetBands = new StringBuilder();
-            temp.mEqualizer.usePreset((short)i);
+            temp.mEqualizer.usePreset((short) i);
 
             for (int j = 0; j < numBands; j++) {
                 // loop through preset bands
-                presetBands.append(temp.mEqualizer.getBandLevel((short)j));
+                presetBands.append(temp.mEqualizer.getBandLevel((short) j));
                 presetBands.append(";");
             }
             presetBands.deleteCharAt(presetBands.length() - 1);
@@ -493,26 +508,37 @@ public class HeadsetService extends Service {
              * Equalizer state is in a single string preference with all values
              * separated by ;
              */
-            String[] levels;
+            String[] levels = null;
+            short[] equalizerLevels = null;
 
-            if (preset == customPresetPos) {
+            if (mOverriddenEqualizerLevels != null) {
+
+            } else if (preset == customPresetPos) {
                 Log.e(TAG, "loading custom band levels");
                 levels = prefs.getString("audiofx.eq.bandlevels.custom",
-                         getZeroedBandsString(bands)).split(";");
+                        getZeroedBandsString(bands)).split(";");
             } else {
                 Log.e(TAG, "loading preset band levels");
                 levels = getSharedPreferences("global", 0).getString("equalizer.preset." + preset,
-                         getZeroedBandsString(bands)).split(";");
-
-            }
-            Log.e(TAG, "band levels applied: " + Arrays.toString(levels));
-
-            short[] equalizerLevels = new short[levels.length];
-            for (int i = 0; i < levels.length; i++) {
-                equalizerLevels[i] = (short)(Float.parseFloat(levels[i]));
+                        getZeroedBandsString(bands)).split(";");
             }
 
-            session.setEqualizerLevels(equalizerLevels);
+            if (levels != null) {
+                Log.e(TAG, "band levels applied: " + Arrays.toString(levels));
+                equalizerLevels = new short[levels.length];
+                for (int i = 0; i < levels.length; i++) {
+                    equalizerLevels[i] = (short) (Float.parseFloat(levels[i]));
+                }
+            } else if (mOverriddenEqualizerLevels != null) {
+                equalizerLevels = new short[levels.length];
+                for (int i = 0; i < levels.length; i++) {
+                    equalizerLevels[i] = (short) mOverriddenEqualizerLevels[i];
+                }
+            }
+            if (equalizerLevels != null) {
+                session.setEqualizerLevels(equalizerLevels);
+            }
+
 
         } catch (Exception e) {
             Log.e(TAG, "Error enabling equalizer!", e);

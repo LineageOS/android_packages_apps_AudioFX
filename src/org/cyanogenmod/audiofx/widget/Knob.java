@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2013, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2014, The CyanogenMod Project. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -69,13 +70,13 @@ public class Knob extends FrameLayout {
 
         boolean onSwitchChanged(Knob knob, boolean on);
 
-        void onAnimationFinished(float endValue);
+        void onAnimationFinished(boolean endValue);
     }
 
     private OnKnobChangeListener mOnKnobChangeListener = null;
 
+    private float mOriginalProgress = 0.0f;
     private float mProgress = 0.0f;
-    private float mPreviousProgress = 0.0f;
     private int mMax = 100;
     private boolean mOn = false;
     private boolean mEnabled = false;
@@ -90,7 +91,6 @@ public class Knob extends FrameLayout {
     private final TextView mProgressTV;
 
     private final ImageView mKnobOn;
-    private final ImageView mKnobOff;
 
     private float mLastX;
     private float mLastY;
@@ -132,7 +132,6 @@ public class Knob extends FrameLayout {
         mProgressTV = (TextView) findViewById(R.id.knob_value);
 
         mKnobOn = (ImageView) findViewById(R.id.knob_toggle_on);
-        mKnobOff = (ImageView) findViewById(R.id.knob_toggle_off);
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(mHighlightColor);
@@ -158,13 +157,7 @@ public class Knob extends FrameLayout {
 
     public void setValue(int value) {
         if (mMax != 0) {
-            setProgress(((float) value) / mMax);
-        }
-    }
-
-    public void setValue(int value, boolean fromUser) {
-        if (mMax != 0) {
-            setProgress(((float) value) / mMax, fromUser);
+            setProgress(mOriginalProgress = ((float) value) / mMax);
         }
     }
 
@@ -172,9 +165,9 @@ public class Knob extends FrameLayout {
         setProgress(progress, false);
     }
 
-    private void setProgressText(boolean on) {
-        if (on) {
-            mProgressTV.setText((int) (mProgress * 100) + "%");
+    public void updateProgressText(boolean showText, float progress) {
+        if (showText) {
+            mProgressTV.setText((int) (progress * 100) + "%");
         } else {
             mProgressTV.setText("--%");
         }
@@ -187,8 +180,10 @@ public class Knob extends FrameLayout {
         if (progress < 0.0f) {
             progress = 0.0f;
         }
+
         mProgress = progress;
-        setProgressText(mEnabled);
+
+        updateProgressText(mEnabled && mOn, progress);
 
         invalidate();
 
@@ -207,75 +202,95 @@ public class Knob extends FrameLayout {
 
     private void drawIndicator() {
         float r = mWidth * INDICATOR_RADIUS;
-        ImageView view = mEnabled ? mKnobOn : mKnobOff;
-        view.setTranslationX((float) Math.sin(mProgress * 2 * Math.PI) * r - mIndicatorWidth / 2);
-        view.setTranslationY((float) -Math.cos(mProgress * 2 * Math.PI) * r - mIndicatorWidth / 2);
+//        ImageView view = mEnabled ? mKnobOn : mKnobOff;
+        mKnobOn.setTranslationX((float) Math.sin(mProgress * 2 * Math.PI) * r - mIndicatorWidth / 2);
+        mKnobOn.setTranslationY((float) -Math.cos(mProgress * 2 * Math.PI) * r - mIndicatorWidth / 2);
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         mEnabled = enabled;
-        setOn(enabled);
+
+        mLabelTV.setTextColor(mEnabled ? mHighlightColor : mDisabledColor);
+        mProgressTV.setTextColor(mEnabled ? mHighlightColor : mDisabledColor);
+        mPaint.setColor(mEnabled ? mHighlightColor : mDisabledColor);
+
+//        if (enabled) {
+//            mOn = true;
+//        }
+        if (enabled) {
+            setOn(mOn, false);
+        }
+//        updateProgressText(mEnabled && mOn, mOriginalProgress);
+//        } else {
+//        }
+//        invalidate();
     }
 
-    public void setOn(final boolean on) {
-        if (on != mOn) {
-            mOn = on;
-        }
+    public void setOn(final boolean on, boolean animate) {
+        mOn = on;
+
         if (mAnimator != null) {
             mAnimator.cancel();
-            mAnimator = null;
         }
 
-        final float targetProgress = mProgress;
-        if (on) {
-            mAnimator = ValueAnimator.ofFloat(0f, targetProgress);
-        } else {
-            mAnimator = ValueAnimator.ofFloat(targetProgress, 0f);
-        }
-//            mAnimator = ValueAnimator.ofFloat(on ? targetProgress : 0f);
-        mAnimator.setDuration(500);
-        mAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                if (mOnKnobChangeListener != null) {
-                    mOnKnobChangeListener.onAnimationFinished(on ? mProgress : 0f);
+        if (animate) {
+            if (on) {
+                mAnimator = ValueAnimator.ofFloat(mProgress, mOriginalProgress);
+            } else {
+                mAnimator = ValueAnimator.ofFloat(mProgress, 0f);
+            }
+            mAnimator.setDuration(500);
+            mAnimator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
                 }
-            }
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                final boolean onn = mEnabled && mOn;
-                mLabelTV.setTextColor(onn ? mHighlightColor : mDisabledColor);
-                mProgressTV.setTextColor(onn ? mHighlightColor : mDisabledColor);
-                mPaint.setColor(onn ? mHighlightColor : mDisabledColor);
-                mKnobOn.setVisibility(onn ? View.VISIBLE : View.GONE);
-                mKnobOff.setVisibility(onn ? View.GONE : View.VISIBLE);
-                mAnimator = null;
-                setProgressText(onn);
-                invalidate();
-            }
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mAnimator = null;
 
-            @Override
-            public void onAnimationCancel(Animator animation) {
+                    updateProgressText(mOn && mEnabled, mOriginalProgress);
+                    if (mOnKnobChangeListener != null) {
+                        mOnKnobChangeListener.onAnimationFinished(on);
+                    }
+                }
 
-            }
+                @Override
+                public void onAnimationCancel(Animator animation) {
 
-            @Override
-            public void onAnimationRepeat(Animator animation) {
+                }
 
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float progress = (Float) animation.getAnimatedValue();
+                    mProgress = progress;
+                    if (mOnKnobChangeListener != null) {
+                        mOnKnobChangeListener.onValueChanged(Knob.this, (int) (progress * mMax), true);
+                    }
+                    updateProgressText(true, progress);
+                    invalidate();
+                }
+            });
+            mAnimator.start();
+        } else {
+            updateProgressText(mEnabled && mOn, mOriginalProgress);
+
+            // make progress correct value
+            mProgress = mOn ? mOriginalProgress : 0f;
+
+            invalidate();
+
+            if (mOnKnobChangeListener != null) {
+                mOnKnobChangeListener.onAnimationFinished(on);
             }
-        });
-        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float progress = (Float) animation.getAnimatedValue();
-                setProgress(progress, false);
-//                setProgressText(true);
-//                invalidate();
-            }
-        });
-        mAnimator.start();
+        }
 
     }
 
@@ -338,7 +353,7 @@ public class Knob extends FrameLayout {
                     if (mMoved || (x - center) * (x - center) + (y - center) * (y - center)
                             > center * center / 4) {
                         float delta = getDelta(x, y);
-                        setProgress(mProgress + delta / 360, true);
+                        setProgress(mOriginalProgress = mProgress + delta / 360, true);
                         mMoved = true;
                     }
                     mLastX = x;
@@ -350,7 +365,7 @@ public class Knob extends FrameLayout {
                     if (mOnKnobChangeListener == null
                             || mOnKnobChangeListener.onSwitchChanged(this, !mOn)) {
                         if (mEnabled) {
-                            setOn(!mOn);
+                            setOn(!mOn, true);
                             invalidate();
                         }
                     }
