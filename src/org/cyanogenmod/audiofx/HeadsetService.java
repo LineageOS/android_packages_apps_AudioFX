@@ -133,6 +133,7 @@ public class HeadsetService extends Service {
         public void enableBassBoost(boolean enable) {
             if (enable != mBassBoost.getEnabled()) {
                 if (!enable) {
+                    mBassBoost.setStrength((short) 1);
                     mBassBoost.setStrength((short) 0);
                 }
                 mBassBoost.setEnabled(enable);
@@ -148,6 +149,7 @@ public class HeadsetService extends Service {
         public void enableVirtualizer(boolean enable) {
             if (enable != mVirtualizer.getEnabled()) {
                 if (!enable) {
+                    mVirtualizer.setStrength((short) 1);
                     mVirtualizer.setStrength((short) 0);
                 }
                 mVirtualizer.setEnabled(enable);
