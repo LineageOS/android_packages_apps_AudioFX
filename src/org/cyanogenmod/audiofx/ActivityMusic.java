@@ -456,6 +456,9 @@ public class ActivityMusic extends Activity {
             }
         });
         mReverbGallery.setSelection(mPRPreset);
+
+        mBassKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.bass.strength", "500")));
+        mVirtualizerKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.virtualizer.strength", "500")));
     }
 
     private SharedPreferences getPrefs() {
@@ -551,14 +554,12 @@ public class ActivityMusic extends Activity {
         mToggleSwitch.setChecked(isEnabled);
 
         if (mVirtualizerSupported) {
-            mVirtualizerKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.virtualizer.strength", "50")));
             mVirtualizerKnob.setOn(getPrefs().getBoolean("audiofx.virtualizer.enable", false), false);
             mVirtualizerKnob.setEnabled(isEnabled && mKnobsAvailable);
         } else {
             mVirtualizerKnob.setVisibility(View.GONE);
         }
         if (mBassBoostSupported) {
-            mBassKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.bass.strength", "50")));
             mBassKnob.setOn(getPrefs().getBoolean("audiofx.bass.enable", true), false);
             mBassKnob.setEnabled(isEnabled && mKnobsAvailable);
         } else {
