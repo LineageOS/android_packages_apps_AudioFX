@@ -249,6 +249,8 @@ public class ActivityMusic extends Activity {
                 updateUI(true);
                 equalizerSetPreset(mEQPreset);
                 equalizerUpdateDisplay(true);
+                mBassKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.bass.strength", "500")));
+                mVirtualizerKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.virtualizer.strength", "500")));
                 return true;
             }
         };
@@ -457,8 +459,7 @@ public class ActivityMusic extends Activity {
         });
         mReverbGallery.setSelection(mPRPreset);
 
-        mBassKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.bass.strength", "500")));
-        mVirtualizerKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.virtualizer.strength", "500")));
+
     }
 
     private SharedPreferences getPrefs() {
