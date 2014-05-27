@@ -249,8 +249,8 @@ public class ActivityMusic extends Activity {
                 updateUI(true);
                 equalizerSetPreset(mEQPreset);
                 equalizerUpdateDisplay(true);
-                mBassKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.bass.strength", "500")));
-                mVirtualizerKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.virtualizer.strength", "500")));
+                mBassKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.bass.strength", "0")));
+                mVirtualizerKnob.setValue(Integer.valueOf(getPrefs().getString("audiofx.virtualizer.strength", "0")));
                 return true;
             }
         };
@@ -567,8 +567,7 @@ public class ActivityMusic extends Activity {
             mBassKnob.setVisibility(View.GONE);
         }
         if (mEqualizerSupported) {
-            mEQPreset = Integer.valueOf(getPrefs().getString("audiofx.eq.preset",
-                    String.valueOf(mEQCustomPresetPosition)));
+            mEQPreset = Integer.valueOf(getPrefs().getString("audiofx.eq.preset", "3"));
             mEqGallery.setEnabled(isEnabled);
             mEqGallery.setSelection(mEQPreset);
         }
