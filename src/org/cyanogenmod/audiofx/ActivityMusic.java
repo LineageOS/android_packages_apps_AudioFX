@@ -49,7 +49,7 @@ import java.util.UUID;
 public class ActivityMusic extends Activity {
 
     private final static String TAG = "AudioFXActivityMusic";
-    private final static boolean DEBUG = true;
+    private final static boolean DEBUG = false;
 
     /**
      * Max number of EQ bands supported
