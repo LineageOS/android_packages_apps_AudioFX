@@ -38,4 +38,5 @@
   <string name="eq_custom">Chcete-li upravit, vyberte „Vlastní“</string>
   <string name="power_on_prompt">Stiskněte tlačítko napájení v pravém horním rohu.</string>
   <string name="reverb">Dozvuku</string>
+  <string name="small_speakers">Malé reproduktory</string>
 </resources>

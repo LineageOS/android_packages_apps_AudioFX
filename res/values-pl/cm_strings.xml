@@ -38,4 +38,5 @@
   <string name="eq_custom">Aby dostosować, wybierz \"Własne\"</string>
   <string name="power_on_prompt">Naciśnij przycisk zasilania w prawym górnym rogu.</string>
   <string name="reverb">Pogłos</string>
+  <string name="small_speakers">Małe głośniki</string>
 </resources>

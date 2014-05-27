@@ -38,4 +38,5 @@
   <string name="eq_custom">Per personalizzare, selezionare \'Personalizzato\'</string>
   <string name="power_on_prompt">Premi il tasto di accensione in alto a destra.</string>
   <string name="reverb">Riverbero</string>
+  <string name="small_speakers">Altoparlanti piccoli</string>
 </resources>

@@ -38,4 +38,5 @@
   <string name="eq_custom">Mukauttaaksesi asetuksia, valitse Muokattu</string>
   <string name="power_on_prompt">Paina virtanäppäintä oikeassa yläkulmassa.</string>
   <string name="reverb">Kaikuefekti</string>
+  <string name="small_speakers">Pienet kaiuttimet</string>
 </resources>

@@ -38,4 +38,5 @@
   <string name="eq_custom">Щоб налаштувати, виберіть \'Користувач\'</string>
   <string name="power_on_prompt">Натисніть кнопку живлення в правому верхньому куті.</string>
   <string name="reverb">Реверберація</string>
+  <string name="small_speakers">Маленькі динаміки</string>
 </resources>

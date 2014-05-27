@@ -286,15 +286,16 @@ public class ActivityMusic extends Activity {
         // setup equalizer presets
         final int numPresets = Integer.parseInt(getSharedPreferences("global", 0)
                 .getString("equalizer.number_of_presets", "0"));
-        mEQPresetNames = new String[numPresets + 2];
+        mEQPresetNames = new String[numPresets + 3];
 
         String[] presetNames = getSharedPreferences("global", 0).getString("equalizer.preset_names", "").split("\\|");
         for (short i = 0; i < numPresets; i++) {
             mEQPresetNames[i] = localizePresetName(presetNames[i]);
         }
         mEQPresetNames[numPresets] = getString(R.string.ci_extreme);
-        mEQPresetNames[numPresets + 1] = getString(R.string.user);
-        mEQCustomPresetPosition = numPresets + 1;
+        mEQPresetNames[numPresets + 1] = getString(R.string.small_speakers);
+        mEQPresetNames[numPresets + 2] = getString(R.string.user);
+        mEQCustomPresetPosition = numPresets + 2;
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.equalizer_presets,
                 mEQPresetNames);
@@ -549,8 +550,10 @@ public class ActivityMusic extends Activity {
             getActionBar().setSelectedNavigationItem(getCurrentDeviceIndex());
         }
 
-        final boolean isEnabled = getPrefs().getBoolean("audiofx.global.enable", false);
-        mKnobsAvailable = !mCurrentDevice.equals("speaker");
+        boolean isSpeaker = mCurrentDevice.equals("speaker");
+
+        final boolean isEnabled = getPrefs().getBoolean("audiofx.global.enable", isSpeaker);
+        mKnobsAvailable = !isSpeaker;
 
         mToggleSwitch.setChecked(isEnabled);
 
@@ -567,7 +570,13 @@ public class ActivityMusic extends Activity {
             mBassKnob.setVisibility(View.GONE);
         }
         if (mEqualizerSupported) {
-            mEQPreset = Integer.valueOf(getPrefs().getString("audiofx.eq.preset", "3"));
+            String preset;
+            if (isSpeaker) {
+                preset = String.valueOf(mNumberEqualizerBands + 2);
+            } else {
+                preset = "3";
+            }
+            mEQPreset = Integer.valueOf(getPrefs().getString("audiofx.eq.preset", preset));
             mEqGallery.setEnabled(isEnabled);
             mEqGallery.setSelection(mEQPreset);
         }

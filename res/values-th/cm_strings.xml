@@ -38,4 +38,5 @@
   <string name="eq_custom">เพื่อกำหนดเอง เลือก \'กำหนดเอง\'</string>
   <string name="power_on_prompt">กดปุ่มเพาเวอร์ด้านบนขวา</string>
   <string name="reverb">เสียงก้อง</string>
+  <string name="small_speakers">ลำโพงเล็ก</string>
 </resources>

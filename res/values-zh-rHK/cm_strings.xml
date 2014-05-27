@@ -38,4 +38,5 @@
   <string name="eq_custom">若要自訂，選擇「自訂」</string>
   <string name="power_on_prompt">按下電源按鈕。</string>
   <string name="reverb">混響效果</string>
+  <string name="small_speakers">小型喇叭</string>
 </resources>

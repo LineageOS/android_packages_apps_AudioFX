@@ -38,4 +38,5 @@
   <string name="eq_custom">Hvis du vil tilpasse, skal du vælge \'Brugerdefineret\'</string>
   <string name="power_on_prompt">Tryk på strømknappen øverst til højre.</string>
   <string name="reverb">Rumklang</string>
+  <string name="small_speakers">Små højttalere</string>
 </resources>

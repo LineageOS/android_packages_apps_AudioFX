@@ -460,6 +460,23 @@ public class HeadsetService extends Service {
             }
         }
         prefs.edit().putString("equalizer.preset." + numPresets, ciExtremeBuilder.toString()).apply();
+
+        // add small-speaker
+        StringBuilder ssBuilder = new StringBuilder("-170;270;50;-220;200");
+        if (numBands > 5) {
+            int extraBands = numBands - 5;
+            for (int i = 0; i < extraBands; i++) {
+                ssBuilder.insert(0,  "0;");
+            }
+        }
+        prefs.edit().putString("equalizer.preset." + (numPresets + 1), ssBuilder.toString()).apply();
+
+        // Enable for the speaker by default
+        if (!getSharedPrefsFile("speaker").exists()) {
+            SharedPreferences spk = getSharedPreferences("speaker", 0);
+            spk.edit().putBoolean("audiofx.global.enable", true).apply();
+            spk.edit().putString("audiofx.eq.preset", String.valueOf(numPresets + 1)).apply();
+        }
     }
 
     /**
@@ -501,7 +518,7 @@ public class HeadsetService extends Service {
 
         try {
             session.enableEqualizer(globalEnabled);
-            final int customPresetPos = session.getNumEqualizerPresets() + 1;
+            final int customPresetPos = session.getNumEqualizerPresets() + 2;
             final int preset = Integer.valueOf(prefs.getString("audiofx.eq.preset",
                     String.valueOf(customPresetPos)));
             final int bands = session.getNumEqualizerBands();

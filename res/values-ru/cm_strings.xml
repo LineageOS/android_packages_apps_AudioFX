@@ -38,4 +38,5 @@
   <string name="eq_custom">Для детальной настройки выберите «Пользовательские»</string>
   <string name="power_on_prompt">Нажмите выключатель в правом верхнем углу.</string>
   <string name="reverb">Реверберация</string>
+  <string name="small_speakers">Маленькие динамики</string>
 </resources>

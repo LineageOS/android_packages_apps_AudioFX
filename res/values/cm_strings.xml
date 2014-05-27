@@ -26,6 +26,7 @@
     <string name="pop">Pop</string>
     <string name="rock">Rock</string>
     <string name="ci_extreme">Electronic</string>
+    <string name="small_speakers">Small speakers</string>
     <string name="user">Custom</string>
 
     <string name="none">None</string>

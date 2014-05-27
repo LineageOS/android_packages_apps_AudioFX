@@ -30,4 +30,5 @@
   <string name="smallroom">Litet rum</string>
   <string name="mediumroom">Medelstort rum</string>
   <string name="largeroom">Stort rum</string>
+  <string name="small_speakers">Små högtalare</string>
 </resources>

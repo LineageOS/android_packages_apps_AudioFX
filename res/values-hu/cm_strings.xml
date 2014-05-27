@@ -38,4 +38,5 @@
   <string name="eq_custom">Testreszabáshoz válassza az \"Egyéni\"-t</string>
   <string name="power_on_prompt">Nyomja meg a bekapcsológombot a jobb felső sarokban.</string>
   <string name="reverb">Zengetés</string>
+  <string name="small_speakers">Kis hangszórók</string>
 </resources>
