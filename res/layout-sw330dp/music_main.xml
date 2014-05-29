@@ -54,6 +54,7 @@
                 />
 
         <TextView
+                android:id="@+id/eq_preset_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#ff808080"
@@ -146,6 +147,7 @@
                 />
 
         <TextView
+                android:id="@+id/reverb_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#ff808080"

@@ -213,6 +213,13 @@ public class ActivityMusic extends Activity {
 
         mContentEffectsViewGroup = (ViewGroup) findViewById(R.id.contentSoundEffects);
 
+        // fix up labels
+        TextView reverbLabel = (TextView) findViewById(R.id.reverb_label);
+        reverbLabel.setText("- " + reverbLabel.getText() + " -");
+
+        TextView eqPresetLabel = (TextView) findViewById(R.id.eq_preset_label);
+        eqPresetLabel.setText("- " + eqPresetLabel.getText() + " -");
+
         // setup actionbar on off switch
         mToggleSwitch = new Switch(this);
         final int padding = getResources().getDimensionPixelSize(

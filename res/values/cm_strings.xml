@@ -46,7 +46,7 @@
     <string name="device_usb">USB</string>
     <string name="device_bluetooth">Bluetooth</string>
     <string name="device_wireless">Wireless</string>
-    <string name="reverb">- Reverb -</string>
-    <string name="eq_preset">- Equalizer Preset-</string>
+    <string name="reverb">Reverb</string>
+    <string name="eq_preset">Equalizer Preset</string>
 
 </resources>
