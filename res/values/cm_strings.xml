@@ -39,6 +39,7 @@
 
     <string name="eq_custom">To customize, select \'Custom\'</string>
     <string name="power_on_prompt">Press the power button on the top-right.</string>
+    <string name="effect_unavalable_for_speaker">Effect not available for Speaker mode.</string>
     
     <string name="device_headset">Headset</string>
     <string name="device_speaker">Speaker</string>

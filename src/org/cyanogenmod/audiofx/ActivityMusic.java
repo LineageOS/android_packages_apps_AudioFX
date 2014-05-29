@@ -384,7 +384,7 @@ public class ActivityMusic extends Activity {
 
             @Override
             public boolean onSwitchChanged(final Knob knob, boolean on) {
-                if (on && !mKnobsAvailable) {
+                if (!mKnobsAvailable) {
                     showHeadsetMsg();
                     return false;
                 }
@@ -420,7 +420,7 @@ public class ActivityMusic extends Activity {
 
             @Override
             public boolean onSwitchChanged(final Knob knob, boolean on) {
-                if (on && !mKnobsAvailable) {
+                if (!mKnobsAvailable) {
                     showHeadsetMsg();
                     return false;
                 }
@@ -786,7 +786,7 @@ public class ActivityMusic extends Activity {
         final Context context = getApplicationContext();
         final int duration = Toast.LENGTH_SHORT;
 
-        mCurrentToast = Toast.makeText(context, getString(R.string.headset_plug), duration);
+        mCurrentToast = Toast.makeText(context, getString(R.string.effect_unavalable_for_speaker), duration);
         mCurrentToast.setGravity(Gravity.CENTER, mCurrentToast.getXOffset() / 2, mCurrentToast.getYOffset() / 2);
         mCurrentToast.show();
     }
