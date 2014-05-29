@@ -99,6 +99,8 @@ public class ActivityMusic extends Activity {
     private boolean mStandalone = false;
     private boolean mStateChangeUpdate = false;
 
+    private Toast mCurrentToast;
+
     HeadsetService mService;
 
     private String mCurrentDevice = "speaker"; // the sensible default
@@ -537,6 +539,12 @@ public class ActivityMusic extends Activity {
     protected void onPause() {
         super.onPause();
 
+        // clear the toast
+        if (mCurrentToast != null) {
+            mCurrentToast.cancel();
+            mCurrentToast = null;
+        }
+
         unbindService(mServiceConnection);
 
         // Unregister for broadcast intents. (These affect the visible UI,
@@ -612,10 +620,15 @@ public class ActivityMusic extends Activity {
             ill.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final Toast toast = Toast.makeText(mContext,
+                    // clear the toast
+                    if (mCurrentToast != null) {
+                        mCurrentToast.cancel();
+                        mCurrentToast = null;
+                    }
+                    mCurrentToast = Toast.makeText(mContext,
                             getString(R.string.power_on_prompt), Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
+                    mCurrentToast.setGravity(Gravity.CENTER, 0, 0);
+                    mCurrentToast.show();
                 }
             });
         }
@@ -764,12 +777,18 @@ public class ActivityMusic extends Activity {
     }
 
     private void showHeadsetMsg() {
+        // clear the toast
+        if (mCurrentToast != null) {
+            mCurrentToast.cancel();
+            mCurrentToast = null;
+        }
+
         final Context context = getApplicationContext();
         final int duration = Toast.LENGTH_SHORT;
 
-        final Toast toast = Toast.makeText(context, getString(R.string.headset_plug), duration);
-        toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);
-        toast.show();
+        mCurrentToast = Toast.makeText(context, getString(R.string.headset_plug), duration);
+        mCurrentToast.setGravity(Gravity.CENTER, mCurrentToast.getXOffset() / 2, mCurrentToast.getYOffset() / 2);
+        mCurrentToast.show();
     }
 
 }
