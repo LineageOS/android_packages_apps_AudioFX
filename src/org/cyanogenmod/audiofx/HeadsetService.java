@@ -408,14 +408,15 @@ public class HeadsetService extends Service {
 
         final int numBands = temp.getNumEqualizerBands();
         final int numPresets = temp.getNumEqualizerPresets();
-        prefs.edit().putString("equalizer.number_of_presets", String.valueOf(numPresets)).apply();
-        prefs.edit().putString("equalizer.number_of_bands", String.valueOf(numBands)).apply();
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("equalizer.number_of_presets", String.valueOf(numPresets)).apply();
+        editor.putString("equalizer.number_of_bands", String.valueOf(numBands)).apply();
 
         // range
         short[] rangeShortArr = temp.mEqualizer.getBandLevelRange();
 
 
-        prefs.edit().putString("equalizer.band_level_range", rangeShortArr[0] + ";" + rangeShortArr[1]).apply();
+        editor.putString("equalizer.band_level_range", rangeShortArr[0] + ";" + rangeShortArr[1]).apply();
 
         // center freqs
         StringBuilder centerFreqs = new StringBuilder();
@@ -426,7 +427,7 @@ public class HeadsetService extends Service {
 
         }
         centerFreqs.deleteCharAt(centerFreqs.length() - 1);
-        prefs.edit().putString("equalizer.center_freqs", centerFreqs.toString()).apply();
+        editor.putString("equalizer.center_freqs", centerFreqs.toString()).apply();
 
         // populate preset names
         StringBuilder presetNames = new StringBuilder();
@@ -445,10 +446,10 @@ public class HeadsetService extends Service {
                 presetBands.append(";");
             }
             presetBands.deleteCharAt(presetBands.length() - 1);
-            prefs.edit().putString("equalizer.preset." + i, presetBands.toString()).apply();
+            editor.putString("equalizer.preset." + i, presetBands.toString()).apply();
         }
         presetNames.deleteCharAt(presetNames.length() - 1);
-        prefs.edit().putString("equalizer.preset_names", presetNames.toString()).apply();
+        editor.putString("equalizer.preset_names", presetNames.toString()).apply();
         temp.release();
 
         // add ci-extreme
@@ -459,7 +460,7 @@ public class HeadsetService extends Service {
                 ciExtremeBuilder.insert(0, "0;");
             }
         }
-        prefs.edit().putString("equalizer.preset." + numPresets, ciExtremeBuilder.toString()).apply();
+        editor.putString("equalizer.preset." + numPresets, ciExtremeBuilder.toString()).apply();
 
         // add small-speaker
         StringBuilder ssBuilder = new StringBuilder("-170;270;50;-220;200");
@@ -469,7 +470,8 @@ public class HeadsetService extends Service {
                 ssBuilder.insert(0,  "0;");
             }
         }
-        prefs.edit().putString("equalizer.preset." + (numPresets + 1), ssBuilder.toString()).apply();
+        editor.putString("equalizer.preset." + (numPresets + 1), ssBuilder.toString()).apply();
+        editor.commit();
 
         // Enable for the speaker by default
         if (!getSharedPrefsFile("speaker").exists()) {
