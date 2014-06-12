@@ -37,5 +37,11 @@
   <string name="plate">Platňa</string>
   <string name="eq_custom">Pre prispôsobenie vyberte \"Vlastné\"</string>
   <string name="power_on_prompt">Stlačte tlačidlo napájania na hornej pravej strane.</string>
+  <string name="effect_unavalable_for_speaker">Efekt nie je dostupný pre režim reproduktora.</string>
+  <string name="device_headset">Slúchadlá</string>
+  <string name="device_speaker">Reproduktor</string>
+  <string name="device_usb">USB</string>
+  <string name="device_bluetooth">Bluetooth</string>
+  <string name="eq_preset">Predvoľba ekvalizéra</string>
   <string name="reverb">Reverb</string>
 </resources>

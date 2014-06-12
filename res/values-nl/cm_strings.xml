@@ -37,6 +37,12 @@
   <string name="plate">Lp</string>
   <string name="eq_custom">Selecteer \'Aangepast\' om aan te passen</string>
   <string name="power_on_prompt">Druk op de aan/uit-knop rechtsboven.</string>
+  <string name="effect_unavalable_for_speaker">Effect niet beschikbaar voor luidsprekermodus.</string>
+  <string name="device_headset">Headset</string>
+  <string name="device_speaker">Luidspreker</string>
+  <string name="device_usb">USB</string>
+  <string name="device_bluetooth">Bluetooth</string>
+  <string name="eq_preset">Equalizer-preset</string>
   <string name="reverb">Galm</string>
   <string name="small_speakers">Kleine speakers</string>
 </resources>

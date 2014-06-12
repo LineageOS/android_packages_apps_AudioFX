@@ -37,6 +37,12 @@
   <string name="plate">Πλάκα</string>
   <string name="eq_custom">Για προσαρμογή, επιλέξτε \'Προσαρμοσμένο\'</string>
   <string name="power_on_prompt">Πιέστε το πλήκτρο ενεργειών επάνω δεξιά.</string>
+  <string name="effect_unavalable_for_speaker">Το εφέ δεν είναι διαθέσιμο κατά την αναπαραγωγή από το ηχείο.</string>
+  <string name="device_headset">Ακουστικά</string>
+  <string name="device_speaker">Ήχειο</string>
+  <string name="device_usb">USB</string>
+  <string name="device_bluetooth">Bluetooth</string>
+  <string name="eq_preset">Προκαθορισμένη ρύθμιση ισοσταθμιστή</string>
   <string name="reverb">Αντήχηση</string>
   <string name="small_speakers">Μικρά ηχεία</string>
 </resources>

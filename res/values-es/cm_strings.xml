@@ -37,6 +37,12 @@
   <string name="plate">Vinilo</string>
   <string name="eq_custom">Para personalizar, selecciona \u00ABPersonalizado\u00BB</string>
   <string name="power_on_prompt">Pulsa el botón de encendido en la parte superior derecha.</string>
+  <string name="effect_unavalable_for_speaker">Efecto no disponible para el modo altavoz.</string>
+  <string name="device_headset">Auriculares</string>
+  <string name="device_speaker">Altavoz</string>
+  <string name="device_usb">USB</string>
+  <string name="device_bluetooth">Bluetooth</string>
+  <string name="eq_preset">Ecualizador preestablecido</string>
   <string name="reverb">Reverberación</string>
   <string name="small_speakers">Altavoces pequeños</string>
 </resources>

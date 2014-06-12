@@ -35,8 +35,14 @@
   <string name="mediumhall">Vidutinio dydžio salė</string>
   <string name="largehall">Didelė salė</string>
   <string name="plate">Plokštė</string>
-  <string name="eq_custom">Norėdami modifikuoti, pasirinkite \"Individualus\"</string>
+  <string name="eq_custom">Norėdami modifikuoti, pasirinkite „Individualus“</string>
   <string name="power_on_prompt">Paspauskite maitinimo mygtuką viršuje dešinėje.</string>
+  <string name="effect_unavalable_for_speaker">Efektas negalimas garsiakalbio režime.</string>
+  <string name="device_headset">Laisvų rankų įranga</string>
+  <string name="device_speaker">Garsiakalbis</string>
+  <string name="device_usb">USB</string>
+  <string name="device_bluetooth">Bluetooth</string>
+  <string name="eq_preset">Ekvalaizerio išankstiniai nustatymai</string>
   <string name="reverb">Aidas</string>
   <string name="small_speakers">Maži garsiakalbiai</string>
 </resources>
