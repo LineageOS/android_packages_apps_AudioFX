@@ -37,5 +37,11 @@
   <string name="plate">Plate</string>
   <string name="eq_custom">Hvis du vil tilpasse, Velg egendefinert</string>
   <string name="power_on_prompt">Trykk på strømknappen øverst til høyre.</string>
+  <string name="effect_unavalable_for_speaker">Effekten er ikke tilgjengelig for høyttaler-modus.</string>
+  <string name="device_headset">Hodetelefon</string>
+  <string name="device_speaker">Høyttaler</string>
+  <string name="device_usb">USB</string>
+  <string name="device_bluetooth">Bluetooth</string>
+  <string name="eq_preset">Equalizer forhåndsinnstilling</string>
   <string name="reverb">Romklang</string>
 </resources>
