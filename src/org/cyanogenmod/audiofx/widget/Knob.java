@@ -270,6 +270,9 @@ public class Knob extends FrameLayout {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float progress = (Float) animation.getAnimatedValue();
+                    if (progress < 0) {
+                        progress = 0;
+                    }
                     mProgress = progress;
                     if (mOnKnobChangeListener != null) {
                         mOnKnobChangeListener.onValueChanged(Knob.this, (int) (progress * mMax), true);
@@ -353,7 +356,11 @@ public class Knob extends FrameLayout {
                     if (mMoved || (x - center) * (x - center) + (y - center) * (y - center)
                             > center * center / 4) {
                         float delta = getDelta(x, y);
-                        setProgress(mOriginalProgress = mProgress + delta / 360, true);
+                        mOriginalProgress = mProgress + delta / 360;
+                        if (mOriginalProgress < 0) {
+                            mOriginalProgress = 0;
+                        }
+                        setProgress(mOriginalProgress, true);
                         mMoved = true;
                     }
                     mLastX = x;
