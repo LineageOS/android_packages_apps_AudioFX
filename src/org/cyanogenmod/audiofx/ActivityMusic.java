@@ -509,6 +509,12 @@ public class ActivityMusic extends Activity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        updateUI(false);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
