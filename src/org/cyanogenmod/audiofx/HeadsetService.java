@@ -309,6 +309,7 @@ public class HeadsetService extends Service {
         IntentFilter audioFilter = new IntentFilter();
         audioFilter.addAction(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
         audioFilter.addAction(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
+        audioFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         registerReceiver(mAudioSessionReceiver, audioFilter);
 
         final IntentFilter intentFilter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
