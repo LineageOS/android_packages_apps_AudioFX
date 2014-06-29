@@ -37,8 +37,11 @@
   <string name="plate">唱片</string>
   <string name="eq_custom">若要自訂，選擇「自訂」</string>
   <string name="power_on_prompt">按下右上方的電源鍵。</string>
+  <string name="effect_unavalable_for_speaker">效果不適用於擴音器模式。</string>
   <string name="device_headset">耳機</string>
+  <string name="device_speaker">擴音器</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">藍牙</string>
+  <string name="eq_preset">等化器預設</string>
   <string name="reverb">混響</string>
 </resources>
