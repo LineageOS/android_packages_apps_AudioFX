@@ -37,6 +37,12 @@
   <string name="plate">Платівка</string>
   <string name="eq_custom">Щоб налаштувати, виберіть \'Користувач\'</string>
   <string name="power_on_prompt">Натисніть кнопку живлення в правому верхньому куті.</string>
+  <string name="effect_unavalable_for_speaker">Ефект не впливає на режим динаміка.</string>
+  <string name="device_headset">Гарнітура</string>
+  <string name="device_speaker">Динамік</string>
+  <string name="device_usb">USB</string>
+  <string name="device_bluetooth">Bluetooth</string>
+  <string name="eq_preset">Налаштування еквалайзера</string>
   <string name="reverb">Реверберація</string>
   <string name="small_speakers">Маленькі динаміки</string>
 </resources>
