@@ -56,6 +56,8 @@ import java.lang.Math;
 import org.cyanogenmod.audiofx.R;
 
 public class Knob extends FrameLayout {
+    private static final String TAG = Knob.class.getSimpleName();
+
     private static final int STROKE_WIDTH = 35;
     private static final float TEXT_SIZE = 0.20f;
     private static final float TEXT_PADDING = 0.31f;
@@ -157,7 +159,14 @@ public class Knob extends FrameLayout {
 
     public void setValue(int value) {
         if (mMax != 0) {
-            setProgress(mOriginalProgress = ((float) value) / mMax);
+            mOriginalProgress = ((float) value) / mMax;
+            if (mOriginalProgress > 100) {
+                mOriginalProgress = 100;
+            } else if (mOriginalProgress < 0) {
+                mOriginalProgress = 0;
+            }
+
+            setProgress(mOriginalProgress);
         }
     }
 
@@ -176,8 +185,7 @@ public class Knob extends FrameLayout {
     public void setProgress(float progress, boolean fromUser) {
         if (progress > 1.0f) {
             progress = 1.0f;
-        }
-        if (progress < 0.0f) {
+        } else if (progress < 0.0f) {
             progress = 0.0f;
         }
 
@@ -272,12 +280,14 @@ public class Knob extends FrameLayout {
                     float progress = (Float) animation.getAnimatedValue();
                     if (progress < 0) {
                         progress = 0;
+                    } else if (progress > 1) {
+                        progress = 1;
                     }
                     mProgress = progress;
                     if (mOnKnobChangeListener != null) {
                         mOnKnobChangeListener.onValueChanged(Knob.this, (int) (progress * mMax), true);
                     }
-                    updateProgressText(true, progress);
+                    updateProgressText(true, mProgress);
                     invalidate();
                 }
             });
@@ -359,6 +369,8 @@ public class Knob extends FrameLayout {
                         mOriginalProgress = mProgress + delta / 360;
                         if (mOriginalProgress < 0) {
                             mOriginalProgress = 0;
+                        } else if (mOriginalProgress > 100) {
+                            mOriginalProgress = 100;
                         }
                         setProgress(mOriginalProgress, true);
                         mMoved = true;
