@@ -404,7 +404,18 @@ public class HeadsetService extends Service {
     }
 
     private void saveDefaults() {
-        EffectSet temp = new EffectSet(0);
+        EffectSet temp;
+        try {
+            temp = new EffectSet(0);
+        } catch (Exception e) {
+            // this is really bad- likely the media stack is broken.
+            // disable ourself if we get into this state, as the service
+            // will restart itself repeatedly!
+            Log.e(TAG, e.getMessage(), e);
+            stopSelf();
+            return;
+        }
+
         SharedPreferences prefs = getSharedPreferences("global", 0);
 
         final int numBands = temp.getNumEqualizerBands();
