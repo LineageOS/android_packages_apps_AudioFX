@@ -37,7 +37,7 @@
   <string name="plate">Plate</string>
   <string name="eq_custom">カスタマイズするには｢カスタム｣を選択してください</string>
   <string name="power_on_prompt">右上の電源ボタンを押してください</string>
-  <string name="effect_unavalable_for_speaker">スピーカーモードではサウンド効果は利用できません。</string>
+  <string name="effect_unavalable_for_speaker">スピーカーモードでは効果は利用できません。</string>
   <string name="device_headset">ヘッドセット</string>
   <string name="device_speaker">スピーカー</string>
   <string name="device_usb">USB</string>

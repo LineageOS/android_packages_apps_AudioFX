@@ -41,7 +41,7 @@
   <string name="device_headset">هێدفۆن</string>
   <string name="device_speaker">بڵندگۆ</string>
   <string name="device_usb">USB</string>
-  <string name="device_bluetooth">بلوتوث</string>
+  <string name="device_bluetooth">بلوتوس</string>
   <string name="eq_preset">ئاماده‌کراوی یه‌کسانکه‌ری ده‌نگ</string>
   <string name="reverb">Reverb</string>
 </resources>
