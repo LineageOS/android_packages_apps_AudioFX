@@ -241,7 +241,9 @@ public class Knob extends FrameLayout {
         if (mAnimator != null) {
             mAnimator.cancel();
         }
-
+        if (mOriginalProgress > 1) {
+            mOriginalProgress = 1;
+        }
         if (animate) {
             if (on) {
                 mAnimator = ValueAnimator.ofFloat(mProgress, mOriginalProgress);
@@ -257,7 +259,6 @@ public class Knob extends FrameLayout {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mAnimator = null;
-
                     updateProgressText(mOn && mEnabled, mOriginalProgress);
                     if (mOnKnobChangeListener != null) {
                         mOnKnobChangeListener.onAnimationFinished(on);
