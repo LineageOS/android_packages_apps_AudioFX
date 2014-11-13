@@ -57,7 +57,7 @@
         </activity>
         <activity
                 android:name=".ControlPanelPicker"
-                android:theme="@*android:style/Theme.Holo.Dialog.Alert"
+                android:theme="@*android:style/Theme.Material.Dialog.Alert"
                 android:excludeFromRecents="true"/>
 
         <receiver

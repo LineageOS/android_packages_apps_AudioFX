@@ -278,8 +278,8 @@ public class HeadsetService extends Service {
                 int state = intent.getIntExtra(BluetoothA2dp.EXTRA_STATE,
                         BluetoothA2dp.STATE_DISCONNECTED);
                 mUseBluetooth = state == BluetoothA2dp.STATE_CONNECTED;
-            } else if (action.equals(Intent.ACTION_ANALOG_AUDIO_DOCK_PLUG) ||
-                    action.equals(Intent.ACTION_DIGITAL_AUDIO_DOCK_PLUG)) {
+            } else if (action.equals(AudioManager.ACTION_ANALOG_AUDIO_DOCK_PLUG) ||
+                    action.equals(AudioManager.ACTION_DIGITAL_AUDIO_DOCK_PLUG)) {
                 mUseUSB = intent.getIntExtra("state", 0) == 1;
             } else if (action.equals(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)) {
                 NetworkInfo networkInfo = (NetworkInfo) intent
@@ -314,8 +314,8 @@ public class HeadsetService extends Service {
 
         final IntentFilter intentFilter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
         intentFilter.addAction(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
-        intentFilter.addAction(Intent.ACTION_ANALOG_AUDIO_DOCK_PLUG);
-        intentFilter.addAction(Intent.ACTION_DIGITAL_AUDIO_DOCK_PLUG);
+        intentFilter.addAction(AudioManager.ACTION_ANALOG_AUDIO_DOCK_PLUG);
+        intentFilter.addAction(AudioManager.ACTION_DIGITAL_AUDIO_DOCK_PLUG);
         intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         registerReceiver(mRoutingReceiver, intentFilter);
