@@ -15,79 +15,160 @@
 -->
 
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res/org.cyanogenmod.audiofx"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/noEffectsTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:ellipsize="marquee"
-        android:fadingEdge="horizontal"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="@string/no_effects"
-        android:layout_weight="1"
-        android:visibility="gone" />
-
-    <org.cyanogenmod.audiofx.widget.InterceptableLinearLayout
-        android:id="@+id/contentSoundEffects"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:custom="http://schemas.android.com/apk/res/org.cyanogenmod.audiofx"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="48dip">
+        android:layout_height="match_parent">
+
+    <TextView
+            android:id="@+id/noEffectsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/no_effects"
+            android:layout_weight="1"
+            android:visibility="gone"/>
+
+    <org.cyanogenmod.audiofx.widget.InterceptableLinearLayout
+            android:id="@+id/contentSoundEffects"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp">
+
+        <include
+                layout="@layout/equalizer"
+                android:layout_width="match_parent"
+                android:layout_height="0dip"
+                android:layout_weight="2"/>
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:background="#cc191919"
+                />
+
+        <TextView
+                android:id="@+id/eq_preset_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#ff808080"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textSize="10sp"
+                android:background="#cc191919"
+                android:text="@string/eq_preset"
+                android:textAllCaps="true"/>
 
         <org.cyanogenmod.audiofx.widget.Gallery
-            android:id="@+id/eqPresets"
-            android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_weight="11"
-            android:padding="0dip"
-            android:fadingEdgeLength="70dip"
-            android:requiresFadingEdge="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/preset_bar" />
+                android:id="@+id/eqPresets"
+                android:layout_width="match_parent"
+                android:layout_height="48dip"
+                android:background="#cc191919"
+                android:gravity="center_vertical"/>
 
 
-        <include layout="@layout/equalizer"
-            android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_weight="26" />
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                />
+
+        <!--<FrameLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dip"-->
+        <!--android:layout_weight="23">-->
+
+        <!--<com.pheelicks.visualizer.VisualizerView-->
+        <!--android:id="@+id/visualizerView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+        <!--</com.pheelicks.visualizer.VisualizerView>-->
+
+        <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_weight="1">-->
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_weight="23"
-            android:gravity="center"
-            android:orientation="horizontal">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+            <Space
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    />
 
             <org.cyanogenmod.audiofx.widget.Knob
-                android:id="@+id/bBStrengthKnob"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                custom:label="@string/bass_boost_strength"
-                custom:foreground="@drawable/knob" />
+                    android:id="@+id/bBStrengthKnob"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    custom:label="@string/bass_boost_strength"
+                    custom:foreground="@drawable/knob_large"/>
+
+            <Space
+                    android:layout_weight="2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    />
 
             <org.cyanogenmod.audiofx.widget.Knob
-                android:id="@+id/vIStrengthKnob"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dip"
-                custom:label="@string/virtualizer_strength"
-                custom:foreground="@drawable/knob" />
+                    android:id="@+id/vIStrengthKnob"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dip"
+                    custom:label="@string/virtualizer_strength"
+                    custom:foreground="@drawable/knob_large"/>
+
+            <Space
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    />
         </LinearLayout>
 
-        <Spinner android:id="@+id/prSpinner"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:minHeight="?android:attr/listPreferredItemHeight"
-            android:drawSelectorOnTop="true"
-        />
+
+        <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="1dp"-->
+        <!--android:background="@color/disabled"/>-->
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                />
+
+        <TextView
+                android:id="@+id/reverb_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#ff808080"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:background="#cc191919"
+                android:paddingTop="8dp"
+                android:textSize="10sp"
+                android:text="@string/reverb"
+                android:textAllCaps="true"/>
+
+
+        <org.cyanogenmod.audiofx.widget.Gallery
+                android:id="@+id/reverb_gallery"
+                android:layout_width="match_parent"
+                android:layout_height="40dip"
+                android:background="#cc191919"
+                android:gravity="center_vertical"/>
+
+
+        <!--</FrameLayout>-->
 
     </org.cyanogenmod.audiofx.widget.InterceptableLinearLayout>
 </LinearLayout>
