@@ -17,10 +17,10 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         package="org.cyanogenmod.audiofx"
         android:installLocation="auto"
-        android:versionName="1.4"
+        android:versionName="1.4.0"
         android:versionCode="10400">
 
-    <uses-sdk android:minSdkVersion="19"/>
+    <uses-sdk android:minSdkVersion="21"/>
 
     <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
@@ -42,15 +42,13 @@
                 android:theme="@style/AppTheme"
                 android:label="@string/eq_dialog_title"
                 android:launchMode="singleTop"
-                android:noHistory="true"
-                android:screenOrientation="portrait">
+                android:noHistory="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.CATEGORY_CONTENT_MUSIC"/>
             </intent-filter>
