@@ -186,6 +186,7 @@ public class HeadsetService extends Service {
     }
 
     protected static final String TAG = HeadsetService.class.getSimpleName();
+    private final static boolean DEBUG = false;
 
     public class LocalBinder extends Binder {
         public HeadsetService getService() {
@@ -501,7 +502,7 @@ public class HeadsetService extends Service {
         SharedPreferences preferences = getSharedPreferences(
                 mode, 0);
 
-        Log.i(TAG, "Selected configuration: " + mode);
+        if (DEBUG) Log.i(TAG, "Selected configuration: " + mode);
 
         for (Integer sessionId : mAudioSessions.keySet()) {
             updateDsp(preferences, mAudioSessions.get(sessionId));
@@ -547,17 +548,17 @@ public class HeadsetService extends Service {
             if (mOverriddenEqualizerLevels != null) {
 
             } else if (preset == customPresetPos) {
-                Log.e(TAG, "loading custom band levels");
+                if (DEBUG) Log.i(TAG, "loading custom band levels");
                 levels = prefs.getString("audiofx.eq.bandlevels.custom",
                         getZeroedBandsString(bands)).split(";");
             } else {
-                Log.e(TAG, "loading preset band levels");
+                if (DEBUG) Log.i(TAG, "loading preset band levels");
                 levels = getSharedPreferences("global", 0).getString("equalizer.preset." + preset,
                         getZeroedBandsString(bands)).split(";");
             }
 
             if (levels != null) {
-                Log.e(TAG, "band levels applied: " + Arrays.toString(levels));
+                if (DEBUG) Log.i(TAG, "band levels applied: " + Arrays.toString(levels));
                 equalizerLevels = new short[levels.length];
                 for (int i = 0; i < levels.length; i++) {
                     equalizerLevels[i] = (short) (Float.parseFloat(levels[i]));
