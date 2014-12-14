@@ -31,25 +31,29 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <resources>
     <color name="highlight">#cc8f8f8f</color>
     <color name="lowlight">#ccf4fcff</color>
-    <color name="grey">#80e7e7e7</color>
+    <color name="grey">#9e9e9e</color>
     <color name="disabled">#80525252</color>
     <color name="disabled_gallery">#888888</color>
     <color name="disabled_knob">#575757</color>
 
-    <color name="white">#90dedede</color>
-    <color name="black">#ff000000</color>
+    <color name="primary">#607D8B</color>
+    <color name="primary_dark">#455A64</color>
+    <color name="accent">#78909C</color>
+
+    <color name="white">#fafafa</color>
+    <color name="black">#212121</color>
     <color name="grid_lines">#22ffffff</color>
     <color name="cb">#88ffffff</color>
     <color name="freq_hl">#2000ddff</color>
     <color name="freq_hl2">#4033b5e5</color>
-    <color name="eq_red">#80ff0000</color>
-    <color name="eq_green">#80aaeaaa</color>
-    <color name="eq_yellow">#80f0ff00</color>
+    <color name="eq_red">#f44336</color>
+    <color name="eq_green">#8bc34a</color>
+    <color name="eq_yellow">#ff9800</color>
     <color name="eq_holo_bright">#8000ddff</color>
     <color name="eq_holo_blue">#8033b5e5</color>
     <color name="eq_holo_dark">#800099cc</color>
     <color name="cb_shader">#ffffffff</color>
     <color name="cb_shader_alpha">#22ffffff</color>
 
-    <color name="window_background">#ff000000</color>
+    <color name="window_background">@color/black</color>
 </resources>
