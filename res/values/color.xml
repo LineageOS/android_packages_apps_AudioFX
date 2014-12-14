@@ -36,6 +36,9 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <color name="disabled_gallery">#888888</color>
     <color name="disabled_knob">#575757</color>
 
+    <color name="primary">#fafafa</color>
+    <color name="accent">#212121</color>
+
     <color name="white">#90dedede</color>
     <color name="black">#ff000000</color>
     <color name="grid_lines">#22ffffff</color>
