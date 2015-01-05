@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aa08908_87bae7df",
+        "filename": "res/values-lt/strings.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2015-01-05T14:55:57Z",
+      "side": 0,
+      "message": "Don\u0027t edit translations",
+      "revId": "f248386c862e5db87e146152af0c68b61c2e9346",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
