@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aa08908_ec3aaacc",
+        "filename": "AndroidManifest.xml",
+        "patchSetId": 12
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2015-01-07T09:12:30Z",
+      "side": 0,
+      "message": "don\u0027t remove this, landscape is not working properly",
+      "revId": "84f22bd9c7e93efa0c62d7568571c8234822a089",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
