@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a9d85d2_e581514f",
+        "filename": "res/values/styles.xml",
+        "patchSetId": 14
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2015-01-18T10:57:57Z",
+      "side": 1,
+      "message": "indentation is still off",
+      "revId": "f2e55566fc118b5473e88303598e8888e6fcbfc6",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
