@@ -16,33 +16,33 @@
      limitations under the License.
 -->
 <resources>
-  <string name="normal">Normal</string>
-  <string name="classical">Klasik</string>
-  <string name="dance">Dansa</string>
-  <string name="flat">Datar</string>
+  <string name="normal">Tavaline</string>
+  <string name="classical">Klassika</string>
+  <string name="dance">Tants</string>
+  <string name="flat">Tasane</string>
   <string name="folk">Folk</string>
   <string name="heavy_metal">Heavy Metal</string>
   <string name="hip_hop">Hip Hop</string>
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
-  <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronik</string>
-  <string name="small_speakers">Speaker kecil</string>
-  <string name="user">Kustom</string>
-  <string name="none">Tidak Ada</string>
-  <string name="smallroom">Ruang kecil</string>
-  <string name="mediumroom">Ruang sedang</string>
-  <string name="largeroom">Ruang besar</string>
-  <string name="mediumhall">Aula sedang</string>
-  <string name="largehall">Aula besar</string>
+  <string name="rock">Rokk</string>
+  <string name="ci_extreme">Elektrooniline</string>
+  <string name="small_speakers">Väiksed kõlarid</string>
+  <string name="user">Kohandatud</string>
+  <string name="none">Puudub</string>
+  <string name="smallroom">Väike tuba</string>
+  <string name="mediumroom">Keskmine tuba</string>
+  <string name="largeroom">Suur tuba</string>
+  <string name="mediumhall">Keskmine hall</string>
+  <string name="largehall">Suur hall</string>
   <string name="plate">Plate</string>
-  <string name="power_on_prompt">Tekan tombol power pada bagian kanan atas.</string>
-  <string name="effect_unavalable_for_speaker">Efek tidak tersedia untuk mode Speaker.</string>
-  <string name="device_headset">Headset</string>
-  <string name="device_speaker">Speaker</string>
+  <string name="power_on_prompt">Vajutage power nuppu üleval paremal.</string>
+  <string name="effect_unavalable_for_speaker">Efekt puudub Kõlari-režiimis.</string>
+  <string name="device_headset">Peakomplekt</string>
+  <string name="device_speaker">Kõlar</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
-  <string name="device_wireless">Nirkabel</string>
-  <string name="reverb">Reverb</string>
-  <string name="eq_preset">Preset equalizer</string>
+  <string name="device_wireless">Juhtmeta</string>
+  <string name="reverb">Peegeldus</string>
+  <string name="eq_preset">Ekvalaiseri eelsäte</string>
 </resources>
