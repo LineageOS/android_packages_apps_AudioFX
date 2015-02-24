@@ -277,10 +277,12 @@ public class ActivityMusic extends Activity {
         ab.setSelectedNavigationItem(getCurrentDeviceIndex());
 
         ab.setCustomView(mToggleSwitch, params);
+        ab.setHomeButtonEnabled(true);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
                         | ActionBar.DISPLAY_SHOW_CUSTOM
+                        | ActionBar.DISPLAY_SHOW_HOME
         );
 
         // initialize views
