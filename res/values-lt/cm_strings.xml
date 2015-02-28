@@ -28,7 +28,7 @@
   <string name="rock">Rokas</string>
   <string name="ci_extreme">Elektronika</string>
   <string name="small_speakers">Maži garsiakalbiai</string>
-  <string name="user">Individualus</string>
+  <string name="user">Priskirtas</string>
   <string name="none">Joks</string>
   <string name="smallroom">Mažas kambarys</string>
   <string name="mediumroom">Vidutinio dydžio kambarys</string>
@@ -42,7 +42,7 @@
   <string name="device_speaker">Garsiakalbis</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
-  <string name="device_wireless">Bevielis</string>
+  <string name="device_wireless">Belaidis</string>
   <string name="reverb">Aidas</string>
   <string name="eq_preset">Ekvalaizerio išankstiniai nustatymai</string>
 </resources>
