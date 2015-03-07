@@ -277,11 +277,8 @@ public class ActivityMusic extends Activity {
         ab.setSelectedNavigationItem(getCurrentDeviceIndex());
 
         ab.setCustomView(mToggleSwitch, params);
-        ab.setDisplayHomeAsUpEnabled(true);
         ab.setDisplayShowTitleEnabled(false);
-        ab.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
-                        | ActionBar.DISPLAY_SHOW_CUSTOM
-        );
+        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 
         // initialize views
         mEqualizerSurface = (EqualizerSurface) findViewById(R.id.frequencyResponse);
