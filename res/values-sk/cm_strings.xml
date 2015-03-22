@@ -36,7 +36,7 @@
   <string name="mediumhall">Stredná sála</string>
   <string name="largehall">Veľká sála</string>
   <string name="plate">Platňa</string>
-  <string name="power_on_prompt">Stlačte tlačidlo napájania na hornej pravej strane.</string>
+  <string name="power_on_prompt">Stlačte prepínacie tlačidlo vpravo hore.</string>
   <string name="effect_unavalable_for_speaker">Efekt nie je dostupný pre režim reproduktora.</string>
   <string name="device_headset">Slúchadlá</string>
   <string name="device_speaker">Reproduktor</string>
