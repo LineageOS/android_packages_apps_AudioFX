@@ -38,7 +38,7 @@
   <string name="plate">צלחת</string>
   <string name="power_on_prompt">לחץ על לחצן ההפעלה למעלה מימין.</string>
   <string name="effect_unavalable_for_speaker">האפקט אינו זמין במצב רמקול.</string>
-  <string name="device_headset">אוזניה</string>
+  <string name="device_headset">אוזניות</string>
   <string name="device_speaker">רמקול</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
