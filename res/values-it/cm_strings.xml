@@ -42,7 +42,7 @@
   <string name="device_speaker">Altoparlante</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
-  <string name="device_wireless">Senza fili</string>
+  <string name="device_wireless">Wireless</string>
   <string name="reverb">Riverbero</string>
   <string name="eq_preset">Equalizzatore predefinito</string>
 </resources>
