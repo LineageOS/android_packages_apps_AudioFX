@@ -35,7 +35,7 @@
   <string name="largeroom">Didelis kambarys</string>
   <string name="mediumhall">Vidutinio dydžio salė</string>
   <string name="largehall">Didelė salė</string>
-  <string name="plate">Plokštė</string>
+  <string name="plate">Platforma</string>
   <string name="power_on_prompt">Paspauskite maitinimo mygtuką viršuje dešinėje.</string>
   <string name="effect_unavalable_for_speaker">Efektas negalimas garsiakalbio režime.</string>
   <string name="device_headset">Laisvų rankų įranga</string>
