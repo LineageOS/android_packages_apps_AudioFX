@@ -44,5 +44,5 @@
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">אלחוטי</string>
   <string name="reverb">תהודה</string>
-  <string name="eq_preset">כיוון אקוולייזר</string>
+  <string name="eq_preset">כיוון אקולייזר</string>
 </resources>

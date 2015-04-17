@@ -42,5 +42,4 @@
   <string name="device_usb">USB-a</string>
   <string name="device_bluetooth">Bluetooth-a</string>
   <string name="reverb">Erreberberazioa</string>
-  <string name="eq_preset">Lehenetsitako ekualizadorea</string>
 </resources>
