@@ -22,6 +22,15 @@
 
     <uses-sdk android:minSdkVersion="21"/>
 
+    <uses-feature android:name="android.software.leanback"
+    android:required="false" />
+ 
+    <uses-feature android:name="android.hardware.touchscreen"
+    android:required="false" />
+
+    <uses-feature android:name="android.hardware.screen.portrait"
+    android:required="false" />
+
     <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -32,6 +41,7 @@
 
     <application
             android:icon="@mipmap/ic_launcher_audiofx"
+            android:banner="@drawable/banner"
             android:label="@string/app_name"
             android:supportsRtl="true"
             android:hardwareAccelerated="true"
@@ -46,6 +56,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL"/>
