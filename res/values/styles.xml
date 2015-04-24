@@ -18,7 +18,7 @@
     <style name="AppTheme" parent="android:Theme.Material">
         <item name="android:windowBackground">@color/window_background</item>
     </style>
-    <style name="Widget.Material.SeekBar.Vertical" parent="@android:Widget.Holo.SeekBar">
+    <style name="Widget.Material.SeekBar.Vertical" parent="@android:Widget.Material.SeekBar">
         <item name="android:indeterminateOnly">false</item>
         <item name="android:progressDrawable">@drawable/scrubber_progress_vertical_holo_dark</item>
 <!-- not public       <item name="android:indeterminateDrawable">@android:drawable/scrubber_progress_horizontal_holo_dark</item> -->
@@ -32,4 +32,28 @@
         <item name="android:paddingTop">16dip</item>
         <item name="android:paddingBottom">16dip</item>
     </style>
+
+    <style name="AppThemeV2" parent="android:Theme.Material">
+        <item name="android:actionBarStyle">@style/ActionBar</item>
+    </style>
+
+    <style name="ActionBar" parent="android:Widget.Material.ActionBar.Solid">
+        <!--<item name="android:background">@color/knob_container_background</item>-->
+        <item name="android:icon">@drawable/ic_actionbar_icon</item>
+        <item name="android:titleTextStyle">@style/AppThemeV2.ActionBar.TitleTextStyle</item>
+        <item name="android:subtitleTextStyle">@style/AppThemeV2.ActionBar.SubtitleTextStyle</item>
+    </style>
+
+    <style name="AppThemeV2.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Material.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppThemeV2.ActionBar.SubtitleTextStyle" parent="@android:style/TextAppearance.Material.Widget.ActionBar.Subtitle">
+        <item name="android:textSize">10sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
 </resources>

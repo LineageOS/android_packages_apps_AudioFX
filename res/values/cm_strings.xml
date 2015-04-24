@@ -14,7 +14,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
     <string name="normal">Normal</string>
     <string name="classical">Classical</string>
     <string name="dance">Dance</string>
@@ -28,6 +28,7 @@
     <string name="ci_extreme">Electronic</string>
     <string name="small_speakers">Small speakers</string>
     <string name="user">Custom</string>
+    <string name="user_n">Custom <xliff:g id="preset_num">%1$d</xliff:g></string>
 
     <string name="none">None</string>
     <string name="smallroom">Small room</string>
@@ -48,5 +49,9 @@
     <string name="device_wireless">Wireless</string>
     <string name="reverb">Reverb</string>
     <string name="eq_preset">Equalizer Preset</string>
+
+    <string name="devices">Devices</string>
+    <string name="virtualizer">Virtualizer</string>
+    <string name="multimedia">Multimedia</string>
 
 </resources>

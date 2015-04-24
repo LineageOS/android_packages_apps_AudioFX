@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.cyngn.audiofx.widget.InterceptableLinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:custom="http://schemas.android.com/apk/res/com.cyngn.audiofx"
+        android:id="@+id/interceptable_layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <com.cyngn.audiofx.widget.InterceptableLinearLayout
+            android:orientation="vertical"
+            android:id="@+id/top_content"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <com.cyngn.audiofx.eq.EqSwipeController
+                android:id="@+id/swipe_interceptor"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <include
+                    layout="@layout/eq_container"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"/>
+
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:id="@+id/preset_container"
+                    android:layout_weight="0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <com.cyngn.audiofx.preset.InfiniteViewPager
+                        android:id="@+id/pager"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        />
+
+                <com.viewpagerindicator.CirclePageIndicator
+                        android:id="@+id/indicator"
+                        android:padding="10dip"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        />
+
+                <android.support.v4.view.ViewPager
+                        android:layout_height="0dp"
+                        android:layout_width="0dp"
+                        android:visibility="gone"
+                        android:id="@+id/fake_pager"
+                        />
+
+            </LinearLayout>
+        </com.cyngn.audiofx.eq.EqSwipeController>
+    </com.cyngn.audiofx.widget.InterceptableLinearLayout>
+
+    <LinearLayout
+            android:background="@color/knob_container_background"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:elevation="8dp"
+            android:padding="4dp">
+
+        <com.cyngn.audiofx.knobs.KnobContainer
+                android:id="@+id/knob_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:gravity="top|center_horizontal"
+                android:orientation="horizontal"
+                android:animateLayoutChanges="true"
+                android:layout_weight="1">
+
+            <Space
+                    android:layout_weight="0.1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"/>
+
+            <RelativeLayout
+                    android:id="@+id/treble_knob_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="@dimen/knob_container_padding_bottom">
+
+                <com.cyngn.audiofx.knobs.RadialKnob
+                        android:id="@+id/treble_knob"
+                        android:layout_width="@dimen/knob_width"
+                        android:layout_gravity="top"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        custom:foreground="@drawable/knob"
+                        />
+
+                <TextView
+                        android:id="@+id/treble_label"
+                        android:layout_alignParentBottom="true"
+                        android:layout_height="22dp"
+                        android:text="@string/treble"
+                        android:layout_centerHorizontal="true"
+                        android:layout_width="wrap_content"/>
+
+            </RelativeLayout>
+
+            <Space
+                    android:layout_weight="0.1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"/>
+
+            <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/bass_knob_container"
+                    android:paddingBottom="@dimen/knob_container_padding_bottom">
+
+                <com.cyngn.audiofx.knobs.RadialKnob
+                        android:id="@+id/bass_knob"
+                        android:layout_gravity="top"
+                        android:layout_width="@dimen/knob_width"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        custom:foreground="@drawable/knob"/>
+
+                <TextView
+                        android:id="@+id/bass_label"
+                        android:layout_alignParentBottom="true"
+                        android:layout_height="22dp"
+                        android:text="@string/bass"
+                        android:layout_centerHorizontal="true"
+                        android:layout_width="wrap_content"/>
+
+            </RelativeLayout>
+
+            <Space
+                    android:layout_weight="0.1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"/>
+
+            <RelativeLayout
+                    android:id="@+id/virtualizer_knob_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="@dimen/knob_container_padding_bottom">
+
+                <com.cyngn.audiofx.knobs.RadialKnob
+                        android:id="@+id/virtualizer_knob"
+                        android:layout_gravity="top"
+                        android:layout_width="@dimen/knob_width"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        custom:foreground="@drawable/knob"/>
+
+                <TextView
+                        android:id="@+id/virtualizer_label"
+                        android:layout_alignParentBottom="true"
+                        android:layout_height="22dp"
+                        android:text="@string/treble"
+                        android:layout_centerHorizontal="true"
+                        android:layout_width="wrap_content"/>
+
+            </RelativeLayout>
+
+            <Space
+                    android:layout_weight="0.1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"/>
+
+        </com.cyngn.audiofx.knobs.KnobContainer>
+
+    </LinearLayout>
+</com.cyngn.audiofx.widget.InterceptableLinearLayout>

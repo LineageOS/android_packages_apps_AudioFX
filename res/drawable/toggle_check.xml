@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false" android:state_checked="true">
+        <bitmap android:src="@drawable/toggle_check_on_disabled" android:gravity="top"/>
+    </item>
+
+    <item android:state_checked="true">
+        <bitmap android:src="@drawable/toggle_check_on" android:gravity="top"/>
+   </item>
+
+    <item android:state_checked="false">
+        <bitmap android:src="@drawable/toggle_check_off" android:gravity="top"/>
+    </item>
+</selector>
