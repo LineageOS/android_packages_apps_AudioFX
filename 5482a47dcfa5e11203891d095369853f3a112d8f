@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da7fb54a_9073624d",
+        "filename": "AndroidManifest.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 10621
+      },
+      "writtenOn": "2015-04-24T11:58:39Z",
+      "side": 1,
+      "message": "Please fix whitespace error.",
+      "revId": "5482a47dcfa5e11203891d095369853f3a112d8f",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
