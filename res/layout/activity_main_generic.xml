@@ -161,7 +161,7 @@
                         android:id="@+id/virtualizer_label"
                         android:layout_alignParentBottom="true"
                         android:layout_height="22dp"
-                        android:text="@string/treble"
+                        android:text="@string/virtualizer"
                         android:layout_centerHorizontal="true"
                         android:layout_width="wrap_content"/>
 
