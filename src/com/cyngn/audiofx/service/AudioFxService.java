@@ -18,8 +18,10 @@ package com.cyngn.audiofx.service;
 import android.app.Service;
 import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothUuid;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +39,7 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.ParcelUuid;
 import android.util.ArrayMap;
 import android.util.Log;
 
@@ -50,6 +53,10 @@ import java.util.Map;
 import java.util.Set;
 
 import static android.bluetooth.BluetoothAdapter.ERROR;
+<<<<<<< HEAD
+=======
+import static android.os.Process.THREAD_PRIORITY_AUDIO;
+>>>>>>> 8bd541e... AudioFX: filter out non-Audio bluetooth device
 import static com.cyngn.audiofx.Constants.*;
 
 /**
@@ -93,6 +100,12 @@ public class AudioFxService extends Service {
     private List<Integer> mSessionsToRemove = new ArrayList<>();
 
     private final LocalBinder mBinder = new LocalBinder();
+
+    private static final ParcelUuid[] BLUETOOTH_AUDIO_UUIDS = {
+            BluetoothUuid.AudioSink,
+            BluetoothUuid.AdvAudioDist,
+            BluetoothUuid.AudioSource
+    };
 
     public class LocalBinder extends Binder {
         public AudioFxService getService() {
@@ -497,6 +510,26 @@ public class AudioFxService extends Service {
         return mLastBluetoothDevice != null ? mLastBluetoothDevice.getAliasName() : null;
     }
 
+    private boolean isAudioBluetoothDevice(BluetoothDevice device) {
+        if (device != null) {
+            final ParcelUuid[] uuids = device.getUuids();
+            if (uuids != null) {
+                if (BluetoothUuid.containsAnyUuid(uuids, BLUETOOTH_AUDIO_UUIDS)) {
+                    return true;
+                }
+            }
+            final BluetoothClass bluetoothClass = device.getBluetoothClass();
+            if (bluetoothClass != null) {
+                if (bluetoothClass.doesClassMatch(BluetoothClass.PROFILE_A2DP) ||
+                        bluetoothClass.doesClassMatch(BluetoothClass.PROFILE_A2DP_SINK) ||
+                        bluetoothClass.doesClassMatch(BluetoothClass.PROFILE_HEADSET)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void updateBondedBluetoothDevices() {
         if (mBluetoothAdapter == null) return;
         final Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
@@ -507,11 +540,13 @@ public class AudioFxService extends Service {
         BluetoothDevice lastBonded = null;
         if (bondedDevices != null) {
             for (BluetoothDevice bondedDevice : bondedDevices) {
-                final boolean bonded = bondedDevice.getBondState() != BluetoothDevice.BOND_NONE;
-                updateInfo(bondedDevice).bonded = bonded;
-                if (bonded) {
-                    bondedCount++;
-                    lastBonded = bondedDevice;
+                if (isAudioBluetoothDevice(bondedDevice)) {
+                    final boolean bonded = bondedDevice.getBondState() != BluetoothDevice.BOND_NONE;
+                    updateInfo(bondedDevice).bonded = bonded;
+                    if (bonded) {
+                        bondedCount++;
+                        lastBonded = bondedDevice;
+                    }
                 }
             }
         }
