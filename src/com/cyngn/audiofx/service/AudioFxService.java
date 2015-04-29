@@ -53,10 +53,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static android.bluetooth.BluetoothAdapter.ERROR;
-<<<<<<< HEAD
-=======
-import static android.os.Process.THREAD_PRIORITY_AUDIO;
->>>>>>> 8bd541e... AudioFX: filter out non-Audio bluetooth device
 import static com.cyngn.audiofx.Constants.*;
 
 /**
