@@ -33,6 +33,4 @@ public class Constants {
 
     public static final String DEVICE_AUDIOFX_EQ_PRESET = "audiofx.eq.preset";
     public static final String DEVICE_AUDIOFX_EQ_PRESET_LEVELS = "audiofx.eq.preset.levels";
-
-    public static final int MAX_CUSTOM_PRESET_LENGTH = 24;
 }
