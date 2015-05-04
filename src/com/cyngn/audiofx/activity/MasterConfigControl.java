@@ -781,18 +781,22 @@ public class MasterConfigControl {
         savePresetsDelayed();
     }
 
-    public void removePreset(int index) {
-        mEqPresets.remove(index);
-        for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
-            callback.onPresetsChanged();
-        }
-        if (mCurrentPreset == index) {
-            if (DEBUG) {
-                Log.w(TAG, "removePreset() called on current preset, changing preset");
+    public boolean removePreset(int index) {
+        if (index > mEQCustomPresetPosition) {
+            mEqPresets.remove(index);
+            for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
+                callback.onPresetsChanged();
             }
-            setPreset(mCurrentPreset-1);
+            if (mCurrentPreset == index) {
+                if (DEBUG) {
+                    Log.w(TAG, "removePreset() called on current preset, changing preset");
+                }
+                setPreset(mCurrentPreset - 1);
+            }
+            savePresetsDelayed();
+            return true;
         }
-        savePresetsDelayed();
+        return false;
     }
 
     public boolean hasMaxxAudio() {

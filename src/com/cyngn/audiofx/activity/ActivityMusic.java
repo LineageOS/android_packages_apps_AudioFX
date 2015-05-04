@@ -175,12 +175,13 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                     @Override
                     public void onClick(View v) {
                         final int currentIndexBeforeRemove = mConfig.getCurrentPresetIndex();
-                        mConfig.removePreset(currentIndexBeforeRemove);
-                        mInfiniteAdapter.notifyDataSetChanged();
-                        mDataAdapter.notifyDataSetChanged();
-                        mPresetPageIndicator.notifyDataSetChanged();
+                        if (mConfig.removePreset(currentIndexBeforeRemove)) {
+                            mInfiniteAdapter.notifyDataSetChanged();
+                            mDataAdapter.notifyDataSetChanged();
+                            mPresetPageIndicator.notifyDataSetChanged();
 
-                        jumpToPreset(mCurrentPage-1);
+                            jumpToPreset(mCurrentPage - 1);
+                        }
                     }
                 }
         );
