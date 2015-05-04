@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EqContainerView extends FrameLayout
-        implements MasterConfigControl.EqUpdatedCallback {
+        implements MasterConfigControl.EqUpdatedCallback, MasterConfigControl.EqControlStateCallback {
 
     private static final String TAG = EqContainerView.class.getSimpleName();
     private static final boolean DEBUG = false;
@@ -94,6 +94,7 @@ public class EqContainerView extends FrameLayout
         if (DEBUG) Log.d(TAG, "onAttachedToWindow()");
         super.onAttachedToWindow();
 
+        mConfig.setEqControlCallback(this);
         mConfig.addEqStateChangeCallback(this);
         onPresetChanged(mConfig.getCurrentPresetIndex()); // update initial state
     }
@@ -102,6 +103,7 @@ public class EqContainerView extends FrameLayout
     protected void onDetachedFromWindow() {
         if (DEBUG) Log.d(TAG, "onDetachedFromWindow()");
         mConfig.removeEqStateChangeCallback(this);
+        mConfig.setEqControlCallback(null);
         super.onDetachedFromWindow();
     }
 
@@ -395,6 +397,14 @@ public class EqContainerView extends FrameLayout
 
     @Override
     public void onPresetChanged(int newPresetIndex) {
+        updateEqState();
+        if (mConfig.isUserPreset()) {
+            mLockBox.setChecked(mConfig.isEqualizerLocked());
+        }
+    }
+
+    @Override
+    public void updateEqState() {
         boolean controlsVisible = mConfig.isUserPreset() || mConfig.isCustomPreset();
         mControlsVisible = controlsVisible; // persist this.
         if (!mSelectedBands.isEmpty()) {
@@ -408,10 +418,6 @@ public class EqContainerView extends FrameLayout
         animateControl(mRemoveControl, state.removeVisible);
         animateControl(mRenameControl, state.renameVisible);
         animateControl(mSaveControl, state.saveVisible);
-
-        if (mConfig.isUserPreset()) {
-            mLockBox.setChecked(mConfig.isEqualizerLocked());
-        }
     }
 
     private void animateControl(final View v, boolean visible) {

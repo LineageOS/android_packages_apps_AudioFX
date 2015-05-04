@@ -29,7 +29,7 @@ public class InfiniteViewPager extends ViewPager {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (mConfig.mAnimatingToCustom) {
+        if (mConfig.isAnimatingToCustom()) {
             return false;
         }
         return super.onInterceptTouchEvent(ev);
@@ -37,7 +37,7 @@ public class InfiniteViewPager extends ViewPager {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        if (mConfig.mAnimatingToCustom) {
+        if (mConfig.isAnimatingToCustom()) {
             return false;
         }
         boolean result;

@@ -451,10 +451,10 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         if (!fromSystem) { // from user
             if (!mConfig.isCustomPreset() // not on custom already
                     && !mConfig.isUserPreset() // or not on a user preset
-                    && !mConfig.mAnimatingToCustom) { // and animation hasn't started
+                    && !mConfig.isAnimatingToCustom()) { // and animation hasn't started
                 if (DEBUG) Log.w(TAG, "met conditions to start an animation to custom trigger");
                 // view pager is infinite, so we can't set the item to 0. find NEXT 0
-                mConfig.mAnimatingToCustom = true;
+                mConfig.setAnimatingToCustom(true);
 
                 final int lengthBefore = mDataAdapter.getCount();
                 final int newIndex = mConfig.copyToCustom();
@@ -587,7 +587,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             Integer colorFrom;
             Integer colorTo;
 
-            if (newPosition == mAnimatingToRealPageTarget && mConfig.mAnimatingToCustom) {
+            if (newPosition == mAnimatingToRealPageTarget && mConfig.isAnimatingToCustom()) {
                 if (DEBUG_VIEWPAGER) Log.w(TAG, "settling var set to true");
                 mJustGotToCustomAndSettling = true;
                 mAnimatingToRealPageTarget = -1;
@@ -596,7 +596,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             newPosition = newPosition % mDataAdapter.getCount();
 
 
-            if (mConfig.mAnimatingToCustom || mDeviceChanging) {
+            if (mConfig.isAnimatingToCustom() || mDeviceChanging) {
                 if (DEBUG_VIEWPAGER)
                     Log.i(TAG, "ignoring onPageScrolled because animating to custom or device is changing");
                 return;
@@ -674,10 +674,15 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             if (mJustGotToCustomAndSettling && mState == ViewPager.SCROLL_STATE_IDLE) {
                 if (DEBUG_VIEWPAGER) Log.w(TAG, "onPageScrollChanged() setting animating to custom = false");
                 mJustGotToCustomAndSettling = false;
-                mConfig.mAnimatingToCustom = false;
+                mConfig.setChangingPresets(false);
+                mConfig.setAnimatingToCustom(false);
             } else {
                 if (mState == ViewPager.SCROLL_STATE_IDLE) {
+                    mConfig.setChangingPresets(false);
                     mConfig.setPreset(mSelectedPosition);
+                } else {
+                    // not idle
+                    mConfig.setChangingPresets(true);
                 }
             }
         }

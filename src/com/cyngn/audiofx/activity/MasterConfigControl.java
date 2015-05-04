@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Master configuration class for AudioFX.
@@ -120,7 +121,10 @@ public class MasterConfigControl {
     private float[] mCenterFreqs;
     private float[] mLevels;
 
-    public boolean mAnimatingToCustom = false;
+    private AtomicBoolean mAnimatingToCustom = new AtomicBoolean(false);
+
+    // whether we are in between presets, animating them and such
+    private boolean mChangingPreset = false;
 
     private int mCurrentPreset;
 
@@ -130,7 +134,6 @@ public class MasterConfigControl {
             new OutputDevice(OutputDevice.DEVICE_SPEAKER); // default!
 
     private final ArrayList<Preset> mEqPresets = new ArrayList<Preset>();
-    //private final String[] mEQPresetNames;
     private int mEQCustomPresetPosition;
 
     private String mZeroedBandString;
@@ -236,6 +239,31 @@ public class MasterConfigControl {
 
         mHasMaxxAudio = mContext.getSharedPreferences("global", 0)
                 .getBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false);
+    }
+
+    public boolean isChangingPresets() {
+        return mChangingPreset;
+    }
+
+    public void setChangingPresets(boolean changing) {
+        mChangingPreset = changing;
+        if (changing) {
+            mEqControlState.saveVisible = false;
+            mEqControlState.removeVisible = false;
+            mEqControlState.renameVisible = false;
+            mEqControlState.unlockVisible = false;
+            if (mEqCallback != null) {
+                mEqCallback.updateEqState();
+            }
+        }
+    }
+
+    public boolean isAnimatingToCustom() {
+        return mAnimatingToCustom.get();
+    }
+
+    public void setAnimatingToCustom(boolean animating) {
+        mAnimatingToCustom.set(animating);
     }
 
     /**
@@ -499,7 +527,7 @@ public class MasterConfigControl {
             // persist
 
             if (mEqPresets.get(mCurrentPreset) instanceof CustomPreset) {
-                if (mAnimatingToCustom) {
+                if (mAnimatingToCustom.get()) {
                     if (DEBUG) {
                         Log.d(TAG, "setLevel() not persisting new custom band becuase animating.");
                     }
@@ -991,5 +1019,14 @@ public class MasterConfigControl {
         public boolean renameVisible;
         public boolean unlockVisible;
         public boolean saveVisible;
+    }
+
+    public void setEqControlCallback(EqControlStateCallback cb) {
+        mEqCallback = cb;
+    }
+
+    private EqControlStateCallback mEqCallback;
+    public interface EqControlStateCallback {
+        public void updateEqState();
     }
 }
