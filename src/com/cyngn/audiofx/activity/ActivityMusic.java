@@ -71,6 +71,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     int mCurrentPage;
     boolean mCurrentDeviceOverride;
     boolean mDeviceChanging;
+    boolean mAutomatedColorChange;
 
     private float[] mOverrideFromBands, mOverrideToBands;
     private MenuItem mMenuDevices;
@@ -537,6 +538,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             Log.d(TAG, "mCurrentPage: " + mCurrentPage);
         }
         int diff = mConfig.getCurrentPresetIndex() - mCurrentPage;
+        boolean samePage = diff == 0;
         diff = mDataAdapter.getCount() + diff;
         if (DEBUG) {
             Log.d(TAG, "diff: " + diff);
@@ -557,6 +559,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 ? getResources().getColor(R.color.disabled_eq)
                 : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
         ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.setDuration(500);
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
             @Override
@@ -564,13 +567,17 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 mCurrentBackgroundColor = (Integer) animator.getAnimatedValue();
                 updateBackgroundColors();
                 if (mCurrentBackgroundColor == colorTo) {
+                    mAutomatedColorChange = false;
                     mDeviceChanging = false;
                     mOverrideToBands = null;
                     mOverrideFromBands = null;
                 }
             }
         });
-        mViewPager.setCurrentItemAbsolute(newPage);
+        mAutomatedColorChange = true;
+        if (!samePage) {
+            mViewPager.setCurrentItemAbsolute(newPage);
+        }
         colorAnimation.start();
     }
 
@@ -627,7 +634,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 colorTo = mConfig.getAssociatedPresetColorHex(toPos);
             }
 
-            if (mConfig.isCurrentDeviceEnabled()) {
+            if (mConfig.isCurrentDeviceEnabled() && !mAutomatedColorChange) {
                 colorFrom = mConfig.getAssociatedPresetColorHex(mSelectedPosition);
                 mCurrentBackgroundColor = (Integer) mArgbEval.evaluate(positionOffset, colorFrom, colorTo);
                 updateBackgroundColors();
