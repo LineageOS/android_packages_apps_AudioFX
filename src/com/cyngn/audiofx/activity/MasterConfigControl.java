@@ -505,8 +505,11 @@ public class MasterConfigControl {
                     }
                 } else {
                     ((CustomPreset) mEqPresets.get(mCurrentPreset)).setLevel(band, dB);
-                    if (isCustomPreset()) {
-                        String levels = EqUtils.floatLevelsToString(mEqPresets.get(mCurrentPreset).mLevels);
+                    if (mEqPresets.get(mCurrentPreset) instanceof PermCustomPreset) {
+                        // store these as millibels
+                        String levels = EqUtils.floatLevelsToString(
+                                EqUtils.convertDecibelsToMillibels(
+                                        mEqPresets.get(mCurrentPreset).mLevels));
                         mContext.getSharedPreferences("global", 0)
                                 .edit()
                                 .putString("custom", levels).apply();
@@ -631,9 +634,16 @@ public class MasterConfigControl {
     public float[] getPersistedPresetLevels(int presetIndex) {
         String newLevels = null;
 
-        newLevels = mContext.getSharedPreferences("global", 0).getString("equalizer.preset." +
-                        presetIndex,
-                mZeroedBandString);
+
+        if (mEqPresets.size() > presetIndex
+                && mEqPresets.get(presetIndex) instanceof PermCustomPreset) {
+            newLevels = mContext.getSharedPreferences("global", 0).getString("custom",
+                    mZeroedBandString);
+        } else {
+            newLevels = mContext.getSharedPreferences("global", 0).getString("equalizer.preset." +
+                            presetIndex,
+                    mZeroedBandString);
+        }
         // stored as millibels, convert to decibels
         float[] levels = EqUtils.stringBandsToFloats(newLevels);
         return EqUtils.convertMillibelsToDecibels(levels);
@@ -646,7 +656,9 @@ public class MasterConfigControl {
      * @return an array of floats[] with the given index's preset levels
      */
     public float[] getPresetLevels(int presetIndex) {
-        if (mEqPresets.get(presetIndex) instanceof CustomPreset) {
+        if (mEqPresets.get(presetIndex) instanceof PermCustomPreset) {
+            return getPersistedPresetLevels(presetIndex);
+        } else if (mEqPresets.get(presetIndex) instanceof CustomPreset) {
             return mEqPresets.get(presetIndex).mLevels;
         } else {
             return getPersistedPresetLevels(presetIndex);
