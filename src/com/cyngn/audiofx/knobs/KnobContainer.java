@@ -16,9 +16,12 @@
 package com.cyngn.audiofx.knobs;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,17 +34,23 @@ import com.cyngn.audiofx.activity.MasterConfigControl;
 public class KnobContainer extends LinearLayout {
 
     private static final String TAG = KnobContainer.class.getSimpleName();
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
+
     private static final int MSG_EXPAND = 0;
     private static final int MSG_CONTRACT = 1;
+
+    private ViewGroup mTrebleContainer;
+    private ViewGroup mBassContainer;
+    private ViewGroup mVirtualizerContainer;
     private RadialKnob mTrebleKnob;
     private RadialKnob mBassKnob;
     private RadialKnob mVirtualizerKnob;
+
     private int mRegularHeight = -1;
     private int mExpandedHeight = -1;
     private H mHandler;
     private boolean mDown;
     private int mPreviousHiddenKnobWidth;
-
 
     public KnobContainer(Context context) {
         super(context);
@@ -67,6 +76,8 @@ public class KnobContainer extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+
+        if (DEBUG) Log.d(TAG, "onFinishInflate()");
 
         OnTouchListener knobTouchListener = new OnTouchListener() {
             @Override
@@ -94,6 +105,10 @@ public class KnobContainer extends LinearLayout {
         mTrebleKnob = (RadialKnob) findViewById(R.id.treble_knob);
         mBassKnob = (RadialKnob) findViewById(R.id.bass_knob);
         mVirtualizerKnob = (RadialKnob) findViewById(R.id.virtualizer_knob);
+
+        mVirtualizerContainer = (ViewGroup) findViewById(R.id.virtualizer_knob_container);
+        mBassContainer = (ViewGroup) findViewById(R.id.bass_knob_container);
+        mTrebleContainer = (ViewGroup) findViewById(R.id.treble_knob_container);
 
         View bassLabel = findViewById(R.id.bass_label);
         View trebleLabel = findViewById(R.id.treble_label);
@@ -133,18 +148,23 @@ public class KnobContainer extends LinearLayout {
         ViewGroup v = null;
         switch (knob) {
             case MasterConfigControl.KNOB_VIRTUALIZER:
-                v = (ViewGroup) findViewById(R.id.virtualizer_knob_container);
+                v = mVirtualizerContainer;
                 break;
             case MasterConfigControl.KNOB_BASS:
-                v = (ViewGroup) findViewById(R.id.bass_knob_container);
+                v = mBassContainer;
                 break;
             case MasterConfigControl.KNOB_TREBLE:
-                v = (ViewGroup) findViewById(R.id.treble_knob_container);
+                v = mTrebleContainer;
                 break;
         }
         if (v == null) {
             throw new UnsupportedOperationException("no knob container");
         }
+
+        if (newMode == v.getVisibility()) {
+            return;
+        }
+        Log.d(TAG, "setKnobVisible() knob=" + knob + " visible=" + visible);
         v.setVisibility(newMode);
 
         /* ensure spacing looks ok!

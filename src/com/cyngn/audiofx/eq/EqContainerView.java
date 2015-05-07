@@ -27,7 +27,7 @@ public class EqContainerView extends FrameLayout
         implements MasterConfigControl.EqUpdatedCallback, MasterConfigControl.EqControlStateCallback {
 
     private static final String TAG = EqContainerView.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     int mWidth;
     int mHeight;
@@ -366,7 +366,7 @@ public class EqContainerView extends FrameLayout
         final float paddingTop = getResources().getDimension(R.dimen.eq_top_padding);
         final int textBlock = getResources().getDimensionPixelSize(R.dimen.eq_text_height);
 
-        float height = mHeight - selectedBoxHeight - textBlock - paddingTop;
+        float height = (mHeight - selectedBoxHeight - textBlock - paddingTop) / 2;
 
         FrameLayout.LayoutParams ll = new FrameLayout.LayoutParams((int) width, (int) height);
         ll.gravity = Gravity.BOTTOM;

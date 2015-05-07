@@ -179,6 +179,7 @@
                     android:layout_height="match_parent"/>
 
             <RelativeLayout
+                    android:visibility="gone"
                     android:id="@+id/virtualizer_knob_container"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -206,6 +207,7 @@
             </RelativeLayout>
 
             <Space
+                    android:visibility="gone"
                     android:layout_weight="0.1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"/>

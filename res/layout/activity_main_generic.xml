@@ -147,6 +147,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
+                    android:visibility="gone"
                     android:paddingBottom="@dimen/knob_container_padding_bottom">
 
                 <com.cyngn.audiofx.knobs.RadialKnob
@@ -168,6 +169,7 @@
             </RelativeLayout>
 
             <Space
+                    android:visibility="gone"
                     android:layout_weight="0.1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"/>

@@ -44,7 +44,7 @@
                 android:name=".activity.ActivityMusic"
                 android:theme="@style/AppThemeV2"
                 android:label="@string/eq_dialog_title"
-                android:launchMode="singleTop"
+                android:launchMode="singleInstance"
                 android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

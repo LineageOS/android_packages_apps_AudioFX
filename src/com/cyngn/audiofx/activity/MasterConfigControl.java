@@ -36,8 +36,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class MasterConfigControl {
 
-    private static final boolean DEBUG = false;
     private static final String TAG = MasterConfigControl.class.getSimpleName();
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     public static final int KNOB_TREBLE = 0;
     public static final int KNOB_BASS = 1;

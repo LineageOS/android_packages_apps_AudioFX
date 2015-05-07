@@ -48,7 +48,7 @@ import java.util.Map;
 public class ActivityMusic extends Activity implements MasterConfigControl.EqUpdatedCallback {
 
     private static final String TAG = ActivityMusic.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     private static final boolean DEBUG_VIEWPAGER = false;
     private final ArgbEvaluator mArgbEval = new ArgbEvaluator();
     MasterConfigControl mConfig;
@@ -112,6 +112,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (DEBUG) Log.d(TAG, "onCreate() savedInstanceState=" + savedInstanceState);
         mHandler = new Handler();
         mConfig = MasterConfigControl.getInstance(this);
         mConfig.bindService();
@@ -233,6 +234,8 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         ab.setHomeButtonEnabled(true);
         ab.setDisplayShowTitleEnabled(true);
         ab.setDisplayShowCustomEnabled(true);
+
+        updateDeviceState();
     }
 
     private void openRenameDialog() {
@@ -262,6 +265,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     }
 
     private void updateDeviceState() {
+        if (DEBUG) Log.d(TAG, "updateDeviceState()");
         final OutputDevice device = mConfig.getCurrentDevice();
         if (mMenuDevices != null) {
             if (DEBUG) {

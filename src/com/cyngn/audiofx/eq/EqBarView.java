@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 
 import com.cyngn.audiofx.R;
@@ -15,7 +16,7 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
         Animation.AnimationListener {
 
     private static final String TAG = EqBarView.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     MasterConfigControl mConfig;
 
@@ -31,6 +32,8 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
 
     private int mFloatingTextHeight;
     private float mInitialLevel;
+
+    private boolean mInitialAnimation = true;
 
     public EqBarView(Context context) {
         super(context);
@@ -84,12 +87,10 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
         mParentHeight = h - selectedBoxHeight - textOffset - paddingTop;
         mParentTop = top;
         mTextOffset = textOffset;
-
-        updateHeight(true);
     }
 
     void updateHeight(boolean systemChange) {
-        if (DEBUG) Log.d(TAG, "updateHeight()");
+        if (DEBUG) Log.d(TAG, "updateHeight() systemChange=" + systemChange + ", mInitialAnimation=" + mInitialAnimation);
 
         if (getInfo() != null) {
 
@@ -104,8 +105,13 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
                         + yProjection + ", mPosY: " + mPosY);
             }
 
-            if (systemChange) {
+            if (systemChange || mInitialAnimation) {
                 ResizeAnimation anim = new ResizeAnimation(this);
+                if (mInitialAnimation) {
+                    anim.setDuration(800);
+                    mInitialAnimation = false;
+                }
+                anim.setInterpolator(new LinearInterpolator());
                 anim.setHeightParams(prevHeight, mPosY);
                 anim.setAnimationListener(this);
                 startAnimation(anim);
@@ -223,7 +229,6 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
 
     @Override
     public void onAnimationStart(Animation animation) {
-
     }
 
     @Override

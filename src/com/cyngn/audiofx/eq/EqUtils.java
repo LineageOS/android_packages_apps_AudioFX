@@ -12,8 +12,8 @@ import java.util.List;
 
 public class EqUtils {
 
-    private static final boolean DEBUG = false;
     private static final String TAG = EqUtils.class.getSimpleName();
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     public static List<MasterConfigControl.Preset> getCustomPresets(Context ctx, int bands) {
         ArrayList<MasterConfigControl.Preset> presets = new ArrayList<MasterConfigControl.Preset>();
