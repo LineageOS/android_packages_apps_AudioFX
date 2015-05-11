@@ -85,6 +85,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     public int mSelectedPosition = 0;
     private Map<Integer, OutputDevice> mBluetoothMap
             = new ArrayMap<Integer, OutputDevice>();
+    private OutputDevice mOutputDevice;
 
     private BroadcastReceiver mDevicesChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -267,6 +268,9 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     private void updateDeviceState() {
         if (DEBUG) Log.d(TAG, "updateDeviceState()");
         final OutputDevice device = mConfig.getCurrentDevice();
+        if (mOutputDevice != null && mOutputDevice.equals(device)) {
+            return;
+        }
         if (mMenuDevices != null) {
             if (DEBUG) {
                 Log.d(TAG, "updating with current device: " + device);
