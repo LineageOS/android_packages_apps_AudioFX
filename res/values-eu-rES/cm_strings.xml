@@ -27,6 +27,7 @@
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
   <string name="ci_extreme">Elektronikoa</string>
+  <string name="small_speakers">Bozgorailu txikiak</string>
   <string name="user">Pertsonalizatua</string>
   <string name="none">Bat ere ez</string>
   <string name="smallroom">Gela txikia</string>
@@ -41,5 +42,7 @@
   <string name="device_speaker">Bozgorailua</string>
   <string name="device_usb">USB-a</string>
   <string name="device_bluetooth">Bluetooth-a</string>
+  <string name="device_wireless">Haririk gabe</string>
   <string name="reverb">Erreberberazioa</string>
+  <string name="eq_preset">Ekualizadore aurre-ezarpena</string>
 </resources>
