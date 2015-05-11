@@ -221,10 +221,8 @@ public class MasterConfigControl {
         }
 
         // add custom preset
-        final String customPermLevels = mContext.getSharedPreferences("global", 0)
-                .getString("custom", mZeroedBandString);
         mEqPresets.add(new PermCustomPreset(mContext.getString(R.string.user),
-                EqUtils.stringBandsToFloats(customPermLevels)));
+                getPersistedCustomLevels()));
         mEQCustomPresetPosition = mEqPresets.size() - 1;
 
         // restore custom prefs
@@ -395,18 +393,24 @@ public class MasterConfigControl {
      * initiated some change. Then update the current preset to 'custom'.
      */
     public int copyToCustom() {
-        mLevels = getPresetLevels(mCurrentPreset);
+//        mLevels = getPresetLevels(mCurrentPreset);
         if (DEBUG) {
             Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(mLevels));
         }
 
-        int writtenToIndex = mEQCustomPresetPosition;
-        ((CustomPreset) mEqPresets.get(writtenToIndex)).setLevels(mLevels);
+        String levels = EqUtils.floatLevelsToString(
+                EqUtils.convertDecibelsToMillibels(
+                        mEqPresets.get(mCurrentPreset).mLevels));
+        mContext.getSharedPreferences("global", 0)
+                .edit()
+                .putString("custom", levels).apply();
+
+        ((CustomPreset) mEqPresets.get(mEQCustomPresetPosition)).setLevels(mLevels);
         if (DEBUG)
-            Log.i(TAG, "copyToCustom() wrote current preset levels to index: " + writtenToIndex);
-        setPreset(writtenToIndex);
+            Log.i(TAG, "copyToCustom() wrote current preset levels to index: " + mEQCustomPresetPosition);
+        setPreset(mEQCustomPresetPosition);
         savePresetsDelayed();
-        return writtenToIndex;
+        return mEQCustomPresetPosition;
     }
 
     public int addPresetFromCustom() {
@@ -652,7 +656,6 @@ public class MasterConfigControl {
 
     public float getLevel(int band) {
         return mLevels[band];
-//        return mEqPresets.get(mCurrentPreset).mLevels[band];
     }
 
     /*===============
@@ -662,16 +665,22 @@ public class MasterConfigControl {
     public float[] getPersistedPresetLevels(int presetIndex) {
         String newLevels = null;
 
-
         if (mEqPresets.size() > presetIndex
                 && mEqPresets.get(presetIndex) instanceof PermCustomPreset) {
-            newLevels = mContext.getSharedPreferences("global", 0).getString("custom",
-                    mZeroedBandString);
+            return getPersistedCustomLevels();
         } else {
             newLevels = mContext.getSharedPreferences("global", 0).getString("equalizer.preset." +
                             presetIndex,
                     mZeroedBandString);
         }
+        // stored as millibels, convert to decibels
+        float[] levels = EqUtils.stringBandsToFloats(newLevels);
+        return EqUtils.convertMillibelsToDecibels(levels);
+    }
+
+    private float[] getPersistedCustomLevels() {
+        String newLevels = mContext.getSharedPreferences("global", 0).getString("custom",
+                mZeroedBandString);
         // stored as millibels, convert to decibels
         float[] levels = EqUtils.stringBandsToFloats(newLevels);
         return EqUtils.convertMillibelsToDecibels(levels);
@@ -683,14 +692,16 @@ public class MasterConfigControl {
      * @param presetIndex index which to fetch preset levels for
      * @return an array of floats[] with the given index's preset levels
      */
-    public float[] getPresetLevels(int presetIndex) {
-        if (mEqPresets.get(presetIndex) instanceof PermCustomPreset) {
-            return getPersistedPresetLevels(presetIndex);
-        } else if (mEqPresets.get(presetIndex) instanceof CustomPreset) {
+    public float[] getPresetLevels(int presetIndex, boolean getPersisted) {
+        if (mEqPresets.get(presetIndex) instanceof CustomPreset || !getPersisted) {
             return mEqPresets.get(presetIndex).mLevels;
         } else {
             return getPersistedPresetLevels(presetIndex);
         }
+    }
+
+    public float[] getPresetLevels(int presetIndex) {
+        return getPresetLevels(presetIndex, true);
     }
 
     /**

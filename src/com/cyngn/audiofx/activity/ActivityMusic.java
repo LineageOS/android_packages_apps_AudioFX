@@ -627,7 +627,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             if (mLastOffset - positionOffset > 0.8) {
                 //Log.e(TAG, "OFFSET DIFF > 0.8! Setting selected position from: " + mSelectedPosition + " to " + newPosition);
                 mSelectedPosition = newPosition;
-                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
+                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition, false);
                 mConfig.setPreset(mSelectedPosition);
             }
 
@@ -655,7 +655,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             }
 
             if (mSelectedPositionBands == null) {
-                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
+                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition, false);
             }
             // get current bands
             float[] currentPositionLevels = mOverrideFromBands != null
@@ -663,7 +663,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                     : mSelectedPositionBands;
             float[] finalPresetLevels = mOverrideToBands != null
                     ? mOverrideToBands
-                    : mConfig.getPresetLevels(toPos);
+                    : mConfig.getPresetLevels(toPos, false);
 
             for (int i = 0; i < mConfig.getNumBands(); i++) {
                 float delta = finalPresetLevels[i] - currentPositionLevels[i];
@@ -683,7 +683,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             if (DEBUG_VIEWPAGER) Log.e(TAG, "onPageSelected(" + position + ")");
             mFakePager.setCurrentItem(position);
             mCurrentPage = mSelectedPosition = position;
-            mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
+            mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition, false);
         }
 
 
