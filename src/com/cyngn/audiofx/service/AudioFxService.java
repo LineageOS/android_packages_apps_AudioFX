@@ -424,10 +424,13 @@ public class AudioFxService extends Service {
 
     public List<OutputDevice> getBluetoothDevices() {
         ArrayList<OutputDevice> devices = new ArrayList<OutputDevice>();
-        for (Map.Entry<BluetoothDevice, DeviceInfo> entry : mDeviceInfo.entrySet()) {
-            if (entry.getValue().bonded) {
-                devices.add(new OutputDevice(OutputDevice.DEVICE_BLUETOOTH, entry.getKey().toString(),
-                        entry.getKey().getAliasName()));
+        synchronized (mDeviceInfo) {
+            Set<Map.Entry<BluetoothDevice, DeviceInfo>> entries = mDeviceInfo.entrySet();
+            for (Map.Entry<BluetoothDevice, DeviceInfo> entry : entries) {
+                if (entry.getValue().bonded) {
+                    devices.add(new OutputDevice(OutputDevice.DEVICE_BLUETOOTH, entry.getKey().toString(),
+                            entry.getKey().getAliasName()));
+                }
             }
         }
         if (DEBUG) Log.d(TAG, "bluetooth devices: " + Arrays.toString(devices.toArray()));
@@ -529,8 +532,10 @@ public class AudioFxService extends Service {
     private void updateBondedBluetoothDevices() {
         if (mBluetoothAdapter == null) return;
         final Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
-        for (DeviceInfo info : mDeviceInfo.values()) {
-            info.bonded = false;
+        synchronized (mDeviceInfo) {
+            for (DeviceInfo info : mDeviceInfo.values()) {
+                info.bonded = false;
+            }
         }
         int bondedCount = 0;
         BluetoothDevice lastBonded = null;
@@ -553,10 +558,12 @@ public class AudioFxService extends Service {
     }
 
     private DeviceInfo updateInfo(BluetoothDevice device) {
-        DeviceInfo info = mDeviceInfo.get(device);
-        info = info != null ? info : new DeviceInfo();
-        mDeviceInfo.put(device, info);
-        return info;
+        synchronized (mDeviceInfo) {
+            DeviceInfo info = mDeviceInfo.get(device);
+            info = info != null ? info : new DeviceInfo();
+            mDeviceInfo.put(device, info);
+            return info;
+        }
     }
 
     private static class DeviceInfo {
