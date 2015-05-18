@@ -116,7 +116,6 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         if (DEBUG) Log.d(TAG, "onCreate() savedInstanceState=" + savedInstanceState);
         mHandler = new Handler();
         mConfig = MasterConfigControl.getInstance(this);
-        mConfig.bindService();
 
         if (mConfig.hasMaxxAudio()) {
             setContentView(R.layout.activity_main_maxx_audio);
@@ -400,13 +399,13 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
     @Override
     protected void onDestroy() {
-        mConfig.unbindService();
         super.onDestroy();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        mConfig.bindService();
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(AudioFxService.ACTION_BLUETOOTH_DEVICES_UPDATED);
@@ -456,6 +455,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
     @Override
     protected void onPause() {
+        mConfig.unbindService();
         unregisterReceiver(mDevicesChangedReceiver);
         mConfig.removeEqStateChangeCallback(this);
         super.onPause();

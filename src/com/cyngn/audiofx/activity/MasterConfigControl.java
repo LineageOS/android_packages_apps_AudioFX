@@ -60,16 +60,18 @@ public class MasterConfigControl {
 
     private AudioFxService mService;
     private ServiceConnection mServiceConnection;
-    private boolean mServiceBound = false;
+    private boolean mServiceBinding = false;
 
     public void bindService() {
-        if (mServiceBound) {
+        if (mService != null || mServiceBinding) {
             return;
         }
+        mServiceBinding = true;
         if (mServiceConnection == null) {
             mServiceConnection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder binder) {
+                    mServiceBinding = false;
                     mService = ((AudioFxService.LocalBinder) binder).getService();
                     mService.update();
                     setCurrentDevice(mService.getCurrentDevice(), false); // update from service
@@ -78,20 +80,21 @@ public class MasterConfigControl {
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
                     mService = null;
+                    mServiceBinding = false;
                 }
             };
         }
         Intent serviceIntent = new Intent(mContext, AudioFxService.class);
         mContext.bindService(serviceIntent, mServiceConnection, 0);
-        mServiceBound = true;
+        mServiceBinding = true;
     }
 
     public void unbindService() {
-        if (!mServiceBound) {
+        if (mServiceBinding || mService == null) {
             return;
         }
         mContext.unbindService(mServiceConnection);
-        mServiceBound = false;
+        mServiceBinding = true;
     }
 
     private void updateService() {
