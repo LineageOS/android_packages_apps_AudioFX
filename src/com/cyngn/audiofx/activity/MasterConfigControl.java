@@ -708,8 +708,12 @@ public class MasterConfigControl {
      * @return an array of floats[] with the given index's preset levels
      */
     public float[] getPresetLevels(int presetIndex, boolean getPersisted) {
-        if (mEqPresets.get(presetIndex) instanceof CustomPreset || !getPersisted) {
-            return mEqPresets.get(presetIndex).mLevels;
+        Preset preset = mEqPresets.get(presetIndex);
+
+        if (preset instanceof PermCustomPreset) {
+            return getPersistedCustomLevels();
+        } else if (preset instanceof CustomPreset || !getPersisted) {
+            return preset.mLevels;
         } else {
             return getPersistedPresetLevels(presetIndex);
         }
