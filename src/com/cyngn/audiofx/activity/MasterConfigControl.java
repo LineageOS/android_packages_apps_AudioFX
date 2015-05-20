@@ -63,7 +63,14 @@ public class MasterConfigControl {
     private boolean mServiceBinding = false;
 
     public void bindService() {
-        if (mService != null || mServiceBinding) {
+        if (mService != null) {
+            if (!mService.getCurrentDevice().equals(mCurrentDevice)) {
+                setCurrentDevice(mService.getCurrentDevice(), false); // update from service
+            }
+
+            return;
+        }
+        if (mServiceBinding) {
             return;
         }
         mServiceBinding = true;
@@ -93,8 +100,8 @@ public class MasterConfigControl {
         if (mServiceBinding || mService == null) {
             return;
         }
-        mContext.unbindService(mServiceConnection);
         mServiceBinding = true;
+        mContext.unbindService(mServiceConnection);
     }
 
     private void updateService() {

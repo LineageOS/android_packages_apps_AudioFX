@@ -206,12 +206,6 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
         mCurrentRealPage = mInfiniteAdapter.getRealCount() * 100;
 
-        mViewPager.setCurrentItem(mConfig.getCurrentPresetIndex());
-        mCurrentBackgroundColor = !mConfig.isCurrentDeviceEnabled()
-                ? getResources().getColor(R.color.disabled_eq)
-                : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
-        updateBackgroundColors();
-
         // setup actionbar on off switch
         mCurrentDeviceToggle = new CheckBox(this);
         final int padding = getResources().getDimensionPixelSize(
@@ -266,33 +260,29 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
     private void updateDeviceState() {
         if (DEBUG) Log.d(TAG, "updateDeviceState()");
+
+        final boolean currentDeviceEnabled = mConfig.isCurrentDeviceEnabled();
+        final int currentPresetIndex = mConfig.getCurrentPresetIndex();
+
+        mCurrentBackgroundColor = !currentDeviceEnabled
+                ? getResources().getColor(R.color.disabled_eq)
+                : mConfig.getAssociatedPresetColorHex(currentPresetIndex );
+        updateBackgroundColors();
+        updateActionBarDeviceIcon();
+
         final OutputDevice device = mConfig.getCurrentDevice();
         if (mOutputDevice != null && mOutputDevice.equals(device)) {
             return;
         }
-        if (mMenuDevices != null) {
-            if (DEBUG) {
-                Log.d(TAG, "updating with current device: " + device);
-            }
-            int icon = 0;
-            if (device.getDeviceType() == OutputDevice.DEVICE_HEADSET) {
-                //headset
-                icon = R.drawable.ic_action_dsp_icons_headphones;
-            } else if (device.getDeviceType() == OutputDevice.DEVICE_SPEAKER) {
-                //speaker
-                icon = R.drawable.ic_action_dsp_icons_speaker;
-            } else if (device.getDeviceType() == OutputDevice.DEVICE_USB) {
-                // usb
-                icon = R.drawable.ic_action_dsp_icons_usb;
-            } else if (device.getDeviceType() == OutputDevice.DEVICE_BLUETOOTH) {
-                //bluetooth
-                icon = R.drawable.ic_action_dsp_icons_bluetoof;
-            } else if (device.getDeviceType() == OutputDevice.DEVICE_WIRELESS) {
-                // wireless
-            }
-            mMenuDevices.setIcon(icon);
+        mOutputDevice = device;
+        if (DEBUG) {
+            Log.d(TAG, "updating with current device: " + device);
         }
-        final boolean currentDeviceEnabled = mConfig.isCurrentDeviceEnabled();
+
+        if (mViewPager != null) {
+            mViewPager.setCurrentItem(currentPresetIndex );
+        }
+
         if (mCurrentDeviceToggle != null) {
             mCurrentDeviceToggle.setChecked(currentDeviceEnabled);
         }
@@ -327,9 +317,38 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         }
     }
 
+    private void updateActionBarDeviceIcon() {
+        if (mMenuDevices != null && mOutputDevice != null) {
+            int icon = 0;
+            switch (mOutputDevice.getDeviceType()) {
+                case OutputDevice.DEVICE_HEADSET:
+                    icon = R.drawable.ic_action_dsp_icons_headphones;
+                    break;
+
+                case OutputDevice.DEVICE_SPEAKER:
+                    icon = R.drawable.ic_action_dsp_icons_speaker;
+                    break;
+
+                case OutputDevice.DEVICE_USB:
+                    icon = R.drawable.ic_action_dsp_icons_usb;
+                    break;
+
+                case OutputDevice.DEVICE_BLUETOOTH:
+                    icon = R.drawable.ic_action_dsp_icons_bluetoof;
+                    break;
+
+                case OutputDevice.DEVICE_WIRELESS:
+                    // TODO add wireless back
+                    break;
+
+            }
+            mMenuDevices.setIcon(icon);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.devices, menu);
         mCurrentDeviceOverride = false;
         mMenuDevices = menu.findItem(R.id.devices);
@@ -358,6 +377,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             }
             updateDeviceState();
         }
+        updateActionBarDeviceIcon();
         return true;
     }
 
