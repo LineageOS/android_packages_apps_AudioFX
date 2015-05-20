@@ -550,8 +550,13 @@ public class MasterConfigControl {
                                 .putString("custom", levels).apply();
                     }
                 }
+                // needs to be updated immediately here for the service.
+                final String levels = EqUtils.floatLevelsToString(
+                        mEqPresets.get(mCurrentPreset).mLevels);
+                getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS,
+                        levels).apply();
             }
-            mService.updateDelayed();
+            mService.update();
             savePresetsDelayed();
         }
     }

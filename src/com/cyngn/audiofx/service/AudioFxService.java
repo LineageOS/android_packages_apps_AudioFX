@@ -674,11 +674,6 @@ public class AudioFxService extends Service {
         mHandler.sendEmptyMessage(MSG_UPDATE_DSP);
     }
 
-    public void updateDelayed() {
-        mHandler.removeMessages(MSG_UPDATE_DSP);
-        mHandler.sendEmptyMessageDelayed(MSG_UPDATE_DSP, 250);
-    }
-
     private void updateDsp(SharedPreferences prefs, EffectSet session) {
         if (session == null) {
             return;
