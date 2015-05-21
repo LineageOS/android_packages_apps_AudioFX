@@ -50,18 +50,18 @@
         <View
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
-                android:background="#cc191919"
+                android:background="@color/audiofx_background_color"
                 />
 
         <TextView
                 android:id="@+id/eq_preset_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#ff808080"
+                android:textColor="@color/eq_preset_label_text_color"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textSize="10sp"
-                android:background="#cc191919"
+                android:background="@color/audiofx_background_color"
                 android:text="@string/eq_preset"
                 android:textAllCaps="true"/>
 
@@ -69,7 +69,7 @@
                 android:id="@+id/eqPresets"
                 android:layout_width="match_parent"
                 android:layout_height="48dip"
-                android:background="#cc191919"
+                android:background="@color/audiofx_background_color"
                 android:gravity="center_vertical"/>
 
 
@@ -150,10 +150,10 @@
                 android:id="@+id/reverb_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#ff808080"
+                android:textColor="@color/reverb_label_text_color"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:background="#cc191919"
+                android:background="@color/audiofx_background_color"
                 android:paddingTop="8dp"
                 android:textSize="10sp"
                 android:text="@string/reverb"
@@ -164,7 +164,7 @@
                 android:id="@+id/reverb_gallery"
                 android:layout_width="match_parent"
                 android:layout_height="40dip"
-                android:background="#cc191919"
+                android:background="@color/audiofx_background_color"
                 android:gravity="center_vertical"/>
 
 
