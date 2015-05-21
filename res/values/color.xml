@@ -30,6 +30,9 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <resources>
     <color name="action_bar_background">#ff2e2e2e</color>
+    <color name="audiofx_background_color">#cc191919</color>
+    <color name="eq_preset_label_text_color">#ff808080</color>
+    <color name="reverb_label_text_color">#ff808080</color>
 
     <color name="highlight">#cc8f8f8f</color>
     <color name="lowlight">#ccf4fcff</color>
