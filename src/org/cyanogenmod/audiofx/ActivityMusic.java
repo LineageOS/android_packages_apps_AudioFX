@@ -272,7 +272,8 @@ public class ActivityMusic extends Activity {
 
         ab.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         ab.setListNavigationCallbacks(mNavBarDeviceAdapter, navigationListener);
-        ab.setBackgroundDrawable(new ColorDrawable(0xFF2E2E2E));
+        ab.setBackgroundDrawable(new ColorDrawable(getResources()
+                .getColor(R.color.action_bar_background)));
         mStateChangeUpdate = true;
         ab.setSelectedNavigationItem(getCurrentDeviceIndex());
 
