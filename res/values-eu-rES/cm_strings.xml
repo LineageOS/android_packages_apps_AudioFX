@@ -36,12 +36,12 @@
   <string name="mediumhall">Areto ertaina</string>
   <string name="largehall">Areto handia</string>
   <string name="plate">Biniloa</string>
-  <string name="power_on_prompt">Goi-eskumako pizte botoia sakatu.</string>
+  <string name="power_on_prompt">Sakatu goi-eskumako pizte botoia.</string>
   <string name="effect_unavalable_for_speaker">Efektua ez dago bozgorailu modurako eskuragarri.</string>
   <string name="device_headset">Aurikularrak</string>
   <string name="device_speaker">Bozgorailua</string>
   <string name="device_usb">USB-a</string>
-  <string name="device_bluetooth">Bluetooth-a</string>
+  <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Haririk gabe</string>
   <string name="reverb">Erreberberazioa</string>
   <string name="eq_preset">Ekualizadore aurre-ezarpena</string>
