@@ -364,9 +364,7 @@ public class AudioFxService extends Service {
         public void setEqualizerLevels(short[] levels) {
             if (mEqualizer.getEnabled()) {
                 for (short i = 0; i < levels.length; i++) {
-                    if (mEqualizer.getBandLevel(i) != levels[i]) {
-                        mEqualizer.setBandLevel(i, levels[i]);
-                    }
+                    mEqualizer.setBandLevel(i, levels[i]);
                 }
             }
         }
