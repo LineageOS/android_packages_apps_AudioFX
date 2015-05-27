@@ -153,6 +153,8 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
         mViewPager.setOnPageChangeListener(mViewPageChangeListener);
 
+        mViewPager.setCurrentItem(mConfig.getCurrentPresetIndex());
+
         mFakePager.setAdapter(adapter);
         mEqContainer.findViewById(R.id.save).setOnClickListener(
                 new View.OnClickListener() {
@@ -277,10 +279,6 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         mOutputDevice = device;
         if (DEBUG) {
             Log.d(TAG, "updating with current device: " + device);
-        }
-
-        if (mViewPager != null) {
-            mViewPager.setCurrentItem(currentPresetIndex );
         }
 
         if (mCurrentDeviceToggle != null) {
