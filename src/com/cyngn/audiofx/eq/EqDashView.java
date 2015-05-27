@@ -38,8 +38,8 @@ public class EqDashView extends View {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-//        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        // workaround to allow dash view to display
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
 

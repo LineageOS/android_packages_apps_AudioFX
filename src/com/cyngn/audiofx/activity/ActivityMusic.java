@@ -85,7 +85,6 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     public int mSelectedPosition = 0;
     private Map<Integer, OutputDevice> mBluetoothMap
             = new ArrayMap<Integer, OutputDevice>();
-    private OutputDevice mOutputDevice;
 
     private BroadcastReceiver mDevicesChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -124,8 +123,6 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         }
 
         mInterceptLayout = (InterceptableLinearLayout) findViewById(R.id.interceptable_layout);
-        mTopInterceptLayout = (InterceptableLinearLayout) findViewById(R.id.top_content);
-        mTopInterceptLayout.setInterception(false);
 
         mKnobContainer = (KnobContainer) findViewById(R.id.knob_container);
         mTrebleKnob = (RadialKnob) findViewById(R.id.treble_knob);
@@ -231,6 +228,12 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         ab.setDisplayShowTitleEnabled(true);
         ab.setDisplayShowCustomEnabled(true);
 
+        mCurrentBackgroundColor = !mConfig.isCurrentDeviceEnabled()
+                ? getResources().getColor(R.color.disabled_eq)
+                : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
+        updateBackgroundColors();
+        updateActionBarDeviceIcon();
+
         updateDeviceState();
     }
 
@@ -263,20 +266,10 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     private void updateDeviceState() {
         if (DEBUG) Log.d(TAG, "updateDeviceState()");
 
-        final boolean currentDeviceEnabled = mConfig.isCurrentDeviceEnabled();
-        final int currentPresetIndex = mConfig.getCurrentPresetIndex();
-
-        mCurrentBackgroundColor = !currentDeviceEnabled
-                ? getResources().getColor(R.color.disabled_eq)
-                : mConfig.getAssociatedPresetColorHex(currentPresetIndex );
-        updateBackgroundColors();
+        final OutputDevice device = mConfig.getCurrentDevice();
+        boolean currentDeviceEnabled = mConfig.isCurrentDeviceEnabled();
         updateActionBarDeviceIcon();
 
-        final OutputDevice device = mConfig.getCurrentDevice();
-        if (mOutputDevice != null && mOutputDevice.equals(device)) {
-            return;
-        }
-        mOutputDevice = device;
         if (DEBUG) {
             Log.d(TAG, "updating with current device: " + device);
         }
@@ -316,9 +309,9 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     }
 
     private void updateActionBarDeviceIcon() {
-        if (mMenuDevices != null && mOutputDevice != null) {
+        if (mMenuDevices != null) {
             int icon = 0;
-            switch (mOutputDevice.getDeviceType()) {
+            switch (mConfig.getCurrentDevice().getDeviceType()) {
                 case OutputDevice.DEVICE_HEADSET:
                     icon = R.drawable.ic_action_dsp_icons_headphones;
                     break;
@@ -552,7 +545,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
     @Override
     public void onPresetChanged(int newPresetIndex) {
-        // do nothing
+        mSelectedPositionBands = mConfig.getPresetLevels(newPresetIndex);
     }
 
     @Override
@@ -642,10 +635,10 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             }
 
             int toPos;
-            if (mLastOffset - positionOffset > 0.8) {
+            if (mLastOffset - positionOffset > 0.8) { // this is needed for flings
                 //Log.e(TAG, "OFFSET DIFF > 0.8! Setting selected position from: " + mSelectedPosition + " to " + newPosition);
                 mSelectedPosition = newPosition;
-                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition, false);
+                // mSelectedPositionBands will be reset by setPreset() below calling back to onPresetChanged()
                 mConfig.setPreset(mSelectedPosition);
             }
 
@@ -673,19 +666,16 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             }
 
             if (mSelectedPositionBands == null) {
-                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition, false);
+                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
             }
             // get current bands
-            float[] currentPositionLevels = mOverrideFromBands != null
-                    ? mOverrideFromBands
-                    : mSelectedPositionBands;
             float[] finalPresetLevels = mOverrideToBands != null
                     ? mOverrideToBands
-                    : mConfig.getPresetLevels(toPos, false);
+                    : mConfig.getPresetLevels(toPos);
 
             for (int i = 0; i < mConfig.getNumBands(); i++) {
-                float delta = finalPresetLevels[i] - currentPositionLevels[i];
-                float newBandLevel = currentPositionLevels[i] + (delta * positionOffset);
+                float delta = finalPresetLevels[i] - mSelectedPositionBands[i];
+                float newBandLevel = mSelectedPositionBands[i] + (delta * positionOffset);
                 //if (DEBUG_VIEWPAGER) Log.d(TAG, i + ", delta: " + delta + ", newBandLevel: " + newBandLevel);
                 mConfig.setLevel(i, newBandLevel, true);
             }
@@ -701,7 +691,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             if (DEBUG_VIEWPAGER) Log.e(TAG, "onPageSelected(" + position + ")");
             mFakePager.setCurrentItem(position);
             mCurrentPage = mSelectedPosition = position;
-            mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition, false);
+            mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
         }
 
 
@@ -756,16 +746,32 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 public void onAnimationUpdate(ValueAnimator animator) {
                     mCurrentBackgroundColor = (Integer) animator.getAnimatedValue();
                     updateBackgroundColors();
-                    if (mCurrentBackgroundColor == colorTo) {
-                        // set parameter and state
-                        mConfig.setCurrentDeviceEnabled(isChecked);
-                        updateDeviceState();
-                        buttonView.setEnabled(true);
-                    }
+                }
+            });
+            colorAnimation.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    buttonView.setEnabled(false);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mConfig.setCurrentDeviceEnabled(isChecked);
+                    updateDeviceState();
+                    buttonView.setEnabled(true);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
                 }
             });
             colorAnimation.start();
-            buttonView.setEnabled(false);
         }
     };
 

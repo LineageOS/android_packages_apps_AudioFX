@@ -392,7 +392,7 @@ public class EqContainerView extends FrameLayout
 
     @Override
     public void onBandLevelChange(int band, float dB, boolean fromSystem) {
-        postInvalidate();
+        // do nothing
     }
 
     @Override
@@ -426,14 +426,12 @@ public class EqContainerView extends FrameLayout
             v.setVisibility(View.VISIBLE);
             v.animate()
                     .alpha(1f)
-                    .withLayer()
                     .setDuration(250)
                     .withEndAction(null);
         } else {
             v.animate().cancel();
             v.animate()
                     .alpha(0f)
-                    .withLayer()
                     .setDuration(250)
                     .withEndAction(new Runnable() {
                         @Override

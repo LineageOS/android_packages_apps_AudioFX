@@ -8,56 +8,48 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <com.cyngn.audiofx.widget.InterceptableLinearLayout
+    <com.cyngn.audiofx.eq.EqSwipeController
+            android:id="@+id/swipe_interceptor"
             android:orientation="vertical"
-            android:id="@+id/top_content"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-        <com.cyngn.audiofx.eq.EqSwipeController
-                android:id="@+id/swipe_interceptor"
-                android:orientation="vertical"
+        <include
+                layout="@layout/eq_container"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
+                android:layout_height="0dp"/>
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/preset_container"
+                android:layout_weight="0"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            <include
-                    layout="@layout/eq_container"
+
+            <com.cyngn.audiofx.preset.InfiniteViewPager
+                    android:id="@+id/pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    />
+
+            <com.viewpagerindicator.CirclePageIndicator
+                    android:id="@+id/indicator"
+                    android:padding="10dip"
                     android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"/>
+                    />
 
-            <LinearLayout
-                    android:orientation="vertical"
-                    android:id="@+id/preset_container"
-                    android:layout_weight="0"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+            <android.support.v4.view.ViewPager
+                    android:layout_height="0dp"
+                    android:layout_width="0dp"
+                    android:visibility="gone"
+                    android:id="@+id/fake_pager"
+                    />
 
-                <com.cyngn.audiofx.preset.InfiniteViewPager
-                        android:id="@+id/pager"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        />
-
-                <com.viewpagerindicator.CirclePageIndicator
-                        android:id="@+id/indicator"
-                        android:padding="10dip"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
-                        />
-
-                <android.support.v4.view.ViewPager
-                        android:layout_height="0dp"
-                        android:layout_width="0dp"
-                        android:visibility="gone"
-                        android:id="@+id/fake_pager"
-                        />
-
-            </LinearLayout>
-        </com.cyngn.audiofx.eq.EqSwipeController>
-    </com.cyngn.audiofx.widget.InterceptableLinearLayout>
+        </LinearLayout>
+    </com.cyngn.audiofx.eq.EqSwipeController>
 
     <LinearLayout
             android:background="@color/knob_container_background"

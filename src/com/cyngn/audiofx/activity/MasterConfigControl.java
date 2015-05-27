@@ -129,7 +129,7 @@ public class MasterConfigControl {
      */
     private int mPredefinedPresets;
     private float[] mCenterFreqs;
-    private float[] mLevels;
+    private float[] mGlobalLevels;
 
     private AtomicBoolean mAnimatingToCustom = new AtomicBoolean(false);
 
@@ -203,9 +203,9 @@ public class MasterConfigControl {
         mMaxDB = bandLevelRange[1] / 100;
 
         mNumBands = centerFreqsKHz.length;
-        mLevels = new float[mNumBands];
-        for (int i = 0; i < mLevels.length; i++) {
-            mLevels[i] = 0;
+        mGlobalLevels = new float[mNumBands];
+        for (int i = 0; i < mGlobalLevels.length; i++) {
+            mGlobalLevels[i] = 0;
         }
 
         mZeroedBandString = EqUtils.getZeroedBandsString(getNumBands());
@@ -225,7 +225,7 @@ public class MasterConfigControl {
         String[] presetNames = mContext.getSharedPreferences("global", 0).getString("equalizer.preset_names", "").split("\\|");
         mPredefinedPresets = presetNames.length + 1; // we consider first EQ to be part of predefined
         for (int i = 0; i < numPresets; i++) {
-            mEqPresets.add(new Preset(
+            mEqPresets.add(new StaticPreset(
                     localizePresetName(presetNames[i]),
                     getPersistedPresetLevels(i)));
         }
@@ -272,6 +272,10 @@ public class MasterConfigControl {
 
     public void setAnimatingToCustom(boolean animating) {
         mAnimatingToCustom.set(animating);
+        if (!animating) {
+            // finished animation
+            updateEqControls();
+        }
     }
 
     /**
@@ -317,7 +321,6 @@ public class MasterConfigControl {
     }
 
     private void savePresetsDelayed() {
-        mHandler.removeMessages(MSG_SAVE_PRESETS);
         mHandler.sendEmptyMessageDelayed(MSG_SAVE_PRESETS, 500);
     }
 
@@ -403,9 +406,9 @@ public class MasterConfigControl {
      * initiated some change. Then update the current preset to 'custom'.
      */
     public int copyToCustom() {
-//        mLevels = getPresetLevels(mCurrentPreset);
+        mGlobalLevels = getPersistedPresetLevels(mCurrentPreset);
         if (DEBUG) {
-            Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(mLevels));
+            Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(mGlobalLevels));
         }
 
         String levels = EqUtils.floatLevelsToString(
@@ -415,7 +418,7 @@ public class MasterConfigControl {
                 .edit()
                 .putString("custom", levels).apply();
 
-        ((CustomPreset) mEqPresets.get(mEQCustomPresetPosition)).setLevels(mLevels);
+        ((PermCustomPreset) mEqPresets.get(mEQCustomPresetPosition)).setLevels(mGlobalLevels);
         if (DEBUG)
             Log.i(TAG, "copyToCustom() wrote current preset levels to index: " + mEQCustomPresetPosition);
         setPreset(mEQCustomPresetPosition);
@@ -424,12 +427,12 @@ public class MasterConfigControl {
     }
 
     public int addPresetFromCustom() {
-        mLevels = getPresetLevels(mEQCustomPresetPosition);
+        mGlobalLevels = getPresetLevels(mEQCustomPresetPosition);
         if (DEBUG) {
-            Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(mLevels));
+            Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(mGlobalLevels));
         }
 
-        int writtenToIndex = addPreset(mLevels);
+        int writtenToIndex = addPreset(mGlobalLevels);
         if (DEBUG)
             Log.i(TAG, "addPresetFromCustom() wrote current preset levels to index: " + writtenToIndex);
         setPreset(writtenToIndex);
@@ -533,7 +536,7 @@ public class MasterConfigControl {
     public void setLevel(int band, float dB, boolean systemChange) {
         //if (DEBUG) Log.i(TAG, "setLevel(" + band + ", " + dB + ", " + systemChange + ")");
 
-        mLevels[band] = dB;
+        mGlobalLevels[band] = dB;
         for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
             callback.onBandLevelChange(band, dB, systemChange);
         }
@@ -584,7 +587,7 @@ public class MasterConfigControl {
         // persist
         getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_EQ_PRESET, String.valueOf(newPresetIndex)).apply();
 
-        // update mLevels
+        // update mGlobalLevels
         float[] newlevels = getPresetLevels(newPresetIndex);
         for (int i = 0; i < newlevels.length; i++) {
             setLevel(i, newlevels[i], true);
@@ -602,6 +605,9 @@ public class MasterConfigControl {
         mEqControlState.removeVisible = isUserPreset();
         mEqControlState.renameVisible = isUserPreset();
         mEqControlState.unlockVisible = isUserPreset();
+        if (mEqCallback != null) {
+            mEqCallback.updateEqState();
+        }
     }
 
     /**
@@ -666,11 +672,11 @@ public class MasterConfigControl {
     }
 
     public float[] getLevels() {
-        return mLevels;
+        return mGlobalLevels;
     }
 
     public float getLevel(int band) {
-        return mLevels[band];
+        return mGlobalLevels[band];
     }
 
     /*===============
@@ -707,16 +713,8 @@ public class MasterConfigControl {
      * @param presetIndex index which to fetch preset levels for
      * @return an array of floats[] with the given index's preset levels
      */
-    public float[] getPresetLevels(int presetIndex, boolean getPersisted) {
-        if (mEqPresets.get(presetIndex) instanceof CustomPreset || !getPersisted) {
-            return mEqPresets.get(presetIndex).mLevels;
-        } else {
-            return getPersistedPresetLevels(presetIndex);
-        }
-    }
-
     public float[] getPresetLevels(int presetIndex) {
-        return getPresetLevels(presetIndex, true);
+        return mEqPresets.get(presetIndex).mLevels;
     }
 
     /**
@@ -929,9 +927,9 @@ public class MasterConfigControl {
 
     public static class Preset {
         public String mName;
-        public final float[] mLevels;
+        protected final float[] mLevels;
 
-        public Preset(String name, float[] levels) {
+        private Preset(String name, float[] levels) {
             this.mName = name;
             mLevels = new float[levels.length];
             for (int i = 0; i < levels.length; i++) {
@@ -944,7 +942,7 @@ public class MasterConfigControl {
             return mName + "|" + EqUtils.floatLevelsToString(mLevels);
         }
 
-        public static Preset fromString(String input) {
+        private static Preset fromString(String input) {
             final String[] split = input.split("\\|");
             if (split == null || split.length != 2) {
                 return null;
@@ -954,7 +952,14 @@ public class MasterConfigControl {
         }
     }
 
+    public static class StaticPreset extends Preset {
+        public StaticPreset(String name, float[] levels) {
+            super(name, levels);
+        }
+    }
+
     public static class PermCustomPreset extends CustomPreset {
+
         public PermCustomPreset(String name, float[] levels) {
             super(name, levels, false);
         }
@@ -1003,6 +1008,10 @@ public class MasterConfigControl {
             for (int i = 0; i < levels.length; i++) {
                 mLevels[i] = levels[i];
             }
+        }
+
+        public float getLevel(int band) {
+            return mLevels[band];
         }
 
         @Override
