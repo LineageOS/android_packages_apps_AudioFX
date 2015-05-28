@@ -105,17 +105,18 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"/>
 
-            <RelativeLayout
+            <FrameLayout
                     android:id="@+id/treble_knob_container"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_weight="0"
                     android:layout_gravity="center_horizontal"
                     android:paddingBottom="@dimen/knob_container_padding_bottom">
 
                 <com.cyngn.audiofx.knobs.RadialKnob
                         android:id="@+id/treble_knob"
                         android:layout_width="@dimen/knob_width"
-                        android:layout_gravity="top"
+                        android:layout_gravity="top|center_horizontal"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         custom:foreground="@drawable/knob"
@@ -123,30 +124,30 @@
 
                 <ImageView
                         android:id="@+id/treble_label"
-                        android:layout_alignParentBottom="true"
+                        android:layout_gravity="bottom|center_horizontal"
                         android:layout_width="76dp"
                         android:layout_height="22dp"
                         android:src="@drawable/maxxreble_white"
-                        android:layout_centerHorizontal="true"
                         android:scaleType="fitCenter"/>
 
-            </RelativeLayout>
+            </FrameLayout>
 
             <Space
                     android:layout_weight="0.1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"/>
 
-            <RelativeLayout
+            <FrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
+                    android:layout_weight="0"
                     android:id="@+id/bass_knob_container"
                     android:paddingBottom="@dimen/knob_container_padding_bottom">
 
                 <com.cyngn.audiofx.knobs.RadialKnob
                         android:id="@+id/bass_knob"
-                        android:layout_gravity="top"
+                        android:layout_gravity="top|center_horizontal"
                         android:layout_width="@dimen/knob_width"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
@@ -154,48 +155,45 @@
 
                 <ImageView
                         android:id="@+id/bass_label"
-                        android:layout_alignParentBottom="true"
-
+                        android:layout_gravity="bottom|center_horizontal"
                         android:layout_width="68dp"
                         android:layout_height="22dp"
                         android:src="@drawable/maxxbass_white"
-                        android:scaleType="fitCenter"
-                        android:layout_centerHorizontal="true"/>
+                        android:scaleType="fitCenter"/>
 
-            </RelativeLayout>
+            </FrameLayout>
 
             <Space
                     android:layout_weight="0.1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"/>
 
-            <RelativeLayout
+            <FrameLayout
                     android:visibility="gone"
                     android:id="@+id/virtualizer_knob_container"
                     android:layout_width="wrap_content"
+                    android:layout_weight="0"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
                     android:paddingBottom="@dimen/knob_container_padding_bottom">
 
                 <com.cyngn.audiofx.knobs.RadialKnob
                         android:id="@+id/virtualizer_knob"
-                        android:layout_gravity="top"
+                        android:layout_gravity="top|center_horizontal"
                         android:layout_width="@dimen/knob_width"
                         android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
                         custom:foreground="@drawable/knob"/>
 
 
                 <ImageView
                         android:id="@+id/virtualizer_label"
-                        android:layout_alignParentBottom="true"
+                        android:layout_gravity="bottom|center_horizontal"
                         android:layout_width="69dp"
                         android:layout_height="22dp"
                         android:src="@drawable/maxxspace_white"
                         android:scaleType="fitCenter"
-                        android:layout_centerHorizontal="true"
                         />
-            </RelativeLayout>
+            </FrameLayout>
 
             <Space
                     android:visibility="gone"
