@@ -28,6 +28,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.media.AudioPatch;
+import android.media.AudioPort;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.BassBoost;
 import android.media.audiofx.Equalizer;
@@ -68,7 +70,7 @@ import static com.cyngn.audiofx.Constants.*;
 public class AudioFxService extends Service {
 
     protected static final String TAG = AudioFxService.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     public static final boolean ENABLE_REVERB = false;
 
     public static final String ACTION_UPDATE_PREFERENCES = "org.cyanogenmod.audiofx.UPDATE_PREFS";
@@ -79,11 +81,7 @@ public class AudioFxService extends Service {
     private final HashMap<Integer, EffectSet> mAudioSessions = new HashMap<>();
     private int mMostRecentSessionId;
 
-    private int mLastUpdatedDevice;
-    private boolean mUseBluetooth;
-    private boolean mUseHeadset;
-    private boolean mUseUSB;
-    private boolean mUseWifiDisplay;
+    AudioPortListener mAudioPortListener;
     private BluetoothDevice mLastBluetoothDevice;
     private BluetoothAdapter mBluetoothAdapter;
     private final ArrayMap<BluetoothDevice, DeviceInfo> mDeviceInfo = new ArrayMap<>();
@@ -247,17 +245,6 @@ public class AudioFxService extends Service {
         registerReceiver(mPreferenceUpdateReceiver,
                 new IntentFilter(ACTION_UPDATE_PREFERENCES));
 
-        // setup audio routing listeners
-        final IntentFilter intentFilter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
-        intentFilter.addAction(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
-        intentFilter.addAction(AudioManager.ACTION_ANALOG_AUDIO_DOCK_PLUG);
-        intentFilter.addAction(AudioManager.ACTION_DIGITAL_AUDIO_DOCK_PLUG);
-        intentFilter.addAction(AudioManager.ACTION_USB_AUDIO_ACCESSORY_PLUG);
-        intentFilter.addAction(AudioManager.ACTION_USB_AUDIO_DEVICE_PLUG);
-        intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
-        registerReceiver(mRoutingReceiver, intentFilter);
-
         final IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
         filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
@@ -267,6 +254,9 @@ public class AudioFxService extends Service {
         BluetoothManager btMan = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = btMan.getAdapter();
         updateBondedBluetoothDevices();
+
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        am.registerAudioPortUpdateListener(mAudioPortListener = new AudioPortListener());
     }
 
     @Override
@@ -276,6 +266,9 @@ public class AudioFxService extends Service {
 
     @Override
     public void onDestroy() {
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        am.unregisterAudioPortUpdateListener(mAudioPortListener);
+
         super.onDestroy();
         if (DEBUG) Log.i(TAG, "Stopping service.");
 
@@ -283,7 +276,6 @@ public class AudioFxService extends Service {
         unregisterReceiver(mPreferenceUpdateReceiver);
 
         unregisterReceiver(mBluetoothReceiver);
-        unregisterReceiver(mRoutingReceiver);
     }
 
     @Override
@@ -442,12 +434,13 @@ public class AudioFxService extends Service {
     }
 
     public OutputDevice getCurrentDevice() {
-        switch (getAudioOutputRouting()) {
+        final int audioOutputRouting = getAudioOutputRouting();
+        switch (audioOutputRouting) {
             case OutputDevice.DEVICE_BLUETOOTH:
                 if (mLastBluetoothDevice == null) {
-                    return new OutputDevice(getAudioOutputRouting());
+                    return new OutputDevice(audioOutputRouting);
                 } else {
-                    return new OutputDevice(getAudioOutputRouting(), mLastBluetoothDevice.toString()
+                    return new OutputDevice(audioOutputRouting, mLastBluetoothDevice.toString()
                             , getLastDeviceName());
                 }
 
@@ -456,7 +449,7 @@ public class AudioFxService extends Service {
             case OutputDevice.DEVICE_USB:
             case OutputDevice.DEVICE_HEADSET:
             case OutputDevice.DEVICE_WIRELESS:
-                return new OutputDevice(getAudioOutputRouting());
+                return new OutputDevice(audioOutputRouting);
         }
     }
 
@@ -487,20 +480,8 @@ public class AudioFxService extends Service {
      * @return string token that identifies configuration to use
      */
     public int getAudioOutputRouting() {
-        if (mLastUpdatedDevice != -1) {
-            return mLastUpdatedDevice;
-        }
-        if (mUseBluetooth) {
-            return OutputDevice.DEVICE_BLUETOOTH;
-        }
-        if (mUseHeadset) {
-            return OutputDevice.DEVICE_HEADSET;
-        }
-        if (mUseUSB) {
-            return OutputDevice.DEVICE_USB;
-        }
-        if (mUseWifiDisplay) {
-            return OutputDevice.DEVICE_WIRELESS;
+        if (mAudioPortListener != null) {
+            return mAudioPortListener.getInternalAudioOutputRouting();
         }
         return OutputDevice.DEVICE_SPEAKER;
     }
@@ -597,64 +578,48 @@ public class AudioFxService extends Service {
         }
     };
 
-    /**
-     * This code listens for changes in bluetooth and headset events. It is
-     * adapted from google's own MusicFX application, so it's presumably the
-     * most correct design there is for this problem.
-     */
-    private final BroadcastReceiver mRoutingReceiver = new BroadcastReceiver() {
+
+    private class AudioPortListener implements AudioManager.OnAudioPortUpdateListener {
+        private boolean mUseBluetooth;
+        private boolean mUseHeadset;
+        private boolean mUseUSB;
+        private boolean mUseWifiDisplay;
+        private boolean mUseSpeaker;
+
         @Override
-        public void onReceive(final Context context, final Intent intent) {
-            final String action = intent.getAction();
+        public void onAudioPortListUpdate(AudioPort[] portList) {
             final boolean prevUseHeadset = mUseHeadset;
             final boolean prevUseBluetooth = mUseBluetooth;
             final boolean prevUseUSB = mUseUSB;
             final boolean prevUseWireless = mUseWifiDisplay;
+            final boolean prevUseSpeaker = mUseSpeaker;
 
-            if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
-                mUseHeadset = intent.getIntExtra("state", 0) == 1;
-                if (mUseHeadset) {
-                    mLastUpdatedDevice = OutputDevice.DEVICE_HEADSET;
-                } else {
-                    mLastUpdatedDevice = -1;
-                }
-            } else if (action.equals(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED)) {
-                int state = intent.getIntExtra(BluetoothA2dp.EXTRA_STATE,
-                        BluetoothA2dp.STATE_DISCONNECTED);
-                mUseBluetooth = state == BluetoothA2dp.STATE_CONNECTED;
-                if (mUseBluetooth) {
-                    mLastUpdatedDevice = OutputDevice.DEVICE_BLUETOOTH;
-                } else {
-                    mLastUpdatedDevice = -1;
-                }
-                updateBondedBluetoothDevices();
-            } else if (action.equals(AudioManager.ACTION_ANALOG_AUDIO_DOCK_PLUG) ||
-                    action.equals(AudioManager.ACTION_DIGITAL_AUDIO_DOCK_PLUG) ||
-                    action.equals(AudioManager.ACTION_USB_AUDIO_ACCESSORY_PLUG) ||
-                    action.equals(AudioManager.ACTION_USB_AUDIO_DEVICE_PLUG)) {
-                mUseUSB = intent.getIntExtra("state", 0) == 1;
-                if (mUseUSB) {
-                    mLastUpdatedDevice = OutputDevice.DEVICE_USB;
-                } else {
-                    mLastUpdatedDevice = -1;
-                }
-            } else if (action.equals(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)) {
-                NetworkInfo networkInfo = (NetworkInfo) intent
-                        .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
-                mUseWifiDisplay = networkInfo.isConnected();
-                if (mUseWifiDisplay) {
-                    mLastUpdatedDevice = OutputDevice.DEVICE_WIRELESS;
-                } else {
-                    mLastUpdatedDevice = -1;
-                }
-            }
+            AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            int device = am.getDevicesForStream(AudioManager.STREAM_MUSIC);
+            mUseBluetooth = (device & AudioManager.DEVICE_OUT_BLUETOOTH_A2DP) != 0
+                    || (device & AudioManager.DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES) != 0
+                    || (device & AudioManager.DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER) != 0
+                    || (device & AudioManager.DEVICE_OUT_BLUETOOTH_SCO) != 0
+                    || (device & AudioManager.DEVICE_OUT_BLUETOOTH_SCO_CARKIT) != 0
+                    || (device & AudioManager.DEVICE_OUT_BLUETOOTH_SCO_HEADSET) != 0;
+
+            mUseHeadset = (device & AudioManager.DEVICE_OUT_WIRED_HEADPHONE) != 0
+                    || (device & AudioManager.DEVICE_OUT_WIRED_HEADSET) != 0;
+
+            mUseUSB = (device & AudioManager.DEVICE_OUT_USB_ACCESSORY) != 0
+                    || (device & AudioManager.DEVICE_OUT_USB_DEVICE) != 0;
+
+            mUseWifiDisplay = false; //TODO add support for wireless display..
+
+            mUseSpeaker = (device & AudioManager.DEVICE_OUT_SPEAKER) != 0;
 
             if (DEBUG) Log.i(TAG, "Headset=" + mUseHeadset + "; Bluetooth="
-                    + mUseBluetooth + " ; USB=" + mUseUSB);
+                    + mUseBluetooth + " ; USB=" + mUseUSB + "; Speaker=" + mUseSpeaker);
             if (prevUseHeadset != mUseHeadset
                     || prevUseBluetooth != mUseBluetooth
                     || prevUseUSB != mUseUSB
-                    || prevUseWireless != mUseWifiDisplay) {
+                    || prevUseWireless != mUseWifiDisplay
+                    || prevUseSpeaker != mUseSpeaker) {
                 Intent deviceChangedIntent = new Intent(ACTION_DEVICE_OUTPUT_CHANGED);
                 deviceChangedIntent.putExtra(EXTRA_DEVICE, getCurrentDevice());
                 sendBroadcast(deviceChangedIntent);
@@ -662,7 +627,36 @@ public class AudioFxService extends Service {
                 update();
             }
         }
-    };
+
+        @Override
+        public void onAudioPatchListUpdate(AudioPatch[] patchList) {
+
+        }
+
+        @Override
+        public void onServiceDied() {
+
+        }
+
+        public int getInternalAudioOutputRouting() {
+            if (mUseSpeaker) {
+                return OutputDevice.DEVICE_SPEAKER;
+            }
+            if (mUseBluetooth) {
+                return OutputDevice.DEVICE_BLUETOOTH;
+            }
+            if (mUseHeadset) {
+                return OutputDevice.DEVICE_HEADSET;
+            }
+            if (mUseUSB) {
+                return OutputDevice.DEVICE_USB;
+            }
+            if (mUseWifiDisplay) {
+                return OutputDevice.DEVICE_WIRELESS;
+            }
+            return OutputDevice.DEVICE_SPEAKER;
+        }
+    }
 
     // ======== DSP UPDATE METHODS BELOW ============= //
 
