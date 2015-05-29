@@ -114,6 +114,13 @@ public class EqContainerView extends FrameLayout
 
     List<EqBarView> mBarViews = new ArrayList<>();
 
+    public void resume() {
+        for (EqBarView mBarView : mBarViews) {
+            mBarView.setInitialAnimation(true);
+        }
+
+    }
+
     private void generateAndAddBars() {
         if (mFirstLayout) {
             mFirstLayout = false;

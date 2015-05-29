@@ -61,6 +61,7 @@ public class MasterConfigControl {
     private AudioFxService mService;
     private ServiceConnection mServiceConnection;
     private boolean mServiceBinding = false;
+    private boolean mServiceUnbinding = false;
 
     public void bindService() {
         if (mService != null) {
@@ -87,7 +88,7 @@ public class MasterConfigControl {
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
                     mService = null;
-                    mServiceBinding = false;
+                    mServiceUnbinding = false;
                 }
             };
         }
@@ -97,11 +98,15 @@ public class MasterConfigControl {
     }
 
     public void unbindService() {
-        if (mServiceBinding || mService == null) {
+        if (mServiceUnbinding || mService == null) {
             return;
         }
-        mServiceBinding = true;
+        mServiceUnbinding = true;
         mContext.unbindService(mServiceConnection);
+    }
+
+    public boolean isServiceBound() {
+        return mService != null;
     }
 
     private void updateService() {

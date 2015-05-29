@@ -75,6 +75,10 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
         mConfig.removeEqStateChangeCallback(this);
     }
 
+    public void setInitialAnimation(boolean forceAnimate) {
+        mInitialAnimation = forceAnimate;
+    }
+
     private EqContainerView.EqBandInfo getInfo() {
         return (EqContainerView.EqBandInfo) getTag();
     }

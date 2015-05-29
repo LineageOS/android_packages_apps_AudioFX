@@ -64,24 +64,27 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     PresetPagerAdapter mDataAdapter;
     InfinitePagerAdapter mInfiniteAdapter;
     InterceptableLinearLayout mInterceptLayout;
-    InterceptableLinearLayout mTopInterceptLayout;
     CheckBox mMaxxVolumeSwitch;
     int mCurrentBackgroundColor;
     int mCurrentRealPage;
-    int mCurrentPage;
-    boolean mCurrentDeviceOverride;
-    boolean mDeviceChanging;
-    boolean mAutomatedColorChange;
 
-    private float[] mOverrideFromBands, mOverrideToBands;
+    // whether we are in the middle of animating while switching devices
+    boolean mDeviceChanging;
+
     private MenuItem mMenuDevices;
     private ViewPager mFakePager;
     private CheckBox mCurrentDeviceToggle;
 
+    private ValueAnimator mDeviceChangeAnimation;
     private int mAnimatingToRealPageTarget = -1;
 
+    /*
+     * this array can hold on to arrays which store preset levels,
+     * so modifying values in here should only be done with extreme care
+     */
     private float[] mSelectedPositionBands;
-    private int mInitialOffset;
+
+    // current selected index
     public int mSelectedPosition = 0;
     private Map<Integer, OutputDevice> mBluetoothMap
             = new ArrayMap<Integer, OutputDevice>();
@@ -116,6 +119,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         mHandler = new Handler();
         mConfig = MasterConfigControl.getInstance(this);
 
+        mSelectedPositionBands = mConfig.getPersistedPresetLevels(mConfig.getCurrentPresetIndex());
         if (mConfig.hasMaxxAudio()) {
             setContentView(R.layout.activity_main_maxx_audio);
         } else {
@@ -150,7 +154,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
         mViewPager.setOnPageChangeListener(mViewPageChangeListener);
 
-        mViewPager.setCurrentItem(mConfig.getCurrentPresetIndex());
+        mViewPager.setCurrentItem(mSelectedPosition = mConfig.getCurrentPresetIndex());
 
         mFakePager.setAdapter(adapter);
         mEqContainer.findViewById(R.id.save).setOnClickListener(
@@ -187,7 +191,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                             mDataAdapter.notifyDataSetChanged();
                             mPresetPageIndicator.notifyDataSetChanged();
 
-                            jumpToPreset(mCurrentPage - 1);
+                            jumpToPreset(mSelectedPosition - 1);
                         }
                     }
                 }
@@ -231,7 +235,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         mCurrentBackgroundColor = !mConfig.isCurrentDeviceEnabled()
                 ? getResources().getColor(R.color.disabled_eq)
                 : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
-        updateBackgroundColors();
+        updateBackgroundColors(mCurrentBackgroundColor);
         updateActionBarDeviceIcon();
 
         updateDeviceState();
@@ -341,7 +345,6 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.devices, menu);
-        mCurrentDeviceOverride = false;
         mMenuDevices = menu.findItem(R.id.devices);
 
         return true;
@@ -394,7 +397,6 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
         }
         if (newDevice != null) {
-            mCurrentDeviceOverride = true;
             mDeviceChanging = true;
             mConfig.setCurrentDevice(newDevice, true);
             return true;
@@ -402,10 +404,10 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateBackgroundColors() {
-        mEqContainer.setBackgroundColor(mCurrentBackgroundColor);
-        mPresetContainer.setBackgroundColor(mCurrentBackgroundColor);
-        mKnobContainer.updateKnobHighlights(mCurrentBackgroundColor);
+    private void updateBackgroundColors(int color) {
+        mEqContainer.setBackgroundColor(color);
+        mPresetContainer.setBackgroundColor(color);
+        mKnobContainer.updateKnobHighlights(color);
     }
 
     @Override
@@ -442,26 +444,25 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             mPresetPageIndicator.notifyDataSetChanged();
             mViewPager.invalidate();
 
-            jumpToPreset(mConfig.getCurrentPresetIndex());
             updateDeviceState();
         } else {
             invalidateOptionsMenu();
+
+            // notify eq we should force the bars to animate to their positions
+            mEqContainer.resume();
         }
+        jumpToPreset(mConfig.getCurrentPresetIndex());
     }
 
     private void jumpToPreset(int index) {
-//        mViewPager.setOnPageChangeListener(null);
-
-        mCurrentBackgroundColor = mConfig.getAssociatedPresetColorHex(index);
-        updateBackgroundColors();
+        // force instant color jump to preset index
+        updateBackgroundColors(mConfig.getAssociatedPresetColorHex(index));
 
         int diff = index -(mCurrentRealPage % mDataAdapter.getCount());
         // double it, short (e.g. 1 hop) distances sometimes bug out??
         diff += mDataAdapter.getCount();
         int newPage = mCurrentRealPage + diff;
         mViewPager.setCurrentItemAbsolute(newPage, false);
-
-//        mViewPager.setOnPageChangeListener(mViewPageChangeListener);
     }
 
     @Override
@@ -474,6 +475,8 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
     @Override
     public void onBandLevelChange(int band, float dB, boolean fromSystem) {
+        // call backs we get when bands are changing, check if the user is physically touching them
+        // and set the preset to "custom" and do proper animations.
         if (!fromSystem) { // from user
             if (!mConfig.isCustomPreset() // not on custom already
                     && !mConfig.isUserPreset() // or not on a user preset
@@ -482,9 +485,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 // view pager is infinite, so we can't set the item to 0. find NEXT 0
                 mConfig.setAnimatingToCustom(true);
 
-                final int lengthBefore = mDataAdapter.getCount();
                 final int newIndex = mConfig.copyToCustom();
-                final int lengthAfter = mDataAdapter.getCount();
 
                 mInfiniteAdapter.notifyDataSetChanged();
                 mDataAdapter.notifyDataSetChanged();
@@ -493,47 +494,33 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 final Integer colorFrom = mCurrentBackgroundColor;
                 final Integer colorTo = mConfig.getAssociatedPresetColorHex(newIndex);
                 ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+                colorAnimation.setDuration(500);
                 colorAnimation.addListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
                         int diff = newIndex - (mCurrentRealPage % mDataAdapter.getCount());
-                        // double it, short (e.g. 1 hop) distances sometimes bug out??
                         diff += mDataAdapter.getCount();
                         int newPage = mCurrentRealPage + diff;
 
                         mAnimatingToRealPageTarget = newPage;
-                            /*if (DEBUG) {
-                                Log.i(TAG, "mCurrentPage: " + mCurrentPage);
-                                Log.i(TAG, "mCurrentRealPage: " + mCurrentRealPage);
-                                Log.i(TAG, "diff: " + diff);
-                                Log.i(TAG, "newPage: " + newPage);
-                                Log.i(TAG, "animating to index: " + mAnimatingToRealPageTarget);
-                                Log.i(TAG, "--------------------------------");
-                            }*/
                         mViewPager.setCurrentItemAbsolute(newPage);
                     }
-
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mCurrentBackgroundColor = colorTo;
+                    }
                     @Override
                     public void onAnimationCancel(Animator animation) {
-
                     }
-
                     @Override
                     public void onAnimationRepeat(Animator animation) {
-
                     }
                 });
                 colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
                     @Override
                     public void onAnimationUpdate(ValueAnimator animator) {
-                        mCurrentBackgroundColor = (Integer) animator.getAnimatedValue();
-                        updateBackgroundColors();
+                        updateBackgroundColors((Integer) animator.getAnimatedValue());
                     }
                 });
                 colorAnimation.start();
@@ -545,7 +532,9 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
     @Override
     public void onPresetChanged(int newPresetIndex) {
-        mSelectedPositionBands = mConfig.getPresetLevels(newPresetIndex);
+        if (!mDeviceChanging) {
+            mSelectedPositionBands = mConfig.getPresetLevels(newPresetIndex);
+        }
     }
 
     @Override
@@ -553,17 +542,17 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         mDataAdapter.notifyDataSetChanged();
     }
 
+
     @Override
     public void onDeviceChanged(OutputDevice deviceId, boolean userChange) {
-        updateDeviceState();
-        if (DEBUG) {
-            Log.d(TAG, "deviceID: " + deviceId);
-            Log.d(TAG, "current preset idx for the device id: " + mConfig.getCurrentPresetIndex());
-            Log.d(TAG, "mCurrentRealPage: " + mCurrentRealPage);
-            Log.d(TAG, "mCurrentPage: " + mCurrentPage);
+        if (!mConfig.isServiceBound()) {
+            // it's possible we could receive a device change broadcast before the service is bound,
+            // from AudioFxService, once service is bound it will call onDeviceChanged.
+            return;
         }
-        int diff = mConfig.getCurrentPresetIndex() - mCurrentPage;
-        boolean samePage = diff == 0;
+        updateDeviceState();
+        int diff = mConfig.getCurrentPresetIndex() - mSelectedPosition;
+        final boolean samePage = diff == 0;
         diff = mDataAdapter.getCount() + diff;
         if (DEBUG) {
             Log.d(TAG, "diff: " + diff);
@@ -573,37 +562,69 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         final int newPage = mCurrentRealPage + diff;
         if (DEBUG) Log.d(TAG, "mCurrentRealPage After: " + newPage);
 
-        // TODO enable these and fix the animation, currently doesn't
-        // calculate deltas in onPageScrolled() properly.
-        //mOverrideFromBands = mConfig.getPresetLevels(mCurrentRealPage);
-        //mOverrideToBands = mConfig.getPresetLevels(mConfig.getCurrentPresetIndex());
+        mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
+        final float[] targetBandLevels = mConfig.getPresetLevels(mConfig.getCurrentPresetIndex());
+
+        if (mDeviceChangeAnimation != null) {
+            mDeviceChangeAnimation.cancel();
+        }
 
         // do background transition manually as viewpager can't handle this bg change
         final Integer colorFrom = mCurrentBackgroundColor;
         final Integer colorTo = !mConfig.isCurrentDeviceEnabled()
                 ? getResources().getColor(R.color.disabled_eq)
                 : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
-        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-        colorAnimation.setDuration(500);
-        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        mDeviceChangeAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        mDeviceChangeAnimation.setDuration(500);
+        mDeviceChangeAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
-                mCurrentBackgroundColor = (Integer) animator.getAnimatedValue();
-                updateBackgroundColors();
-                if (mCurrentBackgroundColor == colorTo) {
-                    mAutomatedColorChange = false;
-                    mDeviceChanging = false;
-                    mOverrideToBands = null;
-                    mOverrideFromBands = null;
+                updateBackgroundColors((Integer) animator.getAnimatedValue());
+
+                final int N = mConfig.getNumBands();
+                for (int i = 0; i < N; i++) { // animate bands
+                    float delta = targetBandLevels[i] - mSelectedPositionBands[i];
+                    float newBandLevel = mSelectedPositionBands[i] + (delta * animator.getAnimatedFraction());
+                    //if (DEBUG_VIEWPAGER) Log.d(TAG, i + ", delta: " + delta + ", newBandLevel: " + newBandLevel);
+                    mConfig.setLevel(i, newBandLevel, true);
                 }
             }
         });
-        mAutomatedColorChange = true;
-        if (!samePage) {
-            mViewPager.setCurrentItemAbsolute(newPage);
-        }
-        colorAnimation.start();
+        mDeviceChangeAnimation.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mConfig.setChangingPresets(true);
+
+                mDeviceChanging = true;
+
+                if (!samePage) {
+                    mViewPager.setCurrentItemAbsolute(newPage);
+                }
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mCurrentBackgroundColor = colorTo;
+                mConfig.setChangingPresets(false);
+
+                mSelectedPosition = mConfig.getCurrentPresetIndex();
+                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
+
+                mDeviceChanging = false;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        mDeviceChangeAnimation.start();
     }
 
     private ViewPager.OnPageChangeListener mViewPageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -639,6 +660,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 //Log.e(TAG, "OFFSET DIFF > 0.8! Setting selected position from: " + mSelectedPosition + " to " + newPosition);
                 mSelectedPosition = newPosition;
                 // mSelectedPositionBands will be reset by setPreset() below calling back to onPresetChanged()
+
                 mConfig.setPreset(mSelectedPosition);
             }
 
@@ -659,21 +681,19 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 colorTo = mConfig.getAssociatedPresetColorHex(toPos);
             }
 
-            if (mConfig.isCurrentDeviceEnabled() && !mAutomatedColorChange) {
+            if (mConfig.isCurrentDeviceEnabled()) {
                 colorFrom = mConfig.getAssociatedPresetColorHex(mSelectedPosition);
-                mCurrentBackgroundColor = (Integer) mArgbEval.evaluate(positionOffset, colorFrom, colorTo);
-                updateBackgroundColors();
+                updateBackgroundColors((Integer) mArgbEval.evaluate(positionOffset, colorFrom, colorTo));
             }
 
             if (mSelectedPositionBands == null) {
                 mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
             }
             // get current bands
-            float[] finalPresetLevels = mOverrideToBands != null
-                    ? mOverrideToBands
-                    : mConfig.getPresetLevels(toPos);
+            float[] finalPresetLevels = mConfig.getPresetLevels(toPos);
 
-            for (int i = 0; i < mConfig.getNumBands(); i++) {
+            final int N = mConfig.getNumBands();
+            for (int i = 0; i < N; i++) { // animate bands
                 float delta = finalPresetLevels[i] - mSelectedPositionBands[i];
                 float newBandLevel = mSelectedPositionBands[i] + (delta * positionOffset);
                 //if (DEBUG_VIEWPAGER) Log.d(TAG, i + ", delta: " + delta + ", newBandLevel: " + newBandLevel);
@@ -690,15 +710,22 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             position = position % mDataAdapter.getCount();
             if (DEBUG_VIEWPAGER) Log.e(TAG, "onPageSelected(" + position + ")");
             mFakePager.setCurrentItem(position);
-            mCurrentPage = mSelectedPosition = position;
-            mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
+            mSelectedPosition = position;
+            if (!mDeviceChanging) {
+                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
+                mCurrentBackgroundColor = mConfig.getAssociatedPresetColorHex(mSelectedPosition);
+            }
         }
 
 
         @Override
         public void onPageScrollStateChanged(int newState) {
-            if (DEBUG_VIEWPAGER) Log.w(TAG, "onPageScrollStateChanged(" + stateToString(newState) + ")");
             mState = newState;
+            if (mDeviceChanging) { // avoid setting unwanted presets during custom animations
+                return;
+            }
+            if (DEBUG_VIEWPAGER)
+                Log.w(TAG, "onPageScrollStateChanged(" + stateToString(newState) + ")");
 
             if (mJustGotToCustomAndSettling && mState == ViewPager.SCROLL_STATE_IDLE) {
                 if (DEBUG_VIEWPAGER) Log.w(TAG, "onPageScrollChanged() setting animating to custom = false");
@@ -731,7 +758,8 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
     };
 
-    private CompoundButton.OnCheckedChangeListener mGlobalEnableToggleListener = new CompoundButton.OnCheckedChangeListener() {
+    private CompoundButton.OnCheckedChangeListener mGlobalEnableToggleListener
+            = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(final CompoundButton buttonView,
                                      final boolean isChecked) {
@@ -741,11 +769,9 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                     : getResources().getColor(R.color.disabled_eq);
             ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
             colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
                 @Override
                 public void onAnimationUpdate(ValueAnimator animator) {
-                    mCurrentBackgroundColor = (Integer) animator.getAnimatedValue();
-                    updateBackgroundColors();
+                    updateBackgroundColors((Integer) animator.getAnimatedValue());
                 }
             });
             colorAnimation.addListener(new Animator.AnimatorListener() {
@@ -753,19 +779,17 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 public void onAnimationStart(Animator animation) {
                     buttonView.setEnabled(false);
                 }
-
                 @Override
                 public void onAnimationEnd(Animator animation) {
+                    mCurrentBackgroundColor = colorTo;
                     mConfig.setCurrentDeviceEnabled(isChecked);
                     updateDeviceState();
                     buttonView.setEnabled(true);
                 }
-
                 @Override
                 public void onAnimationCancel(Animator animation) {
 
                 }
-
                 @Override
                 public void onAnimationRepeat(Animator animation) {
 
