@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a8ec9b2_2725f8c1",
+        "filename": "src/org/cyanogenmod/audiofx/ActivityMusic.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 8961
+      },
+      "writtenOn": "2015-05-29T03:52:10Z",
+      "side": 1,
+      "message": "Don\u0027t pass 100 chars in a line, add an enter",
+      "revId": "3d60b41ccb20d19d2845890488c54de8a7ef73a6",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
