@@ -20,23 +20,24 @@
             android:icon="@drawable/ic_action_dsp_icons_speaker"
             android:showAsAction="ifRoom">
         <menu>
-            <item
-                    android:id="@+id/device_speaker"
-                    android:icon="@drawable/ic_action_dsp_icons_speaker"
-                    android:title="@string/device_speaker" />
-            <item
-                    android:id="@+id/device_headset"
-                    android:icon="@drawable/ic_action_dsp_icons_headphones"
-                    android:title="@string/device_headset" />
+            <group android:id="@+id/device_group">
+                <item
+                        android:id="@+id/device_speaker"
+                        android:checkable="true"
+                        android:icon="@drawable/ic_action_dsp_icons_speaker"
+                        android:title="@string/device_speaker"/>
+                <item
+                        android:id="@+id/device_headset"
+                        android:checkable="true"
+                        android:icon="@drawable/ic_action_dsp_icons_headphones"
+                        android:title="@string/device_headset"/>
 
-            <group android:id="@+id/bluetooth_devices">
-
+                <item
+                        android:id="@+id/device_usb"
+                        android:checkable="true"
+                        android:icon="@drawable/ic_action_dsp_icons_usb"
+                        android:title="@string/device_usb"/>
             </group>
-
-            <item
-                    android:id="@+id/device_usb"
-                    android:icon="@drawable/ic_action_dsp_icons_usb"
-                    android:title="@string/device_usb" />
 
         </menu>
     </item>

@@ -354,8 +354,13 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        mMenuDevices.getSubMenu().removeGroup(R.id.bluetooth_devices);
+        // remove previous bluetooth entries
+        for (Integer id : mBluetoothMap.keySet()) {
+            mMenuDevices.getSubMenu().removeItem(id);
+        }
         mBluetoothMap.clear();
+
+        MenuItem selectedItem = null;
 
         // add bluetooth devices
         List<OutputDevice> bluetoothDevices =
@@ -364,14 +369,37 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             for (int i = 0; i < bluetoothDevices.size(); i++) {
                 int viewId = View.generateViewId();
                 mBluetoothMap.put(viewId, bluetoothDevices.get(i));
-                MenuItem item = mMenuDevices.getSubMenu().add(R.id.bluetooth_devices, viewId, i,
+                MenuItem item = mMenuDevices.getSubMenu().add(R.id.device_group, viewId, i,
                         bluetoothDevices.get(i).getDisplayName());
+                if (bluetoothDevices.get(i).equals(mConfig.getCurrentDevice())) {
+                    selectedItem = item;
+                }
                 item.setIcon(R.drawable.ic_action_dsp_icons_bluetoof);
 
             }
-            updateDeviceState();
         }
+        mMenuDevices.getSubMenu().setGroupCheckable(R.id.device_group, true, true);
+
         updateActionBarDeviceIcon();
+
+        // select proper device
+        if (mConfig.isServiceBound()) {
+            switch (mConfig.getCurrentDevice().getDeviceType()) {
+                case OutputDevice.DEVICE_SPEAKER:
+                    selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_speaker);
+                    break;
+                case OutputDevice.DEVICE_USB:
+                    selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_usb);
+                    break;
+                case OutputDevice.DEVICE_HEADSET:
+                    selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_headset);
+                    break;
+            }
+            if (selectedItem != null) {
+                selectedItem.setChecked(true);
+            }
+        }
+
         return true;
     }
 
@@ -398,6 +426,9 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         }
         if (newDevice != null) {
             mDeviceChanging = true;
+            if (item.isCheckable()) {
+                item.setChecked(!item.isChecked());
+            }
             mConfig.setCurrentDevice(newDevice, true);
             return true;
         }
