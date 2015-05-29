@@ -65,10 +65,11 @@ public class MasterConfigControl {
 
     public void bindService() {
         if (mService != null) {
+            // service already  bound and we might be resuming - emulate what happens below
             if (!mService.getCurrentDevice().equals(mCurrentDevice)) {
                 setCurrentDevice(mService.getCurrentDevice(), false); // update from service
+                updateEqControls();
             }
-
             return;
         }
         if (mServiceBinding) {
@@ -80,14 +81,17 @@ public class MasterConfigControl {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder binder) {
                     mServiceBinding = false;
+                    mServiceUnbinding = false;
                     mService = ((AudioFxService.LocalBinder) binder).getService();
                     mService.update();
                     setCurrentDevice(mService.getCurrentDevice(), false); // update from service
+                    updateEqControls();
                 }
 
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
                     mService = null;
+                    mServiceBinding = false;
                     mServiceUnbinding = false;
                 }
             };
