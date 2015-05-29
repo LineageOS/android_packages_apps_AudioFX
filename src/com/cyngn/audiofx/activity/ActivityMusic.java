@@ -243,7 +243,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
     private void openRenameDialog() {
         AlertDialog.Builder renameDialog = new AlertDialog.Builder(this);
-        renameDialog.setTitle("Rename");
+        renameDialog.setTitle(R.string.rename);
         final EditText newName = new EditText(this);
         newName.setText(mConfig.getCurrentPreset().mName);
         renameDialog.setView(newName);
