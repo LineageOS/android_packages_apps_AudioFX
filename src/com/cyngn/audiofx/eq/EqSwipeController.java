@@ -7,6 +7,7 @@ import android.view.VelocityTracker;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import com.cyngn.audiofx.R;
+import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.preset.InfiniteViewPager;
 
 public class EqSwipeController extends LinearLayout {
@@ -87,7 +88,8 @@ public class EqSwipeController extends LinearLayout {
                 if (!mBarActive
                         && System.currentTimeMillis() - mDownTime > SWIPE_THRESH
                         && System.currentTimeMillis() - mDownTime < BAR_MAX_THRESH
-                        && Math.abs(xVelocity) < X_VELOCITY_THRESH) {
+                        && Math.abs(xVelocity) < X_VELOCITY_THRESH
+                        && !MasterConfigControl.getInstance(getContext()).isEqualizerLocked()) {
                     mBarActive = true;
                     mBar = mEq.startTouchingBarUnder(event);
                 }
