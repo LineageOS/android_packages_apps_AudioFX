@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.cyngn.audiofx.Constants;
+import com.cyngn.audiofx.knobs.KnobCommander;
 import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.OutputDevice;
 import com.viewpagerindicator.CirclePageIndicator;
@@ -52,10 +53,8 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     private static final boolean DEBUG_VIEWPAGER = false;
     private final ArgbEvaluator mArgbEval = new ArgbEvaluator();
     MasterConfigControl mConfig;
+    KnobCommander mKnobCommander;
     Handler mHandler;
-    RadialKnob mTrebleKnob;
-    RadialKnob mBassKnob;
-    RadialKnob mVirtualizerKnob;
     KnobContainer mKnobContainer;
     EqContainerView mEqContainer;
     ViewGroup mPresetContainer;
@@ -118,6 +117,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         if (DEBUG) Log.d(TAG, "onCreate() savedInstanceState=" + savedInstanceState);
         mHandler = new Handler();
         mConfig = MasterConfigControl.getInstance(this);
+        mKnobCommander = KnobCommander.getInstance(this);
 
         mSelectedPositionBands = mConfig.getPersistedPresetLevels(mConfig.getCurrentPresetIndex());
         if (mConfig.hasMaxxAudio()) {
@@ -129,9 +129,6 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         mInterceptLayout = (InterceptableLinearLayout) findViewById(R.id.interceptable_layout);
 
         mKnobContainer = (KnobContainer) findViewById(R.id.knob_container);
-        mTrebleKnob = (RadialKnob) findViewById(R.id.treble_knob);
-        mBassKnob = (RadialKnob) findViewById(R.id.bass_knob);
-        mVirtualizerKnob = (RadialKnob) findViewById(R.id.virtualizer_knob);
         mMaxxVolumeSwitch = (CheckBox) findViewById(R.id.maxx_volume_switch);
         mEqContainer = (EqContainerView) findViewById(R.id.eq_container);
         mPresetContainer = (ViewGroup) findViewById(R.id.preset_container);
@@ -284,31 +281,10 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         if (mInterceptLayout != null) {
             mInterceptLayout.setInterception(!currentDeviceEnabled);
         }
-        if (mTrebleKnob != null) {
-            mTrebleKnob.setValue(mConfig.getTrebleStrength());
-            mTrebleKnob.setOn(mConfig.isTrebleEffectEnabled(), false);
-        }
-        if (mBassKnob != null) {
-            mBassKnob.setValue(mConfig.getBassStrength());
-            mBassKnob.setOn(mConfig.isBassEffectEnabled(), false);
-        }
-        if (mVirtualizerKnob != null) {
-            mVirtualizerKnob.setValue(mConfig.getVirtualizerStrength());
-            mVirtualizerKnob.setOn(mConfig.isVirtualizerEffectEnabled(), false);
-        }
+
         if (mMaxxVolumeSwitch != null) {
             mMaxxVolumeSwitch.setChecked(mConfig.getMaxxVolumeEnabled());
             mMaxxVolumeSwitch.setEnabled(currentDeviceEnabled);
-        }
-
-        // apply special factors
-        if (device.getDeviceType() == OutputDevice.DEVICE_SPEAKER) {
-            // speaker? disable virtual
-            mVirtualizerKnob.setEnabled(false);
-            mKnobContainer.setKnobVisible(MasterConfigControl.KNOB_VIRTUALIZER, false);
-        } else {
-            mVirtualizerKnob.setEnabled(true);
-            mKnobContainer.setKnobVisible(MasterConfigControl.KNOB_VIRTUALIZER, true);
         }
     }
 
@@ -489,7 +465,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         // force instant color jump to preset index
         updateBackgroundColors(mConfig.getAssociatedPresetColorHex(index));
 
-        int diff = index -(mCurrentRealPage % mDataAdapter.getCount());
+        int diff = index - (mCurrentRealPage % mDataAdapter.getCount());
         // double it, short (e.g. 1 hop) distances sometimes bug out??
         diff += mDataAdapter.getCount();
         int newPage = mCurrentRealPage + diff;
@@ -536,13 +512,16 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                         mAnimatingToRealPageTarget = newPage;
                         mViewPager.setCurrentItemAbsolute(newPage);
                     }
+
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mCurrentBackgroundColor = colorTo;
                     }
+
                     @Override
                     public void onAnimationCancel(Animator animation) {
                     }
+
                     @Override
                     public void onAnimationRepeat(Animator animation) {
                     }
@@ -810,6 +789,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 public void onAnimationStart(Animator animation) {
                     buttonView.setEnabled(false);
                 }
+
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     mCurrentBackgroundColor = colorTo;
@@ -817,10 +797,12 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                     updateDeviceState();
                     buttonView.setEnabled(true);
                 }
+
                 @Override
                 public void onAnimationCancel(Animator animation) {
 
                 }
+
                 @Override
                 public void onAnimationRepeat(Animator animation) {
 

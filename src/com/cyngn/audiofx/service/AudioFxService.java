@@ -338,6 +338,14 @@ public class AudioFxService extends Service {
             return mMaxxAudioEffects != null;
         }
 
+        public boolean hasVirtualizer() {
+            return mVirtualizer.getStrengthSupported();
+        }
+
+        public boolean hasBassBoost() {
+            return mBassBoost.getStrengthSupported();
+        }
+
         /*
          * Take lots of care to not poke values that don't need
          * to be poked- this can cause audible pops.
@@ -796,6 +804,9 @@ public class AudioFxService extends Service {
         presetNames.deleteCharAt(presetNames.length() - 1);
         editor.putString("equalizer.preset_names", presetNames.toString()).apply();
 
+
+        editor.putBoolean(DEVICE_AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer()).apply();
+        editor.putBoolean(DEVICE_AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost()).apply();
         editor.putBoolean(DEVICE_AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.hasMaxxAudio()).apply();
         temp.release();
 

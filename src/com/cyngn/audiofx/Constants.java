@@ -22,6 +22,8 @@ public class Constants {
     public static final boolean DEVICE_DEFAULT_GLOBAL_ENABLE = false;
     public static final String DEVICE_AUDIOFX_GLOBAL_ENABLE = "audiofx.global.enable";
     public static final String DEVICE_AUDIOFX_GLOBAL_HAS_MAXXAUDIO = "audiofx.global.hasmaxxaudio";
+    public static final String DEVICE_AUDIOFX_GLOBAL_HAS_BASSBOOST = "audiofx.global.hasbassboost";
+    public static final String DEVICE_AUDIOFX_GLOBAL_HAS_VIRTUALIZER = "audiofx.global.hasvirtualizer";
     public static final String DEVICE_AUDIOFX_BASS_ENABLE = "audiofx.bass.enable";
     public static final String DEVICE_AUDIOFX_BASS_STRENGTH = "audiofx.bass.strength";
     public static final String DEVICE_AUDIOFX_REVERB_PRESET = "audiofx.reverb.preset";

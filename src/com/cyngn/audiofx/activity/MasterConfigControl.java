@@ -14,6 +14,7 @@ import android.widget.CompoundButton;
 import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.eq.EqUtils;
+import com.cyngn.audiofx.knobs.KnobCommander;
 import com.cyngn.audiofx.knobs.RadialKnob;
 import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.OutputDevice;
@@ -39,9 +40,6 @@ public class MasterConfigControl {
     private static final String TAG = MasterConfigControl.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
-    public static final int KNOB_TREBLE = 0;
-    public static final int KNOB_BASS = 1;
-    public static final int KNOB_VIRTUALIZER = 2;
 
     private static final int MSG_SAVE_PRESETS = 1;
 
@@ -113,7 +111,7 @@ public class MasterConfigControl {
         return mService != null;
     }
 
-    private void updateService() {
+    public void updateService() {
         if (mService != null) {
             mService.update();
         }
@@ -198,7 +196,7 @@ public class MasterConfigControl {
 
     private synchronized void initialize() {
         // setup eq
-        int bands = Integer.parseInt(mContext.getSharedPreferences("global", 0)
+        int bands = Integer.parseInt(getGlobalPrefs()
                 .getString("equalizer.number_of_bands", "5"));
         final int[] centerFreqs = EqUtils.getCenterFreqs(mContext, bands);
         final int[] bandLevelRange = EqUtils.getBandLevelRange(mContext);
@@ -227,11 +225,11 @@ public class MasterConfigControl {
         mEqUpdateCallbacks = new ArrayList<EqUpdatedCallback>();
 
         // setup equalizer presets
-        final int numPresets = Integer.parseInt(mContext.getSharedPreferences("global", 0)
+        final int numPresets = Integer.parseInt(getGlobalPrefs()
                 .getString("equalizer.number_of_presets", "0"));
 
         // add library-provided presets
-        String[] presetNames = mContext.getSharedPreferences("global", 0).getString("equalizer.preset_names", "").split("\\|");
+        String[] presetNames = getGlobalPrefs().getString("equalizer.preset_names", "").split("\\|");
         mPredefinedPresets = presetNames.length + 1; // we consider first EQ to be part of predefined
         for (int i = 0; i < numPresets; i++) {
             mEqPresets.add(new StaticPreset(
@@ -254,8 +252,12 @@ public class MasterConfigControl {
         }
         setPreset(mCurrentPreset);
 
-        mHasMaxxAudio = mContext.getSharedPreferences("global", 0)
+        mHasMaxxAudio = getGlobalPrefs()
                 .getBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false);
+    }
+
+    public SharedPreferences getGlobalPrefs() {
+        return mContext.getSharedPreferences("global", 0);
     }
 
     public boolean isChangingPresets() {
@@ -319,12 +321,13 @@ public class MasterConfigControl {
             }
         }
         setCurrentDeviceEnabled(isCurrentDeviceEnabled());
-        setVirtualiserStrength(getVirtualizerStrength());
-        setVirtualizerEnabled(isVirtualizerEffectEnabled());
-        setBassStrength(getBassStrength());
-        setBassEnabled(isBassEffectEnabled());
-        setTrebleStrength(getTrebleStrength());
-        setTrebleEnabled(isTrebleEffectEnabled());
+        final KnobCommander knobs = KnobCommander.getInstance(mContext);
+        knobs.setVirtualiserStrength(knobs.getVirtualizerStrength());
+        knobs.setVirtualizerEnabled(knobs.isVirtualizerEffectEnabled());
+        knobs.setBassStrength(knobs.getBassStrength());
+        knobs.setBassEnabled(knobs.isBassEffectEnabled());
+        knobs.setTrebleStrength(knobs.getTrebleStrength());
+        knobs.setTrebleEnabled(knobs.isTrebleEffectEnabled());
         setMaxxVolumeEnabled(getMaxxVolumeEnabled());
         setPreset(0); // calls updateEqControls()
     }
@@ -336,51 +339,6 @@ public class MasterConfigControl {
     public int indexOf(Preset p) {
         return mEqPresets.indexOf(p);
     }
-
-    private RadialKnob.OnKnobChangeListener mTrebleKnobCallback = new RadialKnob.OnKnobChangeListener() {
-        @Override
-        public void onValueChanged(RadialKnob knob, int value, boolean fromUser) {
-            if (fromUser) {
-                setTrebleStrength(value);
-            }
-        }
-
-        @Override
-        public boolean onSwitchChanged(RadialKnob knob, boolean on) {
-            setTrebleEnabled(on);
-            return true;
-        }
-    };
-
-    private RadialKnob.OnKnobChangeListener mBassKnobCallback = new RadialKnob.OnKnobChangeListener() {
-        @Override
-        public void onValueChanged(RadialKnob knob, int value, boolean fromUser) {
-            if (fromUser) {
-                setBassStrength(value);
-            }
-        }
-
-        @Override
-        public boolean onSwitchChanged(RadialKnob knob, boolean on) {
-            setBassEnabled(on);
-            return true;
-        }
-    };
-
-    private RadialKnob.OnKnobChangeListener mVirtualizerCallback = new RadialKnob.OnKnobChangeListener() {
-        @Override
-        public void onValueChanged(RadialKnob knob, int value, boolean fromUser) {
-            if (fromUser) {
-               setVirtualiserStrength(value);
-            }
-        }
-
-        @Override
-        public boolean onSwitchChanged(RadialKnob knob, boolean on) {
-            setVirtualizerEnabled(on);
-            return true;
-        }
-    };
 
     /**
      * Update the current device used when querying any device-specific values such as the current
@@ -423,7 +381,7 @@ public class MasterConfigControl {
         String levels = EqUtils.floatLevelsToString(
                 EqUtils.convertDecibelsToMillibels(
                         mEqPresets.get(mCurrentPreset).mLevels));
-        mContext.getSharedPreferences("global", 0)
+        getGlobalPrefs()
                 .edit()
                 .putString("custom", levels).apply();
 
@@ -469,14 +427,6 @@ public class MasterConfigControl {
         return mEqPresets.size() -1;
     }
 
-    public RadialKnob.OnKnobChangeListener getRadialKnobCallback(int whichKnob) {
-        switch (whichKnob) {
-            case KNOB_TREBLE: return mTrebleKnobCallback;
-            case KNOB_BASS: return mBassKnobCallback;
-            case KNOB_VIRTUALIZER: return mVirtualizerCallback;
-            default: return null;
-        }
-    }
 
     /**
      * Implement this callback to receive any changes called to the MasterConfigControl instance
@@ -521,7 +471,7 @@ public class MasterConfigControl {
         mEqUpdateCallbacks.remove(callback);
     }
 
-    private SharedPreferences getPrefs() {
+    public SharedPreferences getPrefs() {
         return mContext.getSharedPreferences(
                 getCurrentDevice().getDevicePreferenceName(mContext), 0);
     }
@@ -564,7 +514,7 @@ public class MasterConfigControl {
                         String levels = EqUtils.floatLevelsToString(
                                 EqUtils.convertDecibelsToMillibels(
                                         mEqPresets.get(mCurrentPreset).mLevels));
-                        mContext.getSharedPreferences("global", 0)
+                        getGlobalPrefs()
                                 .edit()
                                 .putString("custom", levels).apply();
                     }
@@ -699,7 +649,7 @@ public class MasterConfigControl {
                 && mEqPresets.get(presetIndex) instanceof PermCustomPreset) {
             return getPersistedCustomLevels();
         } else {
-            newLevels = mContext.getSharedPreferences("global", 0).getString("equalizer.preset." +
+            newLevels = getGlobalPrefs().getString("equalizer.preset." +
                             presetIndex,
                     mZeroedBandString);
         }
@@ -709,7 +659,7 @@ public class MasterConfigControl {
     }
 
     private float[] getPersistedCustomLevels() {
-        String newLevels = mContext.getSharedPreferences("global", 0).getString("custom",
+        String newLevels = getGlobalPrefs().getString("custom",
                 mZeroedBandString);
         // stored as millibels, convert to decibels
         float[] levels = EqUtils.stringBandsToFloats(newLevels);
@@ -864,30 +814,6 @@ public class MasterConfigControl {
         return mHasMaxxAudio;
     }
 
-    public boolean isBassEffectEnabled() {
-        return getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_BASS_ENABLE, false);
-    }
-
-    public boolean isTrebleEffectEnabled() {
-        return getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_TREBLE_ENABLE, false);
-    }
-
-    public boolean isVirtualizerEffectEnabled() {
-        return getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, false);
-    }
-
-    public int getVirtualizerStrength() {
-        return Integer.valueOf(getPrefs().getString(Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "0")) / 10;
-    }
-
-    public int getBassStrength() {
-        return Integer.valueOf(getPrefs().getString(Constants.DEVICE_AUDIOFX_BASS_STRENGTH, "0")) / 10;
-    }
-
-    public int getTrebleStrength() {
-        return Integer.valueOf(getPrefs().getString(Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH, "0"));
-    }
-
     public boolean getMaxxVolumeEnabled() {
         return getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, false);
     }
@@ -897,38 +823,6 @@ public class MasterConfigControl {
         updateService();
     }
 
-    public void setTrebleEnabled(boolean on) {
-        getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_TREBLE_ENABLE, on).apply();
-        updateService();
-    }
-
-    public void setTrebleStrength(int value) {
-        // set parameter and state
-        getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH, String.valueOf(value)).apply();
-        updateService();
-    }
-
-    public void setBassEnabled(boolean on) {
-        getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_BASS_ENABLE, on).apply();
-        updateService();
-    }
-
-    public void setBassStrength(int value) {
-        // set parameter and state
-        getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_BASS_STRENGTH, String.valueOf(value * 10)).apply();
-        updateService();
-    }
-
-    public void setVirtualizerEnabled(boolean on) {
-        getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, on).apply();
-        updateService();
-    }
-
-    public void setVirtualiserStrength(int value) {
-        // set parameter and state
-        getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, String.valueOf(value * 10)).apply();
-        updateService();
-    }
 
     public EqControlState getEqControlState() {
         return mEqControlState;

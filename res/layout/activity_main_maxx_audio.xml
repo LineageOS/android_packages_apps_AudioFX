@@ -114,7 +114,7 @@
                     android:paddingBottom="@dimen/knob_container_padding_bottom">
 
                 <com.cyngn.audiofx.knobs.RadialKnob
-                        android:id="@+id/treble_knob"
+                        android:id="@+id/knob"
                         android:layout_width="@dimen/knob_width"
                         android:layout_gravity="top|center_horizontal"
                         android:layout_height="wrap_content"
@@ -123,7 +123,7 @@
                         />
 
                 <ImageView
-                        android:id="@+id/treble_label"
+                        android:id="@+id/label"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_width="76dp"
                         android:layout_height="22dp"
@@ -146,7 +146,7 @@
                     android:paddingBottom="@dimen/knob_container_padding_bottom">
 
                 <com.cyngn.audiofx.knobs.RadialKnob
-                        android:id="@+id/bass_knob"
+                        android:id="@+id/knob"
                         android:layout_gravity="top|center_horizontal"
                         android:layout_width="@dimen/knob_width"
                         android:layout_height="wrap_content"
@@ -154,7 +154,7 @@
                         custom:foreground="@drawable/knob"/>
 
                 <ImageView
-                        android:id="@+id/bass_label"
+                        android:id="@+id/label"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_width="68dp"
                         android:layout_height="22dp"
@@ -178,7 +178,7 @@
                     android:paddingBottom="@dimen/knob_container_padding_bottom">
 
                 <com.cyngn.audiofx.knobs.RadialKnob
-                        android:id="@+id/virtualizer_knob"
+                        android:id="@+id/knob"
                         android:layout_gravity="top|center_horizontal"
                         android:layout_width="@dimen/knob_width"
                         android:layout_height="wrap_content"
@@ -186,7 +186,7 @@
 
 
                 <ImageView
-                        android:id="@+id/virtualizer_label"
+                        android:id="@+id/label"
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_width="69dp"
                         android:layout_height="22dp"

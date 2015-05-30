@@ -1,0 +1,22 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:custom="http://schemas.android.com/apk/res/com.cyngn.audiofx"
+             android:layout_width="wrap_content"
+             android:layout_height="match_parent"
+             android:layout_gravity="center_horizontal"
+             android:layout_weight="0"
+             android:paddingBottom="@dimen/knob_container_padding_bottom">
+
+    <com.cyngn.audiofx.knobs.RadialKnob
+            android:id="@+id/knob"
+            android:layout_gravity="top|center_horizontal"
+            android:layout_width="@dimen/knob_width"
+            android:layout_height="wrap_content"
+            custom:foreground="@drawable/knob"/>
+
+    <TextView
+            android:id="@+id/label"
+            android:layout_height="22dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_width="wrap_content"/>
+
+</FrameLayout>
