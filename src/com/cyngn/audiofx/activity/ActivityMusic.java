@@ -234,8 +234,6 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
         updateBackgroundColors(mCurrentBackgroundColor);
         updateActionBarDeviceIcon();
-
-        updateDeviceState();
     }
 
     private void openRenameDialog() {
@@ -406,6 +404,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 item.setChecked(!item.isChecked());
             }
             mConfig.setCurrentDevice(newDevice, true);
+            updateActionBarDeviceIcon();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -457,6 +456,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
 
             // notify eq we should force the bars to animate to their positions
             mEqContainer.resume();
+            updateDeviceState();
         }
         jumpToPreset(mConfig.getCurrentPresetIndex());
     }
