@@ -607,6 +607,7 @@ public class AudioFxService extends Service {
 
         @Override
         public void onAudioPortListUpdate(AudioPort[] portList) {
+            Log.d(TAG, "onAudioPortListUpdate() called with " + "portList = [" + Arrays.toString(portList) + "]");
             final boolean prevUseHeadset = mUseHeadset;
             final boolean prevUseBluetooth = mUseBluetooth;
             final boolean prevUseUSB = mUseUSB;
@@ -617,10 +618,7 @@ public class AudioFxService extends Service {
             int device = am.getDevicesForStream(AudioManager.STREAM_MUSIC);
             mUseBluetooth = (device & AudioManager.DEVICE_OUT_BLUETOOTH_A2DP) != 0
                     || (device & AudioManager.DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES) != 0
-                    || (device & AudioManager.DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER) != 0
-                    || (device & AudioManager.DEVICE_OUT_BLUETOOTH_SCO) != 0
-                    || (device & AudioManager.DEVICE_OUT_BLUETOOTH_SCO_CARKIT) != 0
-                    || (device & AudioManager.DEVICE_OUT_BLUETOOTH_SCO_HEADSET) != 0;
+                    || (device & AudioManager.DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER) != 0;
 
             mUseHeadset = (device & AudioManager.DEVICE_OUT_WIRED_HEADPHONE) != 0
                     || (device & AudioManager.DEVICE_OUT_WIRED_HEADSET) != 0;
