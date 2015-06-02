@@ -607,7 +607,6 @@ public class AudioFxService extends Service {
 
         @Override
         public void onAudioPortListUpdate(AudioPort[] portList) {
-            Log.d(TAG, "onAudioPortListUpdate() called with " + "portList = [" + Arrays.toString(portList) + "]");
             final boolean prevUseHeadset = mUseHeadset;
             final boolean prevUseBluetooth = mUseBluetooth;
             final boolean prevUseUSB = mUseUSB;
