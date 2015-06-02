@@ -58,52 +58,34 @@ public class MasterConfigControl {
 
     private AudioFxService mService;
     private ServiceConnection mServiceConnection;
-    private boolean mServiceBinding = false;
-    private boolean mServiceUnbinding = false;
 
-    public void bindService() {
-        if (mService != null) {
-            // service already  bound and we might be resuming - emulate what happens below
-            if (!mService.getCurrentDevice().equals(mCurrentDevice)) {
-                setCurrentDevice(mService.getCurrentDevice(), false); // update from service
-                updateEqControls();
-            }
-            return;
-        }
-        if (mServiceBinding) {
-            return;
-        }
-        mServiceBinding = true;
+    public boolean bindService() {
+        if (DEBUG) Log.i(TAG, "bindService()");
         if (mServiceConnection == null) {
             mServiceConnection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder binder) {
-                    mServiceBinding = false;
-                    mServiceUnbinding = false;
+                    if (DEBUG) Log.i(TAG, "onServiceConnected ");
                     mService = ((AudioFxService.LocalBinder) binder).getService();
-                    mService.update();
                     setCurrentDevice(mService.getCurrentDevice(), false); // update from service
+                    mService.update();
                     updateEqControls();
                 }
 
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
+                    if (DEBUG) Log.w(TAG, "onServiceDisconnected ");
                     mService = null;
-                    mServiceBinding = false;
-                    mServiceUnbinding = false;
                 }
             };
         }
         Intent serviceIntent = new Intent(mContext, AudioFxService.class);
-        mContext.bindService(serviceIntent, mServiceConnection, 0);
-        mServiceBinding = true;
+        return mContext.bindService(serviceIntent, mServiceConnection, 0);
     }
 
     public void unbindService() {
-        if (mServiceUnbinding || mService == null) {
-            return;
-        }
-        mServiceUnbinding = true;
+        if (DEBUG) Log.i(TAG, "unbindService() called");
+        mService = null;
         mContext.unbindService(mServiceConnection);
     }
 
@@ -189,8 +171,7 @@ public class MasterConfigControl {
     }
 
     private MasterConfigControl(Context context) {
-        mContext = context;
-        bindService();
+        mContext = context.getApplicationContext();
         initialize();
     }
 

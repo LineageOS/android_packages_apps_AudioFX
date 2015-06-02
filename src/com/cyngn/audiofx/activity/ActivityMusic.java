@@ -14,7 +14,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
-import android.text.InputFilter;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.view.Gravity;
@@ -28,7 +27,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.knobs.KnobCommander;
 import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.OutputDevice;
@@ -37,7 +35,6 @@ import com.viewpagerindicator.PageIndicator;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.eq.EqContainerView;
 import com.cyngn.audiofx.knobs.KnobContainer;
-import com.cyngn.audiofx.knobs.RadialKnob;
 import com.cyngn.audiofx.preset.InfinitePagerAdapter;
 import com.cyngn.audiofx.preset.InfiniteViewPager;
 import com.cyngn.audiofx.preset.PresetPagerAdapter;
@@ -87,6 +84,8 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     public int mSelectedPosition = 0;
     private Map<Integer, OutputDevice> mBluetoothMap
             = new ArrayMap<Integer, OutputDevice>();
+    List<OutputDevice> mBluetoothDevices = null;
+    private boolean mResumeDeviceChanged;
 
     private BroadcastReceiver mDevicesChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -95,6 +94,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        mBluetoothDevices = mConfig.getBluetoothDevices();
                         invalidateOptionsMenu();
                     }
                 });
@@ -233,7 +233,6 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 ? getResources().getColor(R.color.disabled_eq)
                 : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
         updateBackgroundColors(mCurrentBackgroundColor);
-        updateActionBarDeviceIcon();
     }
 
     private void openRenameDialog() {
@@ -262,12 +261,9 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         renameDialog.show();
     }
 
-    private void updateDeviceState() {
-        if (DEBUG) Log.d(TAG, "updateDeviceState()");
-
+    private void updateEnabledState() {
         final OutputDevice device = mConfig.getCurrentDevice();
         boolean currentDeviceEnabled = mConfig.isCurrentDeviceEnabled();
-        updateActionBarDeviceIcon();
 
         if (DEBUG) {
             Log.d(TAG, "updating with current device: " + device);
@@ -327,38 +323,35 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-
-        // remove previous bluetooth entries
-        for (Integer id : mBluetoothMap.keySet()) {
-            mMenuDevices.getSubMenu().removeItem(id);
-        }
-        mBluetoothMap.clear();
-
-        MenuItem selectedItem = null;
-
-        // add bluetooth devices
-        List<OutputDevice> bluetoothDevices =
-                mConfig.getBluetoothDevices();
-        if (bluetoothDevices != null) {
-            for (int i = 0; i < bluetoothDevices.size(); i++) {
-                int viewId = View.generateViewId();
-                mBluetoothMap.put(viewId, bluetoothDevices.get(i));
-                MenuItem item = mMenuDevices.getSubMenu().add(R.id.device_group, viewId, i,
-                        bluetoothDevices.get(i).getDisplayName());
-                if (bluetoothDevices.get(i).equals(mConfig.getCurrentDevice())) {
-                    selectedItem = item;
-                }
-                item.setIcon(R.drawable.ic_action_dsp_icons_bluetoof);
-
-            }
-        }
-        mMenuDevices.getSubMenu().setGroupCheckable(R.id.device_group, true, true);
-
+        final OutputDevice currentDevice = mConfig.getCurrentDevice();
         updateActionBarDeviceIcon();
 
         // select proper device
         if (mConfig.isServiceBound()) {
-            switch (mConfig.getCurrentDevice().getDeviceType()) {
+            MenuItem selectedItem = null;
+
+
+            if (mBluetoothDevices != null) {
+                // remove previous bluetooth entries
+                for (Integer id : mBluetoothMap.keySet()) {
+                    mMenuDevices.getSubMenu().removeItem(id);
+                }
+                mBluetoothMap.clear();
+
+                for (int i = 0; i < mBluetoothDevices.size(); i++) {
+                    int viewId = View.generateViewId();
+                    mBluetoothMap.put(viewId, mBluetoothDevices.get(i));
+                    MenuItem item = mMenuDevices.getSubMenu().add(R.id.device_group, viewId, i,
+                            mBluetoothDevices.get(i).getDisplayName());
+                    if (mBluetoothDevices.get(i).equals(currentDevice)) {
+                        selectedItem = item;
+                    }
+                    item.setIcon(R.drawable.ic_action_dsp_icons_bluetoof);
+                }
+            }
+            mMenuDevices.getSubMenu().setGroupCheckable(R.id.device_group, true, true);
+
+            switch (currentDevice.getDeviceType()) {
                 case OutputDevice.DEVICE_SPEAKER:
                     selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_speaker);
                     break;
@@ -403,8 +396,13 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             if (item.isCheckable()) {
                 item.setChecked(!item.isChecked());
             }
-            mConfig.setCurrentDevice(newDevice, true);
-            updateActionBarDeviceIcon();
+            final OutputDevice finalNewDevice = newDevice;
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mConfig.setCurrentDevice(finalNewDevice, true);
+                }
+            }, 100);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -417,13 +415,9 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
+        mResumeDeviceChanged = true;
         mConfig.bindService();
 
         IntentFilter filter = new IntentFilter();
@@ -450,18 +444,15 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             mPresetPageIndicator.notifyDataSetChanged();
             mViewPager.invalidate();
 
-            updateDeviceState();
+            updateEnabledState();
+            jumpToPreset(mConfig.getCurrentPresetIndex());
         } else {
-            invalidateOptionsMenu();
-
-            // notify eq we should force the bars to animate to their positions
-            mEqContainer.resume();
-            updateDeviceState();
+            // do all work in onDeviceChanged() callback after service attaches
         }
-        jumpToPreset(mConfig.getCurrentPresetIndex());
     }
 
     private void jumpToPreset(int index) {
+        // TODO always animate colors here so they're smooooth
         // force instant color jump to preset index
         updateBackgroundColors(mConfig.getAssociatedPresetColorHex(index));
 
@@ -552,15 +543,23 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         mDataAdapter.notifyDataSetChanged();
     }
 
-
     @Override
     public void onDeviceChanged(OutputDevice deviceId, boolean userChange) {
-        if (!mConfig.isServiceBound()) {
-            // it's possible we could receive a device change broadcast before the service is bound,
-            // from AudioFxService, once service is bound it will call onDeviceChanged.
+        if (!isResumed()) {
             return;
         }
-        updateDeviceState();
+
+        invalidateOptionsMenu();
+        updateEnabledState();
+
+        if (mResumeDeviceChanged) {
+            mBluetoothDevices = mConfig.getBluetoothDevices();
+            mResumeDeviceChanged = false;
+            mEqContainer.resume();
+            jumpToPreset(mConfig.getCurrentPresetIndex());
+            return;
+        }
+
         int diff = mConfig.getCurrentPresetIndex() - mSelectedPosition;
         final boolean samePage = diff == 0;
         diff = mDataAdapter.getCount() + diff;
@@ -794,7 +793,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 public void onAnimationEnd(Animator animation) {
                     mCurrentBackgroundColor = colorTo;
                     mConfig.setCurrentDeviceEnabled(isChecked);
-                    updateDeviceState();
+                    updateEnabledState();
                     buttonView.setEnabled(true);
                 }
 

@@ -47,9 +47,11 @@ import android.util.Log;
 
 import com.cyngn.audiofx.eq.EqUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -93,8 +95,6 @@ public class AudioFxService extends Service {
 
     private List<Integer> mSessionsToRemove = new ArrayList<>();
 
-    private final LocalBinder mBinder = new LocalBinder();
-
     private static final ParcelUuid[] BLUETOOTH_AUDIO_UUIDS = {
             BluetoothUuid.AudioSink,
             BluetoothUuid.AdvAudioDist,
@@ -102,10 +102,14 @@ public class AudioFxService extends Service {
     };
 
     public class LocalBinder extends Binder {
-        public AudioFxService getService() {
-            return AudioFxService.this;
+        WeakReference<AudioFxService> mService;
+        public LocalBinder(AudioFxService service) {// added a constructor for Stub here
+            mService = new WeakReference<AudioFxService>(service);
         }
 
+        public AudioFxService getService() {
+            return mService.get();
+        }
     }
 
     /**
@@ -280,7 +284,7 @@ public class AudioFxService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return mBinder;
+        return new LocalBinder(this);
     }
 
     // ======== Effects =============== //
@@ -443,8 +447,15 @@ public class AudioFxService extends Service {
 
     public OutputDevice getCurrentDevice() {
         final int audioOutputRouting = getAudioOutputRouting();
+        Log.d(TAG, "getCurrentDevice, audioOutputRouting=" + audioOutputRouting);
         switch (audioOutputRouting) {
             case OutputDevice.DEVICE_BLUETOOTH:
+                if (mLastBluetoothDevice == null) {
+                    final Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
+                    if (bondedDevices != null) {
+                        mLastBluetoothDevice = bondedDevices.iterator().next();
+                    }
+                }
                 if (mLastBluetoothDevice == null) {
                     return new OutputDevice(audioOutputRouting);
                 } else {

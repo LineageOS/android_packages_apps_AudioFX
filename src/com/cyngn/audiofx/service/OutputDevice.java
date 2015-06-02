@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
+
 /**
  * Created by roman on 4/13/15.
  */
@@ -66,9 +68,8 @@ public class OutputDevice implements Parcelable {
 
     @Override
     public String toString() {
-        return mDeviceDisplayName;
+        return "deviceType=" + getDeviceTypeKey(mDeviceType) + ", displayName=" + mDeviceDisplayName + ", uniqueId=" + mUniqueDeviceIdentifier;
     }
-
 
     protected OutputDevice(Parcel in) {
         mDeviceType = in.readInt();
@@ -100,6 +101,16 @@ public class OutputDevice implements Parcelable {
         } else {
             dest.writeInt(0);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof OutputDevice)) {
+            return false;
+        }
+        OutputDevice other = (OutputDevice) o;
+        return getDeviceType() == other.getDeviceType()
+                && Objects.equals(mUniqueDeviceIdentifier, other.mUniqueDeviceIdentifier);
     }
 
     public static final Parcelable.Creator<OutputDevice> CREATOR
