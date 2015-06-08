@@ -149,7 +149,9 @@ public class AudioFxService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (DEBUG) Log.i(TAG, "Preferences updated.");
-            update();
+            if (!mHandler.hasMessages(MSG_UPDATE_DSP)) {
+                update();
+            }
         }
     };
 
@@ -637,6 +639,7 @@ public class AudioFxService extends Service {
                     || prevUseWireless != mUseWifiDisplay
                     || prevUseSpeaker != mUseSpeaker) {
                 Intent deviceChangedIntent = new Intent(ACTION_DEVICE_OUTPUT_CHANGED);
+                deviceChangedIntent.setPackage(getPackageName());
                 deviceChangedIntent.putExtra(EXTRA_DEVICE, getCurrentDevice());
                 sendBroadcast(deviceChangedIntent);
 

@@ -31,7 +31,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/>
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_ROUTING" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_ROUTING"/>
 
     <application
             android:icon="@mipmap/ic_launcher"
@@ -92,11 +92,18 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.AudioFxService" />
+        <service android:name=".service.AudioFxService"/>
 
         <receiver android:name=".service.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receiver.PresetChangeReceiver"
+                  android:exported="false">
+            <intent-filter>
+                <action android:name="org.cyanogenmod.audiofx.ACTION_DEVICE_OUTPUT_CHANGED"/>
             </intent-filter>
         </receiver>
 

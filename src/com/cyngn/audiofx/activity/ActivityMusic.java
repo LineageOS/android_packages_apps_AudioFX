@@ -99,14 +99,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                     }
                 });
             } else if (AudioFxService.ACTION_DEVICE_OUTPUT_CHANGED.equals(intent.getAction())) {
-                final OutputDevice device = intent.getParcelableExtra(AudioFxService.EXTRA_DEVICE);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mConfig.setCurrentDevice(device, false);
-                        invalidateOptionsMenu();
-                    }
-                });
+                invalidateOptionsMenu();
             }
         }
     };
