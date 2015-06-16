@@ -39,7 +39,9 @@ import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Binder;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.ParcelUuid;
 import android.util.ArrayMap;
@@ -82,6 +84,8 @@ public class AudioFxService extends Service {
 
     private final HashMap<Integer, EffectSet> mAudioSessions = new HashMap<>();
     private int mMostRecentSessionId;
+
+    private AudioServiceHandler mHandler;
 
     AudioPortListener mAudioPortListener;
     private BluetoothDevice mLastBluetoothDevice;
@@ -155,7 +159,11 @@ public class AudioFxService extends Service {
         }
     };
 
-    private final Handler mHandler = new Handler() {
+    private class AudioServiceHandler extends Handler {
+        public AudioServiceHandler(Looper looper) {
+            super(looper);
+        }
+
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -228,12 +236,16 @@ public class AudioFxService extends Service {
                     break;
             }
         }
-    };
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         if (DEBUG) Log.i(TAG, "Starting service.");
+
+        HandlerThread handlerThread = new HandlerThread(TAG, android.os.Process.THREAD_PRIORITY_AUDIO);
+        handlerThread.start();
+        mHandler = new AudioServiceHandler(handlerThread.getLooper());
 
         try {
             saveDefaults();
@@ -282,6 +294,8 @@ public class AudioFxService extends Service {
         unregisterReceiver(mPreferenceUpdateReceiver);
 
         unregisterReceiver(mBluetoothReceiver);
+
+        mHandler.getLooper().quit();
     }
 
     @Override
