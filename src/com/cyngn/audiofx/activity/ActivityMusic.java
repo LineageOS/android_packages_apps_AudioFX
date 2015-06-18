@@ -11,6 +11,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.usb.UsbManager;
+import android.media.AudioManager;
+import android.media.AudioService;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
@@ -86,6 +89,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
             = new ArrayMap<Integer, OutputDevice>();
     List<OutputDevice> mBluetoothDevices = null;
     private boolean mResumeDeviceChanged;
+    private boolean mUsbDeviceConnected;
 
     private BroadcastReceiver mDevicesChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -99,6 +103,12 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                     }
                 });
             } else if (AudioFxService.ACTION_DEVICE_OUTPUT_CHANGED.equals(intent.getAction())) {
+                invalidateOptionsMenu();
+            } else if (AudioManager.ACTION_DIGITAL_AUDIO_DOCK_PLUG.equals(intent.getAction())
+                    || AudioManager.ACTION_ANALOG_AUDIO_DOCK_PLUG.equals(intent.getAction())
+                    || AudioManager.ACTION_USB_AUDIO_DEVICE_PLUG.equals(intent.getAction())) {
+                boolean connected = intent.getIntExtra("state", 0) == 1;
+                mUsbDeviceConnected = connected;
                 invalidateOptionsMenu();
             }
         }
@@ -319,10 +329,12 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         final OutputDevice currentDevice = mConfig.getCurrentDevice();
         updateActionBarDeviceIcon();
 
+        final MenuItem usb = menu.findItem(R.id.device_usb);
+        usb.setVisible(mUsbDeviceConnected);
+
         // select proper device
         if (mConfig.isServiceBound()) {
             MenuItem selectedItem = null;
-
 
             if (mBluetoothDevices != null) {
                 // remove previous bluetooth entries
@@ -416,6 +428,9 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
         IntentFilter filter = new IntentFilter();
         filter.addAction(AudioFxService.ACTION_BLUETOOTH_DEVICES_UPDATED);
         filter.addAction(AudioFxService.ACTION_DEVICE_OUTPUT_CHANGED);
+        filter.addAction(AudioManager.ACTION_DIGITAL_AUDIO_DOCK_PLUG);
+        filter.addAction(AudioManager.ACTION_ANALOG_AUDIO_DOCK_PLUG);
+        filter.addAction(AudioManager.ACTION_USB_AUDIO_DEVICE_PLUG);
         registerReceiver(mDevicesChangedReceiver, filter);
         mConfig.addEqStateChangeCallback(ActivityMusic.this);
 
