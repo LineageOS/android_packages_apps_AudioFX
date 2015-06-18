@@ -185,14 +185,7 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final int currentIndexBeforeRemove = mConfig.getCurrentPresetIndex();
-                        if (mConfig.removePreset(currentIndexBeforeRemove)) {
-                            mInfiniteAdapter.notifyDataSetChanged();
-                            mDataAdapter.notifyDataSetChanged();
-                            mPresetPageIndicator.notifyDataSetChanged();
-
-                            jumpToPreset(mSelectedPosition - 1);
-                        }
+                        removeCurrentCustomPreset(true);
                     }
                 }
         );
@@ -236,6 +229,39 @@ public class ActivityMusic extends Activity implements MasterConfigControl.EqUpd
                 ? getResources().getColor(R.color.disabled_eq)
                 : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
         updateBackgroundColors(mCurrentBackgroundColor);
+    }
+
+    private void removeCurrentCustomPreset(boolean showWarning) {
+        if (showWarning) {
+            MasterConfigControl.Preset p = mConfig.getCurrentPreset();
+            if (p instanceof MasterConfigControl.CustomPreset
+                    && ((MasterConfigControl.CustomPreset) p).isLocked()) {
+                new AlertDialog.Builder(ActivityMusic.this)
+                        .setTitle(R.string.remove_custom_preset_warning_title)
+                        .setMessage(String.format(getString(
+                                        R.string.remove_custom_preset_warning_message), p.mName))
+                        .setNegativeButton(android.R.string.no, null)
+                        .setPositiveButton(android.R.string.yes,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        removeCurrentCustomPreset(false);
+                                    }
+                                })
+                        .create()
+                        .show();
+                return;
+            }
+        }
+
+        final int currentIndexBeforeRemove = mConfig.getCurrentPresetIndex();
+        if (mConfig.removePreset(currentIndexBeforeRemove)) {
+            mInfiniteAdapter.notifyDataSetChanged();
+            mDataAdapter.notifyDataSetChanged();
+            mPresetPageIndicator.notifyDataSetChanged();
+
+            jumpToPreset(mSelectedPosition - 1);
+        }
     }
 
     private void openRenameDialog() {
