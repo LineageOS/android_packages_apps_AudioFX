@@ -32,8 +32,12 @@
   <string name="none">Nenio</string>
   <string name="smallroom">Malgranda ĉambro</string>
   <string name="mediumroom">Mezgranda ĉambro</string>
+  <string name="largeroom">Granda ĉambro</string>
+  <string name="mediumhall">Mezgranda halo</string>
+  <string name="largehall">Granda halo</string>
   <string name="plate">Plata</string>
   <string name="power_on_prompt">Premu ŝaltilon supr-desktre.</string>
+  <string name="effect_unavalable_for_speaker">Efekto ne disponeblas por la laŭtparolila modo.</string>
   <string name="device_headset">Kapaŭskultilo</string>
   <string name="device_speaker">Parolilo</string>
   <string name="device_usb">USB</string>
