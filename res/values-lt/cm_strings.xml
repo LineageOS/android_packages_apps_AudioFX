@@ -44,5 +44,5 @@
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Belaidis</string>
   <string name="reverb">Aidas</string>
-  <string name="eq_preset">Ekvalaizerio išankstiniai nustatymai</string>
+  <string name="eq_preset">Vienodintuvo išankstiniai nustatymai</string>
 </resources>
