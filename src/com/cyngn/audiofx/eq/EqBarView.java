@@ -193,6 +193,8 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
 
                 if (mInitialLevel != level) {
                     mConfig.setLevel(getInfo().index, level, false);
+                } else {
+                    updateHeight(false);
                 }
 
                 break;
