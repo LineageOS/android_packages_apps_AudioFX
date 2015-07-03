@@ -56,7 +56,6 @@
 
     <string name="rename">Rename</string>
 
-    <string name="remove_custom_preset_warning_title">Preset locked</string>
-    <string name="remove_custom_preset_warning_message">Preset %1$s is currently locked. Are you sure you want to remove it?</string>
+    <string name="remove_custom_preset_warning_message">Are you sure you want to remove %1$s?</string>
 
 </resources>
