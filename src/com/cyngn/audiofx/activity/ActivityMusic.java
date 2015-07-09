@@ -1,850 +1,326 @@
 package com.cyngn.audiofx.activity;
 
-import android.animation.Animator;
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.hardware.usb.UsbManager;
-import android.media.AudioManager;
-import android.media.AudioService;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.view.ViewPager;
-import android.util.ArrayMap;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.cyngn.audiofx.knobs.KnobCommander;
-import com.cyngn.audiofx.service.AudioFxService;
-import com.cyngn.audiofx.service.OutputDevice;
-import com.viewpagerindicator.CirclePageIndicator;
-import com.viewpagerindicator.PageIndicator;
+import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
-import com.cyngn.audiofx.eq.EqContainerView;
-import com.cyngn.audiofx.knobs.KnobContainer;
-import com.cyngn.audiofx.preset.InfinitePagerAdapter;
-import com.cyngn.audiofx.preset.InfiniteViewPager;
-import com.cyngn.audiofx.preset.PresetPagerAdapter;
-import com.cyngn.audiofx.widget.InterceptableLinearLayout;
+import com.cyngn.audiofx.fragment.AudioFxFragment;
+import com.cyngn.audiofx.fragment.DTSFragment;
+import com.cyngn.audiofx.service.DtsControl;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class ActivityMusic extends Activity implements MasterConfigControl.EqUpdatedCallback {
+public class ActivityMusic extends Activity {
 
     private static final String TAG = ActivityMusic.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
-    private static final boolean DEBUG_VIEWPAGER = false;
-    private final ArgbEvaluator mArgbEval = new ArgbEvaluator();
-    MasterConfigControl mConfig;
-    KnobCommander mKnobCommander;
-    Handler mHandler;
-    KnobContainer mKnobContainer;
-    EqContainerView mEqContainer;
-    ViewGroup mPresetContainer;
-    InfiniteViewPager mViewPager;
-    PageIndicator mPresetPageIndicator;
-    PresetPagerAdapter mDataAdapter;
-    InfinitePagerAdapter mInfiniteAdapter;
-    InterceptableLinearLayout mInterceptLayout;
-    CheckBox mMaxxVolumeSwitch;
-    int mCurrentBackgroundColor;
-    int mCurrentRealPage;
 
-    // whether we are in the middle of animating while switching devices
-    boolean mDeviceChanging;
+    public static final int CURRENT_MODE_AUDIOFX = 1;
+    public static final int CURRENT_MODE_DTS = 2;
 
-    private MenuItem mMenuDevices;
-    private ViewPager mFakePager;
+    public static final String TAG_AUDIOFX = "audiofx";
+    public static final String TAG_DTS = "dts";
+
+    private int mCurrentMode = CURRENT_MODE_AUDIOFX;
+    private Spinner mSpinner;
+    DtsControl mDts;
+
     private CheckBox mCurrentDeviceToggle;
+    MasterConfigControl mConfig;
 
-    private ValueAnimator mDeviceChangeAnimation;
-    private int mAnimatingToRealPageTarget = -1;
+    private List<ActivityStateListener> mGlobalToggleListeners = new ArrayList<>();
 
-    /*
-     * this array can hold on to arrays which store preset levels,
-     * so modifying values in here should only be done with extreme care
-     */
-    private float[] mSelectedPositionBands;
+    public interface ActivityStateListener {
+        public void onGlobalToggleChanged(final CompoundButton buttonView, boolean isChecked);
 
-    // current selected index
-    public int mSelectedPosition = 0;
-    private Map<Integer, OutputDevice> mBluetoothMap
-            = new ArrayMap<Integer, OutputDevice>();
-    List<OutputDevice> mBluetoothDevices = null;
-    private boolean mResumeDeviceChanged;
-    private boolean mUsbDeviceConnected;
-
-    private BroadcastReceiver mDevicesChangedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (AudioFxService.ACTION_BLUETOOTH_DEVICES_UPDATED.equals(intent.getAction())) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mBluetoothDevices = mConfig.getBluetoothDevices();
-                        invalidateOptionsMenu();
-                    }
-                });
-            } else if (AudioFxService.ACTION_DEVICE_OUTPUT_CHANGED.equals(intent.getAction())) {
-                invalidateOptionsMenu();
-            } else if (AudioManager.ACTION_DIGITAL_AUDIO_DOCK_PLUG.equals(intent.getAction())
-                    || AudioManager.ACTION_ANALOG_AUDIO_DOCK_PLUG.equals(intent.getAction())
-                    || AudioManager.ACTION_USB_AUDIO_DEVICE_PLUG.equals(intent.getAction())) {
-                boolean connected = intent.getIntExtra("state", 0) == 1;
-                mUsbDeviceConnected = connected;
-                invalidateOptionsMenu();
-            }
-        }
-    };
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (DEBUG) Log.d(TAG, "onCreate() savedInstanceState=" + savedInstanceState);
-        mHandler = new Handler();
-        mConfig = MasterConfigControl.getInstance(this);
-        mKnobCommander = KnobCommander.getInstance(this);
-
-        mSelectedPositionBands = mConfig.getPersistedPresetLevels(mConfig.getCurrentPresetIndex());
-        if (mConfig.hasMaxxAudio()) {
-            setContentView(R.layout.activity_main_maxx_audio);
-        } else {
-            setContentView(R.layout.activity_main_generic);
-        }
-
-        mInterceptLayout = (InterceptableLinearLayout) findViewById(R.id.interceptable_layout);
-
-        mKnobContainer = (KnobContainer) findViewById(R.id.knob_container);
-        mMaxxVolumeSwitch = (CheckBox) findViewById(R.id.maxx_volume_switch);
-        mEqContainer = (EqContainerView) findViewById(R.id.eq_container);
-        mPresetContainer = (ViewGroup) findViewById(R.id.preset_container);
-        mViewPager = (InfiniteViewPager) findViewById(R.id.pager);
-        CirclePageIndicator indicator = (CirclePageIndicator) findViewById(R.id.indicator);
-        mPresetPageIndicator = indicator;
-
-        if (mMaxxVolumeSwitch != null) {
-            mMaxxVolumeSwitch.setOnCheckedChangeListener(mMaxxVolumeListener);
-        }
-
-        final PresetPagerAdapter adapter = new PresetPagerAdapter(this);
-        InfinitePagerAdapter infinitePagerAdapter = new InfinitePagerAdapter(adapter);
-
-        mInfiniteAdapter = infinitePagerAdapter;
-        mDataAdapter = adapter;
-
-        mViewPager.setAdapter(mInfiniteAdapter);
-        mFakePager = (ViewPager) findViewById(R.id.fake_pager);
-
-        mViewPager.setOnPageChangeListener(mViewPageChangeListener);
-
-        mViewPager.setCurrentItem(mSelectedPosition = mConfig.getCurrentPresetIndex());
-
-        mFakePager.setAdapter(adapter);
-        mEqContainer.findViewById(R.id.save).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        final int newidx = mConfig.addPresetFromCustom();
-                        mInfiniteAdapter.notifyDataSetChanged();
-                        mDataAdapter.notifyDataSetChanged();
-                        mPresetPageIndicator.notifyDataSetChanged();
-
-                        jumpToPreset(newidx);
-                    }
-                }
-        );
-        mEqContainer.findViewById(R.id.rename).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (mConfig.isUserPreset()) {
-                            openRenameDialog();
-                        }
-                    }
-                }
-        );
-        mEqContainer.findViewById(R.id.remove).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        removeCurrentCustomPreset(true);
-                    }
-                }
-        );
-
-        indicator.setViewPager(mFakePager, mConfig.getCurrentPresetIndex());
-        indicator.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // eat all events
-                return true;
-            }
-        });
-        indicator.setSnap(true);
-
-        mCurrentRealPage = mInfiniteAdapter.getRealCount() * 100;
-
-        // setup actionbar on off switch
-        mCurrentDeviceToggle = new CheckBox(this);
-        final int padding = getResources().getDimensionPixelSize(
-                R.dimen.action_bar_switch_padding);
-        mCurrentDeviceToggle.setPaddingRelative(0, 0, padding, 0);
-        mCurrentDeviceToggle.setButtonDrawable(R.drawable.toggle_check);
-        mCurrentDeviceToggle.setOnCheckedChangeListener(mGlobalEnableToggleListener);
-
-        final ActionBar.LayoutParams params = new ActionBar.LayoutParams(
-                ActionBar.LayoutParams.WRAP_CONTENT,
-                ActionBar.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER_VERTICAL | Gravity.END);
-
-        ActionBar ab = getActionBar();
-        ab.setTitle(R.string.app_title);
-        if (mConfig.hasMaxxAudio()) {
-            ab.setSubtitle(R.string.app_subtitle);
-        }
-        ab.setCustomView(mCurrentDeviceToggle, params);
-        ab.setHomeButtonEnabled(true);
-        ab.setDisplayShowTitleEnabled(true);
-        ab.setDisplayShowCustomEnabled(true);
-
-        mCurrentBackgroundColor = !mConfig.isCurrentDeviceEnabled()
-                ? getResources().getColor(R.color.disabled_eq)
-                : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
-        updateBackgroundColors(mCurrentBackgroundColor);
+        public void onModeChanged(int mode);
     }
-
-    private void removeCurrentCustomPreset(boolean showWarning) {
-        if (showWarning) {
-            MasterConfigControl.Preset p = mConfig.getCurrentPreset();
-            new AlertDialog.Builder(ActivityMusic.this)
-                    .setMessage(String.format(getString(
-                            R.string.remove_custom_preset_warning_message), p.mName))
-                    .setNegativeButton(android.R.string.no, null)
-                    .setPositiveButton(android.R.string.yes,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    removeCurrentCustomPreset(false);
-                                }
-                            })
-                    .create()
-                    .show();
-            return;
-        }
-
-        final int currentIndexBeforeRemove = mConfig.getCurrentPresetIndex();
-        if (mConfig.removePreset(currentIndexBeforeRemove)) {
-            mInfiniteAdapter.notifyDataSetChanged();
-            mDataAdapter.notifyDataSetChanged();
-            mPresetPageIndicator.notifyDataSetChanged();
-
-            jumpToPreset(mSelectedPosition - 1);
-        }
-    }
-
-    private void openRenameDialog() {
-        AlertDialog.Builder renameDialog = new AlertDialog.Builder(this);
-        renameDialog.setTitle(R.string.rename);
-        final EditText newName = new EditText(this);
-        newName.setText(mConfig.getCurrentPreset().mName);
-        renameDialog.setView(newName);
-        renameDialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-
-            public void onClick(DialogInterface d, int which) {
-                mConfig.renameCurrentPreset(newName.getText().toString());
-                final TextView viewWithTag = (TextView) mViewPager.findViewWithTag(mConfig.getCurrentPreset());
-                viewWithTag.setText(newName.getText().toString());
-                mDataAdapter.notifyDataSetChanged();
-                mViewPager.invalidate();
-            }
-        });
-
-        renameDialog.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-
-            public void onClick(DialogInterface d, int which) {
-            }
-        });
-
-        renameDialog.show();
-    }
-
-    private void updateEnabledState() {
-        final OutputDevice device = mConfig.getCurrentDevice();
-        boolean currentDeviceEnabled = mConfig.isCurrentDeviceEnabled();
-
-        if (DEBUG) {
-            Log.d(TAG, "updating with current device: " + device);
-        }
-
-        if (mCurrentDeviceToggle != null) {
-            mCurrentDeviceToggle.setChecked(currentDeviceEnabled);
-        }
-        if (mInterceptLayout != null) {
-            mInterceptLayout.setInterception(!currentDeviceEnabled);
-        }
-
-        if (mMaxxVolumeSwitch != null) {
-            mMaxxVolumeSwitch.setChecked(mConfig.getMaxxVolumeEnabled());
-            mMaxxVolumeSwitch.setEnabled(currentDeviceEnabled);
-        }
-    }
-
-    private void updateActionBarDeviceIcon() {
-        if (mMenuDevices != null) {
-            int icon = 0;
-            switch (mConfig.getCurrentDevice().getDeviceType()) {
-                case OutputDevice.DEVICE_HEADSET:
-                    icon = R.drawable.ic_action_dsp_icons_headphones;
-                    break;
-
-                case OutputDevice.DEVICE_SPEAKER:
-                    icon = R.drawable.ic_action_dsp_icons_speaker;
-                    break;
-
-                case OutputDevice.DEVICE_USB:
-                    icon = R.drawable.ic_action_dsp_icons_usb;
-                    break;
-
-                case OutputDevice.DEVICE_BLUETOOTH:
-                    icon = R.drawable.ic_action_dsp_icons_bluetoof;
-                    break;
-
-                case OutputDevice.DEVICE_WIRELESS:
-                    // TODO add wireless back
-                    break;
-
-            }
-            mMenuDevices.setIcon(icon);
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.devices, menu);
-        mMenuDevices = menu.findItem(R.id.devices);
-
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        final OutputDevice currentDevice = mConfig.getCurrentDevice();
-        updateActionBarDeviceIcon();
-
-        final MenuItem usb = menu.findItem(R.id.device_usb);
-        usb.setVisible(mUsbDeviceConnected);
-
-        // select proper device
-        if (mConfig.isServiceBound()) {
-            MenuItem selectedItem = null;
-
-            if (mBluetoothDevices != null) {
-                // remove previous bluetooth entries
-                for (Integer id : mBluetoothMap.keySet()) {
-                    mMenuDevices.getSubMenu().removeItem(id);
-                }
-                mBluetoothMap.clear();
-
-                for (int i = 0; i < mBluetoothDevices.size(); i++) {
-                    int viewId = View.generateViewId();
-                    mBluetoothMap.put(viewId, mBluetoothDevices.get(i));
-                    MenuItem item = mMenuDevices.getSubMenu().add(R.id.device_group, viewId, i,
-                            mBluetoothDevices.get(i).getDisplayName());
-                    if (mBluetoothDevices.get(i).equals(currentDevice)) {
-                        selectedItem = item;
-                    }
-                    item.setIcon(R.drawable.ic_action_dsp_icons_bluetoof);
-                }
-            }
-            mMenuDevices.getSubMenu().setGroupCheckable(R.id.device_group, true, true);
-
-            switch (currentDevice.getDeviceType()) {
-                case OutputDevice.DEVICE_SPEAKER:
-                    selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_speaker);
-                    break;
-                case OutputDevice.DEVICE_USB:
-                    selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_usb);
-                    break;
-                case OutputDevice.DEVICE_HEADSET:
-                    selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_headset);
-                    break;
-            }
-            if (selectedItem != null) {
-                selectedItem.setChecked(true);
-            }
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        OutputDevice newDevice = null;
-        switch (item.getItemId()) {
-            case R.id.device_headset:
-                newDevice = new OutputDevice(OutputDevice.DEVICE_HEADSET);
-                break;
-
-            case R.id.device_usb:
-                newDevice = new OutputDevice(OutputDevice.DEVICE_USB);
-                break;
-
-            case R.id.device_speaker:
-                newDevice = new OutputDevice(OutputDevice.DEVICE_SPEAKER);
-                break;
-
-            default:
-                newDevice = mBluetoothMap.get(item.getItemId());
-                break;
-
-        }
-        if (newDevice != null) {
-            mDeviceChanging = true;
-            if (item.isCheckable()) {
-                item.setChecked(!item.isChecked());
-            }
-            final OutputDevice finalNewDevice = newDevice;
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mConfig.setCurrentDevice(finalNewDevice, true);
-                }
-            }, 100);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void updateBackgroundColors(int color) {
-        mEqContainer.setBackgroundColor(color);
-        mPresetContainer.setBackgroundColor(color);
-        mKnobContainer.updateKnobHighlights(color);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mResumeDeviceChanged = true;
-        mConfig.bindService();
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(AudioFxService.ACTION_BLUETOOTH_DEVICES_UPDATED);
-        filter.addAction(AudioFxService.ACTION_DEVICE_OUTPUT_CHANGED);
-        filter.addAction(AudioManager.ACTION_DIGITAL_AUDIO_DOCK_PLUG);
-        filter.addAction(AudioManager.ACTION_ANALOG_AUDIO_DOCK_PLUG);
-        filter.addAction(AudioManager.ACTION_USB_AUDIO_DEVICE_PLUG);
-        registerReceiver(mDevicesChangedReceiver, filter);
-        mConfig.addEqStateChangeCallback(ActivityMusic.this);
-
-        /**
-         * Since the app is 'persisted', the user cannot clear the app's data because the app will
-         * still be in memory after they try and force close it. Let's mimic clearing the data if we
-         * detect this.
-         */
-        if (!getSharedPrefsFile("global").exists()) {
-            Log.w(TAG, "missing global configuration file, resetting state");
-            mConfig.removeEqStateChangeCallback(ActivityMusic.this);
-            mConfig.resetState();
-            mConfig.addEqStateChangeCallback(ActivityMusic.this);
-
-            getSharedPreferences("global", 0).edit().commit();
-
-            mInfiniteAdapter.notifyDataSetChanged();
-            mDataAdapter.notifyDataSetChanged();
-            mPresetPageIndicator.notifyDataSetChanged();
-            mViewPager.invalidate();
-
-            updateEnabledState();
-            jumpToPreset(mConfig.getCurrentPresetIndex());
-        } else {
-            // do all work in onDeviceChanged() callback after service attaches
-        }
-    }
-
-    private void jumpToPreset(int index) {
-        // TODO always animate colors here so they're smooooth
-        // force instant color jump to preset index
-        updateBackgroundColors(mConfig.getAssociatedPresetColorHex(index));
-
-        int diff = index - (mCurrentRealPage % mDataAdapter.getCount());
-        // double it, short (e.g. 1 hop) distances sometimes bug out??
-        diff += mDataAdapter.getCount();
-        int newPage = mCurrentRealPage + diff;
-        mViewPager.setCurrentItemAbsolute(newPage, false);
-    }
-
-    @Override
-    protected void onPause() {
-        mConfig.unbindService();
-        unregisterReceiver(mDevicesChangedReceiver);
-        mConfig.removeEqStateChangeCallback(this);
-        super.onPause();
-    }
-
-    @Override
-    public void onBandLevelChange(int band, float dB, boolean fromSystem) {
-        // call backs we get when bands are changing, check if the user is physically touching them
-        // and set the preset to "custom" and do proper animations.
-        if (!fromSystem) { // from user
-            if (!mConfig.isCustomPreset() // not on custom already
-                    && !mConfig.isUserPreset() // or not on a user preset
-                    && !mConfig.isAnimatingToCustom()) { // and animation hasn't started
-                if (DEBUG) Log.w(TAG, "met conditions to start an animation to custom trigger");
-                // view pager is infinite, so we can't set the item to 0. find NEXT 0
-                mConfig.setAnimatingToCustom(true);
-
-                final int newIndex = mConfig.copyToCustom();
-
-                mInfiniteAdapter.notifyDataSetChanged();
-                mDataAdapter.notifyDataSetChanged();
-                mViewPager.getAdapter().notifyDataSetChanged();
-                // do background transition manually as viewpager can't handle this bg change
-                final Integer colorFrom = mCurrentBackgroundColor;
-                final Integer colorTo = mConfig.getAssociatedPresetColorHex(newIndex);
-                ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-                colorAnimation.setDuration(500);
-                colorAnimation.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        int diff = newIndex - (mCurrentRealPage % mDataAdapter.getCount());
-                        diff += mDataAdapter.getCount();
-                        int newPage = mCurrentRealPage + diff;
-
-                        mAnimatingToRealPageTarget = newPage;
-                        mViewPager.setCurrentItemAbsolute(newPage);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mCurrentBackgroundColor = colorTo;
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-                    }
-                });
-                colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animator) {
-                        updateBackgroundColors((Integer) animator.getAnimatedValue());
-                    }
-                });
-                colorAnimation.start();
-
-            }
-            mSelectedPositionBands[band] = dB;
-        }
-    }
-
-    @Override
-    public void onPresetChanged(int newPresetIndex) {
-        if (!mDeviceChanging) {
-            mSelectedPositionBands = mConfig.getPresetLevels(newPresetIndex);
-        }
-    }
-
-    @Override
-    public void onPresetsChanged() {
-        mDataAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onDeviceChanged(OutputDevice deviceId, boolean userChange) {
-        if (!isResumed()) {
-            return;
-        }
-
-        invalidateOptionsMenu();
-        updateEnabledState();
-
-        if (mResumeDeviceChanged) {
-            mBluetoothDevices = mConfig.getBluetoothDevices();
-            mResumeDeviceChanged = false;
-            mEqContainer.resume();
-            jumpToPreset(mConfig.getCurrentPresetIndex());
-            return;
-        }
-
-        int diff = mConfig.getCurrentPresetIndex() - mSelectedPosition;
-        final boolean samePage = diff == 0;
-        diff = mDataAdapter.getCount() + diff;
-        if (DEBUG) {
-            Log.d(TAG, "diff: " + diff);
-        }
-
-        if (DEBUG) Log.d(TAG, "mCurrentRealPage Before: " + mCurrentRealPage);
-        final int newPage = mCurrentRealPage + diff;
-        if (DEBUG) Log.d(TAG, "mCurrentRealPage After: " + newPage);
-
-        mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
-        final float[] targetBandLevels = mConfig.getPresetLevels(mConfig.getCurrentPresetIndex());
-
-        if (mDeviceChangeAnimation != null) {
-            mDeviceChangeAnimation.cancel();
-        }
-
-        // do background transition manually as viewpager can't handle this bg change
-        final Integer colorFrom = mCurrentBackgroundColor;
-        final Integer colorTo = !mConfig.isCurrentDeviceEnabled()
-                ? getResources().getColor(R.color.disabled_eq)
-                : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
-        mDeviceChangeAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-        mDeviceChangeAnimation.setDuration(500);
-        mDeviceChangeAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-            @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                updateBackgroundColors((Integer) animator.getAnimatedValue());
-
-                final int N = mConfig.getNumBands();
-                for (int i = 0; i < N; i++) { // animate bands
-                    float delta = targetBandLevels[i] - mSelectedPositionBands[i];
-                    float newBandLevel = mSelectedPositionBands[i] + (delta * animator.getAnimatedFraction());
-                    //if (DEBUG_VIEWPAGER) Log.d(TAG, i + ", delta: " + delta + ", newBandLevel: " + newBandLevel);
-                    mConfig.setLevel(i, newBandLevel, true);
-                }
-            }
-        });
-        mDeviceChangeAnimation.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mConfig.setChangingPresets(true);
-
-                mDeviceChanging = true;
-
-                if (!samePage) {
-                    mViewPager.setCurrentItemAbsolute(newPage);
-                }
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mCurrentBackgroundColor = colorTo;
-                mConfig.setChangingPresets(false);
-
-                mSelectedPosition = mConfig.getCurrentPresetIndex();
-                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
-
-                mDeviceChanging = false;
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        mDeviceChangeAnimation.start();
-    }
-
-    private ViewPager.OnPageChangeListener mViewPageChangeListener = new ViewPager.OnPageChangeListener() {
-
-        int mState;
-        float mLastOffset;
-        boolean mJustGotToCustomAndSettling;
-
-        @Override
-        public void onPageScrolled(int newPosition, float positionOffset, int positionOffsetPixels) {
-            if (DEBUG_VIEWPAGER)
-                Log.i(TAG, "onPageScrolled(" + newPosition + ", " + positionOffset + ", " + positionOffsetPixels + ")");
-            Integer colorFrom;
-            Integer colorTo;
-
-            if (newPosition == mAnimatingToRealPageTarget && mConfig.isAnimatingToCustom()) {
-                if (DEBUG_VIEWPAGER) Log.w(TAG, "settling var set to true");
-                mJustGotToCustomAndSettling = true;
-                mAnimatingToRealPageTarget = -1;
-            }
-
-            newPosition = newPosition % mDataAdapter.getCount();
-
-
-            if (mConfig.isAnimatingToCustom() || mDeviceChanging) {
-                if (DEBUG_VIEWPAGER)
-                    Log.i(TAG, "ignoring onPageScrolled because animating to custom or device is changing");
-                return;
-            }
-
-            int toPos;
-            if (mLastOffset - positionOffset > 0.8) { // this is needed for flings
-                //Log.e(TAG, "OFFSET DIFF > 0.8! Setting selected position from: " + mSelectedPosition + " to " + newPosition);
-                mSelectedPosition = newPosition;
-                // mSelectedPositionBands will be reset by setPreset() below calling back to onPresetChanged()
-
-                mConfig.setPreset(mSelectedPosition);
-            }
-
-            if (newPosition < mSelectedPosition || (newPosition == mDataAdapter.getCount() - 1) && mSelectedPosition == 0) {
-                // scrolling left <<<<<
-                positionOffset = (1 - positionOffset);
-                //Log.v(TAG, "<<<<<< positionOffset: " + positionOffset + " (last offset: " + mLastOffset + ")");
-                toPos = newPosition;
-                colorTo = mConfig.getAssociatedPresetColorHex(toPos);
-            } else {
-                // scrolling right >>>>>
-                //Log.v(TAG, ">>>>>>> positionOffset: " + positionOffset + " (last offset: " + mLastOffset + ")");
-                toPos = newPosition + 1 % mDataAdapter.getCount();
-                if (toPos >= mDataAdapter.getCount()) {
-                    toPos = 0;
-                }
-
-                colorTo = mConfig.getAssociatedPresetColorHex(toPos);
-            }
-
-            if (mConfig.isCurrentDeviceEnabled()) {
-                colorFrom = mConfig.getAssociatedPresetColorHex(mSelectedPosition);
-                updateBackgroundColors((Integer) mArgbEval.evaluate(positionOffset, colorFrom, colorTo));
-            }
-
-            if (mSelectedPositionBands == null) {
-                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
-            }
-            // get current bands
-            float[] finalPresetLevels = mConfig.getPresetLevels(toPos);
-
-            final int N = mConfig.getNumBands();
-            for (int i = 0; i < N; i++) { // animate bands
-                float delta = finalPresetLevels[i] - mSelectedPositionBands[i];
-                float newBandLevel = mSelectedPositionBands[i] + (delta * positionOffset);
-                //if (DEBUG_VIEWPAGER) Log.d(TAG, i + ", delta: " + delta + ", newBandLevel: " + newBandLevel);
-                mConfig.setLevel(i, newBandLevel, true);
-            }
-            mLastOffset = positionOffset;
-
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            if (DEBUG_VIEWPAGER) Log.i(TAG, "onPageSelected(" + position + ")");
-            mCurrentRealPage = position;
-            position = position % mDataAdapter.getCount();
-            if (DEBUG_VIEWPAGER) Log.e(TAG, "onPageSelected(" + position + ")");
-            mFakePager.setCurrentItem(position);
-            mSelectedPosition = position;
-            if (!mDeviceChanging) {
-                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
-                mCurrentBackgroundColor = mConfig.getAssociatedPresetColorHex(mSelectedPosition);
-            }
-        }
-
-
-        @Override
-        public void onPageScrollStateChanged(int newState) {
-            mState = newState;
-            if (mDeviceChanging) { // avoid setting unwanted presets during custom animations
-                return;
-            }
-            if (DEBUG_VIEWPAGER)
-                Log.w(TAG, "onPageScrollStateChanged(" + stateToString(newState) + ")");
-
-            if (mJustGotToCustomAndSettling && mState == ViewPager.SCROLL_STATE_IDLE) {
-                if (DEBUG_VIEWPAGER) Log.w(TAG, "onPageScrollChanged() setting animating to custom = false");
-                mJustGotToCustomAndSettling = false;
-                mConfig.setChangingPresets(false);
-                mConfig.setAnimatingToCustom(false);
-            } else {
-                if (mState == ViewPager.SCROLL_STATE_IDLE) {
-                    mConfig.setChangingPresets(false);
-                    mConfig.setPreset(mSelectedPosition);
-                } else {
-                    // not idle
-                    mConfig.setChangingPresets(true);
-                }
-            }
-        }
-
-        private String stateToString(int state) {
-            switch (state) {
-                case 0:
-                    return "STATE_IDLE";
-                case 1:
-                    return "STATE_DRAGGING";
-                case 2:
-                    return "STATE_SETTLING";
-                default:
-                    return "STATE_WUT";
-            }
-        }
-
-    };
 
     private CompoundButton.OnCheckedChangeListener mGlobalEnableToggleListener
             = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(final CompoundButton buttonView,
                                      final boolean isChecked) {
-            final Integer colorFrom = mCurrentBackgroundColor;
-            final Integer colorTo = isChecked
-                    ? mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex())
-                    : getResources().getColor(R.color.disabled_eq);
-            ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-            colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animator) {
-                    updateBackgroundColors((Integer) animator.getAnimatedValue());
-                }
-            });
-            colorAnimation.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    buttonView.setEnabled(false);
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mCurrentBackgroundColor = colorTo;
-                    mConfig.setCurrentDeviceEnabled(isChecked);
-                    updateEnabledState();
-                    buttonView.setEnabled(true);
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-
-                }
-            });
-            colorAnimation.start();
+            for (ActivityStateListener listener : mGlobalToggleListeners) {
+                listener.onGlobalToggleChanged(buttonView, isChecked);
+            }
         }
     };
 
-    private CompoundButton.OnCheckedChangeListener mMaxxVolumeListener = new CompoundButton.OnCheckedChangeListener() {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if (DEBUG)
+            Log.i(TAG, "onCreate() called with "
+                    + "savedInstanceState = [" + savedInstanceState + "]");
+        super.onCreate(savedInstanceState);
+        mDts = new DtsControl(this);
+        mConfig = MasterConfigControl.getInstance(this);
+
+        ActionBar ab = getActionBar();
+        ab.setTitle(R.string.app_title);
+        ab.setDisplayShowCustomEnabled(true);
+
+        if (mDts.hasDts()) {
+            ab.setCustomView(R.layout.action_bar);
+
+            mCurrentDeviceToggle = (CheckBox) findViewById(R.id.device_toggle);
+            final int padding = getResources().getDimensionPixelSize(
+                    R.dimen.action_bar_switch_padding);
+            mCurrentDeviceToggle.setPaddingRelative(mCurrentDeviceToggle.getPaddingLeft(),
+                    mCurrentDeviceToggle.getPaddingTop(),
+                    padding,
+                    mCurrentDeviceToggle.getPaddingBottom());
+
+            mCurrentDeviceToggle.setButtonDrawable(R.drawable.toggle_check);
+            mCurrentDeviceToggle.setOnCheckedChangeListener(mGlobalEnableToggleListener);
+
+            ModeAdapter spinnerAdapter = new ModeAdapter(this);
+
+            mSpinner = (Spinner) findViewById(R.id.spinner);
+            mSpinner.setAdapter(spinnerAdapter);
+
+            final boolean shouldUseDts = mDts.shouldUseDts();
+            setCurrentMode(shouldUseDts ? CURRENT_MODE_DTS : CURRENT_MODE_AUDIOFX);
+            mSpinner.setSelection(shouldUseDts ? 1 : 0, false);
+        } else {
+            // manually populate action bar
+            if (mConfig.hasMaxxAudio()) {
+                ab.setDisplayShowTitleEnabled(true);
+                ab.setSubtitle(R.string.app_subtitle);
+            }
+            // setup actionbar on off switch
+            mCurrentDeviceToggle = new CheckBox(this);
+            final int padding = getResources().getDimensionPixelSize(
+                    R.dimen.action_bar_switch_padding);
+            mCurrentDeviceToggle.setPaddingRelative(0, 0, padding, 0);
+            mCurrentDeviceToggle.setButtonDrawable(R.drawable.toggle_check);
+            mCurrentDeviceToggle.setOnCheckedChangeListener(mGlobalEnableToggleListener);
+
+            final ActionBar.LayoutParams params = new ActionBar.LayoutParams(
+                    ActionBar.LayoutParams.WRAP_CONTENT,
+                    ActionBar.LayoutParams.WRAP_CONTENT,
+                    Gravity.CENTER_VERTICAL | Gravity.END);
+            ab.setCustomView(mCurrentDeviceToggle, params);
+        }
+
+        setContentView(R.layout.activity_main);
+
+        if (savedInstanceState == null && findViewById(R.id.main_fragment) != null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.main_fragment,
+                            mCurrentMode == CURRENT_MODE_AUDIOFX
+                                    ? new AudioFxFragment()
+                                    : new DTSFragment(),
+                            TAG_AUDIOFX)
+                    .commit();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mDts.hasDts()) {
+            final boolean audioFX = mCurrentMode == CURRENT_MODE_AUDIOFX;
+            final int padding = getResources().getDimensionPixelSize(
+                    audioFX ? R.dimen.action_bar_switch_padding
+                            : R.dimen.action_bar_dts_switch_padding);
+
+            mCurrentDeviceToggle.setPaddingRelative(mCurrentDeviceToggle.getPaddingLeft(),
+                    mCurrentDeviceToggle.getPaddingTop(),
+                    padding,
+                    mCurrentDeviceToggle.getPaddingBottom());
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        if (DEBUG) Log.i(TAG, "onResume() called with " + "");
+        super.onResume();
+
+        /**
+         * Since the app is 'persisted', the user cannot clear the app's data because the app will
+         * still be in memory after they try and force close it. Let's mimic clearing the data if we
+         * detect this.
+         */
+        if (!getSharedPrefsFile(Constants.AUDIOFX_GLOBAL_FILE).exists()) {
+            Log.w(TAG, "missing global configuration file, resetting state");
+            AudioFxFragment frag = (AudioFxFragment) getFragmentManager()
+                    .findFragmentByTag(TAG_AUDIOFX);
+            if (frag != null) {
+                frag.onFakeDataClear();
+            }
+        }
+
+        // action bar controls need to live beyond all fragments
+        setupDtsActionBar();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (DEBUG) Log.i(TAG, "onConfigurationChanged() called with "
+                + "newConfig = [" + newConfig + "]");
+        mCurrentDeviceToggle = null;
+    }
+
+    private void setupDtsActionBar() {
+        if (!mDts.hasDts()) {
+            return;
+        }
+        mCurrentDeviceToggle = (CheckBox) findViewById(R.id.device_toggle);
+
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                int selectedMode = (Integer) parent.getItemAtPosition(position);
+                setCurrentMode(selectedMode);
+
+                mDts.setShouldUseDts(mCurrentMode == CURRENT_MODE_DTS);
+
+                if (mCurrentMode == CURRENT_MODE_AUDIOFX) {
+                    mCurrentDeviceToggle.setChecked(mConfig.isCurrentDeviceEnabled());
+
+                    // change to audio fx layout
+                    getFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.main_fragment, new AudioFxFragment(), TAG_AUDIOFX)
+                            .commit();
+
+                } else if (mCurrentMode == CURRENT_MODE_DTS) {
+                    // change to dts layout
+                    getFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.main_fragment, new DTSFragment(), TAG_DTS)
+                            .commit();
+                }
+                mCurrentDeviceToggle = null;
+                setupDtsActionBar();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    public void addToggleListener(ActivityStateListener listener) {
+        mGlobalToggleListeners.add(listener);
+    }
+
+    public void removeToggleListener(ActivityStateListener listener) {
+        mGlobalToggleListeners.remove(listener);
+    }
+
+    public void setGlobalToggleChecked(boolean checked) {
+        mCurrentDeviceToggle.setOnCheckedChangeListener(null);
+        mCurrentDeviceToggle.setChecked(checked);
+        mCurrentDeviceToggle.setOnCheckedChangeListener(mGlobalEnableToggleListener);
+    }
+
+    public void setCurrentMode(int currentMode) {
+        if (mCurrentMode != currentMode) {
+            mCurrentMode = currentMode;
+            for (ActivityStateListener listener : mGlobalToggleListeners) {
+                listener.onModeChanged(mCurrentMode);
+            }
+        }
+    }
+
+    public int getCurrentMode() {
+        return mCurrentMode;
+    }
+
+    private static class ModeAdapter extends ArrayAdapter<Integer> {
+        private LayoutInflater mInflater;
+        public ModeAdapter(Context context) {
+            super(context, R.layout.action_bar_spinner_row, android.R.id.title,
+                    new Integer[]{CURRENT_MODE_AUDIOFX, CURRENT_MODE_DTS}
+            );
+            setDropDownViewResource(R.layout.action_bar_spinner_row);
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
         @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            mConfig.setMaxxVolumeEnabled(isChecked);
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            View view;
+            TextView text;
+            TextView subText;
+
+            if (convertView == null) {
+                view = mInflater.inflate(R.layout.action_bar_spinner_row, parent, false);
+            } else {
+                view = convertView;
+            }
+            final Integer mode = getItem(position);
+
+            text = (TextView) view.findViewById(android.R.id.title);
+            text.setText(R.string.app_name);
+
+            subText = (TextView) view.findViewById(android.R.id.summary);
+            subText.setText(getModeSubTitle(mode));
+            subText.setVisibility(subText.length() == 0 ? View.GONE : View.VISIBLE);
+            return view;
         }
-    };
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view;
+            TextView text;
+            TextView subText;
+
+            if (convertView == null) {
+                view = mInflater.inflate(R.layout.action_bar_spinner, parent, false);
+            } else {
+                view = convertView;
+            }
+
+            final Integer mode = getItem(position);
+            text = (TextView) view.findViewById(android.R.id.title);
+            text.setText(R.string.app_name);
+
+            subText = (TextView) view.findViewById(android.R.id.summary);
+            subText.setText(getModeSubTitle(mode));
+            subText.setVisibility(subText.length() == 0 ? View.GONE : View.VISIBLE);
+            return view;
+        }
+
+        public String getModeSubTitle(int mode) {
+            switch (mode) {
+                case CURRENT_MODE_DTS:
+                    return getContext().getResources().getString(R.string.mode_dts);
+                case CURRENT_MODE_AUDIOFX:
+                default:
+                    return null;
+            }
+        }
+    }
 }

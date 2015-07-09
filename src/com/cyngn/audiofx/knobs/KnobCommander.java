@@ -61,7 +61,7 @@ public class KnobCommander {
     }
 
     public boolean hasBassBoost() {
-        return mConfig.getGlobalPrefs().getBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_HAS_BASSBOOST, false);
+        return mConfig.getGlobalPrefs().getBoolean(Constants.AUDIOFX_GLOBAL_HAS_BASSBOOST, false);
     }
 
     public boolean hasTreble() {
@@ -69,7 +69,7 @@ public class KnobCommander {
     }
 
     public boolean hasVirtualizer() {
-        return mConfig.getGlobalPrefs().getBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_HAS_VIRTUALIZER, false);
+        return mConfig.getGlobalPrefs().getBoolean(Constants.AUDIOFX_GLOBAL_HAS_VIRTUALIZER, false);
     }
 
     public boolean isBassEffectEnabled() {

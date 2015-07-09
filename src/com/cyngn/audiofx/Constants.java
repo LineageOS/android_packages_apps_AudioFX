@@ -15,15 +15,28 @@
  */
 package com.cyngn.audiofx;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 public class Constants {
 
-    // per-device settings
+    // global settings
+    public static final String AUDIOFX_GLOBAL_FILE = "global";
 
+    public static final String AUDIOFX_GLOBAL_USE_DTS = "audiofx.global.use_dts";
+    public static final String AUDIOFX_GLOBAL_HAS_DTS = "audiofx.global.has_dts";
+    public static final String AUDIOFX_GLOBAL_ENABLE_DTS = "audiofx.global.dts.enable";
+    public static final String AUDIOFX_GLOBAL_HAS_MAXXAUDIO = "audiofx.global.hasmaxxaudio";
+    public static final String AUDIOFX_GLOBAL_HAS_BASSBOOST = "audiofx.global.hasbassboost";
+    public static final String AUDIOFX_GLOBAL_HAS_VIRTUALIZER = "audiofx.global.hasvirtualizer";
+
+    // per-device settings
     public static final boolean DEVICE_DEFAULT_GLOBAL_ENABLE = false;
+
+    /**
+     * not really global enable, but really the device global enable...
+     */
     public static final String DEVICE_AUDIOFX_GLOBAL_ENABLE = "audiofx.global.enable";
-    public static final String DEVICE_AUDIOFX_GLOBAL_HAS_MAXXAUDIO = "audiofx.global.hasmaxxaudio";
-    public static final String DEVICE_AUDIOFX_GLOBAL_HAS_BASSBOOST = "audiofx.global.hasbassboost";
-    public static final String DEVICE_AUDIOFX_GLOBAL_HAS_VIRTUALIZER = "audiofx.global.hasvirtualizer";
     public static final String DEVICE_AUDIOFX_BASS_ENABLE = "audiofx.bass.enable";
     public static final String DEVICE_AUDIOFX_BASS_STRENGTH = "audiofx.bass.strength";
     public static final String DEVICE_AUDIOFX_REVERB_PRESET = "audiofx.reverb.preset";
@@ -35,4 +48,8 @@ public class Constants {
 
     public static final String DEVICE_AUDIOFX_EQ_PRESET = "audiofx.eq.preset";
     public static final String DEVICE_AUDIOFX_EQ_PRESET_LEVELS = "audiofx.eq.preset.levels";
+
+    public static SharedPreferences getGlobalPrefs(Context context) {
+        return context.getSharedPreferences(AUDIOFX_GLOBAL_FILE, 0);
+    }
 }

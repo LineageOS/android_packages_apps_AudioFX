@@ -41,4 +41,8 @@
 
     <dimen name="radial_rect_padding">8dp</dimen>
     <dimen name="radial_knob_stroke">22dp</dimen>
+
+    <!-- 16 dp + 64 dp -->
+    <dimen name="action_bar_dts_switch_padding">48dp</dimen>
+
 </resources>

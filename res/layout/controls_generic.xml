@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:background="@color/knob_container_background"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="160dp"
+              android:elevation="8dp"
+              android:padding="4dp">
+
+    <com.cyngn.audiofx.knobs.KnobContainer
+            android:id="@+id/knob_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="top|center_horizontal"
+            android:orientation="horizontal"
+            android:animateLayoutChanges="true"
+            android:layout_weight="1">
+
+    </com.cyngn.audiofx.knobs.KnobContainer>
+
+</LinearLayout>

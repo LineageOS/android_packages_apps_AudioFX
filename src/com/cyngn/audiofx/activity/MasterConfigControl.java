@@ -15,7 +15,6 @@ import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.eq.EqUtils;
 import com.cyngn.audiofx.knobs.KnobCommander;
-import com.cyngn.audiofx.knobs.RadialKnob;
 import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.OutputDevice;
 
@@ -85,8 +84,10 @@ public class MasterConfigControl {
 
     public void unbindService() {
         if (DEBUG) Log.i(TAG, "unbindService() called");
+        if (mServiceConnection != null && isServiceBound()) {
+            mContext.unbindService(mServiceConnection);
+        }
         mService = null;
-        mContext.unbindService(mServiceConnection);
     }
 
     public boolean isServiceBound() {
@@ -234,7 +235,7 @@ public class MasterConfigControl {
         setPreset(mCurrentPreset);
 
         mHasMaxxAudio = getGlobalPrefs()
-                .getBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false);
+                .getBoolean(Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false);
     }
 
     public SharedPreferences getGlobalPrefs() {

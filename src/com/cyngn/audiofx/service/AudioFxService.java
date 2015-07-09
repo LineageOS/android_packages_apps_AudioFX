@@ -16,7 +16,6 @@
 package com.cyngn.audiofx.service;
 
 import android.app.Service;
-import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
@@ -35,8 +34,6 @@ import android.media.audiofx.BassBoost;
 import android.media.audiofx.Equalizer;
 import android.media.audiofx.PresetReverb;
 import android.media.audiofx.Virtualizer;
-import android.net.NetworkInfo;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -52,8 +49,8 @@ import com.cyngn.audiofx.eq.EqUtils;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -115,6 +112,8 @@ public class AudioFxService extends Service {
             return mService.get();
         }
     }
+
+    private DtsControl mDts;
 
     /**
      * Receive new broadcast intents for adding DSP to session
@@ -202,13 +201,26 @@ public class AudioFxService extends Service {
 
                 case MSG_UPDATE_DSP:
 
+                    if (mDts.hasDts()) {
+                        if (mDts.shouldUseDts()) {
+                            if (DEBUG) Log.d(TAG, "forcing DTS effects");
+                            disableAllEffects();
+
+                            mDts.setEnabled(mDts.getUserEnabled());
+                            return;
+                        } else {
+                            if (DEBUG) Log.d(TAG, "not using DTS");
+                            mDts.setEnabled(false);
+                        }
+                    }
+
                     final String mode = getCurrentDevicePreferenceName();
                     if (DEBUG) Log.i(TAG, "Updating to configuration: " + mode);
                     synchronized (mAudioSessions) {
                         // immediately update most recent session
                         if (mMostRecentSessionId > 0) {
                             if (DEBUG) Log.d(TAG, "updating DSP for most recent session id ("
-                                    + mMostRecentSessionId + "!");
+                                    + mMostRecentSessionId + ")!");
                             updateDsp(getSharedPreferences(mode, 0),
                                     mAudioSessions.get(mMostRecentSessionId)
                             );
@@ -247,6 +259,7 @@ public class AudioFxService extends Service {
         handlerThread.start();
         mHandler = new AudioServiceHandler(handlerThread.getLooper());
 
+        mDts = new DtsControl(this);
         try {
             saveDefaults();
         } catch (Exception e) {
@@ -341,7 +354,7 @@ public class AudioFxService extends Service {
                 mMaxxAudioEffects = new MaxxAudioEffects(1000, sessionId);
             } catch (Exception e) {
                 mMaxxAudioEffects = null;
-                Log.w(TAG, "Unable to initialize MaxxAudio library!");
+                if (DEBUG) Log.w(TAG, "Unable to initialize MaxxAudio library!");
             }
 
             mEqualizer = new Equalizer(1000, sessionId);
@@ -700,6 +713,10 @@ public class AudioFxService extends Service {
     }
 
     private void updateDsp(SharedPreferences prefs, EffectSet session) {
+        if (DEBUG) {
+            Log.i(TAG, "updateDsp() called with " + "prefs = [" + prefs
+                    + "], session = [" + session + "]");
+        }
         if (session == null) {
             return;
         }
@@ -774,6 +791,20 @@ public class AudioFxService extends Service {
         }
     }
 
+    private void disableAllEffects() {
+        final Collection<EffectSet> values = mAudioSessions.values();
+        for (EffectSet effectSet : values) {
+            effectSet.enableBassBoost(false);
+            effectSet.enableEqualizer(false);
+            effectSet.enableVirtualizer(false);
+            effectSet.enableReverb(false);
+            if (effectSet.hasMaxxAudio()) {
+                effectSet.mMaxxAudioEffects.setMaxxTrebleEnabled(false);
+                effectSet.mMaxxAudioEffects.setMaxxVolumeEnabled(false);
+            }
+        }
+    }
+
     /**
      * This method sets some sane defaults for presets, device defaults, etc
      * <p/>
@@ -828,9 +859,9 @@ public class AudioFxService extends Service {
         editor.putString("equalizer.preset_names", presetNames.toString()).apply();
 
 
-        editor.putBoolean(DEVICE_AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer()).apply();
-        editor.putBoolean(DEVICE_AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost()).apply();
-        editor.putBoolean(DEVICE_AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.hasMaxxAudio()).apply();
+        editor.putBoolean(AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer()).apply();
+        editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost()).apply();
+        editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.hasMaxxAudio()).apply();
         temp.release();
 
         applyDefaults(false);
@@ -848,5 +879,11 @@ public class AudioFxService extends Service {
             spk.edit().putString(DEVICE_AUDIOFX_EQ_PRESET, "0").apply();
             spk.edit().putBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, true).apply();
         }
+    }
+
+    public static void updateService(Context context) {
+        final Intent updateServiceIntent = new Intent(AudioFxService.ACTION_UPDATE_PREFERENCES);
+//        updateServiceIntent.setClass(context, AudioFxService.class);
+        context.sendBroadcast(updateServiceIntent);
     }
 }
