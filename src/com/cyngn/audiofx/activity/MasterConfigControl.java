@@ -355,7 +355,7 @@ public class MasterConfigControl {
      * initiated some change. Then update the current preset to 'custom'.
      */
     public int copyToCustom() {
-        mGlobalLevels = getPersistedPresetLevels(mCurrentPreset);
+        updateGlobalLevels(mCurrentPreset);
         if (DEBUG) {
             Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(mGlobalLevels));
         }
@@ -376,7 +376,7 @@ public class MasterConfigControl {
     }
 
     public int addPresetFromCustom() {
-        mGlobalLevels = getPresetLevels(mEQCustomPresetPosition);
+        updateGlobalLevels(mEQCustomPresetPosition);
         if (DEBUG) {
             Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(mGlobalLevels));
         }
@@ -784,12 +784,20 @@ public class MasterConfigControl {
                 if (DEBUG) {
                     Log.w(TAG, "removePreset() called on current preset, changing preset");
                 }
+                updateGlobalLevels(mCurrentPreset - 1);
                 setPreset(mCurrentPreset - 1);
             }
             savePresetsDelayed();
             return true;
         }
         return false;
+    }
+
+    private void updateGlobalLevels(int presetIndexToCopy) {
+        final float[] presetLevels = getPresetLevels(presetIndexToCopy);
+        for (int i = 0; i < mGlobalLevels.length; i++) {
+            mGlobalLevels[i] = presetLevels[i];
+        }
     }
 
     public boolean hasMaxxAudio() {
