@@ -1,9 +1,12 @@
 package com.cyngn.audiofx.eq;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
@@ -13,7 +16,7 @@ import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.service.OutputDevice;
 
 public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpdatedCallback,
-        Animation.AnimationListener {
+        ValueAnimator.AnimatorUpdateListener {
 
     private static final String TAG = EqBarView.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
@@ -33,6 +36,7 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
     private int mFloatingTextHeight;
     private float mInitialLevel;
 
+    private ValueAnimator mAnimator;
     private boolean mInitialAnimation = true;
 
     public EqBarView(Context context) {
@@ -93,12 +97,10 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
         mTextOffset = textOffset;
     }
 
-    void updateHeight(boolean systemChange) {
-        if (DEBUG) Log.d(TAG, "updateHeight() systemChange=" + systemChange + ", mInitialAnimation=" + mInitialAnimation);
+    void updateHeight() {
+        if (DEBUG) Log.d(TAG, "updateHeight() mInitialAnimation=" + mInitialAnimation);
 
         if (getInfo() != null) {
-
-            float prevHeight = getLayoutParams().height;
             float level = mConfig.getLevel((getInfo()).index);
             float yProjection = 1 - mConfig.projectY(level);
             float height = (yProjection * (mParentHeight));
@@ -109,16 +111,20 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
                         + yProjection + ", mPosY: " + mPosY);
             }
 
-            if (systemChange || mInitialAnimation) {
-                ResizeAnimation anim = new ResizeAnimation(this);
+            if (mInitialAnimation) {
+                if (mAnimator != null) {
+                    mAnimator.cancel();
+                    mAnimator = null;
+                }
+                mAnimator = ValueAnimator.ofFloat(getLayoutParams().height, mPosY);
+                mAnimator.addUpdateListener(this);
                 if (mInitialAnimation) {
-                    anim.setDuration(800);
+                    mAnimator.setDuration(800);
                     mInitialAnimation = false;
                 }
-                anim.setInterpolator(new LinearInterpolator());
-                anim.setHeightParams(prevHeight, mPosY);
-                anim.setAnimationListener(this);
-                startAnimation(anim);
+                mAnimator.setInterpolator(new LinearInterpolator());
+                mAnimator.start();
+
             } else {
                 getLayoutParams().height = (int) mPosY;
                 requestLayout();
@@ -159,7 +165,6 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
             return false;
         }
 
-        ResizeAnimation anim;
         final float x = event.getRawX();
         final float y = event.getRawY() - mParentTop;
 
@@ -194,7 +199,7 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
                 if (mInitialLevel != level) {
                     mConfig.setLevel(getInfo().index, level, false);
                 } else {
-                    updateHeight(false);
+                    updateHeight();
                 }
 
                 break;
@@ -215,7 +220,7 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
             return;
         }
 
-        updateHeight(fromSystem);
+        updateHeight();
     }
 
     @Override
@@ -234,16 +239,10 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
     }
 
     @Override
-    public void onAnimationStart(Animation animation) {
-    }
-
-    @Override
-    public void onAnimationEnd(Animation animation) {
-        mPosY = getLayoutParams().height;
-    }
-
-    @Override
-    public void onAnimationRepeat(Animation animation) {
-
+    public void onAnimationUpdate(ValueAnimator animation) {
+        int val = (int) ((Float) animation.getAnimatedValue() + 0.5f);
+        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+        layoutParams.height = val;
+        setLayoutParams(layoutParams);
     }
 }
