@@ -344,7 +344,7 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
             mControlFragment = null;
         }
 
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
 
     }
 
