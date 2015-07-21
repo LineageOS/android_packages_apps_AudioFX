@@ -79,14 +79,22 @@ public class ControlPanelPicker extends AlertActivity implements OnClickListener
         p.mOnClickListener = mItemClickListener;
         p.mLabelColumn = "title";
         p.mIsSingleChoice = true;
-        p.mPositiveButtonText = getString(com.android.internal.R.string.ok);
+        p.mPositiveButtonText = getString(getOkStringResId());
         p.mPositiveButtonListener = this;
-        p.mNegativeButtonText = getString(com.android.internal.R.string.cancel);
+        p.mNegativeButtonText = getString(getCancelStringResId());
         p.mOnPrepareListViewListener = this;
         p.mTitle = getString(R.string.picker_title);
         p.mCheckedItem = defpanelidx;
         
         setupAlert();
+    }
+
+    private int getOkStringResId() {
+        return getResources().getIdentifier("ok", "string", "android");
+    }
+
+    private int getCancelStringResId() {
+        return getResources().getIdentifier("cancel", "string", "android");
     }
 
     private DialogInterface.OnClickListener mItemClickListener =
