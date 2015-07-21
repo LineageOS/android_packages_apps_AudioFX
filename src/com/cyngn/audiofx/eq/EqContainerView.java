@@ -202,7 +202,7 @@ public class EqContainerView extends FrameLayout
     public EqBarView startTouchingBarUnder(MotionEvent event) {
         EqBarView foundBar = findBar(event.getX(), event.getY(), mBarViews);
         if (foundBar != null) {
-            foundBar.updateHeight(false);
+            foundBar.updateHeight();
 
             foundBar.startInteraction(event.getRawX(), event.getRawY());
             startBarInteraction(foundBar);
