@@ -3,7 +3,6 @@ package com.cyngn.audiofx.fragment;
 import android.annotation.Nullable;
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,7 +52,7 @@ public class DTSFragment extends Fragment implements ActivityMusic.ActivityState
     public void onResume() {
         super.onResume();
 
-        final boolean dtsEnabledByUser = mDts.getUserEnabled();
+        final boolean dtsEnabledByUser = mDts.isUserEnabled();
         ((ActivityMusic)getActivity())
                 .setGlobalToggleChecked(mGlobalToggleEnabled = dtsEnabledByUser);
         updateLogo();

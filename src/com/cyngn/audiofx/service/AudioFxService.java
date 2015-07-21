@@ -206,7 +206,7 @@ public class AudioFxService extends Service {
                             if (DEBUG) Log.d(TAG, "forcing DTS effects");
                             disableAllEffects();
 
-                            mDts.setEnabled(mDts.getUserEnabled());
+                            mDts.setEnabled(mDts.isUserEnabled());
                             return;
                         } else {
                             if (DEBUG) Log.d(TAG, "not using DTS");
