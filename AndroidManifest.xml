@@ -17,8 +17,8 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         package="com.cyngn.audiofx"
         android:installLocation="auto"
-        android:versionName="1.8"
-        android:versionCode="10800">
+        android:versionName="1.81"
+        android:versionCode="10810">
 
     <uses-sdk android:minSdkVersion="22"/>
 
