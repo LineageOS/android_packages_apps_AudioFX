@@ -47,6 +47,11 @@ public class BandDeltaBlockView extends FrameLayout implements MasterConfigContr
         init();
     }
 
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
+    }
+
     public void setBand(int band) {
         mBand = band;
     }

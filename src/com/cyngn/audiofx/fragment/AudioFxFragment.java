@@ -144,6 +144,8 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         filter.addAction(AudioManager.ACTION_USB_AUDIO_DEVICE_PLUG);
         getActivity().registerReceiver(mDevicesChangedReceiver, filter);
         mConfig.addEqStateChangeCallback(this);
+
+        updateEnabledState();
     }
 
     @Override
@@ -417,11 +419,6 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
 
     @Override
     public void onDeviceChanged(OutputDevice deviceId, boolean userChange) {
-        if (!isResumed()) {
-            ((ActivityMusic) getActivity()).setGlobalToggleChecked(mConfig.isCurrentDeviceEnabled());
-            return;
-        }
-
         getActivity().invalidateOptionsMenu();
         updateEnabledState();
 

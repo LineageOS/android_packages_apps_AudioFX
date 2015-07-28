@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.annotation.Nullable;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
@@ -101,11 +102,8 @@ public class EqualizerFragment extends AudioFxBaseFragment
 
     @Override
     public void updateFragmentBackgroundColors(int color) {
-        if (mEqContainer != null) {
-            mEqContainer.setBackgroundColor(color);
-        }
-        if (mPresetContainer != null) {
-            mPresetContainer.setBackgroundColor(color);
+        if (getActivity() != null && getActivity().getWindow() != null) {
+            getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(color));
         }
     }
 

@@ -2,6 +2,9 @@ package com.cyngn.audiofx.eq;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -11,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -44,7 +48,8 @@ public class EqContainerView extends FrameLayout
 
     boolean mFirstLayout = true;
     boolean mInLayout;
-    private List<Integer> mSelectedBands = new ArrayList<>();
+    private final List<Integer> mSelectedBands = new ArrayList<>();
+    private final Paint mFadePaint = new Paint();
 
     public static class EqBandInfo {
         public int index;
@@ -72,6 +77,13 @@ public class EqContainerView extends FrameLayout
     private void init() {
         mConfig = MasterConfigControl.getInstance(mContext);
         mBandInfo = new ArrayList<EqBandInfo>();
+        mFadePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.ADD));
+        setLayerType(LAYER_TYPE_HARDWARE, null);
+    }
+
+    @Override
+    public boolean hasOverlappingRendering() {
+        return true;
     }
 
     @Override
@@ -126,7 +138,6 @@ public class EqContainerView extends FrameLayout
             mFirstLayout = false;
             mBarViews.clear();
 
-            final float barWidth = getResources().getDimension(R.dimen.eq_bar_width);
             final int textBlock = getResources().getDimensionPixelSize(R.dimen.eq_text_height);
             for (int i = 0; i < mConfig.getNumBands(); i++) {
                 final EqBandInfo band = new EqBandInfo();
@@ -136,8 +147,6 @@ public class EqContainerView extends FrameLayout
 
                 final EqBarView bar = new EqBarView(mContext);
                 bar.setTag(band);
-
-                final int finalI = i;
                 bar.setOnTouchListener(new OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
@@ -211,6 +220,8 @@ public class EqContainerView extends FrameLayout
     }
 
     public void startBarInteraction(EqBarView bar) {
+        bar.setLayerType(LAYER_TYPE_HARDWARE, mFadePaint);
+
         Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         v.vibrate(30);
 
@@ -223,6 +234,7 @@ public class EqContainerView extends FrameLayout
     }
 
     public void stopBarInteraction(EqBarView bar) {
+        bar.setLayerType(LAYER_TYPE_NONE, null);
         synchronized (mSelectedBands) {
             EqBandInfo band = (EqBandInfo) bar.getTag();
             mSelectedBands.remove((Integer) band.index);
@@ -274,9 +286,6 @@ public class EqContainerView extends FrameLayout
                 EqBandInfo info = (EqBandInfo) child.getTag();
                 final int childWidth = child.getMeasuredWidth();
                 final int childHeight = child.getMeasuredHeight();
-
-                float freq = mConfig.getCenterFreq(info.index);
-                float x = mConfig.projectX(freq) * mWidth;
 
                 int l = mCurLeft;
                 int r = (int) (l + barWidth);
@@ -333,13 +342,14 @@ public class EqContainerView extends FrameLayout
         final float barWidth = getResources().getDimension(R.dimen.eq_bar_width);
         for (int i = 0; i < mConfig.getNumBands(); i++) {
             EqBandInfo tag = mBandInfo.get(i);
-            EqBarView bar = (EqBarView) findViewWithTag(tag);
+            final EqBarView bar = (EqBarView) findViewWithTag(tag);
             if (bar != null) {
+                final ViewPropertyAnimator barAnimation = bar.animate();
                 if (mSelectedBands.isEmpty()) {
                     if (i % 2 == 0) {
-                        bar.animate().withLayer().alpha(0.6f);
+                        barAnimation.alpha(0.6f);
                     } else {
-                        bar.animate().withLayer().alpha(0.8f);
+                        barAnimation.alpha(0.8f);
                     }
                     tag.db.setAlpha(0);
 
@@ -351,7 +361,7 @@ public class EqContainerView extends FrameLayout
                 } else if (mSelectedBands.contains(i)) {
                     tag.db.setAlpha(1);
 
-                    bar.animate().alpha(1f);
+                    barAnimation.alpha(1f);
                     bar.setBackgroundColor(getResources().getColor(R.color.band_bar_color_selected));
 
                     tag.label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
@@ -360,7 +370,7 @@ public class EqContainerView extends FrameLayout
                     tag.label.requestLayout();
                 } else {
                     tag.db.setAlpha(0);
-                    bar.animate().withLayer().alpha(0.40f);
+                    barAnimation.alpha(0.40f);
                 }
             }
         }
@@ -428,13 +438,19 @@ public class EqContainerView extends FrameLayout
     }
 
     private void animateControl(final View v, boolean visible) {
+        v.setLayerType(LAYER_TYPE_HARDWARE, mFadePaint);
         if (visible) {
             v.animate().cancel();
             v.setVisibility(View.VISIBLE);
             v.animate()
                     .alpha(1f)
                     .setDuration(250)
-                    .withEndAction(null);
+                    .withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            v.setLayerType(LAYER_TYPE_NONE, null);
+                        }
+                    });
         } else {
             v.animate().cancel();
             v.animate()
@@ -443,6 +459,7 @@ public class EqContainerView extends FrameLayout
                     .withEndAction(new Runnable() {
                         @Override
                         public void run() {
+                            v.setLayerType(LAYER_TYPE_NONE, null);
                             v.setVisibility(View.INVISIBLE);
                         }
                     });

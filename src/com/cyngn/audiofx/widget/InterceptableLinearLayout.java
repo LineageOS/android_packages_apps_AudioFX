@@ -53,6 +53,11 @@ public class InterceptableLinearLayout extends LinearLayout {
         return mIntercept;
     }
 
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
+    }
+
     public void setInterception(boolean intercept) {
         mIntercept = intercept;
     }

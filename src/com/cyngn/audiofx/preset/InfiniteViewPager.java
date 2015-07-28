@@ -17,6 +17,11 @@ public class InfiniteViewPager extends ViewPager {
 
     MasterConfigControl mConfig;
 
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
+    }
+
     public InfiniteViewPager(Context context) {
         super(context);
         mConfig = MasterConfigControl.getInstance(context);

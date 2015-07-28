@@ -74,4 +74,5 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <color name="band_bar_color_selected">#ffffffff</color>
     <color name="knob_container_background">#323437</color>
     <color name="disabled_eq">#ff6c6c6c</color>
+    <color name="radial_knob_arc_bg">#4e5052</color>
 </resources>

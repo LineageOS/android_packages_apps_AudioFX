@@ -39,7 +39,8 @@
     <dimen name="drag_area_max">200dp</dimen>
     <dimen name="knob_container_padding_bottom">8dp</dimen>
 
-    <dimen name="radial_rect_padding">8dp</dimen>
+    <dimen name="radial_rect_padding">11dp</dimen>
+    <dimen name="radial_text_size">18sp</dimen>
     <dimen name="radial_knob_stroke">22dp</dimen>
 
     <!-- 16 dp + 64 dp -->

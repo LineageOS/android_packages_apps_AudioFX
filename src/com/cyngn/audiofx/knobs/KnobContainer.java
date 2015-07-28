@@ -66,6 +66,11 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
         init();
     }
 
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
+    }
+
     private void init() {
         mKnobCommander = KnobCommander.getInstance(mContext);
         mHandler = new H();

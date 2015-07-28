@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- * Copyright (c) 2014, The CyanogenMod Project. All rights reserved.
+ * Copyright (c) 2015, The CyanogenMod Project. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -34,20 +34,22 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
 import com.cyngn.audiofx.R;
 
-public class RadialKnob extends FrameLayout {
+public class RadialKnob extends View {
 
     private static final String TAG = RadialKnob.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
@@ -58,11 +60,10 @@ public class RadialKnob extends FrameLayout {
     private static final int DO_NOT_VIBRATE_THRESHOLD = 100;
 
     private static final int DEGREE_OFFSET = -225;
+    private static final int START_ANGLE = 360 + DEGREE_OFFSET;
     private static final int MAX_DEGREES = 270;
 
-    private final Paint mPaint;
-    private final TextView mProgressTV;
-    private final ImageView mIndicator;
+    private final Paint mPaint, mTextPaint = new Paint();
 
     ValueAnimator mAnimator;
     float mOffProgress;
@@ -79,26 +80,40 @@ public class RadialKnob extends FrameLayout {
     private float mLastY;
     private boolean mMoved;
     private int mWidth = 0;
-    private RectF mRectF;
+    private RectF mRectF, mOuterRect = new RectF(), mInnerRect = new RectF();
     private float mLastAngle;
     private Long mLastVibrateTime;
     private int mHighlightColor;
+    private int mBackgroundArcColor;
     private int mRectPadding;
+    private int mStrokeWidth;
+    private float mTextOffset;
+
+    Path mPath = new Path();
+    PathMeasure mPathMeasure = new PathMeasure();
+    float[] mTmp = new float[2];
+    float mStartX, mStopX, mStartY, mStopY;
 
     public RadialKnob(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        LayoutInflater li = (LayoutInflater)
-                context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        li.inflate(R.layout.radial_knob, this, true);
 
         Resources res = getResources();
+        mBackgroundArcColor = res.getColor(R.color.radial_knob_arc_bg);
         mHighlightColor = res.getColor(R.color.highlight);
-        mProgressTV = (TextView) findViewById(R.id.knob_value);
-        mIndicator = (ImageView) findViewById(R.id.indicator);
+
+        mTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+        mTextPaint.setElegantTextHeight(true);
+        mTextPaint.setFakeBoldText(true);
+        mTextPaint.setTextSize(res.getDimension(R.dimen.radial_text_size));
+        mTextPaint.setColor(Color.LTGRAY);
+
+        mTextOffset = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2,
+                getResources().getDisplayMetrics());
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(mHighlightColor);
-        mPaint.setStrokeWidth(res.getDimensionPixelSize(R.dimen.radial_knob_stroke));
+        mPaint.setStrokeWidth(mStrokeWidth = res.getDimensionPixelSize(R.dimen.radial_knob_stroke));
         mPaint.setStrokeCap(Paint.Cap.BUTT);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setShadowLayer(2, 1, -2, getResources().getColor(R.color.black));
@@ -109,6 +124,7 @@ public class RadialKnob extends FrameLayout {
         setScaleY(REGULAR_SCALE);
 
         mRectPadding = res.getDimensionPixelSize(R.dimen.radial_rect_padding);
+        invalidate();
     }
 
     public RadialKnob(Context context, AttributeSet attrs) {
@@ -127,16 +143,6 @@ public class RadialKnob extends FrameLayout {
         }
     }
 
-    public void updateProgressText() {
-        if (mEnabled && mOn) {
-            mProgressTV.setText((int) (mProgress * 100) + "%");
-        } else if (mEnabled) {
-            mProgressTV.setText("OFF");
-        } else {
-            mProgressTV.setText("--");
-        }
-    }
-
     public void setProgress(float progress, boolean fromUser) {
         if (progress > 1.0f) {
             progress = 1.0f;
@@ -146,7 +152,7 @@ public class RadialKnob extends FrameLayout {
         }
 
         mProgress = progress;
-        updateProgressText();
+
         invalidate();
 
         if (mOnKnobChangeListener != null) {
@@ -166,19 +172,12 @@ public class RadialKnob extends FrameLayout {
         setProgress(progress, false);
     }
 
-    private void drawIndicator() {
-        float rotationY = mOn ? mProgress * MAX_DEGREES : 0;
-        rotationY -= 135;
-        mIndicator.setRotation(rotationY);
-    }
-
     @Override
     public void setEnabled(boolean enabled) {
         mEnabled = enabled;
         if (enabled) {
             setOn(mOn, false);
         }
-        updateProgressText();
         invalidate();
     }
 
@@ -187,9 +186,7 @@ public class RadialKnob extends FrameLayout {
         if (mAnimator != null) {
             mAnimator.cancel();
         }
-        updateProgressText();
         invalidate();
-
     }
 
     public void setHighlightColor(int color) {
@@ -200,15 +197,54 @@ public class RadialKnob extends FrameLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        drawIndicator();
+
+        mPaint.setStrokeWidth(mStrokeWidth);
+
+        mPaint.setColor(mBackgroundArcColor);
+        canvas.drawArc(mRectF, START_ANGLE, MAX_DEGREES, false, mPaint);
+
+        final float sweepAngle = mEnabled ? mProgress * MAX_DEGREES : 0;
         if (mOn) {
-            canvas.drawArc(mRectF, 135, mEnabled ? mProgress * MAX_DEGREES : 0, false, mPaint);
+            mPaint.setColor(mHighlightColor);
+            canvas.drawArc(mRectF, START_ANGLE, sweepAngle, false, mPaint);
         }
+
+        // render the indicator
+        mPath.reset();
+        mPath.arcTo(mInnerRect, START_ANGLE, sweepAngle, true);
+
+        mPathMeasure.setPath(mPath, false);
+        mPathMeasure.getPosTan(mPathMeasure.getLength(), mTmp, null);
+
+        mStartX = mTmp[0];
+        mStartY = mTmp[1];
+
+        mPath.reset();
+        mPath.arcTo(mOuterRect, START_ANGLE, sweepAngle, true);
+
+        mPathMeasure.setPath(mPath, false);
+        mPathMeasure.getPosTan(mPathMeasure.getLength(), mTmp, null);
+
+        mStopX = mTmp[0];
+        mStopY = mTmp[1];
+
+        mPaint.setStrokeWidth(mStrokeWidth / 2);
+        mPaint.setColor(Color.WHITE);
+        canvas.drawLine(mStartX, mStartY, mStopX, mStopY, mPaint);
+
+        canvas.drawText(getProgressText(),
+                mOuterRect.centerX(),
+                mOuterRect.centerY() + (mTextPaint.getTextSize() / 2.f) - mTextOffset,
+                mTextPaint);
+    }
+
+    private String getProgressText() {
+        return (int) (mProgress * 100) + "%";
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldW, int oldH) {
-
+        super.onSizeChanged(w, h, oldW, oldH);
 
         int size = w > h ? h : w;
         mWidth = size;
@@ -222,11 +258,10 @@ public class RadialKnob extends FrameLayout {
             mRectF = new RectF(mRectPadding, mRectPadding + diff,
                     w - mRectPadding, h - mRectPadding - diff);
         }
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return true;
+        mOuterRect.set(mRectF);
+        mOuterRect.inset(-mRectPadding, -mRectPadding);
+        mInnerRect.set(mRectF);
+        mInnerRect.inset(mRectPadding, mRectPadding);
     }
 
     private boolean isUserSelected() {
@@ -273,9 +308,10 @@ public class RadialKnob extends FrameLayout {
                 if (DEBUG) Log.i(TAG, "onAnimationUpdate(): mProgress: "
                         + mProgress + ", mLastAngle: " + mLastAngle);
 
-                updateProgressText();
+                setProgress(mProgress);
                 if (mOnKnobChangeListener != null) {
-                    mOnKnobChangeListener.onValueChanged(RadialKnob.this, (int) (progress * mMax), true);
+                    mOnKnobChangeListener.onValueChanged(RadialKnob.this,
+                            (int) (progress * mMax), true);
                 }
                 postInvalidate();
             }
@@ -360,7 +396,8 @@ public class RadialKnob extends FrameLayout {
                                     ", mOffProgress: " + mOffProgress + ", delta " + delta);
                         // we want at least 1%, how many degrees = 1%? + a little padding
                         final float onePercentInDegrees = (MAX_DEGREES / 100) + 1f;
-                        if (mOffProgress > 15 && angle < MAX_DEGREES && angle >= onePercentInDegrees) {
+                        if (mOffProgress > 15 && angle < MAX_DEGREES
+                                && angle >= onePercentInDegrees) {
                             if (DEBUG) Log.w(TAG, "delta: " + delta);
                             if (angle <= MAX_DEGREES) {
                                 if (mOnKnobChangeListener != null) {
@@ -412,7 +449,8 @@ public class RadialKnob extends FrameLayout {
     }
 
     private void vibrate() {
-        if (mLastVibrateTime == null || System.currentTimeMillis() - mLastVibrateTime > DO_NOT_VIBRATE_THRESHOLD) {
+        if (mLastVibrateTime == null || System.currentTimeMillis() - mLastVibrateTime
+                > DO_NOT_VIBRATE_THRESHOLD) {
             Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
             vibrator.vibrate(40);
             mLastVibrateTime = System.currentTimeMillis();
@@ -488,6 +526,11 @@ public class RadialKnob extends FrameLayout {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
     }
 
     public void setOnKnobChangeListener(OnKnobChangeListener l) {

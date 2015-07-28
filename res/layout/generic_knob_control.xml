@@ -1,5 +1,4 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:custom="http://schemas.android.com/apk/res/com.cyngn.audiofx"
              android:layout_width="wrap_content"
              android:layout_height="match_parent"
              android:layout_gravity="center_horizontal"
@@ -10,8 +9,7 @@
             android:id="@+id/knob"
             android:layout_gravity="top|center_horizontal"
             android:layout_width="@dimen/knob_width"
-            android:layout_height="wrap_content"
-            custom:foreground="@drawable/knob"/>
+            android:layout_height="wrap_content"/>
 
     <TextView
             android:id="@+id/label"

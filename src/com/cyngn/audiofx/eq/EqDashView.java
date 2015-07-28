@@ -36,6 +36,11 @@ public class EqDashView extends View {
     }
 
     @Override
+    public boolean hasOverlappingRendering() {
+        return false;
+    }
+
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         // workaround to allow dash view to display
