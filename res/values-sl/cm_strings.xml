@@ -16,31 +16,33 @@
      limitations under the License.
 -->
 <resources>
-  <string name="normal">Normalno</string>
-  <string name="classical">Klasika</string>
-  <string name="dance">Ples</string>
-  <string name="flat">Ravno</string>
-  <string name="folk">Narodne</string>
+  <string name="normal">Običajna</string>
+  <string name="classical">Klasična</string>
+  <string name="dance">Plesna</string>
+  <string name="flat">Ploska</string>
+  <string name="folk">Ljudska</string>
   <string name="heavy_metal">Heavy Metal</string>
-  <string name="hip_hop">Hip-hop</string>
+  <string name="hip_hop">Hip Hop</string>
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
   <string name="ci_extreme">Elektronska</string>
-  <string name="user">Prilagođeno</string>
-  <string name="none">Ništa</string>
-  <string name="smallroom">Mala soba</string>
+  <string name="small_speakers">Majhni zvočniki</string>
+  <string name="user">Po meri</string>
+  <string name="none">Brez</string>
+  <string name="smallroom">Majhna soba</string>
   <string name="mediumroom">Srednja soba</string>
   <string name="largeroom">Velika soba</string>
-  <string name="mediumhall">Srednja dvorana</string>
+  <string name="mediumhall">Srednje velika dvorana</string>
   <string name="largehall">Velika dvorana</string>
-  <string name="plate">Ploča</string>
-  <string name="power_on_prompt">Pritisnite gumb za uključivanje gore desno.</string>
-  <string name="effect_unavalable_for_speaker">Efekt nije dostupan za način Zvučnika.</string>
-  <string name="device_headset">Slušalice</string>
-  <string name="device_speaker">Zvučnik</string>
+  <string name="plate">Plošča</string>
+  <string name="power_on_prompt">Pritisnite gumb za vklop na zgornji desni strani.</string>
+  <string name="effect_unavalable_for_speaker">Učinek ni na voljo v načinu Zvočnika.</string>
+  <string name="device_headset">Slušalke</string>
+  <string name="device_speaker">Zvočnik</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
-  <string name="reverb">Odjek</string>
-  <string name="eq_preset">Predlošci ekvilajzera</string>
+  <string name="device_wireless">Brezžično</string>
+  <string name="reverb">Odboj</string>
+  <string name="eq_preset">Prednastavitev izenačevalnika</string>
 </resources>
