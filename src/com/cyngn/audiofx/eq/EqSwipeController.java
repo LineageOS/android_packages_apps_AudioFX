@@ -86,6 +86,7 @@ public class EqSwipeController extends LinearLayout {
                 float yVelocity = mVelocityTracker.getYVelocity(pointerId);
 
                 if (!mBarActive
+                        && !MasterConfigControl.getInstance(getContext()).isChangingPresets()
                         && System.currentTimeMillis() - mDownTime > SWIPE_THRESH
                         && System.currentTimeMillis() - mDownTime < BAR_MAX_THRESH
                         && Math.abs(xVelocity) < X_VELOCITY_THRESH
