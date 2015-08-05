@@ -23,11 +23,18 @@ import android.media.audiofx.*;
 import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Binder;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
+import android.os.Process;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -233,18 +240,15 @@ public class HeadsetService extends Service {
             int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
             if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
                 Log.i(TAG, String.format("New audio session: %d", sessionId));
-                if (!mAudioSessions.containsKey(sessionId)) {
-                    mAudioSessions.put(sessionId, new EffectSet(sessionId));
-                }
-            }
-            if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
+                mSessionsToRemove.remove((Integer) sessionId);
+                mHandler.sendMessage(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId, 0));
+            } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
                 Log.i(TAG, String.format("Audio session removed: %d", sessionId));
-                EffectSet gone = mAudioSessions.remove(sessionId);
-                if (gone != null) {
-                    gone.release();
-                }
+                mSessionsToRemove.add(sessionId);
+                mHandler.sendMessageDelayed(
+                        Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId, 0),
+                        10000);
             }
-            update();
         }
     };
 
@@ -255,7 +259,9 @@ public class HeadsetService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Preferences updated.");
-            update();
+            if (!mHandler.hasMessages(MSG_UPDATE_DSP)) {
+                update();
+            }
         }
     };
 
@@ -304,10 +310,103 @@ public class HeadsetService extends Service {
         }
     };
 
+    private static final int MSG_UPDATE_DSP = 100;
+    private static final int MSG_ADD_SESSION = 101;
+    private static final int MSG_REMOVE_SESSION = 102;
+    private static final int MSG_UPDATE_FOR_SESSION = 103;
+
+    private int mMostRecentSessionId;
+    private List<Integer> mSessionsToRemove = new ArrayList<>();
+    private AudioServiceHandler mHandler;
+
+    private class AudioServiceHandler extends Handler {
+        public AudioServiceHandler(Looper looper) {
+            super(looper);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_ADD_SESSION:
+
+                    synchronized (mAudioSessions) {
+                        if (!mAudioSessions.containsKey(msg.arg1)) {
+                            if (DEBUG) Log.d(TAG, "added new EffectSet for sessionId=" + msg.arg1);
+                            mAudioSessions.put(msg.arg1, new EffectSet(msg.arg1));
+                        }
+                    }
+                    mMostRecentSessionId = msg.arg1;
+                    if (DEBUG) Log.d(TAG, "new most recent sesssionId=" + msg.arg1);
+
+                    update();
+                    break;
+
+                case MSG_REMOVE_SESSION:
+
+                    for (Integer id : mSessionsToRemove) {
+                        synchronized (mAudioSessions) {
+                            EffectSet gone = mAudioSessions.remove(id);
+                            if (gone != null) {
+                                if (DEBUG) Log.d(TAG, "removed EffectSet for sessionId=" + id);
+                                gone.release();
+                            }
+                            if (mMostRecentSessionId == id) {
+                                if (DEBUG) Log.d(TAG, "resetting most recent session ID");
+                                mMostRecentSessionId = -1;
+                            }
+                        }
+                    }
+
+                    update();
+                    break;
+
+                case MSG_UPDATE_DSP:
+
+                    final String mode = getAudioOutputRouting();
+                    if (DEBUG) Log.i(TAG, "Updating to configuration: " + mode);
+                    synchronized (mAudioSessions) {
+                        // immediately update most recent session
+                        if (mMostRecentSessionId > 0) {
+                            if (DEBUG) Log.d(TAG, "updating DSP for most recent session id ("
+                                    + mMostRecentSessionId + ")!");
+                            updateDsp(getSharedPreferences(mode, 0),
+                                    mAudioSessions.get(mMostRecentSessionId)
+                            );
+                        }
+
+                        // cancel updates for other effects, let them go through on the last call
+                        removeMessages(MSG_UPDATE_FOR_SESSION);
+                        int delay = 500;
+                        for (Integer integer : mAudioSessions.keySet()) {
+                            if (integer == mMostRecentSessionId) {
+                                continue;
+                            }
+                            sendMessageDelayed(Message.obtain(this,
+                                    MSG_UPDATE_FOR_SESSION, integer, 0), delay);
+                            delay += 500;
+                        }
+                    }
+                    break;
+
+                case MSG_UPDATE_FOR_SESSION:
+                    String device = getAudioOutputRouting();
+                    if (DEBUG) Log.i(TAG, "updating DSP for sessionId=" + msg.arg1 + ", device=" + device);
+                    updateDsp(getSharedPreferences(device, 0), mAudioSessions.get(msg.arg1)
+                    );
+                    break;
+            }
+        }
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "Starting service.");
+
+        HandlerThread handlerThread = new HandlerThread(TAG,
+                Process.THREAD_PRIORITY_URGENT_AUDIO);
+        handlerThread.start();
+        mHandler = new AudioServiceHandler(handlerThread.getLooper());
 
         IntentFilter audioFilter = new IntentFilter();
         audioFilter.addAction(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
@@ -501,16 +600,9 @@ public class HeadsetService extends Service {
     /**
      * Push new configuration to audio stack.
      */
-    protected synchronized void update() {
-        final String mode = getAudioOutputRouting();
-        SharedPreferences preferences = getSharedPreferences(
-                mode, 0);
-
-        if (DEBUG) Log.i(TAG, "Selected configuration: " + mode);
-
-        for (Integer sessionId : mAudioSessions.keySet()) {
-            updateDsp(preferences, mAudioSessions.get(sessionId));
-        }
+    protected void update() {
+        mHandler.removeMessages(MSG_UPDATE_DSP);
+        mHandler.sendEmptyMessage(MSG_UPDATE_DSP);
     }
 
     private void updateDsp(SharedPreferences prefs, EffectSet session) {
