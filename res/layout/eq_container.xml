@@ -6,19 +6,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <!--<com.cyngn.maxxaudio.eq.EqResponseView-->
-    <!--android:id="@+id/response_view"-->
-    <!--android:visibility="gone"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"/>-->
-
-
-    <com.cyngn.audiofx.eq.EqDashView
-            android:id="@+id/dash"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@drawable/dash"/>
-
     <FrameLayout
             android:id="@+id/eq_controls"
             android:padding="4dp"

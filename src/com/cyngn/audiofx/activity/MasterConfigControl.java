@@ -830,6 +830,10 @@ public class MasterConfigControl {
             }
         }
 
+        public float getBandLevel(int band) {
+            return mLevels[band];
+        }
+
         @Override
         public String toString() {
             return mName + "|" + EqUtils.floatLevelsToString(mLevels);

@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.Nullable;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -23,12 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.ActivityMusic;
 import com.cyngn.audiofx.activity.MasterConfigControl;
@@ -36,7 +30,6 @@ import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.OutputDevice;
 import com.cyngn.audiofx.widget.InterceptableLinearLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -425,7 +418,7 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         if (mResumeDeviceChanged) {
             mBluetoothDevices = mConfig.getBluetoothDevices();
             if (mEqFragment != null) {
-                mEqFragment.mEqContainer.resume();
+                mEqFragment.mEqContainer.animateBars();
                 mEqFragment.jumpToPreset(mConfig.getCurrentPresetIndex());
             }
             mResumeDeviceChanged = false;

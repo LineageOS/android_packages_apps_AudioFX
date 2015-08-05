@@ -63,7 +63,7 @@ public class RadialKnob extends View {
     private static final int START_ANGLE = 360 + DEGREE_OFFSET;
     private static final int MAX_DEGREES = 270;
 
-    private final Paint mPaint, mTextPaint = new Paint();
+    private final Paint mPaint, mTextPaint;
 
     ValueAnimator mAnimator;
     float mOffProgress;
@@ -87,6 +87,7 @@ public class RadialKnob extends View {
     private int mBackgroundArcColor;
     private int mRectPadding;
     private int mStrokeWidth;
+    private float mHandleWidth; // little square indicator where user touches
     private float mTextOffset;
 
     Path mPath = new Path();
@@ -101,6 +102,7 @@ public class RadialKnob extends View {
         mBackgroundArcColor = res.getColor(R.color.radial_knob_arc_bg);
         mHighlightColor = res.getColor(R.color.highlight);
 
+        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         mTextPaint.setElegantTextHeight(true);
@@ -109,6 +111,9 @@ public class RadialKnob extends View {
         mTextPaint.setColor(Color.LTGRAY);
 
         mTextOffset = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2,
+                getResources().getDisplayMetrics());
+
+        mHandleWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5,
                 getResources().getDisplayMetrics());
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -209,9 +214,11 @@ public class RadialKnob extends View {
             canvas.drawArc(mRectF, START_ANGLE, sweepAngle, false, mPaint);
         }
 
+        final float indicatorSweepAngle = Math.max(1f, sweepAngle);
+
         // render the indicator
         mPath.reset();
-        mPath.arcTo(mInnerRect, START_ANGLE, sweepAngle, true);
+        mPath.arcTo(mInnerRect, START_ANGLE, indicatorSweepAngle, true);
 
         mPathMeasure.setPath(mPath, false);
         mPathMeasure.getPosTan(mPathMeasure.getLength(), mTmp, null);
@@ -220,7 +227,7 @@ public class RadialKnob extends View {
         mStartY = mTmp[1];
 
         mPath.reset();
-        mPath.arcTo(mOuterRect, START_ANGLE, sweepAngle, true);
+        mPath.arcTo(mOuterRect, START_ANGLE, indicatorSweepAngle, true);
 
         mPathMeasure.setPath(mPath, false);
         mPathMeasure.getPosTan(mPathMeasure.getLength(), mTmp, null);
@@ -228,7 +235,7 @@ public class RadialKnob extends View {
         mStopX = mTmp[0];
         mStopY = mTmp[1];
 
-        mPaint.setStrokeWidth(mStrokeWidth / 2);
+        mPaint.setStrokeWidth(mHandleWidth);
         mPaint.setColor(Color.WHITE);
         canvas.drawLine(mStartX, mStartY, mStopX, mStopY, mPaint);
 
