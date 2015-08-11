@@ -23,6 +23,8 @@ public class Constants {
     // global settings
     public static final String AUDIOFX_GLOBAL_FILE = "global";
 
+    public static final String SAVED_DEFAULTS = "saved_defaults";
+
     public static final String AUDIOFX_GLOBAL_USE_DTS = "audiofx.global.use_dts";
     public static final String AUDIOFX_GLOBAL_HAS_DTS = "audiofx.global.has_dts";
     public static final String AUDIOFX_GLOBAL_ENABLE_DTS = "audiofx.global.dts.enable";

@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.ArrayMap;
@@ -127,7 +128,6 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
     public void onResume() {
         super.onResume();
         mResumeDeviceChanged = true;
-        mConfig.bindService();
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(AudioFxService.ACTION_BLUETOOTH_DEVICES_UPDATED);
@@ -137,6 +137,8 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         filter.addAction(AudioManager.ACTION_USB_AUDIO_DEVICE_PLUG);
         getActivity().registerReceiver(mDevicesChangedReceiver, filter);
         mConfig.addEqStateChangeCallback(this);
+
+        mConfig.bindService();
 
         updateEnabledState();
     }
@@ -416,12 +418,29 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         updateEnabledState();
 
         if (mResumeDeviceChanged) {
-            mBluetoothDevices = mConfig.getBluetoothDevices();
-            if (mEqFragment != null) {
-                mEqFragment.mEqContainer.animateBars();
-                mEqFragment.jumpToPreset(mConfig.getCurrentPresetIndex());
-            }
-            mResumeDeviceChanged = false;
+            new AsyncTask<Void, Void, List<OutputDevice>>() {
+
+                @Override
+                protected void onPreExecute() {
+                    mResumeDeviceChanged = false;
+                }
+
+                @Override
+                protected List<OutputDevice> doInBackground(Void... params) {
+                    return mConfig.getBluetoothDevices();
+                }
+
+                @Override
+                protected void onPostExecute(List<OutputDevice> outputDevices) {
+                    mBluetoothDevices = outputDevices;
+                    if (isVisible()) {
+                        if (mEqFragment != null) {
+                            mEqFragment.mEqContainer.animateBars();
+                            mEqFragment.jumpToPreset(mConfig.getCurrentPresetIndex());
+                        }
+                    }
+                }
+            }.execute((Void) null);
         }
     }
 

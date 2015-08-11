@@ -22,6 +22,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothUuid;
 import android.content.BroadcastReceiver;
+import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -44,12 +45,14 @@ import android.os.ParcelUuid;
 import android.util.ArrayMap;
 import android.util.Log;
 
+import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.eq.EqUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,22 +82,26 @@ public class AudioFxService extends Service {
     public static final String ACTION_DEVICE_OUTPUT_CHANGED = "org.cyanogenmod.audiofx.ACTION_DEVICE_OUTPUT_CHANGED";
     public static final String EXTRA_DEVICE = "device";
 
-    private final HashMap<Integer, EffectSet> mAudioSessions = new HashMap<>();
-    private int mMostRecentSessionId;
+    final Map<Integer, EffectSet> mAudioSessions
+            = Collections.synchronizedMap(new ArrayMap<Integer, EffectSet>());
+    final Map<BluetoothDevice, DeviceInfo> mDeviceInfo
+            = Collections.synchronizedMap(new ArrayMap<BluetoothDevice, DeviceInfo>());
 
-    private AudioServiceHandler mHandler;
+    final List<Integer> mSessionsToRemove = Collections.synchronizedList(new ArrayList<Integer>());
 
+    int mMostRecentSessionId;
+    Handler mHandler;
     AudioPortListener mAudioPortListener;
-    private BluetoothDevice mLastBluetoothDevice;
-    private BluetoothAdapter mBluetoothAdapter;
-    private final ArrayMap<BluetoothDevice, DeviceInfo> mDeviceInfo = new ArrayMap<>();
+    BluetoothDevice mLastBluetoothDevice;
+
+    BluetoothAdapter mBluetoothAdapter;
+    DtsControl mDts;
 
     private static final int MSG_UPDATE_DSP = 100;
     private static final int MSG_ADD_SESSION = 101;
     private static final int MSG_REMOVE_SESSION = 102;
     private static final int MSG_UPDATE_FOR_SESSION = 103;
-
-    private List<Integer> mSessionsToRemove = new ArrayList<>();
+    private static final int MSG_SELF_DESTRUCT = 104;
 
     private static final ParcelUuid[] BLUETOOTH_AUDIO_UUIDS = {
             BluetoothUuid.AudioSink,
@@ -102,48 +109,39 @@ public class AudioFxService extends Service {
             BluetoothUuid.AudioSource
     };
 
-    public class LocalBinder extends Binder {
+    public static class LocalBinder extends Binder {
         WeakReference<AudioFxService> mService;
+
         public LocalBinder(AudioFxService service) {// added a constructor for Stub here
             mService = new WeakReference<AudioFxService>(service);
         }
 
-        public AudioFxService getService() {
-            return mService.get();
-        }
-    }
-
-    private DtsControl mDts;
-
-    /**
-     * Receive new broadcast intents for adding DSP to session
-     */
-    private final BroadcastReceiver mAudioSessionReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
-            String pkg = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
-            int contentType = intent.getIntExtra(AudioEffect.EXTRA_CONTENT_TYPE,
-                    AudioEffect.CONTENT_TYPE_MUSIC);
-
-            if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
-                if (DEBUG) Log.i(TAG, String.format("New audio session: %d, package: %s",
-                        sessionId, pkg));
-
-                mSessionsToRemove.remove((Integer) sessionId);
-                mHandler.sendMessage(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId, 0));
-            } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
-                if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d, package: %s",
-                        sessionId, pkg));
-
-                mSessionsToRemove.add(sessionId);
-                mHandler.sendMessageDelayed(
-                        Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId, 0),
-                        10000);
+        public void update() {
+            if (mService.get() != null) {
+                mService.get().update();
             }
         }
-    };
+
+        public void applyDefaults() {
+            if (mService.get() != null) {
+                mService.get().forceDefaults();
+            }
+        }
+
+        public OutputDevice getCurrentDevice() {
+            if (mService.get() != null) {
+                return mService.get().getCurrentDevice();
+            }
+            return null;
+        }
+
+        public List<OutputDevice> getBluetoothDevices() {
+            if (mService.get() != null) {
+                return mService.get().getBluetoothDevices();
+            }
+            return null;
+        }
+    }
 
     /**
      * Update audio parameters when preferences have been updated.
@@ -158,21 +156,16 @@ public class AudioFxService extends Service {
         }
     };
 
-    private class AudioServiceHandler extends Handler {
-        public AudioServiceHandler(Looper looper) {
-            super(looper);
-        }
+    private class AudioServiceHandler implements Handler.Callback {
 
         @Override
-        public void handleMessage(Message msg) {
+        public boolean handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_ADD_SESSION:
 
-                    synchronized (mAudioSessions) {
-                        if (!mAudioSessions.containsKey(msg.arg1)) {
-                            if (DEBUG) Log.d(TAG, "added new EffectSet for sessionId=" + msg.arg1);
-                            mAudioSessions.put(msg.arg1, new EffectSet(msg.arg1));
-                        }
+                    if (!mAudioSessions.containsKey(msg.arg1)) {
+                        if (DEBUG) Log.d(TAG, "added new EffectSet for sessionId=" + msg.arg1);
+                        mAudioSessions.put(msg.arg1, new EffectSet(msg.arg1));
                     }
                     mMostRecentSessionId = msg.arg1;
                     if (DEBUG) Log.d(TAG, "new most recent sesssionId=" + msg.arg1);
@@ -183,20 +176,21 @@ public class AudioFxService extends Service {
                 case MSG_REMOVE_SESSION:
 
                     for (Integer id : mSessionsToRemove) {
-                        synchronized (mAudioSessions) {
-                            EffectSet gone = mAudioSessions.remove(id);
-                            if (gone != null) {
-                                if (DEBUG) Log.d(TAG, "removed EffectSet for sessionId=" + id);
-                                gone.release();
-                            }
-                            if (mMostRecentSessionId == id) {
-                                if (DEBUG) Log.d(TAG, "resetting most recent session ID");
-                                mMostRecentSessionId = -1;
-                            }
+                        EffectSet gone = mAudioSessions.remove(id);
+                        if (gone != null) {
+                            if (DEBUG) Log.d(TAG, "removed EffectSet for sessionId=" + id);
+                            gone.release();
+                        }
+                        if (mMostRecentSessionId == id) {
+                            if (DEBUG) Log.d(TAG, "resetting most recent session ID");
+                            mMostRecentSessionId = -1;
                         }
                     }
+                    mSessionsToRemove.clear();
 
                     update();
+                    mHandler.sendEmptyMessageDelayed(MSG_SELF_DESTRUCT, 10000);
+
                     break;
 
                 case MSG_UPDATE_DSP:
@@ -207,7 +201,7 @@ public class AudioFxService extends Service {
                             disableAllEffects();
 
                             mDts.setEnabled(mDts.isUserEnabled());
-                            return;
+                            break;
                         } else {
                             if (DEBUG) Log.d(TAG, "not using DTS");
                             mDts.setEnabled(false);
@@ -216,15 +210,13 @@ public class AudioFxService extends Service {
 
                     final String mode = getCurrentDevicePreferenceName();
                     if (DEBUG) Log.i(TAG, "Updating to configuration: " + mode);
-                    synchronized (mAudioSessions) {
-                        // immediately update most recent session
-                        if (mMostRecentSessionId > 0) {
-                            if (DEBUG) Log.d(TAG, "updating DSP for most recent session id ("
-                                    + mMostRecentSessionId + ")!");
-                            updateDsp(getSharedPreferences(mode, 0),
-                                    mAudioSessions.get(mMostRecentSessionId)
-                            );
-                        }
+                    // immediately update most recent session
+                    if (mMostRecentSessionId > 0) {
+                        if (DEBUG) Log.d(TAG, "updating DSP for most recent session id ("
+                                + mMostRecentSessionId + ")!");
+                        updateDsp(getSharedPreferences(mode, 0),
+                                mAudioSessions.get(mMostRecentSessionId)
+                        );
 
                         // cancel updates for other effects, let them go through on the last call
                         mHandler.removeMessages(MSG_UPDATE_FOR_SESSION);
@@ -242,11 +234,29 @@ public class AudioFxService extends Service {
 
                 case MSG_UPDATE_FOR_SESSION:
                     String device = getCurrentDevicePreferenceName();
-                    if (DEBUG) Log.i(TAG, "updating DSP for sessionId=" + msg.arg1 + ", device=" + device);
-                    updateDsp(getSharedPreferences(device, 0), mAudioSessions.get(msg.arg1)
-                    );
+                    if (DEBUG)
+                        Log.i(TAG, "updating DSP for sessionId=" + msg.arg1 + ", device=" + device);
+                    updateDsp(getSharedPreferences(device, 0), mAudioSessions.get(msg.arg1));
+                    break;
+
+                case MSG_SELF_DESTRUCT:
+                    mHandler.removeMessages(MSG_SELF_DESTRUCT);
+                    if (mAudioSessions.isEmpty()
+                            && mSessionsToRemove.isEmpty()
+                            && mMostRecentSessionId <= 0) {
+                        Log.w(TAG, "self destructing, no sessions active and nothing to do.");
+                        stopSelf();
+                    } else {
+                        if (DEBUG) {
+                            Log.w(TAG, "failed to self destruct, mAudioSession size: "
+                                    + mAudioSessions.size() + ", mSessionsToRemove size: "
+                                    + mSessionsToRemove.size() + ", mMostRecentSession: "
+                                    + mMostRecentSessionId);
+                        }
+                    }
                     break;
             }
+            return true;
         }
     }
 
@@ -255,23 +265,22 @@ public class AudioFxService extends Service {
         super.onCreate();
         if (DEBUG) Log.i(TAG, "Starting service.");
 
-        HandlerThread handlerThread = new HandlerThread(TAG, android.os.Process.THREAD_PRIORITY_AUDIO);
+        HandlerThread handlerThread = new HandlerThread(TAG,
+                android.os.Process.THREAD_PRIORITY_AUDIO);
         handlerThread.start();
-        mHandler = new AudioServiceHandler(handlerThread.getLooper());
+
+        mHandler = new Handler(handlerThread.getLooper(), new AudioServiceHandler());
 
         mDts = new DtsControl(this);
+
         try {
             saveDefaults();
         } catch (Exception e) {
+            SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
+            prefs.edit().putBoolean(Constants.SAVED_DEFAULTS, false).commit();
             Log.e(TAG, "Error initializing effects!", e);
             stopSelf();
         }
-
-        IntentFilter audioFilter = new IntentFilter();
-        audioFilter.addAction(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-        audioFilter.addAction(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
-        audioFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
-        registerReceiver(mAudioSessionReceiver, audioFilter);
 
         registerReceiver(mPreferenceUpdateReceiver,
                 new IntentFilter(ACTION_UPDATE_PREFERENCES));
@@ -292,23 +301,62 @@ public class AudioFxService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
+        if (intent != null && intent.getAction() != null) {
+            String action = intent.getAction();
+            int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
+            String pkg = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
+
+            if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
+                if (DEBUG) Log.i(TAG, String.format("New audio session: %d, package: %s",
+                        sessionId, pkg));
+
+                mHandler.removeMessages(MSG_SELF_DESTRUCT);
+
+                mSessionsToRemove.remove((Integer) sessionId);
+                mHandler.sendMessage(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId, 0));
+
+                return START_STICKY;
+            } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
+                if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d, package: %s",
+                        sessionId, pkg));
+
+                mHandler.removeMessages(MSG_SELF_DESTRUCT);
+
+                mSessionsToRemove.add(sessionId);
+                mHandler.sendMessageDelayed(
+                        Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId, 0),
+                        10000);
+
+                return START_STICKY;
+            }
+        }
+        if (DEBUG)
+            Log.i(TAG, "onStartCommand() called with " + "intent = [" + intent + "], flags = ["
+                    + flags + "], startId = [" + startId + "]");
+        mHandler.sendEmptyMessageDelayed(MSG_SELF_DESTRUCT, 10000);
+        return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
+        if (DEBUG) Log.i(TAG, "Stopping service.");
+
         AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         am.unregisterAudioPortUpdateListener(mAudioPortListener);
 
-        super.onDestroy();
-        if (DEBUG) Log.i(TAG, "Stopping service.");
-
-        unregisterReceiver(mAudioSessionReceiver);
         unregisterReceiver(mPreferenceUpdateReceiver);
-
         unregisterReceiver(mBluetoothReceiver);
 
+        mHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
         mHandler.getLooper().quit();
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        mHandler.sendEmptyMessageDelayed(MSG_SELF_DESTRUCT, 10000);
+
+        return super.onUnbind(intent);
     }
 
     @Override
@@ -455,13 +503,11 @@ public class AudioFxService extends Service {
 
     public List<OutputDevice> getBluetoothDevices() {
         ArrayList<OutputDevice> devices = new ArrayList<OutputDevice>();
-        synchronized (mDeviceInfo) {
-            Set<Map.Entry<BluetoothDevice, DeviceInfo>> entries = mDeviceInfo.entrySet();
-            for (Map.Entry<BluetoothDevice, DeviceInfo> entry : entries) {
-                if (entry.getValue().bonded) {
-                    devices.add(new OutputDevice(OutputDevice.DEVICE_BLUETOOTH, entry.getKey().toString(),
-                            entry.getKey().getAliasName()));
-                }
+        Set<Map.Entry<BluetoothDevice, DeviceInfo>> entries = mDeviceInfo.entrySet();
+        for (Map.Entry<BluetoothDevice, DeviceInfo> entry : entries) {
+            if (entry.getValue().bonded) {
+                devices.add(new OutputDevice(OutputDevice.DEVICE_BLUETOOTH, entry.getKey().toString(),
+                        entry.getKey().getAliasName()));
             }
         }
         if (DEBUG) Log.d(TAG, "bluetooth devices: " + Arrays.toString(devices.toArray()));
@@ -474,7 +520,7 @@ public class AudioFxService extends Service {
 
     public OutputDevice getCurrentDevice() {
         final int audioOutputRouting = getAudioOutputRouting();
-        Log.d(TAG, "getCurrentDevice, audioOutputRouting=" + audioOutputRouting);
+        if (DEBUG) Log.d(TAG, "getCurrentDevice, audioOutputRouting=" + audioOutputRouting);
         switch (audioOutputRouting) {
             case OutputDevice.DEVICE_BLUETOOTH:
                 if (mLastBluetoothDevice == null) {
@@ -559,10 +605,8 @@ public class AudioFxService extends Service {
     private void updateBondedBluetoothDevices() {
         if (mBluetoothAdapter == null) return;
         final Set<BluetoothDevice> bondedDevices = mBluetoothAdapter.getBondedDevices();
-        synchronized (mDeviceInfo) {
-            for (DeviceInfo info : mDeviceInfo.values()) {
-                info.bonded = false;
-            }
+        for (DeviceInfo info : mDeviceInfo.values()) {
+            info.bonded = false;
         }
         int bondedCount = 0;
         BluetoothDevice lastBonded = null;
@@ -585,12 +629,10 @@ public class AudioFxService extends Service {
     }
 
     private DeviceInfo updateInfo(BluetoothDevice device) {
-        synchronized (mDeviceInfo) {
-            DeviceInfo info = mDeviceInfo.get(device);
-            info = info != null ? info : new DeviceInfo();
-            mDeviceInfo.put(device, info);
-            return info;
-        }
+        DeviceInfo info = mDeviceInfo.get(device);
+        info = info != null ? info : new DeviceInfo();
+        mDeviceInfo.put(device, info);
+        return info;
     }
 
     private static class DeviceInfo {
@@ -805,15 +847,26 @@ public class AudioFxService extends Service {
         }
     }
 
+    private void forceDefaults() {
+        SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
+        prefs.edit().putBoolean("saved_defaults", false).apply();
+        saveDefaults();
+        applyDefaults(true);
+    }
+
     /**
      * This method sets some sane defaults for presets, device defaults, etc
      * <p/>
      * First we read presets from the system, then adjusts some setting values
      * for some better defaults!
      */
-    private void saveDefaults() {
+    private synchronized void saveDefaults() {
+        SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
+
+        if (prefs.getBoolean(Constants.SAVED_DEFAULTS, false)) {
+            return;
+        }
         EffectSet temp = new EffectSet(0);
-        SharedPreferences prefs = getSharedPreferences("global", 0);
 
         final int numBands = temp.getNumEqualizerBands();
         final int numPresets = temp.getNumEqualizerPresets();
@@ -863,6 +916,8 @@ public class AudioFxService extends Service {
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost()).apply();
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.hasMaxxAudio()).apply();
         temp.release();
+
+        editor.putBoolean(Constants.SAVED_DEFAULTS, true).apply();
 
         applyDefaults(false);
     }

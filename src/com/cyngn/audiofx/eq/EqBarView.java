@@ -163,6 +163,10 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
     }
 
     private void updateHeight(int h) {
+        if (isInLayout()) {
+            return;
+        }
+
         final ViewGroup.LayoutParams params = getLayoutParams();
         params.height = h;
         setLayoutParams(params);

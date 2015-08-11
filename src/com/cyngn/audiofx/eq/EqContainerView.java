@@ -364,13 +364,6 @@ public class EqContainerView extends FrameLayout
         }
     }
 
-    @Override
-    public void requestLayout() {
-        if (!mInLayout) {
-            super.requestLayout();
-        }
-    }
-
     private void updateSelectedBands() {
         for (int i = 0; i < mConfig.getNumBands(); i++) {
             EqBandInfo tag = mBandInfo.get(i);

@@ -39,7 +39,6 @@ public class MasterConfigControl {
     private static final String TAG = MasterConfigControl.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
-
     private static final int MSG_SAVE_PRESETS = 1;
 
     private Context mContext;
@@ -55,7 +54,7 @@ public class MasterConfigControl {
 
     EqControlState mEqControlState = new EqControlState();
 
-    private AudioFxService mService;
+    private AudioFxService.LocalBinder mService;
     private ServiceConnection mServiceConnection;
 
     public boolean bindService() {
@@ -65,7 +64,7 @@ public class MasterConfigControl {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder binder) {
                     if (DEBUG) Log.i(TAG, "onServiceConnected ");
-                    mService = ((AudioFxService.LocalBinder) binder).getService();
+                    mService = ((AudioFxService.LocalBinder) binder);
                     setCurrentDevice(mService.getCurrentDevice(), false); // update from service
                     mService.update();
                     updateEqControls();
@@ -79,7 +78,8 @@ public class MasterConfigControl {
             };
         }
         Intent serviceIntent = new Intent(mContext, AudioFxService.class);
-        return mContext.bindService(serviceIntent, mServiceConnection, 0);
+        return mContext.bindService(serviceIntent, mServiceConnection,
+                        Context.BIND_AUTO_CREATE);
     }
 
     public void unbindService() {
@@ -275,7 +275,7 @@ public class MasterConfigControl {
      * Resets the state of the config to the default state
      */
     public synchronized void resetState() {
-        File prefsdir = new File(mContext.getApplicationInfo().dataDir,"shared_prefs");
+        File prefsdir = new File(mContext.getApplicationInfo().dataDir, "shared_prefs");
         if (prefsdir.exists() && prefsdir.isDirectory()) {
             String[] files = prefsdir.list();
             for (String name : files) {
@@ -287,7 +287,7 @@ public class MasterConfigControl {
         }
 
         if (mService != null) {
-            mService.applyDefaults(true);
+            mService.applyDefaults();
         } else {
             Log.e(TAG, "resetState() but we have no service to apply defaults to!");
         }
@@ -406,7 +406,7 @@ public class MasterConfigControl {
             callback.onPresetsChanged();
         }
 
-        return mEqPresets.size() -1;
+        return mEqPresets.size() - 1;
     }
 
 
@@ -763,7 +763,7 @@ public class MasterConfigControl {
 
     public void renameCurrentPreset(String s) {
         if (isUserPreset()) {
-            ((CustomPreset)getCurrentPreset()).setName(s);
+            ((CustomPreset) getCurrentPreset()).setName(s);
         }
 
         // notify change
@@ -958,6 +958,7 @@ public class MasterConfigControl {
     }
 
     private EqControlStateCallback mEqCallback;
+
     public interface EqControlStateCallback {
         public void updateEqState();
     }
