@@ -26,8 +26,10 @@
     <string name="pop">Pop</string>
     <string name="rock">Rock</string>
     <string name="ci_extreme">Electronic</string>
+    <string name="multimedia">Multimedia</string>
     <string name="small_speakers">Small speakers</string>
     <string name="user">Custom</string>
+    <string name="user_n">Custom <xliff:g id="preset_num">%1$d</xliff:g></string>
 
     <string name="none">None</string>
     <string name="smallroom">Small room</string>
@@ -37,9 +39,10 @@
     <string name="largehall">Large hall</string>
     <string name="plate">Plate</string>
 
+    <string name="eq_custom">To customize, select \'Custom\'</string>
     <string name="power_on_prompt">Press the power button on the top-right.</string>
     <string name="effect_unavalable_for_speaker">Effect not available for Speaker mode.</string>
-    
+
     <string name="device_headset">Headset</string>
     <string name="device_speaker">Speaker</string>
     <string name="device_usb">USB</string>
@@ -47,4 +50,13 @@
     <string name="device_wireless">Wireless</string>
     <string name="reverb">Reverb</string>
     <string name="eq_preset">Equalizer preset</string>
+
+    <string name="devices">Devices</string>
+
+    <string name="virtualizer">Virtualizer</string>
+    <string name="treble">Treble</string>
+    <string name="bass">Bass</string>
+    <string name="rename">Rename</string>
+
+    <string name="remove_custom_preset_warning_message">Are you sure you want to remove %1$s?</string>
 </resources>
