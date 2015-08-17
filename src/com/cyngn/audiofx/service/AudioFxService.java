@@ -22,7 +22,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothUuid;
 import android.content.BroadcastReceiver;
-import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -39,7 +38,6 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
 import android.os.ParcelUuid;
 import android.util.ArrayMap;
@@ -53,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,8 +75,13 @@ public class AudioFxService extends Service {
     public static final boolean ENABLE_REVERB = false;
 
     public static final String ACTION_UPDATE_PREFERENCES = "org.cyanogenmod.audiofx.UPDATE_PREFS";
-    public static final String ACTION_BLUETOOTH_DEVICES_UPDATED = "org.cyanogenmod.audiofx.ACTION_BLUETOOTH_DEVICES_UPDATED";
-    public static final String ACTION_DEVICE_OUTPUT_CHANGED = "org.cyanogenmod.audiofx.ACTION_DEVICE_OUTPUT_CHANGED";
+
+    public static final String ACTION_BLUETOOTH_DEVICES_UPDATED
+            = "org.cyanogenmod.audiofx.ACTION_BLUETOOTH_DEVICES_UPDATED";
+
+    public static final String ACTION_DEVICE_OUTPUT_CHANGED
+            = "org.cyanogenmod.audiofx.ACTION_DEVICE_OUTPUT_CHANGED";
+
     public static final String EXTRA_DEVICE = "device";
 
     final Map<Integer, EffectSet> mAudioSessions
@@ -274,7 +276,7 @@ public class AudioFxService extends Service {
         mDts = new DtsControl(this);
 
         try {
-            saveDefaults();
+            saveAndApplyDefaults();
         } catch (Exception e) {
             SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
             prefs.edit().putBoolean(Constants.SAVED_DEFAULTS, false).commit();
@@ -506,7 +508,8 @@ public class AudioFxService extends Service {
         Set<Map.Entry<BluetoothDevice, DeviceInfo>> entries = mDeviceInfo.entrySet();
         for (Map.Entry<BluetoothDevice, DeviceInfo> entry : entries) {
             if (entry.getValue().bonded) {
-                devices.add(new OutputDevice(OutputDevice.DEVICE_BLUETOOTH, entry.getKey().toString(),
+                devices.add(new OutputDevice(OutputDevice.DEVICE_BLUETOOTH,
+                        entry.getKey().toString(),
                         entry.getKey().getAliasName()));
             }
         }
@@ -849,9 +852,8 @@ public class AudioFxService extends Service {
 
     private void forceDefaults() {
         SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
-        prefs.edit().putBoolean("saved_defaults", false).apply();
-        saveDefaults();
-        applyDefaults(true);
+        prefs.edit().putBoolean(SAVED_DEFAULTS, false).apply();
+        saveAndApplyDefaults(true);
     }
 
     /**
@@ -860,10 +862,10 @@ public class AudioFxService extends Service {
      * First we read presets from the system, then adjusts some setting values
      * for some better defaults!
      */
-    private synchronized void saveDefaults() {
+    private synchronized void saveAndApplyDefaults(boolean overridePrevious) {
         SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
 
-        if (prefs.getBoolean(Constants.SAVED_DEFAULTS, false)) {
+        if (prefs.getBoolean(SAVED_DEFAULTS, false)) {
             return;
         }
         EffectSet temp = new EffectSet(0);
@@ -871,12 +873,13 @@ public class AudioFxService extends Service {
         final int numBands = temp.getNumEqualizerBands();
         final int numPresets = temp.getNumEqualizerPresets();
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("equalizer.number_of_presets", String.valueOf(numPresets)).apply();
-        editor.putString("equalizer.number_of_bands", String.valueOf(numBands)).apply();
+        editor.putString(EQUALIZER_NUMBER_OF_PRESETS, String.valueOf(numPresets)).apply();
+        editor.putString(EQUALIZER_NUMBER_OF_BANDS, String.valueOf(numBands)).apply();
 
         // range
         short[] rangeShortArr = temp.mEqualizer.getBandLevelRange();
-        editor.putString("equalizer.band_level_range", rangeShortArr[0] + ";" + rangeShortArr[1]).apply();
+        editor.putString(EQUALIZER_BAND_LEVEL_RANGE, rangeShortArr[0]
+                + ";" + rangeShortArr[1]).apply();
 
         // center freqs
         StringBuilder centerFreqs = new StringBuilder();
@@ -887,7 +890,7 @@ public class AudioFxService extends Service {
 
         }
         centerFreqs.deleteCharAt(centerFreqs.length() - 1);
-        editor.putString("equalizer.center_freqs", centerFreqs.toString()).apply();
+        editor.putString(EQUALIZER_CENTER_FREQS, centerFreqs.toString()).apply();
 
         // populate preset names
         StringBuilder presetNames = new StringBuilder();
@@ -906,10 +909,10 @@ public class AudioFxService extends Service {
                 presetBands.append(";");
             }
             presetBands.deleteCharAt(presetBands.length() - 1);
-            editor.putString("equalizer.preset." + i, presetBands.toString()).apply();
+            editor.putString(EQUALIZER_PRESET + i, presetBands.toString()).apply();
         }
         presetNames.deleteCharAt(presetNames.length() - 1);
-        editor.putString("equalizer.preset_names", presetNames.toString()).apply();
+        editor.putString(EQUALIZER_PRESET_NAMES, presetNames.toString()).apply();
 
 
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer()).apply();
@@ -919,26 +922,33 @@ public class AudioFxService extends Service {
 
         editor.putBoolean(Constants.SAVED_DEFAULTS, true).apply();
 
-        applyDefaults(false);
+        applyDefaults(overridePrevious);
     }
 
 
     /**
      * This method sets up some *persisted* defaults.
+     * Prereq: saveDefaults() must have been run before this can apply its defaults properly.
      */
-    public void applyDefaults(boolean overridePrevious) {
-        // Enable for the speaker by default
-        if (!getSharedPrefsFile("speaker").exists() || overridePrevious) {
-            SharedPreferences spk = getSharedPreferences("speaker", 0);
-            spk.edit().putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true).apply();
-            spk.edit().putString(DEVICE_AUDIOFX_EQ_PRESET, "0").apply();
-            spk.edit().putBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, true).apply();
+    private void applyDefaults(boolean overridePrevious) {
+        if (getSharedPreferences(AUDIOFX_GLOBAL_FILE, 0)
+                .getBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false)) {
+            // Maxx Audio defaults:
+            // enable speaker by default, enable maxx volume, set preset to the first index,
+            // which should be flat
+            if (!getSharedPrefsFile(DEVICE_SPEAKER).exists() || overridePrevious) {
+                getSharedPreferences(DEVICE_SPEAKER, 0)
+                        .edit()
+                        .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
+                        .putString(DEVICE_AUDIOFX_EQ_PRESET, "0")
+                        .putBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, true)
+                        .commit();
+            }
         }
     }
 
     public static void updateService(Context context) {
         final Intent updateServiceIntent = new Intent(AudioFxService.ACTION_UPDATE_PREFERENCES);
-//        updateServiceIntent.setClass(context, AudioFxService.class);
         context.sendBroadcast(updateServiceIntent);
     }
 }

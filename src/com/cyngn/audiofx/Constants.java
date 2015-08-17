@@ -22,6 +22,7 @@ public class Constants {
 
     // global settings
     public static final String AUDIOFX_GLOBAL_FILE = "global";
+    public static final String DEVICE_SPEAKER = "speaker";
 
     public static final String SAVED_DEFAULTS = "saved_defaults";
 
@@ -50,6 +51,14 @@ public class Constants {
 
     public static final String DEVICE_AUDIOFX_EQ_PRESET = "audiofx.eq.preset";
     public static final String DEVICE_AUDIOFX_EQ_PRESET_LEVELS = "audiofx.eq.preset.levels";
+
+    // eq
+    public static final String EQUALIZER_NUMBER_OF_PRESETS = "equalizer.number_of_presets";
+    public static final String EQUALIZER_NUMBER_OF_BANDS = "equalizer.number_of_bands";
+    public static final String EQUALIZER_BAND_LEVEL_RANGE = "equalizer.band_level_range";
+    public static final String EQUALIZER_CENTER_FREQS = "equalizer.center_freqs";
+    public static final String EQUALIZER_PRESET = "equalizer.preset.";
+    public static final String EQUALIZER_PRESET_NAMES = "equalizer.preset_names";
 
     public static SharedPreferences getGlobalPrefs(Context context) {
         return context.getSharedPreferences(AUDIOFX_GLOBAL_FILE, 0);
