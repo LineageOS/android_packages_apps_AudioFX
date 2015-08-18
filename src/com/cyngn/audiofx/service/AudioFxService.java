@@ -276,7 +276,7 @@ public class AudioFxService extends Service {
         mDts = new DtsControl(this);
 
         try {
-            saveAndApplyDefaults();
+            saveAndApplyDefaults(false);
         } catch (Exception e) {
             SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
             prefs.edit().putBoolean(Constants.SAVED_DEFAULTS, false).commit();
