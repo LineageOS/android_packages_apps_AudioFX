@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.AudioPatch;
 import android.media.AudioPort;
@@ -44,6 +45,7 @@ import android.util.ArrayMap;
 import android.util.Log;
 
 import com.cyngn.audiofx.Constants;
+import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.eq.EqUtils;
 
 import java.lang.ref.WeakReference;
@@ -52,6 +54,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -83,6 +86,8 @@ public class AudioFxService extends Service {
             = "org.cyanogenmod.audiofx.ACTION_DEVICE_OUTPUT_CHANGED";
 
     public static final String EXTRA_DEVICE = "device";
+
+    private static final int CURRENT_PREFS_INT_VERSION = 1;
 
     final Map<Integer, EffectSet> mAudioSessions
             = Collections.synchronizedMap(new ArrayMap<Integer, EffectSet>());
@@ -279,7 +284,7 @@ public class AudioFxService extends Service {
             saveAndApplyDefaults(false);
         } catch (Exception e) {
             SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
-            prefs.edit().putBoolean(Constants.SAVED_DEFAULTS, false).commit();
+            prefs.edit().clear().commit();
             Log.e(TAG, "Error initializing effects!", e);
             stopSelf();
         }
@@ -865,7 +870,16 @@ public class AudioFxService extends Service {
     private synchronized void saveAndApplyDefaults(boolean overridePrevious) {
         SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
 
-        if (prefs.getBoolean(SAVED_DEFAULTS, false)) {
+        final int currentPrefVer = prefs.getInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT, 0);
+        boolean needsPrefsUpdate = currentPrefVer
+                < CURRENT_PREFS_INT_VERSION;
+
+        if (needsPrefsUpdate) {
+            Log.d(TAG, "rebuilding presets due to preference upgrade from " + currentPrefVer
+                    + " to " + CURRENT_PREFS_INT_VERSION);
+        }
+
+        if (prefs.getBoolean(SAVED_DEFAULTS, false) && !needsPrefsUpdate) {
             return;
         }
         EffectSet temp = new EffectSet(0);
@@ -922,7 +936,9 @@ public class AudioFxService extends Service {
 
         editor.putBoolean(Constants.SAVED_DEFAULTS, true).apply();
 
-        applyDefaults(overridePrevious);
+        applyDefaults(overridePrevious || needsPrefsUpdate);
+        editor.putInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT,
+                CURRENT_PREFS_INT_VERSION).apply();
     }
 
 
@@ -931,8 +947,8 @@ public class AudioFxService extends Service {
      * Prereq: saveDefaults() must have been run before this can apply its defaults properly.
      */
     private void applyDefaults(boolean overridePrevious) {
-        if (getSharedPreferences(AUDIOFX_GLOBAL_FILE, 0)
-                .getBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false)) {
+        final SharedPreferences globalPrefs = getSharedPreferences(AUDIOFX_GLOBAL_FILE, 0);
+        if (globalPrefs.getBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false)) {
             // Maxx Audio defaults:
             // enable speaker by default, enable maxx volume, set preset to the first index,
             // which should be flat
@@ -942,9 +958,60 @@ public class AudioFxService extends Service {
                         .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
                         .putString(DEVICE_AUDIOFX_EQ_PRESET, "0")
                         .putBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, true)
-                        .commit();
+                        .apply();
+            }
+        } else if (globalPrefs.getBoolean(AUDIOFX_GLOBAL_HAS_DTS, false)) {
+            // do nothing for DTS
+        } else {
+            // apply defaults for all others
+            if (Integer.parseInt(globalPrefs.getString(EQUALIZER_NUMBER_OF_BANDS, "0")) == 5) {
+                SharedPreferences.Editor globalEditor = globalPrefs.edit();
+
+                // for 5 band configs, let's add a `Small Speaker` configuration if one
+                // doesn't exist ( from oss AudioFX: -170;270;50;-220;200 )
+                int currentPresets = Integer.parseInt(
+                        globalPrefs.getString(EQUALIZER_NUMBER_OF_PRESETS, "0"));
+
+                final String currentPresetNames = globalPrefs.getString(EQUALIZER_PRESET_NAMES, "");
+
+                // we use the name as keys - get the english string so its consistent with the
+                // others even if user has changed locale
+                final String smallSpeakerPresetName
+                        = getNonLocalizedString(R.string.small_speakers);
+
+                // sanity check
+                if (currentPresetNames.toLowerCase().contains(smallSpeakerPresetName)) {
+                    // nothing to do!
+                    return;
+                }
+
+                // append new preset identifier
+                String newPresetNames = currentPresetNames
+                        + (currentPresets > 0 ? "|" : "")
+                        + smallSpeakerPresetName;
+
+                // set this new preset as the default and enable it for speaker
+                getSharedPreferences(DEVICE_SPEAKER, 0)
+                        .edit()
+                        .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
+                        .putString(DEVICE_AUDIOFX_EQ_PRESET, Integer.toString(currentPresets))
+                        .apply();
+
+                // currentPresets is incremented below
+                globalEditor
+                        .putString(EQUALIZER_PRESET + currentPresets, "-170;270;50;-220;200")
+                        .putString(EQUALIZER_PRESET_NAMES, newPresetNames)
+                        .putString(EQUALIZER_NUMBER_OF_PRESETS,
+                                Integer.toString(++currentPresets))
+                        .apply();
             }
         }
+    }
+
+    private String getNonLocalizedString(int res) {
+        Configuration config = new Configuration(getResources().getConfiguration());
+        config.setLocale(Locale.ROOT);
+        return createConfigurationContext(config).getString(res);
     }
 
     public static void updateService(Context context) {
