@@ -965,7 +965,6 @@ public class AudioFxService extends Service {
         } else {
             // apply defaults for all others
             if (Integer.parseInt(globalPrefs.getString(EQUALIZER_NUMBER_OF_BANDS, "0")) == 5) {
-                SharedPreferences.Editor globalEditor = globalPrefs.edit();
 
                 // for 5 band configs, let's add a `Small Speaker` configuration if one
                 // doesn't exist ( from oss AudioFX: -170;270;50;-220;200 )
@@ -991,19 +990,24 @@ public class AudioFxService extends Service {
                         + smallSpeakerPresetName;
 
                 // set this new preset as the default and enable it for speaker
-                getSharedPreferences(DEVICE_SPEAKER, 0)
-                        .edit()
-                        .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
-                        .putString(DEVICE_AUDIOFX_EQ_PRESET, Integer.toString(currentPresets))
-                        .apply();
+                if (!getSharedPrefsFile(DEVICE_SPEAKER).exists() || overridePrevious) {
+                    getSharedPreferences(DEVICE_SPEAKER, 0)
+                            .edit()
+                            .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
+                            .putString(DEVICE_AUDIOFX_EQ_PRESET, Integer.toString(currentPresets))
+                            .apply();
+                }
 
                 // currentPresets is incremented below
-                globalEditor
-                        .putString(EQUALIZER_PRESET + currentPresets, "-170;270;50;-220;200")
-                        .putString(EQUALIZER_PRESET_NAMES, newPresetNames)
-                        .putString(EQUALIZER_NUMBER_OF_PRESETS,
-                                Integer.toString(++currentPresets))
-                        .apply();
+                if (!getSharedPrefsFile(AUDIOFX_GLOBAL_FILE).exists() || overridePrevious) {
+                    globalPrefs
+                            .edit()
+                            .putString(EQUALIZER_PRESET + currentPresets, "-170;270;50;-220;200")
+                            .putString(EQUALIZER_PRESET_NAMES, newPresetNames)
+                            .putString(EQUALIZER_NUMBER_OF_PRESETS,
+                                    Integer.toString(++currentPresets))
+                            .apply();
+                }
             }
         }
     }
