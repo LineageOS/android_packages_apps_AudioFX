@@ -17,5 +17,32 @@
 -->
 <resources>
   <string name="normal">عادی</string>
+  <string name="classical">کلاسیک</string>
+  <string name="dance">رقص</string>
+  <string name="flat">صاف</string>
+  <string name="folk">محلی</string>
+  <string name="heavy_metal">هوی متال</string>
+  <string name="hip_hop">هیپ هاپ</string>
+  <string name="jazz">جاز</string>
+  <string name="pop">پاپ</string>
+  <string name="rock">راک</string>
+  <string name="ci_extreme">الکترونیکی</string>
+  <string name="small_speakers">بلندگوهای کوچک</string>
+  <string name="user">شخصی</string>
+  <string name="none">هیچ کدام</string>
+  <string name="smallroom">اتاق کوچک</string>
+  <string name="mediumroom">اتاق متوسط</string>
+  <string name="largeroom">اتاق بزرگ</string>
+  <string name="mediumhall">سالن متوسط</string>
+  <string name="largehall">سالن بزرگ</string>
+  <string name="plate">صفحه گرامافون</string>
   <string name="power_on_prompt">دکمه روشن کردن را در بالا سمت راست بزنید.</string>
+  <string name="effect_unavalable_for_speaker">این افکت در حالت بلندگو فعال نمی شود.</string>
+  <string name="device_headset">هدست</string>
+  <string name="device_speaker">بلندگو</string>
+  <string name="device_usb">USB</string>
+  <string name="device_bluetooth">بلوتوث</string>
+  <string name="device_wireless">بی سیم</string>
+  <string name="reverb">Reverb</string>
+  <string name="eq_preset">اکولایزر از پیش تعیین شده</string>
 </resources>
