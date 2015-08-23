@@ -6,6 +6,8 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.MeasureSpec;
 
 import com.cyngn.audiofx.activity.MasterConfigControl;
 
@@ -38,6 +40,18 @@ public class InfiniteViewPager extends ViewPager {
             return false;
         }
         return super.onInterceptTouchEvent(ev);
+    }
+
+    @Override
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int maxHeight = 0;
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            maxHeight = Math.max(maxHeight, child.getMeasuredHeight());
+        }
+
+        super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.EXACTLY));
     }
 
     @Override
