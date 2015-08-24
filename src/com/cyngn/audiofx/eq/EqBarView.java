@@ -88,12 +88,8 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
         return (EqContainerView.EqBandInfo) getTag();
     }
 
-    public void setParentHeight(float h, int top, int textOffset) {
-
-        final float selectedBoxHeight = getResources().getDimension(R.dimen.eq_selected_box_height);
-        final float paddingTop = getResources().getDimension(R.dimen.eq_top_padding);
-
-        mParentHeight = h - selectedBoxHeight - textOffset - paddingTop;
+    public void setParentHeight(float h, int top) {
+        mParentHeight = h;
         mParentTop = top;
     }
 

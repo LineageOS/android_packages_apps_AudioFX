@@ -48,7 +48,6 @@ public class EqContainerView extends FrameLayout
 
     private int mSelectedBandColor;
     private boolean mFirstLayout = true;
-    private boolean mInLayout;
 
     private Paint mTextPaint;
     private Paint mFreqPaint;
@@ -63,6 +62,14 @@ public class EqContainerView extends FrameLayout
             v.vibrate(30);
         }
     };
+    private int mPaddingTop;
+    private int mPaddingBottom;
+    private int mBarWidth;
+    private int mBarSeparation;
+    private int mEmptyBottomPadding;
+    private int mFreqTextHeight;
+    private int mSelectedBoxHeight;
+    private int mExtraTopPadding;
 
     public static class EqBandInfo {
         public int mIndex;
@@ -88,11 +95,22 @@ public class EqContainerView extends FrameLayout
     }
 
     private void init() {
+        mBarWidth = getResources().getDimensionPixelSize(R.dimen.eq_bar_width);
+        mBarSeparation = getResources().getDimensionPixelSize(R.dimen.separator_width);
+
+        mEmptyBottomPadding = getResources().getDimensionPixelSize(R.dimen.eq_bar_bottom_grab_space);
+        mFreqTextHeight = getResources().getDimensionPixelSize(R.dimen.eq_text_height);
+        mSelectedBoxHeight = Math.round(getResources().getDimension(R.dimen.eq_selected_box_height)
+                * getResources().getConfiguration().fontScale);
+        mExtraTopPadding = getResources().getDimensionPixelSize(R.dimen.eq_top_padding);
+
+        mPaddingTop = mSelectedBoxHeight + mExtraTopPadding;
+        mPaddingBottom = mFreqTextHeight + mEmptyBottomPadding;
+
         mConfig = MasterConfigControl.getInstance(mContext);
         mBarViews = new ArrayList<>();
         mBandInfo = new ArrayList<>();
         mSelectedBands = new ArrayList<>();
-        mDashPath = new Path();
         setWillNotDraw(false);
 
         mSelectedBandColor = getResources().getColor(R.color.band_bar_color_selected);
@@ -113,7 +131,7 @@ public class EqContainerView extends FrameLayout
 
         mSelectedFreqPaint = new Paint(mFreqPaint);
         mSelectedFreqPaint.setAntiAlias(true);
-        mSelectedFreqPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 16,
+        mSelectedFreqPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 15,
                 getResources().getDisplayMetrics()));
 
         mCenterLinePaint = new Paint();
@@ -177,7 +195,6 @@ public class EqContainerView extends FrameLayout
             mFirstLayout = false;
             mBarViews.clear();
 
-            final int textBlock = getResources().getDimensionPixelSize(R.dimen.eq_text_height);
             for (int i = 0; i < mConfig.getNumBands(); i++) {
                 final EqBandInfo band = new EqBandInfo();
                 band.mIndex = i;
@@ -218,7 +235,7 @@ public class EqContainerView extends FrameLayout
                         getResources().getDisplayMetrics()));
 
                 addView(bar, getFrameParams());
-                bar.setParentHeight(mHeight, getTop(), textBlock);
+                bar.setParentHeight(mHeight, getTop());
 
                 final float freq = mConfig.getCenterFreq(i);
                 String frequencyText = String.format(freq < 1000 ? "%.0f" : "%.0fk",
@@ -243,19 +260,15 @@ public class EqContainerView extends FrameLayout
 
     public void startBarInteraction(EqBarView bar) {
         setControlsVisible(false, false);
-//        synchronized (mSelectedBands) {
         EqBandInfo band = (EqBandInfo) bar.getTag();
         mSelectedBands.add(band.mIndex);
-//        }
         updateSelectedBands();
         AsyncTask.execute(mVibrateRunnable);
     }
 
     public void stopBarInteraction(EqBarView bar) {
-//        synchronized (mSelectedBands) {
         EqBandInfo band = (EqBandInfo) bar.getTag();
         mSelectedBands.remove((Integer) band.mIndex);
-//        }
         updateSelectedBands();
         setControlsVisible(mControlsVisible, true);
     }
@@ -274,23 +287,17 @@ public class EqContainerView extends FrameLayout
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        final float selectedBoxHeight = getResources().getDimension(R.dimen.eq_selected_box_height);
-        final float barWidth = getResources().getDimension(R.dimen.eq_bar_width);
-        final float separatorWidth = getResources().getDimension(R.dimen.separator_width);
-        final int textBlock = getResources().getDimensionPixelSize(R.dimen.eq_text_height);
-
         mWidth = right - left;
-        mHeight = bottom - top;
+        mHeight = bottom - top - mPaddingTop - mPaddingBottom;
 
         generateAndAddBars();
 
         //---------------------------------------------------
-        mInLayout = true;
 
-        int dashY = (int) ((mConfig.projectY(0) * mHeight) + separatorWidth);
+        int dashY = Math.round((1 - mConfig.projectY(0)) * mHeight) + mExtraTopPadding;
 
-        final int widthOfBars = (int) ((mConfig.getNumBands() * barWidth)
-                + ((mConfig.getNumBands() - 1) * separatorWidth));
+        final int widthOfBars = (mConfig.getNumBands() * mBarWidth)
+                + ((mConfig.getNumBands() - 1) * mBarSeparation);
         final int freeSpace = mWidth - widthOfBars;
 
         int mCurLeft = (freeSpace / 2);
@@ -298,34 +305,33 @@ public class EqContainerView extends FrameLayout
         for (int i = 0; i < childCount; i++) {
             final View child = getChildAt(i);
 
-            final LayoutParams lp = (LayoutParams) child.getLayoutParams();
             if (child instanceof EqBarView) {
                 final int childWidth = child.getMeasuredWidth();
                 final int childHeight = child.getMeasuredHeight();
 
                 int l = mCurLeft;
-                int r = (int) (l + barWidth);
+                int r = l + mBarWidth;
 
-                mCurLeft += barWidth + separatorWidth;
-
-                final int layoutBottom = mHeight - lp.bottomMargin;
+                mCurLeft += mBarWidth + mBarSeparation;
 
                 if (((EqBarView) child).isUserInteracting()) {
                     l -= childWidth / 4;
                     r += childWidth / 4;
-
                 }
 
-                child.layout(l,
-                        (int) (layoutBottom - childHeight - selectedBoxHeight),
-                        r,
-                        layoutBottom - textBlock);
+                final int layoutTop = mHeight - childHeight + mPaddingTop;
+                final int layoutBottom = layoutTop + childHeight
+                        + mPaddingBottom - mEmptyBottomPadding;
+                child.layout(l, layoutTop, r, layoutBottom);
             }
         }
 
-        mDashPath.reset();
-        mDashPath.moveTo(freeSpace / 2, dashY - 2);
-        mDashPath.lineTo(widthOfBars + (freeSpace / 2), dashY);
+        if (mDashPath == null) {
+            mDashPath = new Path();
+            mDashPath.reset();
+            mDashPath.moveTo(freeSpace / 2, dashY);
+            mDashPath.lineTo(widthOfBars + (freeSpace / 2), dashY);
+        }
 
         mControls.layout(
                 right - mControls.getMeasuredWidth() - mControls.getPaddingLeft(),
@@ -333,7 +339,6 @@ public class EqContainerView extends FrameLayout
                 right - mControls.getPaddingRight(),
                 top + mControls.getMeasuredHeight() + mControls.getPaddingTop() + mControls.getPaddingBottom()
         );
-        mInLayout = false;
     }
 
 
@@ -388,16 +393,9 @@ public class EqContainerView extends FrameLayout
 
     private FrameLayout.LayoutParams getFrameParams() {
         float width = getResources().getDimension(R.dimen.eq_bar_width);
-
-        final float selectedBoxHeight = getResources().getDimension(R.dimen.eq_selected_box_height);
-        final float paddingTop = getResources().getDimension(R.dimen.eq_top_padding);
-        final int textBlock = getResources().getDimensionPixelSize(R.dimen.eq_text_height);
-
-        float height = (mHeight - selectedBoxHeight - textBlock - paddingTop) / 2;
-
+        float height = mHeight / 2;
         FrameLayout.LayoutParams ll = new FrameLayout.LayoutParams((int) width, (int) height);
         ll.gravity = Gravity.BOTTOM;
-
         return ll;
     }
 
