@@ -44,6 +44,7 @@
                 android:theme="@style/AppThemeV2"
                 android:label="@string/eq_dialog_title"
                 android:launchMode="singleInstance"
+                android:configChanges="locale"
                 android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

@@ -14,11 +14,9 @@ import android.widget.CompoundButton;
 import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.eq.EqUtils;
-import com.cyngn.audiofx.knobs.KnobCommander;
 import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.OutputDevice;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -214,9 +212,7 @@ public class MasterConfigControl {
         String[] presetNames = getGlobalPrefs().getString("equalizer.preset_names", "").split("\\|");
         mPredefinedPresets = presetNames.length + 1; // we consider first EQ to be part of predefined
         for (int i = 0; i < numPresets; i++) {
-            mEqPresets.add(new StaticPreset(
-                    localizePresetName(presetNames[i]),
-                    getPersistedPresetLevels(i)));
+            mEqPresets.add(new StaticPreset(presetNames[i], getPersistedPresetLevels(i)));
         }
 
         // add custom preset
@@ -686,7 +682,7 @@ public class MasterConfigControl {
 
     public String getLocalizedPresetName(int index) {
         // already localized
-        return mEqPresets.get(index).mName;
+        return localizePresetName(mEqPresets.get(index).mName);
     }
 
     private final String localizePresetName(final String name) {
@@ -803,6 +799,15 @@ public class MasterConfigControl {
             }
             float[] levels = EqUtils.stringBandsToFloats(split[1]);
             return new Preset(split[0], levels);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof Preset) {
+                Preset other = (Preset) o;
+                return other.mName.equals(mName);
+            }
+            return super.equals(o);
         }
     }
 

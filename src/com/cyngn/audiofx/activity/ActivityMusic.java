@@ -214,7 +214,9 @@ public class ActivityMusic extends Activity {
         super.onConfigurationChanged(newConfig);
         if (DEBUG) Log.i(TAG, "onConfigurationChanged() called with "
                 + "newConfig = [" + newConfig + "]");
-        mCurrentDeviceToggle = null;
+        if (newConfig.orientation != getResources().getConfiguration().orientation) {
+            mCurrentDeviceToggle = null;
+        }
     }
 
     private void setupDtsActionBar() {
