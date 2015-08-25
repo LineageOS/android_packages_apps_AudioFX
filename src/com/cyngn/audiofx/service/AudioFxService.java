@@ -887,13 +887,13 @@ public class AudioFxService extends Service {
         final int numBands = temp.getNumEqualizerBands();
         final int numPresets = temp.getNumEqualizerPresets();
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(EQUALIZER_NUMBER_OF_PRESETS, String.valueOf(numPresets)).apply();
-        editor.putString(EQUALIZER_NUMBER_OF_BANDS, String.valueOf(numBands)).apply();
+        editor.putString(EQUALIZER_NUMBER_OF_PRESETS, String.valueOf(numPresets));
+        editor.putString(EQUALIZER_NUMBER_OF_BANDS, String.valueOf(numBands));
 
         // range
         short[] rangeShortArr = temp.mEqualizer.getBandLevelRange();
         editor.putString(EQUALIZER_BAND_LEVEL_RANGE, rangeShortArr[0]
-                + ";" + rangeShortArr[1]).apply();
+                + ";" + rangeShortArr[1]);
 
         // center freqs
         StringBuilder centerFreqs = new StringBuilder();
@@ -904,7 +904,7 @@ public class AudioFxService extends Service {
 
         }
         centerFreqs.deleteCharAt(centerFreqs.length() - 1);
-        editor.putString(EQUALIZER_CENTER_FREQS, centerFreqs.toString()).apply();
+        editor.putString(EQUALIZER_CENTER_FREQS, centerFreqs.toString());
 
         // populate preset names
         StringBuilder presetNames = new StringBuilder();
@@ -923,22 +923,25 @@ public class AudioFxService extends Service {
                 presetBands.append(";");
             }
             presetBands.deleteCharAt(presetBands.length() - 1);
-            editor.putString(EQUALIZER_PRESET + i, presetBands.toString()).apply();
+            editor.putString(EQUALIZER_PRESET + i, presetBands.toString());
         }
         presetNames.deleteCharAt(presetNames.length() - 1);
-        editor.putString(EQUALIZER_PRESET_NAMES, presetNames.toString()).apply();
+        editor.putString(EQUALIZER_PRESET_NAMES, presetNames.toString());
 
 
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer()).apply();
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost()).apply();
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.hasMaxxAudio()).apply();
+        editor.putBoolean(AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer());
+        editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost());
+        editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.hasMaxxAudio());
         temp.release();
-
-        editor.putBoolean(Constants.SAVED_DEFAULTS, true).apply();
+        editor.commit();
 
         applyDefaults(overridePrevious || needsPrefsUpdate);
-        editor.putInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT,
-                CURRENT_PREFS_INT_VERSION).apply();
+
+        prefs
+                .edit()
+                .putInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT, CURRENT_PREFS_INT_VERSION)
+                .putBoolean(Constants.SAVED_DEFAULTS, true)
+                .commit();
     }
 
 
@@ -958,7 +961,7 @@ public class AudioFxService extends Service {
                         .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
                         .putString(DEVICE_AUDIOFX_EQ_PRESET, "0")
                         .putBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, true)
-                        .apply();
+                        .commit();
             }
         } else if (globalPrefs.getBoolean(AUDIOFX_GLOBAL_HAS_DTS, false)) {
             // do nothing for DTS
@@ -995,7 +998,7 @@ public class AudioFxService extends Service {
                             .edit()
                             .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
                             .putString(DEVICE_AUDIOFX_EQ_PRESET, Integer.toString(currentPresets))
-                            .apply();
+                            .commit();
                 }
 
                 // currentPresets is incremented below
@@ -1006,7 +1009,7 @@ public class AudioFxService extends Service {
                             .putString(EQUALIZER_PRESET_NAMES, newPresetNames)
                             .putString(EQUALIZER_NUMBER_OF_PRESETS,
                                     Integer.toString(++currentPresets))
-                            .apply();
+                            .commit();
                 }
             }
         }

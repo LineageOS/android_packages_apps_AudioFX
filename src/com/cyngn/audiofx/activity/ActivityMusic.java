@@ -3,6 +3,8 @@ package com.cyngn.audiofx.activity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +24,7 @@ import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.fragment.AudioFxFragment;
 import com.cyngn.audiofx.fragment.DTSFragment;
+import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.DtsControl;
 
 import java.util.ArrayList;
@@ -47,6 +50,8 @@ public class ActivityMusic extends Activity {
 
     private List<ActivityStateListener> mGlobalToggleListeners = new ArrayList<>();
 
+    private boolean mWaitingForService;
+
     public interface ActivityStateListener {
         public void onGlobalToggleChanged(final CompoundButton buttonView, boolean isChecked);
 
@@ -65,13 +70,44 @@ public class ActivityMusic extends Activity {
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         if (DEBUG)
             Log.i(TAG, "onCreate() called with "
                     + "savedInstanceState = [" + savedInstanceState + "]");
         super.onCreate(savedInstanceState);
-        mDts = new DtsControl(this);
+
+        final SharedPreferences globalPrefs =
+                getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
+        final boolean ready = globalPrefs
+                .getBoolean(Constants.SAVED_DEFAULTS, false);
+
+        if (!ready) {
+            mWaitingForService = true;
+            globalPrefs.registerOnSharedPreferenceChangeListener(
+                    new SharedPreferences.OnSharedPreferenceChangeListener() {
+                        @Override
+                        public void onSharedPreferenceChanged(
+                                SharedPreferences sharedPreferences, String key) {
+                            if (key.equals(Constants.SAVED_DEFAULTS)
+                                    && sharedPreferences.getBoolean(Constants.SAVED_DEFAULTS,
+                                    false)) {
+                                mWaitingForService = false;
+                                sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+                                init(savedInstanceState);
+                                setupDtsActionBar();
+                            }
+                        }
+                    });
+            startService(new Intent(ActivityMusic.this, AudioFxService.class));
+            // TODO add loading fragment if service initialization takes too long
+        } else {
+            init(savedInstanceState);
+        }
+    }
+
+    private void init(Bundle savedInstanceState) {
         mConfig = MasterConfigControl.getInstance(this);
+        mDts = new DtsControl(this);
 
         ActionBar ab = getActionBar();
         ab.setTitle(R.string.app_title);
@@ -164,6 +200,10 @@ public class ActivityMusic extends Activity {
     protected void onResume() {
         if (DEBUG) Log.i(TAG, "onResume() called with " + "");
         super.onResume();
+
+        if (mWaitingForService) {
+            return;
+        }
 
         /**
          * Since the app is 'persisted', the user cannot clear the app's data because the app will
