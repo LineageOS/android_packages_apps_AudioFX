@@ -1,22 +1,17 @@
 package com.cyngn.audiofx.eq;
 
-import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
-
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.service.OutputDevice;
 
-public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpdatedCallback,
-        ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
+public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpdatedCallback {
 
     private static final String TAG = EqBarView.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
@@ -33,10 +28,6 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
     private int mParentTop;
     private Integer mIndex;
     private float mInitialLevel;
-
-    private ValueAnimator mAnimator;
-    private boolean mInitialAnimation = true;
-
 
     public EqBarView(Context context) {
         super(context);
@@ -80,10 +71,6 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
         mConfig.removeEqStateChangeCallback(this);
     }
 
-    public void setInitialAnimation(boolean forceAnimate) {
-        mInitialAnimation = forceAnimate;
-    }
-
     private EqContainerView.EqBandInfo getInfo() {
         return (EqContainerView.EqBandInfo) getTag();
     }
@@ -94,12 +81,7 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
     }
 
     void updateHeight() {
-        if (DEBUG) Log.d(TAG, "updateHeight() mInitialAnimation=" + mInitialAnimation);
-
-        if (mAnimator != null) {
-            mAnimator.cancel();
-            mAnimator = null;
-        }
+        if (DEBUG) Log.d(TAG, "updateHeight()");
 
         if (getInfo() != null) {
             float level = mConfig.getLevel(getIndex());
@@ -111,18 +93,7 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
                 Log.d(TAG, getIndex() + "level: " + level + ", yProjection: "
                         + yProjection + ", mPosY: " + mPosY);
             }
-
-            if (mInitialAnimation) {
-                mInitialAnimation = false;
-                mAnimator = ValueAnimator.ofFloat(getLayoutParams().height, mPosY);
-                mAnimator.addUpdateListener(this);
-                mAnimator.addListener(this);
-                mAnimator.setDuration(800);
-                mAnimator.setInterpolator(new LinearInterpolator());
-                mAnimator.start();
-            } else {
-                updateHeight((int) mPosY);
-            }
+            updateHeight((int) mPosY);
         } else {
             if (DEBUG) Log.d(TAG, "could not updateHeight()");
         }
@@ -258,31 +229,6 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
 
     @Override
     public void onDeviceChanged(OutputDevice deviceId, boolean userChange) {
-
-    }
-
-    @Override
-    public void onAnimationUpdate(ValueAnimator animation) {
-        int val = (int) ((Float) animation.getAnimatedValue() + 0.5f);
-        updateHeight(val);
-    }
-
-    @Override
-    public void onAnimationStart(Animator animation) {
-//        setLayerType(LAYER_TYPE_HARDWARE, null);
-    }
-
-    @Override
-    public void onAnimationEnd(Animator animation) {
-//        setLayerType(LAYER_TYPE_NONE, null);
-    }
-
-    @Override
-    public void onAnimationCancel(Animator animation) {
-    }
-
-    @Override
-    public void onAnimationRepeat(Animator animation) {
 
     }
 }

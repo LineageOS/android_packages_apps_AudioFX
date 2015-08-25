@@ -151,22 +151,6 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         mConfig.unbindService();
     }
 
-    public void onFakeDataClear() {
-        int colorTo = !mConfig.isCurrentDeviceEnabled()
-                ? mDisabledColor
-                : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
-        animateBackgroundColorTo(colorTo, null, null);
-
-        updateEnabledState();
-
-        if (mEqFragment != null) {
-            mEqFragment.onFakeDataClear();
-        }
-        if (mControlFragment != null) {
-            mControlFragment.onFakeDataClear();
-        }
-    }
-
     public void updateBackgroundColors(Integer color, boolean cancelAnimated) {
         if (cancelAnimated && mColorChangeAnimator != null) {
             mColorChangeAnimator.cancel();
@@ -435,7 +419,6 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
                     mBluetoothDevices = outputDevices;
                     if (isVisible()) {
                         if (mEqFragment != null) {
-                            mEqFragment.mEqContainer.animateBars();
                             mEqFragment.jumpToPreset(mConfig.getCurrentPresetIndex());
                         }
                     }

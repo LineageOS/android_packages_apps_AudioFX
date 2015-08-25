@@ -271,49 +271,6 @@ public class MasterConfigControl {
         }
     }
 
-    /**
-     * Resets the state of the config to the default state
-     */
-    public synchronized void resetState() {
-        File prefsdir = new File(mContext.getApplicationInfo().dataDir, "shared_prefs");
-        if (prefsdir.exists() && prefsdir.isDirectory()) {
-            String[] files = prefsdir.list();
-            for (String name : files) {
-                File f = new File(prefsdir, name);
-                if (f.isFile() && !f.equals("global")) {
-                    f.delete();
-                }
-            }
-        }
-
-        if (mService != null) {
-            mService.applyDefaults();
-        } else {
-            Log.e(TAG, "resetState() but we have no service to apply defaults to!");
-        }
-
-        for (int i = getPresetCount() - 1; i >= 0; i--) {
-            Preset p = getPreset(i);
-            if (p instanceof CustomPreset) {
-                if (p instanceof PermCustomPreset) {
-                    ((PermCustomPreset) p).setLevels(EqUtils.stringBandsToFloats(mZeroedBandString));
-                } else {
-                    removePreset(i);
-                }
-            }
-        }
-        setCurrentDeviceEnabled(isCurrentDeviceEnabled());
-        final KnobCommander knobs = KnobCommander.getInstance(mContext);
-        knobs.setVirtualiserStrength(knobs.getVirtualizerStrength());
-        knobs.setVirtualizerEnabled(knobs.isVirtualizerEffectEnabled());
-        knobs.setBassStrength(knobs.getBassStrength());
-        knobs.setBassEnabled(knobs.isBassEffectEnabled());
-        knobs.setTrebleStrength(knobs.getTrebleStrength());
-        knobs.setTrebleEnabled(knobs.isTrebleEffectEnabled());
-        setMaxxVolumeEnabled(getMaxxVolumeEnabled());
-        setPreset(0); // calls updateEqControls()
-    }
-
     private void savePresetsDelayed() {
         mHandler.sendEmptyMessageDelayed(MSG_SAVE_PRESETS, 500);
     }

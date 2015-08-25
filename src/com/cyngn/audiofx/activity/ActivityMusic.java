@@ -205,20 +205,6 @@ public class ActivityMusic extends Activity {
             return;
         }
 
-        /**
-         * Since the app is 'persisted', the user cannot clear the app's data because the app will
-         * still be in memory after they try and force close it. Let's mimic clearing the data if we
-         * detect this.
-         */
-        if (!getSharedPrefsFile(Constants.AUDIOFX_GLOBAL_FILE).exists()) {
-            Log.w(TAG, "missing global configuration file, resetting state");
-            AudioFxFragment frag = (AudioFxFragment) getFragmentManager()
-                    .findFragmentByTag(TAG_AUDIOFX);
-            if (frag != null) {
-                frag.onFakeDataClear();
-            }
-        }
-
         // action bar controls need to live beyond all fragments
         setupDtsActionBar();
     }

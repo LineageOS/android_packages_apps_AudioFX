@@ -62,9 +62,4 @@ public class AudioFxBaseFragment extends Fragment {
     public void updateEnabledState() {
 
     }
-
-    public void onFakeDataClear() {
-
-    }
-
 }

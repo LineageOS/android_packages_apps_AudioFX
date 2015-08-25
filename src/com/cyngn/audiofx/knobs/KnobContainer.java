@@ -223,8 +223,8 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
                 v = mTrebleContainer;
                 break;
         }
-        if (v == null) {
-            throw new UnsupportedOperationException("no knob container");
+        if (v == null && visible) {
+            throw new UnsupportedOperationException("no knob container for knob: " + knob);
         }
 
         if (newMode == v.getVisibility()) {

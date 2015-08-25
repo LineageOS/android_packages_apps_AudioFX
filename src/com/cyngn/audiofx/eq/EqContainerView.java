@@ -184,12 +184,6 @@ public class EqContainerView extends FrameLayout
         return false;
     }
 
-    public void animateBars() {
-        for (EqBarView mBarView : mBarViews) {
-            mBarView.setInitialAnimation(true);
-        }
-    }
-
     private void generateAndAddBars() {
         if (mFirstLayout) {
             mFirstLayout = false;

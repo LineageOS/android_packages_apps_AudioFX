@@ -90,23 +90,11 @@ public class EqualizerFragment extends AudioFxBaseFragment
     }
 
     @Override
-    public void onFakeDataClear() {
-        super.onFakeDataClear();
-        mInfiniteAdapter.notifyDataSetChanged();
-        mDataAdapter.notifyDataSetChanged();
-        mPresetPageIndicator.notifyDataSetChanged();
-        mViewPager.invalidate();
-
-        jumpToPreset(mConfig.getCurrentPresetIndex());
-    }
-
-    @Override
     public void updateFragmentBackgroundColors(int color) {
         if (getActivity() != null && getActivity().getWindow() != null) {
             getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(color));
         }
     }
-
 
     public void jumpToPreset(int index) {
         int diff = index - (mCurrentRealPage % mDataAdapter.getCount());
