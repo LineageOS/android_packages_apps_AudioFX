@@ -15,7 +15,6 @@
     <LinearLayout
             android:orientation="vertical"
             android:id="@+id/preset_container"
-            android:layout_weight="0"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -28,7 +27,6 @@
         <com.viewpagerindicator.CirclePageIndicator
                 android:id="@+id/indicator"
                 android:padding="10dip"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
         />

@@ -44,8 +44,7 @@
                 android:theme="@style/AppThemeV2"
                 android:label="@string/eq_dialog_title"
                 android:launchMode="singleInstance"
-                android:configChanges="locale"
-                android:screenOrientation="portrait">
+                android:configChanges="locale|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -106,7 +105,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receiver.PresetChangeReceiver"
+        <receiver android:name=".receiver.DeviceOutputChangeReceiver"
                   android:exported="false">
             <intent-filter>
                 <action android:name="org.cyanogenmod.audiofx.ACTION_DEVICE_OUTPUT_CHANGED"/>

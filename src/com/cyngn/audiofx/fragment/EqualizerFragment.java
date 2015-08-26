@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import com.cyngn.audiofx.R;
-import com.cyngn.audiofx.activity.ActivityMusic;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.eq.EqContainerView;
 import com.cyngn.audiofx.preset.InfinitePagerAdapter;
@@ -38,8 +37,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
 
     Handler mHandler;
     public EqContainerView mEqContainer;
-    ViewGroup mPresetContainer;
-    InfiniteViewPager mViewPager;
+    InfiniteViewPager mPresetPager;
     PageIndicator mPresetPageIndicator;
     PresetPagerAdapter mDataAdapter;
     InfinitePagerAdapter mInfiniteAdapter;
@@ -101,7 +99,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
         // double it, short (e.g. 1 hop) distances sometimes bug out??
         diff += mDataAdapter.getCount();
         int newPage = mCurrentRealPage + diff;
-        mViewPager.setCurrentItemAbsolute(newPage, false);
+        mPresetPager.setCurrentItemAbsolute(newPage, false);
     }
 
     private void removeCurrentCustomPreset(boolean showWarning) {
@@ -143,11 +141,11 @@ public class EqualizerFragment extends AudioFxBaseFragment
 
             public void onClick(DialogInterface d, int which) {
                 mConfig.renameCurrentPreset(newName.getText().toString());
-                final TextView viewWithTag = (TextView) mViewPager
+                final TextView viewWithTag = (TextView) mPresetPager
                         .findViewWithTag(mConfig.getCurrentPreset());
                 viewWithTag.setText(newName.getText().toString());
                 mDataAdapter.notifyDataSetChanged();
-                mViewPager.invalidate();
+                mPresetPager.invalidate();
             }
         });
 
@@ -173,8 +171,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         mEqContainer = (EqContainerView) view.findViewById(R.id.eq_container);
-        mPresetContainer = (ViewGroup) view.findViewById(R.id.preset_container);
-        mViewPager = (InfiniteViewPager) view.findViewById(R.id.pager);
+        mPresetPager = (InfiniteViewPager) view.findViewById(R.id.pager);
         CirclePageIndicator indicator = (CirclePageIndicator) view.findViewById(R.id.indicator);
         mPresetPageIndicator = indicator;
 
@@ -183,12 +180,12 @@ public class EqualizerFragment extends AudioFxBaseFragment
         mInfiniteAdapter = new InfinitePagerAdapter(adapter);
         mDataAdapter = adapter;
 
-        mViewPager.setAdapter(mInfiniteAdapter);
+        mPresetPager.setAdapter(mInfiniteAdapter);
         mFakePager = (ViewPager) view.findViewById(R.id.fake_pager);
 
-        mViewPager.setOnPageChangeListener(mViewPageChangeListener);
+        mPresetPager.setOnPageChangeListener(mViewPageChangeListener);
 
-        mViewPager.setCurrentItem(mSelectedPosition = mConfig.getCurrentPresetIndex());
+        mPresetPager.setCurrentItem(mSelectedPosition = mConfig.getCurrentPresetIndex());
 
         mFakePager.setAdapter(adapter);
         mEqContainer.findViewById(R.id.save).setOnClickListener(
@@ -233,11 +230,9 @@ public class EqualizerFragment extends AudioFxBaseFragment
             }
         });
         indicator.setSnap(true);
-
-        updateFragmentBackgroundColors(getCurrentBackgroundColor());
-
         mCurrentRealPage = mInfiniteAdapter.getRealCount() * 100;
 
+        updateFragmentBackgroundColors(getCurrentBackgroundColor());
     }
 
 
@@ -257,7 +252,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
 
                 mInfiniteAdapter.notifyDataSetChanged();
                 mDataAdapter.notifyDataSetChanged();
-                mViewPager.getAdapter().notifyDataSetChanged();
+                mPresetPager.getAdapter().notifyDataSetChanged();
                 // do background transition manually as viewpager can't handle this bg change
                 final Integer colorTo = !mConfig.isCurrentDeviceEnabled()
                         ? getDisabledColor()
@@ -270,7 +265,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
                         int newPage = mCurrentRealPage + diff;
 
                         mAnimatingToRealPageTarget = newPage;
-                        mViewPager.setCurrentItemAbsolute(newPage);
+                        mPresetPager.setCurrentItemAbsolute(newPage);
                     }
 
                     @Override
@@ -334,13 +329,12 @@ public class EqualizerFragment extends AudioFxBaseFragment
                 mDeviceChanging = true;
 
                 if (!samePage) {
-                    mViewPager.setCurrentItemAbsolute(newPage);
+                    mPresetPager.setCurrentItemAbsolute(newPage);
                 }
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-//                setBackgroundColor(colorTo);
                 mConfig.setChangingPresets(false);
 
                 mSelectedPosition = mConfig.getCurrentPresetIndex();

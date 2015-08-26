@@ -508,7 +508,7 @@ public class AudioFxService extends Service {
 
     // ======== output routing ============= //
 
-    public List<OutputDevice> getBluetoothDevices() {
+    public synchronized List<OutputDevice> getBluetoothDevices() {
         ArrayList<OutputDevice> devices = new ArrayList<OutputDevice>();
         Set<Map.Entry<BluetoothDevice, DeviceInfo>> entries = mDeviceInfo.entrySet();
         for (Map.Entry<BluetoothDevice, DeviceInfo> entry : entries) {
@@ -526,7 +526,7 @@ public class AudioFxService extends Service {
         return getCurrentDevice().getDevicePreferenceName(AudioFxService.this);
     }
 
-    public OutputDevice getCurrentDevice() {
+    public synchronized OutputDevice getCurrentDevice() {
         final int audioOutputRouting = getAudioOutputRouting();
         if (DEBUG) Log.d(TAG, "getCurrentDevice, audioOutputRouting=" + audioOutputRouting);
         switch (audioOutputRouting) {
@@ -682,6 +682,8 @@ public class AudioFxService extends Service {
         private boolean mUseWifiDisplay;
         private boolean mUseSpeaker;
 
+        private boolean mInitial = true;
+
         @Override
         public void onAudioPortListUpdate(AudioPort[] portList) {
             final boolean prevUseHeadset = mUseHeadset;
@@ -708,7 +710,11 @@ public class AudioFxService extends Service {
 
             if (DEBUG) Log.i(TAG, "Headset=" + mUseHeadset + "; Bluetooth="
                     + mUseBluetooth + " ; USB=" + mUseUSB + "; Speaker=" + mUseSpeaker);
-            if (prevUseHeadset != mUseHeadset
+            if (mInitial) {
+                // don't send the first update. we always get an update after registering as a
+                // listener. let's use that to establish an initial state.
+                mInitial = false;
+            } else  if (prevUseHeadset != mUseHeadset
                     || prevUseBluetooth != mUseBluetooth
                     || prevUseUSB != mUseUSB
                     || prevUseWireless != mUseWifiDisplay

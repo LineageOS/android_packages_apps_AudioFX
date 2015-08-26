@@ -17,10 +17,12 @@ package com.cyngn.audiofx.knobs;
 
 import android.animation.LayoutTransition;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,17 +55,14 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
 
     public KnobContainer(Context context) {
         super(context);
-        init();
     }
 
     public KnobContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
     }
 
     public KnobContainer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init();
     }
 
     @Override
@@ -105,6 +104,8 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        init();
+
         if (DEBUG) Log.d(TAG, "onFinishInflate()");
 
         OnTouchListener knobTouchListener = new OnTouchListener() {
@@ -136,7 +137,8 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
 
         if (mTrebleContainer != null) {
             mTrebleKnob = (RadialKnob) mTrebleContainer.findViewById(R.id.knob);
-            mTrebleKnob.setTag(new KnobInfo(mTrebleKnob, mTrebleContainer.findViewById(R.id.label)));
+            mTrebleKnob.setTag(new KnobInfo(mTrebleKnob,
+                    mTrebleContainer.findViewById(R.id.label)));
             mTrebleKnob.setOnTouchListener(knobTouchListener);
             mTrebleKnob.setOnKnobChangeListener(
                     KnobCommander.getInstance(getContext()).getRadialKnobCallback(
@@ -160,7 +162,8 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
         }
         if (mVirtualizerContainer != null) {
             mVirtualizerKnob = (RadialKnob) mVirtualizerContainer.findViewById(R.id.knob);
-            mVirtualizerKnob.setTag(new KnobInfo(mVirtualizerKnob, mVirtualizerContainer.findViewById(R.id.label)));
+            mVirtualizerKnob.setTag(new KnobInfo(mVirtualizerKnob,
+                    mVirtualizerContainer.findViewById(R.id.label)));
             mVirtualizerKnob.setOnTouchListener(knobTouchListener);
             mVirtualizerKnob.setOnKnobChangeListener(
                     KnobCommander.getInstance(getContext()).getRadialKnobCallback(
@@ -177,7 +180,8 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
     }
 
     private ViewGroup addKnob(int whichKnob) {
-        ViewGroup knobContainer = (ViewGroup) View.inflate(mContext, R.layout.generic_knob_control, null);
+        ViewGroup knobContainer = (ViewGroup) LayoutInflater.from(mContext)
+                .inflate(R.layout.generic_knob_control, this, false);
         TextView label = (TextView) knobContainer.findViewById(R.id.label);
 
         int newContainerId = 0;
@@ -205,8 +209,17 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
         knobContainer.setId(newContainerId);
         label.setText(knobLabelRes);
 
-        addView(knobContainer, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+        addView(knobContainer, getKnobParams());
         return knobContainer;
+    }
+
+    private LayoutParams getKnobParams() {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+        } else {
+            return new LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1);
+        }
     }
 
     public void setKnobVisible(int knob, boolean visible) {
@@ -233,12 +246,13 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
         Log.d(TAG, "setKnobVisible() knob=" + knob + " visible=" + visible);
         v.setVisibility(newMode);
 
-        if (MasterConfigControl.getInstance(mContext).hasMaxxAudio()) { // only used on maxx audio layout
+        // only used on maxx audio layout
+        if (MasterConfigControl.getInstance(mContext).hasMaxxAudio()) {
             /* ensure spacing looks ok!
              *
              * it goes like, Space, knob layout, Space, knob layout, Space, etc.....
-             * starting with the first knob (skipping the first space), ensure the pairs have the same
-             * visibility so there's no extra space at the end.
+             * starting with the first knob (skipping the first space), ensure the pairs have the
+             * same visibility so there's no extra space at the end.
              */
             for (int i = 1; i < getChildCount() - 1; i += 2) {
                 View layout = getChildAt(i);
@@ -314,7 +328,7 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
 
     @Override
     public void onDeviceChanged(OutputDevice device, boolean userChange) {
-       updateKnobs(device);
+        updateKnobs(device);
     }
 
     private void updateKnobs(OutputDevice device) {

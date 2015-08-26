@@ -50,7 +50,7 @@ public class ActivityMusic extends Activity {
 
     private List<ActivityStateListener> mGlobalToggleListeners = new ArrayList<>();
 
-    private boolean mWaitingForService;
+    private boolean mWaitingForService = true;
 
     public interface ActivityStateListener {
         public void onGlobalToggleChanged(final CompoundButton buttonView, boolean isChecked);
@@ -76,13 +76,15 @@ public class ActivityMusic extends Activity {
                     + "savedInstanceState = [" + savedInstanceState + "]");
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_main);
+
         final SharedPreferences globalPrefs =
                 getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
         final boolean ready = globalPrefs
                 .getBoolean(Constants.SAVED_DEFAULTS, false);
 
-        if (!ready) {
-            mWaitingForService = true;
+        mWaitingForService = !ready;
+        if (mWaitingForService) {
             globalPrefs.registerOnSharedPreferenceChangeListener(
                     new SharedPreferences.OnSharedPreferenceChangeListener() {
                         @Override
@@ -91,10 +93,12 @@ public class ActivityMusic extends Activity {
                             if (key.equals(Constants.SAVED_DEFAULTS)
                                     && sharedPreferences.getBoolean(Constants.SAVED_DEFAULTS,
                                     false)) {
-                                mWaitingForService = false;
                                 sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
                                 init(savedInstanceState);
                                 setupDtsActionBar();
+
+                                mWaitingForService = false;
+                                invalidateOptionsMenu();
                             }
                         }
                     });
@@ -156,8 +160,6 @@ public class ActivityMusic extends Activity {
             ab.setCustomView(mCurrentDeviceToggle, params);
         }
 
-        setContentView(R.layout.activity_main);
-
         if (savedInstanceState == null && findViewById(R.id.main_fragment) != null) {
             getFragmentManager()
                     .beginTransaction()
@@ -177,7 +179,7 @@ public class ActivityMusic extends Activity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mDts.hasDts()) {
+        if (!mWaitingForService && mDts.hasDts()) {
             final boolean audioFX = mCurrentMode == CURRENT_MODE_AUDIOFX;
             final int padding = getResources().getDimensionPixelSize(
                     audioFX ? R.dimen.action_bar_switch_padding

@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
 
+import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 
 /**
@@ -44,14 +45,10 @@ public class InfiniteViewPager extends ViewPager {
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int maxHeight = 0;
-        for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(i);
-            child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-            maxHeight = Math.max(maxHeight, child.getMeasuredHeight());
-        }
-
-        super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.EXACTLY));
+        int textSize = getResources().getDimensionPixelSize(R.dimen.preset_text_size)
+                + getResources().getDimensionPixelSize(R.dimen.preset_text_padding);
+        super.onMeasure(widthMeasureSpec,
+                MeasureSpec.makeMeasureSpec(textSize, MeasureSpec.EXACTLY));
     }
 
     @Override

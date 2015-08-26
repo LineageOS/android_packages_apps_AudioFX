@@ -16,6 +16,7 @@ import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.eq.EqUtils;
 import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.OutputDevice;
+import libcore.util.Objects;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,7 +65,6 @@ public class MasterConfigControl {
                     if (DEBUG) Log.i(TAG, "onServiceConnected ");
                     mService = ((AudioFxService.LocalBinder) binder);
                     setCurrentDevice(mService.getCurrentDevice(), false); // update from service
-                    mService.update();
                     updateEqControls();
                 }
 
@@ -128,6 +128,7 @@ public class MasterConfigControl {
 
     ArrayList<EqUpdatedCallback> mEqUpdateCallbacks;
 
+    private List<OutputDevice> mCachedBluetoothDevices;
     private OutputDevice mCurrentDevice =
             new OutputDevice(OutputDevice.DEVICE_SPEAKER); // default!
 
@@ -235,7 +236,7 @@ public class MasterConfigControl {
     }
 
     public SharedPreferences getGlobalPrefs() {
-        return mContext.getSharedPreferences("global", 0);
+        return mContext.getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
     }
 
     public boolean isChangingPresets() {
@@ -243,14 +244,18 @@ public class MasterConfigControl {
     }
 
     public void setChangingPresets(boolean changing) {
-        mChangingPreset = changing;
-        if (changing) {
-            mEqControlState.saveVisible = false;
-            mEqControlState.removeVisible = false;
-            mEqControlState.renameVisible = false;
-            mEqControlState.unlockVisible = false;
-            if (mEqCallback != null) {
-                mEqCallback.updateEqState();
+        if (mChangingPreset != changing) {
+            mChangingPreset = changing;
+            if (changing) {
+                mEqControlState.saveVisible = false;
+                mEqControlState.removeVisible = false;
+                mEqControlState.renameVisible = false;
+                mEqControlState.unlockVisible = false;
+                if (mEqCallback != null) {
+                    mEqCallback.updateEqState();
+                }
+            } else {
+                updateEqControls();
             }
         }
     }
@@ -276,15 +281,31 @@ public class MasterConfigControl {
     }
 
     /**
+     * @return returns the current device key that's in use
+     */
+    public OutputDevice getCurrentDevice() {
+        return mCurrentDevice;
+    }
+
+    /**
      * Update the current device used when querying any device-specific values such as the current
      * preset, or the user's custom eq preset settings.
      *
      * @param audioOutputRouting the new device key
      */
     public void setCurrentDevice(OutputDevice audioOutputRouting, boolean userSwitch) {
+        final OutputDevice currentDevice = getCurrentDevice();
+
         mCurrentDevice = audioOutputRouting;
+
+        if (Objects.equal(currentDevice, getCurrentDevice())) {
+            // nothing to do
+            return;
+        }
+
         // need to update the current preset based on the device here.
-        int newPreset = Integer.parseInt(getPrefs().getString(Constants.DEVICE_AUDIOFX_EQ_PRESET, "0"));
+        int newPreset = Integer.parseInt(getPrefs().getString(Constants.DEVICE_AUDIOFX_EQ_PRESET,
+                "0"));
         if (newPreset > mEqPresets.size() - 1) {
             newPreset = 0;
         }
@@ -395,6 +416,7 @@ public class MasterConfigControl {
      */
     public synchronized void addEqStateChangeCallback(EqUpdatedCallback callback) {
         mEqUpdateCallbacks.add(callback);
+        callback.onDeviceChanged(getCurrentDevice(), false);
     }
 
     /**
@@ -409,13 +431,6 @@ public class MasterConfigControl {
     public SharedPreferences getPrefs() {
         return mContext.getSharedPreferences(
                 getCurrentDevice().getDevicePreferenceName(mContext), 0);
-    }
-
-    /**
-     * @return returns the current device key that's in use
-     */
-    public OutputDevice getCurrentDevice() {
-        return mCurrentDevice;
     }
 
     /**
@@ -496,9 +511,10 @@ public class MasterConfigControl {
     private void updateEqControls() {
         //boolean removeVisible, boolean renameVisible, boolean exportVisible
         mEqControlState.saveVisible = mEQCustomPresetPosition == mCurrentPreset;
-        mEqControlState.removeVisible = isUserPreset();
-        mEqControlState.renameVisible = isUserPreset();
-        mEqControlState.unlockVisible = isUserPreset();
+        final boolean userPreset = isUserPreset();
+        mEqControlState.removeVisible = userPreset;
+        mEqControlState.renameVisible = userPreset;
+        mEqControlState.unlockVisible = userPreset;
         if (mEqCallback != null) {
             mEqCallback.updateEqState();
         }
@@ -890,9 +906,9 @@ public class MasterConfigControl {
 
     public List<OutputDevice> getBluetoothDevices() {
         if (mService != null) {
-            return mService.getBluetoothDevices();
+            return mCachedBluetoothDevices = mService.getBluetoothDevices();
         }
-        return null;
+        return mCachedBluetoothDevices;
     }
 
     private final Handler mHandler = new Handler() {

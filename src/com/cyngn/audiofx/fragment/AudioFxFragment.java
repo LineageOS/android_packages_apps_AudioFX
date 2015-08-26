@@ -55,7 +55,6 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
     private Map<Integer, OutputDevice> mBluetoothMap
             = new ArrayMap<Integer, OutputDevice>();
     List<OutputDevice> mBluetoothDevices = null;
-    private boolean mResumeDeviceChanged;
     private boolean mUsbDeviceConnected;
 
     EqualizerFragment mEqFragment;
@@ -81,6 +80,8 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         ((ActivityMusic) getActivity()).addToggleListener(this);
 
         mCurrentMode = ((ActivityMusic) getActivity()).getCurrentMode();
+
+        mConfig.bindService(); // bind early
     }
 
     @Override
@@ -127,11 +128,9 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
     @Override
     public void onResume() {
         super.onResume();
-        mResumeDeviceChanged = true;
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(AudioFxService.ACTION_BLUETOOTH_DEVICES_UPDATED);
-        filter.addAction(AudioFxService.ACTION_DEVICE_OUTPUT_CHANGED);
         filter.addAction(AudioManager.ACTION_DIGITAL_AUDIO_DOCK_PLUG);
         filter.addAction(AudioManager.ACTION_ANALOG_AUDIO_DOCK_PLUG);
         filter.addAction(AudioManager.ACTION_USB_AUDIO_DEVICE_PLUG);
@@ -185,11 +184,13 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.devices, menu);
         mMenuDevices = menu.findItem(R.id.devices);
+        mBluetoothDevices = mConfig.getBluetoothDevices();
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
+
         final OutputDevice currentDevice = mConfig.getCurrentDevice();
         updateActionBarDeviceIcon();
 
@@ -197,43 +198,41 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         usb.setVisible(mUsbDeviceConnected);
 
         // select proper device
-        if (mConfig.isServiceBound()) {
-            MenuItem selectedItem = null;
+        MenuItem selectedItem = null;
 
-            if (mBluetoothDevices != null) {
-                // remove previous bluetooth entries
-                for (Integer id : mBluetoothMap.keySet()) {
-                    mMenuDevices.getSubMenu().removeItem(id);
+        if (mBluetoothDevices != null) {
+            // remove previous bluetooth entries
+            for (Integer id : mBluetoothMap.keySet()) {
+                mMenuDevices.getSubMenu().removeItem(id);
+            }
+            mBluetoothMap.clear();
+
+            for (int i = 0; i < mBluetoothDevices.size(); i++) {
+                int viewId = View.generateViewId();
+                mBluetoothMap.put(viewId, mBluetoothDevices.get(i));
+                MenuItem item = mMenuDevices.getSubMenu().add(R.id.device_group, viewId, i,
+                        mBluetoothDevices.get(i).getDisplayName());
+                if (mBluetoothDevices.get(i).equals(currentDevice)) {
+                    selectedItem = item;
                 }
-                mBluetoothMap.clear();
+                item.setIcon(R.drawable.ic_action_dsp_icons_bluetoof);
+            }
+        }
+        mMenuDevices.getSubMenu().setGroupCheckable(R.id.device_group, true, true);
 
-                for (int i = 0; i < mBluetoothDevices.size(); i++) {
-                    int viewId = View.generateViewId();
-                    mBluetoothMap.put(viewId, mBluetoothDevices.get(i));
-                    MenuItem item = mMenuDevices.getSubMenu().add(R.id.device_group, viewId, i,
-                            mBluetoothDevices.get(i).getDisplayName());
-                    if (mBluetoothDevices.get(i).equals(currentDevice)) {
-                        selectedItem = item;
-                    }
-                    item.setIcon(R.drawable.ic_action_dsp_icons_bluetoof);
-                }
-            }
-            mMenuDevices.getSubMenu().setGroupCheckable(R.id.device_group, true, true);
-
-            switch (currentDevice.getDeviceType()) {
-                case OutputDevice.DEVICE_SPEAKER:
-                    selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_speaker);
-                    break;
-                case OutputDevice.DEVICE_USB:
-                    selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_usb);
-                    break;
-                case OutputDevice.DEVICE_HEADSET:
-                    selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_headset);
-                    break;
-            }
-            if (selectedItem != null) {
-                selectedItem.setChecked(true);
-            }
+        switch (currentDevice.getDeviceType()) {
+            case OutputDevice.DEVICE_SPEAKER:
+                selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_speaker);
+                break;
+            case OutputDevice.DEVICE_USB:
+                selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_usb);
+                break;
+            case OutputDevice.DEVICE_HEADSET:
+                selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_headset);
+                break;
+        }
+        if (selectedItem != null) {
+            selectedItem.setChecked(true);
         }
     }
 
@@ -265,19 +264,20 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
                 item.setChecked(!item.isChecked());
             }
             final OutputDevice finalNewDevice = newDevice;
-            mHandler.postDelayed(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     mConfig.setCurrentDevice(finalNewDevice, true);
                 }
-            }, 100);
+            });
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             Bundle savedInstanceState) {
         if (container == null) {
             Log.w(TAG, "container is null.");
             // no longer displaying this fragment
@@ -298,8 +298,10 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         }
 
         if (createNewFrags) {
-            fragmentTransaction.add(R.id.equalizer, mEqFragment = new EqualizerFragment(), TAG_EQUALIZER);
-            fragmentTransaction.add(R.id.controls, mControlFragment = new ControlsFragment(), TAG_CONTROLS);
+            fragmentTransaction.add(R.id.equalizer, mEqFragment = new EqualizerFragment(),
+                    TAG_EQUALIZER);
+            fragmentTransaction.add(R.id.controls, mControlFragment = new ControlsFragment(),
+                    TAG_CONTROLS);
         }
 
         fragmentTransaction.commit();
@@ -369,8 +371,6 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
                         getActivity().invalidateOptionsMenu();
                     }
                 });
-            } else if (AudioFxService.ACTION_DEVICE_OUTPUT_CHANGED.equals(intent.getAction())) {
-                getActivity().invalidateOptionsMenu();
             } else if (AudioManager.ACTION_DIGITAL_AUDIO_DOCK_PLUG.equals(intent.getAction())
                     || AudioManager.ACTION_ANALOG_AUDIO_DOCK_PLUG.equals(intent.getAction())
                     || AudioManager.ACTION_USB_AUDIO_DEVICE_PLUG.equals(intent.getAction())) {
@@ -398,33 +398,8 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
 
     @Override
     public void onDeviceChanged(OutputDevice deviceId, boolean userChange) {
-        getActivity().invalidateOptionsMenu();
         updateEnabledState();
-
-        if (mResumeDeviceChanged) {
-            new AsyncTask<Void, Void, List<OutputDevice>>() {
-
-                @Override
-                protected void onPreExecute() {
-                    mResumeDeviceChanged = false;
-                }
-
-                @Override
-                protected List<OutputDevice> doInBackground(Void... params) {
-                    return mConfig.getBluetoothDevices();
-                }
-
-                @Override
-                protected void onPostExecute(List<OutputDevice> outputDevices) {
-                    mBluetoothDevices = outputDevices;
-                    if (isVisible()) {
-                        if (mEqFragment != null) {
-                            mEqFragment.jumpToPreset(mConfig.getCurrentPresetIndex());
-                        }
-                    }
-                }
-            }.execute((Void) null);
-        }
+        getActivity().invalidateOptionsMenu();
     }
 
     private void updateActionBarDeviceIcon() {

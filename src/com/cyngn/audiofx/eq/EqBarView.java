@@ -19,7 +19,7 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
     MasterConfigControl mConfig;
 
     private float mNormalWidth;
-    private float mParentHeight;
+    private float mParentHeight = -1;
     private float mLastTouchX;
     private float mLastTouchY;
     private float mPosX;
@@ -78,6 +78,7 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
     public void setParentHeight(float h, int top) {
         mParentHeight = h;
         mParentTop = top;
+        updateHeight();
     }
 
     void updateHeight() {
@@ -99,7 +100,7 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
         }
     }
 
-    private int getIndex() {
+    public int getIndex() {
         if (mIndex == null) {
             mIndex = (getInfo()).mIndex;
         }
@@ -126,20 +127,14 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
     /* package */ void endInteraction() {
         mUserInteracting = false;
 
-        updateWidth((int)mNormalWidth);
+        updateWidth((int) mNormalWidth);
     }
 
     private void updateHeight(int h) {
-        if (isInLayout()) {
-            return;
-        }
-
-        final ViewGroup.LayoutParams params = getLayoutParams();
-        params.height = h;
-        setLayoutParams(params);
-
-        if (getParent() instanceof View) {
-            ((View) getParent()).postInvalidateOnAnimation();
+        if (!isInLayout()) {
+            final ViewGroup.LayoutParams params = getLayoutParams();
+            params.height = h;
+            setLayoutParams(params);
         }
     }
 
