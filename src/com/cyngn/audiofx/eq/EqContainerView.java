@@ -70,6 +70,24 @@ public class EqContainerView extends FrameLayout
     private int mBarSeparation;
     private int mBarBottomGrabSpacePadding;
 
+    public void stopListening() {
+        for (EqBarView barView : mBarViews) {
+            barView.setTag(null);
+            mConfig.removeEqStateChangeCallback(barView);
+        }
+        mConfig.removeEqStateChangeCallback(this);
+    }
+
+    public void startListening() {
+        for (int i = 0; i < mBandInfo.size(); i++) {
+
+            final EqBarView eqBarView = mBarViews.get(i);
+            eqBarView.setTag(mBandInfo.get(i));
+            mConfig.addEqStateChangeCallback(eqBarView);
+        }
+        mConfig.addEqStateChangeCallback(this);
+    }
+
     public static class EqBandInfo {
         public int mIndex;
 

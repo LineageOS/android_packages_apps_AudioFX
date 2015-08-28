@@ -1,9 +1,10 @@
-package com.cyngn.audiofx.service;
+package com.cyngn.audiofx.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.audiofx.AudioEffect;
+import com.cyngn.audiofx.service.AudioFxService;
 
 public class ServiceDispatcher extends BroadcastReceiver {
     @Override

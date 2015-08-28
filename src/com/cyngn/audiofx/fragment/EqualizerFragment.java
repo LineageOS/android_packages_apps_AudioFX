@@ -38,7 +38,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
     Handler mHandler;
     public EqContainerView mEqContainer;
     InfiniteViewPager mPresetPager;
-    PageIndicator mPresetPageIndicator;
+    CirclePageIndicator mPresetPageIndicator;
     PresetPagerAdapter mDataAdapter;
     InfinitePagerAdapter mInfiniteAdapter;
     int mCurrentRealPage;
@@ -67,24 +67,23 @@ public class EqualizerFragment extends AudioFxBaseFragment
         mHandler = new Handler();
 
         mSelectedPositionBands = mConfig.getPersistedPresetLevels(mConfig.getCurrentPresetIndex());
-
     }
 
     @Override
     public void onPause() {
-        super.onPause();
+        mEqContainer.stopListening();
         mConfig.removeEqStateChangeCallback(this);
+        super.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        mEqContainer.startListening();
         mConfig.addEqStateChangeCallback(this);
 
-        final Integer colorTo = !mConfig.isCurrentDeviceEnabled()
-                ? getDisabledColor()
-                : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
-        animateBackgroundColorTo(colorTo, null, null);
+        mPresetPageIndicator.notifyDataSetChanged();
+        mDataAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -172,22 +171,9 @@ public class EqualizerFragment extends AudioFxBaseFragment
 
         mEqContainer = (EqContainerView) view.findViewById(R.id.eq_container);
         mPresetPager = (InfiniteViewPager) view.findViewById(R.id.pager);
-        CirclePageIndicator indicator = (CirclePageIndicator) view.findViewById(R.id.indicator);
-        mPresetPageIndicator = indicator;
-
-        final PresetPagerAdapter adapter = new PresetPagerAdapter(getActivity());
-
-        mInfiniteAdapter = new InfinitePagerAdapter(adapter);
-        mDataAdapter = adapter;
-
-        mPresetPager.setAdapter(mInfiniteAdapter);
+        mPresetPageIndicator  = (CirclePageIndicator) view.findViewById(R.id.indicator);
         mFakePager = (ViewPager) view.findViewById(R.id.fake_pager);
 
-        mPresetPager.setOnPageChangeListener(mViewPageChangeListener);
-
-        mPresetPager.setCurrentItem(mSelectedPosition = mConfig.getCurrentPresetIndex());
-
-        mFakePager.setAdapter(adapter);
         mEqContainer.findViewById(R.id.save).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -221,20 +207,32 @@ public class EqualizerFragment extends AudioFxBaseFragment
                 }
         );
 
-        indicator.setViewPager(mFakePager, mConfig.getCurrentPresetIndex());
-        indicator.setOnTouchListener(new View.OnTouchListener() {
+        mSelectedPosition = mConfig.getCurrentPresetIndex();
+
+        mDataAdapter = new PresetPagerAdapter(getActivity());
+        mInfiniteAdapter = new InfinitePagerAdapter(mDataAdapter);
+
+        mPresetPager.setAdapter(mInfiniteAdapter);
+        mPresetPager.setOnPageChangeListener(mViewPageChangeListener);
+
+        mFakePager.setAdapter(mDataAdapter);
+        mCurrentRealPage = mPresetPager.getCurrentItem();
+
+        mPresetPageIndicator.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 // eat all events
                 return true;
             }
         });
-        indicator.setSnap(true);
-        mCurrentRealPage = mInfiniteAdapter.getRealCount() * 100;
+        mPresetPageIndicator.setSnap(true);
 
-        updateFragmentBackgroundColors(getCurrentBackgroundColor());
+        mPresetPageIndicator.setViewPager(mFakePager, 0);
+        mPresetPageIndicator.setCurrentItem(mSelectedPosition);
+
+        mFakePager.setCurrentItem(mSelectedPosition);
+        mPresetPager.setCurrentItem(mSelectedPosition);
     }
-
 
     @Override
     public void onBandLevelChange(int band, float dB, boolean fromSystem) {
@@ -289,10 +287,6 @@ public class EqualizerFragment extends AudioFxBaseFragment
 
     @Override
     public void onPresetChanged(int newPresetIndex) {
-        mDataAdapter.notifyDataSetChanged();
-        if (!mDeviceChanging) {
-            mSelectedPositionBands = mConfig.getPresetLevels(newPresetIndex);
-        }
     }
 
     @Override
@@ -308,6 +302,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
         if (DEBUG) {
             Log.d(TAG, "diff: " + diff);
         }
+        mCurrentRealPage = mPresetPager.getCurrentItem();
 
         if (DEBUG) Log.d(TAG, "mCurrentRealPage Before: " + mCurrentRealPage);
         final int newPage = mCurrentRealPage + diff;

@@ -5,16 +5,21 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.Nullable;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.AudioPatch;
+import android.media.AudioPort;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.format.DateUtils;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,9 +29,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import com.cyngn.audiofx.AudioOutputChangeListener;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.ActivityMusic;
 import com.cyngn.audiofx.activity.MasterConfigControl;
+import com.cyngn.audiofx.receiver.DeviceOutputChangeReceiver;
 import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.OutputDevice;
 import com.cyngn.audiofx.widget.InterceptableLinearLayout;
@@ -38,6 +45,7 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         ActivityMusic.ActivityStateListener {
 
     private static final String TAG = AudioFxFragment.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     public static final String TAG_EQUALIZER = "equalizer";
     public static final String TAG_CONTROLS = "controls";
@@ -69,9 +77,32 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
 
     private int mCurrentMode;
 
+    OutputDevice mSystemDevice;
+    OutputDevice mUserSelection;
+    private AudioOutputChangeListener mAudioListener;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mAudioListener = new AudioOutputChangeListener(getActivity()) {
+            @Override
+            public void onAudioOutputChanged(boolean firstChange, int outputType) {
+                if (firstChange) {
+                    if (DEBUG) Log.d(TAG, "ignoring first audio output mode change.");
+                    return;
+                }
+                mSystemDevice = null;
+                // clear out user change to update to the current actual device, which has changed
+                mConfig.setCurrentDevice(mUserSelection = null, true);
+            }
+        };
+
+        if (savedInstanceState != null) {
+            mUserSelection = savedInstanceState.getParcelable("user_device");
+            mSystemDevice = savedInstanceState.getParcelable("system_device");
+        }
+
         mConfig = MasterConfigControl.getInstance(getActivity());
         mHandler = new Handler();
         mDisabledColor = getResources().getColor(R.color.disabled_eq);
@@ -82,6 +113,13 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         mCurrentMode = ((ActivityMusic) getActivity()).getCurrentMode();
 
         mConfig.bindService(); // bind early
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("user_device", mUserSelection);
+        outState.putParcelable("system_device", mSystemDevice);
     }
 
     @Override
@@ -125,9 +163,16 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         return createNewFrags;
     }
 
+    private void checkClearUserDevice() {
+        if (mSystemDevice != null && !mConfig.getSystemDevice().equals(mSystemDevice)) {
+            mSystemDevice = null;
+            mUserSelection = null;
+        }
+        mConfig.setCurrentDevice(mUserSelection, true);
+    }
+
     @Override
     public void onResume() {
-        super.onResume();
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(AudioFxService.ACTION_BLUETOOTH_DEVICES_UPDATED);
@@ -140,14 +185,28 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         mConfig.bindService();
 
         updateEnabledState();
+
+        mAudioListener.register();
+
+        checkClearUserDevice();
+
+        super.onResume();
+
+        mCurrentBackgroundColor = !mConfig.isCurrentDeviceEnabled()
+                ? mDisabledColor
+                : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
+        updateBackgroundColors(mCurrentBackgroundColor, false);
     }
 
     @Override
     public void onPause() {
-        super.onPause();
         getActivity().unregisterReceiver(mDevicesChangedReceiver);
         mConfig.removeEqStateChangeCallback(this);
         mConfig.unbindService();
+        mConfig.setCurrentDevice(null, true);
+
+        mAudioListener.unregister();
+        super.onPause();
     }
 
     public void updateBackgroundColors(Integer color, boolean cancelAnimated) {
@@ -263,11 +322,12 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
             if (item.isCheckable()) {
                 item.setChecked(!item.isChecked());
             }
-            final OutputDevice finalNewDevice = newDevice;
+            mSystemDevice = mConfig.getSystemDevice();
+            mUserSelection = newDevice;
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mConfig.setCurrentDevice(finalNewDevice, true);
+                    mConfig.setCurrentDevice(mUserSelection, true);
                 }
             });
             return true;
@@ -336,11 +396,6 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         super.onViewCreated(view, savedInstanceState);
 
         mInterceptLayout = (InterceptableLinearLayout) view.findViewById(R.id.interceptable_layout);
-
-        mCurrentBackgroundColor = !mConfig.isCurrentDeviceEnabled()
-                ? mDisabledColor
-                : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
-        updateBackgroundColors(mCurrentBackgroundColor, false);
     }
 
     public void animateBackgroundColorTo(int colorTo, Animator.AnimatorListener listener,
@@ -400,6 +455,12 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
     public void onDeviceChanged(OutputDevice deviceId, boolean userChange) {
         updateEnabledState();
         getActivity().invalidateOptionsMenu();
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                checkClearUserDevice();
+            }
+        });
     }
 
     private void updateActionBarDeviceIcon() {

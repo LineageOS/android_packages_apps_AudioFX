@@ -15,7 +15,6 @@
  */
 package com.cyngn.audiofx.knobs;
 
-import android.animation.LayoutTransition;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Handler;
@@ -28,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.LinearLayout;
-import android.widget.Space;
 import android.widget.TextView;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.MasterConfigControl;
@@ -86,18 +84,6 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
                 mVirtualizerContainer = addKnob(KnobCommander.KNOB_VIRTUALIZER);
             }
         }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        MasterConfigControl.getInstance(mContext).addEqStateChangeCallback(this);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        MasterConfigControl.getInstance(mContext).removeEqStateChangeCallback(this);
     }
 
     @Override

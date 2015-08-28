@@ -44,6 +44,7 @@ import android.os.ParcelUuid;
 import android.util.ArrayMap;
 import android.util.Log;
 
+import com.cyngn.audiofx.AudioOutputChangeListener;
 import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.eq.EqUtils;
@@ -98,7 +99,7 @@ public class AudioFxService extends Service {
 
     int mMostRecentSessionId;
     Handler mHandler;
-    AudioPortListener mAudioPortListener;
+    AudioOutputChangeListener mAudioPortListener;
     BluetoothDevice mLastBluetoothDevice;
 
     BluetoothAdapter mBluetoothAdapter;
@@ -302,8 +303,18 @@ public class AudioFxService extends Service {
         mBluetoothAdapter = btMan.getAdapter();
         updateBondedBluetoothDevices();
 
-        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        am.registerAudioPortUpdateListener(mAudioPortListener = new AudioPortListener());
+        mAudioPortListener = new AudioOutputChangeListener(this) {
+            @Override
+            public void onAudioOutputChanged(boolean firstChange, int outputType) {
+                if (!firstChange) {
+                    Intent deviceChangedIntent = new Intent(ACTION_DEVICE_OUTPUT_CHANGED);
+                    deviceChangedIntent.setPackage(getPackageName());
+                    deviceChangedIntent.putExtra(EXTRA_DEVICE, getCurrentDevice());
+                    sendBroadcast(deviceChangedIntent);
+                }
+            }
+        };
+        mAudioPortListener.register();
     }
 
     @Override
@@ -348,8 +359,8 @@ public class AudioFxService extends Service {
     public void onDestroy() {
         if (DEBUG) Log.i(TAG, "Stopping service.");
 
-        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        am.unregisterAudioPortUpdateListener(mAudioPortListener);
+        mAudioPortListener.unregister();
+        mAudioPortListener = null;
 
         unregisterReceiver(mPreferenceUpdateReceiver);
         unregisterReceiver(mBluetoothReceiver);
@@ -674,98 +685,15 @@ public class AudioFxService extends Service {
         }
     };
 
-
-    private class AudioPortListener implements AudioManager.OnAudioPortUpdateListener {
-        private boolean mUseBluetooth;
-        private boolean mUseHeadset;
-        private boolean mUseUSB;
-        private boolean mUseWifiDisplay;
-        private boolean mUseSpeaker;
-
-        private boolean mInitial = true;
-
-        @Override
-        public void onAudioPortListUpdate(AudioPort[] portList) {
-            final boolean prevUseHeadset = mUseHeadset;
-            final boolean prevUseBluetooth = mUseBluetooth;
-            final boolean prevUseUSB = mUseUSB;
-            final boolean prevUseWireless = mUseWifiDisplay;
-            final boolean prevUseSpeaker = mUseSpeaker;
-
-            AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            int device = am.getDevicesForStream(AudioManager.STREAM_MUSIC);
-            mUseBluetooth = (device & AudioManager.DEVICE_OUT_BLUETOOTH_A2DP) != 0
-                    || (device & AudioManager.DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES) != 0
-                    || (device & AudioManager.DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER) != 0;
-
-            mUseHeadset = (device & AudioManager.DEVICE_OUT_WIRED_HEADPHONE) != 0
-                    || (device & AudioManager.DEVICE_OUT_WIRED_HEADSET) != 0;
-
-            mUseUSB = (device & AudioManager.DEVICE_OUT_USB_ACCESSORY) != 0
-                    || (device & AudioManager.DEVICE_OUT_USB_DEVICE) != 0;
-
-            mUseWifiDisplay = false; //TODO add support for wireless display..
-
-            mUseSpeaker = (device & AudioManager.DEVICE_OUT_SPEAKER) != 0;
-
-            if (DEBUG) Log.i(TAG, "Headset=" + mUseHeadset + "; Bluetooth="
-                    + mUseBluetooth + " ; USB=" + mUseUSB + "; Speaker=" + mUseSpeaker);
-            if (mInitial) {
-                // don't send the first update. we always get an update after registering as a
-                // listener. let's use that to establish an initial state.
-                mInitial = false;
-            } else  if (prevUseHeadset != mUseHeadset
-                    || prevUseBluetooth != mUseBluetooth
-                    || prevUseUSB != mUseUSB
-                    || prevUseWireless != mUseWifiDisplay
-                    || prevUseSpeaker != mUseSpeaker) {
-                Intent deviceChangedIntent = new Intent(ACTION_DEVICE_OUTPUT_CHANGED);
-                deviceChangedIntent.setPackage(getPackageName());
-                deviceChangedIntent.putExtra(EXTRA_DEVICE, getCurrentDevice());
-                sendBroadcast(deviceChangedIntent);
-
-                update();
-            }
-        }
-
-        @Override
-        public void onAudioPatchListUpdate(AudioPatch[] patchList) {
-
-        }
-
-        @Override
-        public void onServiceDied() {
-
-        }
-
-        public int getInternalAudioOutputRouting() {
-            if (mUseSpeaker) {
-                return OutputDevice.DEVICE_SPEAKER;
-            }
-            if (mUseBluetooth) {
-                return OutputDevice.DEVICE_BLUETOOTH;
-            }
-            if (mUseHeadset) {
-                return OutputDevice.DEVICE_HEADSET;
-            }
-            if (mUseUSB) {
-                return OutputDevice.DEVICE_USB;
-            }
-            if (mUseWifiDisplay) {
-                return OutputDevice.DEVICE_WIRELESS;
-            }
-            return OutputDevice.DEVICE_SPEAKER;
-        }
-    }
-
     // ======== DSP UPDATE METHODS BELOW ============= //
 
     /**
      * Push new configuration to audio stack.
      */
     public void update() {
-        mHandler.removeMessages(MSG_UPDATE_DSP);
-        mHandler.sendEmptyMessage(MSG_UPDATE_DSP);
+        if (!mHandler.hasMessages(MSG_UPDATE_DSP)) {
+            mHandler.sendEmptyMessage(MSG_UPDATE_DSP);
+        }
     }
 
     private void updateDsp(SharedPreferences prefs, EffectSet session) {

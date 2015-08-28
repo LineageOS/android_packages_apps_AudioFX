@@ -54,23 +54,6 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
         return false;
     }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        mConfig.addEqStateChangeCallback(this);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        mConfig.removeEqStateChangeCallback(this);
-    }
-
     private EqContainerView.EqBandInfo getInfo() {
         return (EqContainerView.EqBandInfo) getTag();
     }

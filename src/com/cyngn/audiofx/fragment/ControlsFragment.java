@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import com.cyngn.audiofx.R;
+import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.knobs.KnobCommander;
 import com.cyngn.audiofx.knobs.KnobContainer;
 import com.cyngn.audiofx.service.OutputDevice;
@@ -43,12 +44,14 @@ public class ControlsFragment extends AudioFxBaseFragment {
 
     @Override
     public void onPause() {
+        MasterConfigControl.getInstance(getActivity()).removeEqStateChangeCallback(mKnobContainer);
         super.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        MasterConfigControl.getInstance(getActivity()).addEqStateChangeCallback(mKnobContainer);
     }
 
     @Override

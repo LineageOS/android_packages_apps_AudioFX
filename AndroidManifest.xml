@@ -92,7 +92,7 @@
 
         <service android:name=".service.AudioFxService"/>
 
-        <receiver android:name=".service.ServiceDispatcher">
+        <receiver android:name=".receiver.ServiceDispatcher">
             <intent-filter>
                 <action android:name="android.media.action.OPEN_AUDIO_EFFECT_CONTROL_SESSION"/>
                 <action android:name="android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION"/>

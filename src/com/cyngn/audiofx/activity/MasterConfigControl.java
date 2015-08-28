@@ -11,6 +11,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.CompoundButton;
 
+import com.cyngn.audiofx.AudioOutputChangeListener;
 import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.eq.EqUtils;
@@ -37,7 +38,9 @@ public class MasterConfigControl {
 
     private static final String TAG = MasterConfigControl.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
+    private static final boolean SERVICE_DEBUG = false;
 
+    private final Handler mHandler;
     private static final int MSG_SAVE_PRESETS = 1;
 
     private Context mContext;
@@ -55,22 +58,23 @@ public class MasterConfigControl {
 
     private AudioFxService.LocalBinder mService;
     private ServiceConnection mServiceConnection;
+    private AudioOutputChangeListener mServiceOutputListener;
 
     public boolean bindService() {
-        if (DEBUG) Log.i(TAG, "bindService()");
+        if (SERVICE_DEBUG) Log.i(TAG, "bindService()");
         if (mServiceConnection == null) {
             mServiceConnection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder binder) {
-                    if (DEBUG) Log.i(TAG, "onServiceConnected ");
+                    if (SERVICE_DEBUG) Log.i(TAG, "onServiceConnected ");
                     mService = ((AudioFxService.LocalBinder) binder);
-                    setCurrentDevice(mService.getCurrentDevice(), false); // update from service
-                    updateEqControls();
+                    mServiceOutputListener.register();
                 }
 
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
-                    if (DEBUG) Log.w(TAG, "onServiceDisconnected ");
+                    if (SERVICE_DEBUG) Log.w(TAG, "onServiceDisconnected ");
+                    mServiceOutputListener.unregister();
                     mService = null;
                 }
             };
@@ -81,7 +85,7 @@ public class MasterConfigControl {
     }
 
     public void unbindService() {
-        if (DEBUG) Log.i(TAG, "unbindService() called");
+        if (SERVICE_DEBUG) Log.i(TAG, "unbindService() called");
         if (mServiceConnection != null && isServiceBound()) {
             mContext.unbindService(mServiceConnection);
         }
@@ -125,12 +129,14 @@ public class MasterConfigControl {
     private boolean mChangingPreset = false;
 
     private int mCurrentPreset;
+    private SharedPreferences mCurrentDevicePrefs;
 
     ArrayList<EqUpdatedCallback> mEqUpdateCallbacks;
 
     private List<OutputDevice> mCachedBluetoothDevices;
     private OutputDevice mCurrentDevice =
             new OutputDevice(OutputDevice.DEVICE_SPEAKER); // default!
+    private OutputDevice mUserDeviceOverride;
 
     private final ArrayList<Preset> mEqPresets = new ArrayList<Preset>();
     private int mEQCustomPresetPosition;
@@ -172,10 +178,33 @@ public class MasterConfigControl {
 
     private MasterConfigControl(Context context) {
         mContext = context.getApplicationContext();
+
+        mHandler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                switch (msg.what) {
+                    case MSG_SAVE_PRESETS:
+                        EqUtils.saveCustomPresets(mContext, mEqPresets);
+                        break;
+                }
+                return true;
+            }}, true);
+
+        mServiceOutputListener = new AudioOutputChangeListener(mContext) {
+            @Override
+            public void onAudioOutputChanged(boolean firstChange, int outputType) {
+                if (mService != null) {
+                    setCurrentDevice(mService.getCurrentDevice(), false);
+                }
+            }
+        };
+
         initialize();
     }
 
     private synchronized void initialize() {
+        mCurrentDevicePrefs = getPrefs();
+
         // setup eq
         int bands = Integer.parseInt(getGlobalPrefs()
                 .getString("equalizer.number_of_bands", "5"));
@@ -280,10 +309,17 @@ public class MasterConfigControl {
         return mEqPresets.indexOf(p);
     }
 
+    public OutputDevice getSystemDevice() {
+        return mCurrentDevice;
+    }
+
     /**
      * @return returns the current device key that's in use
      */
     public OutputDevice getCurrentDevice() {
+        if (mUserDeviceOverride != null) {
+            return mUserDeviceOverride;
+        }
         return mCurrentDevice;
     }
 
@@ -293,12 +329,17 @@ public class MasterConfigControl {
      *
      * @param audioOutputRouting the new device key
      */
-    public void setCurrentDevice(OutputDevice audioOutputRouting, boolean userSwitch) {
-        final OutputDevice currentDevice = getCurrentDevice();
+    public synchronized void setCurrentDevice(OutputDevice audioOutputRouting, boolean userSwitch) {
+        final OutputDevice previousDevice = getCurrentDevice();
 
-        mCurrentDevice = audioOutputRouting;
+        if (userSwitch) {
+            mUserDeviceOverride = audioOutputRouting;
+        } else {
+            mCurrentDevice = audioOutputRouting;
+        }
 
-        if (Objects.equal(currentDevice, getCurrentDevice())) {
+        mCurrentDevicePrefs = getPrefs();
+        if (Objects.equal(previousDevice, getCurrentDevice())) {
             // nothing to do
             return;
         }
@@ -309,15 +350,15 @@ public class MasterConfigControl {
         if (newPreset > mEqPresets.size() - 1) {
             newPreset = 0;
         }
-        setPreset(newPreset);
 
-//        for (int i = 0; i < getNumBands(); i++) {
-//            setLevel(i, getLevel(i), true);
-//        }
+        // this should be ready to go for callbacks to query the new device preset below
+        mCurrentPreset = newPreset;
 
         for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
-            callback.onDeviceChanged(audioOutputRouting, userSwitch);
+            callback.onDeviceChanged(getCurrentDevice(), userSwitch);
         }
+
+        setPreset(newPreset);
     }
 
     public Preset getCurrentPreset() {
@@ -452,30 +493,30 @@ public class MasterConfigControl {
         if (!systemChange) { // user is touching
             // persist
 
-            if (mEqPresets.get(mCurrentPreset) instanceof CustomPreset) {
+            final Preset preset = mEqPresets.get(mCurrentPreset);
+            if (preset instanceof CustomPreset) {
                 if (mAnimatingToCustom.get()) {
                     if (DEBUG) {
                         Log.d(TAG, "setLevel() not persisting new custom band becuase animating.");
                     }
                 } else {
-                    ((CustomPreset) mEqPresets.get(mCurrentPreset)).setLevel(band, dB);
-                    if (mEqPresets.get(mCurrentPreset) instanceof PermCustomPreset) {
+                    ((CustomPreset) preset).setLevel(band, dB);
+                    if (preset instanceof PermCustomPreset) {
                         // store these as millibels
                         String levels = EqUtils.floatLevelsToString(
                                 EqUtils.convertDecibelsToMillibels(
-                                        mEqPresets.get(mCurrentPreset).mLevels));
+                                        preset.mLevels));
                         getGlobalPrefs()
                                 .edit()
                                 .putString("custom", levels).apply();
                     }
                 }
                 // needs to be updated immediately here for the service.
-                final String levels = EqUtils.floatLevelsToString(
-                        mEqPresets.get(mCurrentPreset).mLevels);
-                getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS,
+                final String levels = EqUtils.floatLevelsToString(preset.mLevels);
+                mCurrentDevicePrefs.edit().putString(Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS,
                         levels).apply();
             }
-            mService.update();
+            updateService();
             savePresetsDelayed();
         }
     }
@@ -910,19 +951,6 @@ public class MasterConfigControl {
         }
         return mCachedBluetoothDevices;
     }
-
-    private final Handler mHandler = new Handler() {
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case MSG_SAVE_PRESETS:
-                    EqUtils.saveCustomPresets(mContext, mEqPresets);
-                    break;
-            }
-        }
-    };
 
     public static class EqControlState {
         public boolean removeVisible;

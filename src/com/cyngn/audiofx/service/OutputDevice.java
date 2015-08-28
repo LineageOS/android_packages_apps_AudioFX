@@ -20,6 +20,16 @@ public class OutputDevice implements Parcelable {
     String mDeviceDisplayName;
     String mUniqueDeviceIdentifier;
 
+    public static OutputDevice fromString(String s) {
+        if (s != null && !s.isEmpty()) {
+            final String[] split = s.split(",");
+            if (split != null && split.length == 3) {
+                return new OutputDevice(Integer.parseInt(split[0]), split[1], split[2]);
+            }
+        }
+        return null;
+    }
+
     public OutputDevice(int deviceType) {
         this.mDeviceType = deviceType;
         this.mUniqueDeviceIdentifier = null;
@@ -64,6 +74,11 @@ public class OutputDevice implements Parcelable {
         } else {
             return getDeviceTypeKey(mDeviceType);
         }
+    }
+
+    public String serialize() {
+        return mDeviceType + "," + (mUniqueDeviceIdentifier != null ?
+                mUniqueDeviceIdentifier : "") + "," +  mDeviceDisplayName;
     }
 
     @Override
