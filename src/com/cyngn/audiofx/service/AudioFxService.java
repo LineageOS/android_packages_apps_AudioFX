@@ -627,22 +627,26 @@ public class AudioFxService extends Service {
         for (DeviceInfo info : mDeviceInfo.values()) {
             info.bonded = false;
         }
-        int bondedCount = 0;
-        BluetoothDevice lastBonded = null;
+        int bondedAndConnectedCount = 0;
+        BluetoothDevice lastBondedAndConnected = null;
         if (bondedDevices != null) {
             for (BluetoothDevice bondedDevice : bondedDevices) {
                 if (isAudioBluetoothDevice(bondedDevice)) {
                     final boolean bonded = bondedDevice.getBondState() != BluetoothDevice.BOND_NONE;
                     updateInfo(bondedDevice).bonded = bonded;
                     if (bonded) {
-                        bondedCount++;
-                        lastBonded = bondedDevice;
+                        if (bondedDevice.isConnected()) {
+                            bondedAndConnectedCount++;
+                            lastBondedAndConnected = bondedDevice;
+                        }
                     }
                 }
             }
         }
-        if (mLastBluetoothDevice == null && bondedCount == 1) {
-            mLastBluetoothDevice = lastBonded;
+        if (mLastBluetoothDevice == null && bondedAndConnectedCount == 1) {
+            mLastBluetoothDevice = lastBondedAndConnected;
+        } else {
+            mLastBluetoothDevice = null;
         }
         sendBroadcast(new Intent(ACTION_BLUETOOTH_DEVICES_UPDATED)); // let UI know to refresh
     }
@@ -673,10 +677,8 @@ public class AudioFxService extends Service {
                 if (state != ERROR) {
                     info.connectionState = state;
                 }
-                mLastBluetoothDevice = device;
             } else if (action.equals(BluetoothDevice.ACTION_ALIAS_CHANGED)) {
                 updateInfo(device);
-                mLastBluetoothDevice = device;
             } else if (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
                 if (DEBUG) Log.d(TAG, "ACTION_BOND_STATE_CHANGED " + device);
                 // we'll update all bonded devices below
