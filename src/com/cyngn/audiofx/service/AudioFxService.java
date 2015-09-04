@@ -27,9 +27,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.media.AudioManager;
-import android.media.AudioPatch;
-import android.media.AudioPort;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.BassBoost;
 import android.media.audiofx.Equalizer;
@@ -39,8 +36,10 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.ParcelUuid;
+import android.os.Process;
 import android.util.ArrayMap;
 import android.util.Log;
 
@@ -99,17 +98,22 @@ public class AudioFxService extends Service {
 
     int mMostRecentSessionId;
     Handler mHandler;
+    Handler mBackgroundHandler;
     AudioOutputChangeListener mAudioPortListener;
     BluetoothDevice mLastBluetoothDevice;
 
     BluetoothAdapter mBluetoothAdapter;
     DtsControl mDts;
 
+    // audio priority handler messages
     private static final int MSG_UPDATE_DSP = 100;
     private static final int MSG_ADD_SESSION = 101;
     private static final int MSG_REMOVE_SESSION = 102;
     private static final int MSG_UPDATE_FOR_SESSION = 103;
     private static final int MSG_SELF_DESTRUCT = 104;
+
+    // background priority messages
+    private static final int MSG_BG_UPDATE_EQ_OVERRIDE = 200;
 
     private static final ParcelUuid[] BLUETOOTH_AUDIO_UUIDS = {
             BluetoothUuid.AudioSink,
@@ -149,6 +153,16 @@ public class AudioFxService extends Service {
             }
             return null;
         }
+
+        public void setOverrideLevels(short band, short level) {
+            if (mService.get() != null) {
+                mService.get().setOverrideLevels(band, level);
+            }
+        }
+    }
+
+    private void setOverrideLevels(short band, short level) {
+        mBackgroundHandler.obtainMessage(MSG_BG_UPDATE_EQ_OVERRIDE, band, level).sendToTarget();
     }
 
     /**
@@ -268,16 +282,41 @@ public class AudioFxService extends Service {
         }
     }
 
+
+    private class AudioBackgroundHandler implements Handler.Callback {
+
+        @Override
+        public boolean handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_BG_UPDATE_EQ_OVERRIDE:
+                    if (mMostRecentSessionId != -1) {
+                        updateEqBand((short) msg.arg1, (short) msg.arg2,
+                                mAudioSessions.get(mMostRecentSessionId));
+                    }
+                    break;
+            }
+            return true;
+        }
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         if (DEBUG) Log.i(TAG, "Starting service.");
 
-        HandlerThread handlerThread = new HandlerThread(TAG,
+        HandlerThread handlerThread = new HandlerThread(TAG + "-AUDIO",
                 android.os.Process.THREAD_PRIORITY_AUDIO);
         handlerThread.start();
 
-        mHandler = new Handler(handlerThread.getLooper(), new AudioServiceHandler());
+        HandlerThread backgroundThread = new HandlerThread(TAG + "-BG_WORK",
+                Process.THREAD_PRIORITY_BACKGROUND);
+        backgroundThread.start();
+
+        final Looper audioLooper = handlerThread.getLooper();
+        final Looper backgorundLooper = backgroundThread.getLooper();
+
+        mHandler = new Handler(audioLooper, new AudioServiceHandler());
+        mBackgroundHandler = new Handler(backgorundLooper, new AudioBackgroundHandler());
 
         mDts = new DtsControl(this);
 
@@ -366,8 +405,10 @@ public class AudioFxService extends Service {
         unregisterReceiver(mBluetoothReceiver);
 
         mHandler.removeCallbacksAndMessages(null);
+        mBackgroundHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
         mHandler.getLooper().quit();
+        mBackgroundHandler.getLooper().quit();
     }
 
     @Override
@@ -688,6 +729,18 @@ public class AudioFxService extends Service {
     };
 
     // ======== DSP UPDATE METHODS BELOW ============= //
+
+    /**
+     * Temporarily override a band level. {@link #updateDsp(SharedPreferences, EffectSet)} will take
+     * care of overriding the preset value when a preset is selected
+     */
+    private synchronized void updateEqBand(short band, short level, EffectSet effectSet) {
+        if (effectSet != null) {
+            if (effectSet.mEqualizer.getEnabled()) {
+                effectSet.mEqualizer.setBandLevel(band, level);
+            }
+        }
+    }
 
     /**
      * Push new configuration to audio stack.

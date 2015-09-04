@@ -42,6 +42,7 @@ public class MasterConfigControl {
 
     private final Handler mHandler;
     private static final int MSG_SAVE_PRESETS = 1;
+    private static final int MSG_SEND_EQ_OVERRIDE = 2;
 
     private Context mContext;
 
@@ -186,6 +187,10 @@ public class MasterConfigControl {
                     case MSG_SAVE_PRESETS:
                         EqUtils.saveCustomPresets(mContext, mEqPresets);
                         break;
+                    case MSG_SEND_EQ_OVERRIDE:
+                        if (mService != null) {
+                            mService.setOverrideLevels((short)msg.arg1, (short) msg.arg2);
+                        }
                 }
                 return true;
             }}, true);
@@ -487,6 +492,10 @@ public class MasterConfigControl {
         //if (DEBUG) Log.i(TAG, "setLevel(" + band + ", " + dB + ", " + systemChange + ")");
 
         mGlobalLevels[band] = dB;
+
+        // quickly convert decibel to millibel and send away to the service
+        mHandler.obtainMessage(MSG_SEND_EQ_OVERRIDE, band, (short) (dB * 100)).sendToTarget();
+
         for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
             callback.onBandLevelChange(band, dB, systemChange);
         }
@@ -511,12 +520,7 @@ public class MasterConfigControl {
                                 .putString("custom", levels).apply();
                     }
                 }
-                // needs to be updated immediately here for the service.
-                final String levels = EqUtils.floatLevelsToString(preset.mLevels);
-                mCurrentDevicePrefs.edit().putString(Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS,
-                        levels).apply();
             }
-            updateService();
             savePresetsDelayed();
         }
     }
