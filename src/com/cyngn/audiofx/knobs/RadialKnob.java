@@ -47,6 +47,7 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.Toast;
 import com.cyngn.audiofx.R;
 
 public class RadialKnob extends View {
@@ -85,6 +86,7 @@ public class RadialKnob extends View {
     private Long mLastVibrateTime;
     private int mHighlightColor;
     private int mBackgroundArcColor;
+    private int mBackgroundArcColorDisabled;
     private int mRectPadding;
     private int mStrokeWidth;
     private float mHandleWidth; // little square indicator where user touches
@@ -100,6 +102,7 @@ public class RadialKnob extends View {
 
         Resources res = getResources();
         mBackgroundArcColor = res.getColor(R.color.radial_knob_arc_bg);
+        mBackgroundArcColorDisabled = res.getColor(R.color.radial_knob_arc_bg_disabled);
         mHighlightColor = res.getColor(R.color.highlight);
 
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -122,8 +125,6 @@ public class RadialKnob extends View {
         mPaint.setStrokeCap(Paint.Cap.BUTT);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setShadowLayer(2, 1, -2, getResources().getColor(R.color.black));
-
-        setWillNotDraw(false);
 
         setScaleX(REGULAR_SCALE);
         setScaleY(REGULAR_SCALE);
@@ -178,15 +179,20 @@ public class RadialKnob extends View {
     }
 
     @Override
+    public boolean isEnabled() {
+        return mEnabled;
+    }
+
+    @Override
     public void setEnabled(boolean enabled) {
         mEnabled = enabled;
         if (enabled) {
-            setOn(mOn, false);
+            setOn(mOn);
         }
         invalidate();
     }
 
-    public void setOn(final boolean on, boolean animate) {
+    public void setOn(final boolean on) {
         mOn = on;
         if (mAnimator != null) {
             mAnimator.cancel();
@@ -205,7 +211,7 @@ public class RadialKnob extends View {
 
         mPaint.setStrokeWidth(mStrokeWidth);
 
-        mPaint.setColor(mBackgroundArcColor);
+        mPaint.setColor(mEnabled ? mBackgroundArcColor : mBackgroundArcColorDisabled);
         canvas.drawArc(mRectF, START_ANGLE, MAX_DEGREES, false, mPaint);
 
         final float sweepAngle = mEnabled ? mProgress * MAX_DEGREES : 0;
@@ -246,7 +252,11 @@ public class RadialKnob extends View {
     }
 
     private String getProgressText() {
-        return (int) (mProgress * 100) + "%";
+        if (mEnabled) {
+            return ((int) (mProgress * 100)) + "%";
+        } else {
+            return "--";
+        }
     }
 
     @Override
@@ -332,7 +342,7 @@ public class RadialKnob extends View {
         final float y = event.getY();
 
         if (!mEnabled) {
-            return true;
+            return false;
         }
 
         switch (event.getActionMasked()) {
@@ -388,7 +398,7 @@ public class RadialKnob extends View {
                         if (mOnKnobChangeListener != null) {
                             mOnKnobChangeListener.onSwitchChanged(this, !mOn);
                         }
-                        setOn(!mOn, false);
+                        setOn(!mOn);
                     }
                 } else {
                     // off
@@ -411,7 +421,7 @@ public class RadialKnob extends View {
                                     mOnKnobChangeListener.onSwitchChanged(this, !mOn);
                                 }
 
-                                setOn(!mOn, false);
+                                setOn(!mOn);
                                 if (angle > 30) {
                                     animateTo(angle / MAX_DEGREES);
                                 } else {
@@ -441,7 +451,7 @@ public class RadialKnob extends View {
                             mOnKnobChangeListener.onSwitchChanged(this, !mOn);
                         }
 
-                        setOn(!mOn, false);
+                        setOn(!mOn);
                     }
                 }
                 mLastX = -1;
@@ -465,6 +475,9 @@ public class RadialKnob extends View {
     }
 
     public void resize(boolean selected) {
+        if (!mEnabled) {
+            return;
+        }
         if (selected) {
             animate()
                     .scaleY(RadialKnob.TOUCHING_SCALE)

@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.service.OutputDevice;
@@ -36,6 +37,8 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
 
     private static final String TAG = KnobContainer.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
+
+    private static final int NOTIFY_DISABLE_DELAY = 5000;
 
     private static final int MSG_EXPAND = 0;
     private static final int MSG_CONTRACT = 1;
@@ -50,6 +53,8 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
     private H mHandler;
 
     private KnobCommander mKnobCommander;
+
+    private long mLastDisabledNotifyTime = -1;
 
     public KnobContainer(Context context) {
         super(context);
@@ -102,15 +107,18 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
                     case MotionEvent.ACTION_DOWN:
                         message = mHandler.obtainMessage(MSG_EXPAND, v.getTag());
                         mHandler.sendMessageDelayed(message, 0);
-                        return false;
+                        break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_CANCEL:
                         mHandler.removeMessages(MSG_EXPAND);
                         message = mHandler.obtainMessage(MSG_CONTRACT, v.getTag());
                         mHandler.sendMessageDelayed(message, 10);
-                        return false;
+                        break;
                 }
-
+                if (!v.isEnabled()) {
+                    notifyDisabled();
+                    return true;
+                }
                 return false;
             }
         };
@@ -262,6 +270,15 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
         }
     }
 
+    private void notifyDisabled() {
+        final long now = System.currentTimeMillis();
+        if (mLastDisabledNotifyTime == -1 || now - mLastDisabledNotifyTime > NOTIFY_DISABLE_DELAY) {
+            mLastDisabledNotifyTime = now;
+            Toast.makeText(mContext, R.string.effect_unavalable_for_speaker,
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public boolean shouldDelayChildPressedState() {
         return false;
@@ -294,7 +311,6 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
             */
             knob.resize(makeBig);
         }
-        invalidate();
     }
 
     @Override
@@ -318,14 +334,15 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
     }
 
     private void updateKnobs(OutputDevice device) {
-        boolean hideVirtualizer = device.getDeviceType() == OutputDevice.DEVICE_SPEAKER;
+        final boolean speaker = device.getDeviceType() == OutputDevice.DEVICE_SPEAKER;
+        final boolean maxxAudio = MasterConfigControl.getInstance(mContext).hasMaxxAudio();
 
-        mKnobCommander.updateTrebleKnob(mTrebleKnob, true);
-        mKnobCommander.updateBassKnob(mBassKnob, true);
-        mKnobCommander.updateVirtualizerKnob(mVirtualizerKnob, true);
-        if (hideVirtualizer) {
+        mKnobCommander.updateTrebleKnob(mTrebleKnob, true); // maxx audio only knob for now
+        mKnobCommander.updateBassKnob(mBassKnob, maxxAudio || !speaker);
+        mKnobCommander.updateVirtualizerKnob(mVirtualizerKnob, maxxAudio || !speaker);
+        if (maxxAudio) {
             // speaker? disable virtual
-            setKnobVisible(KnobCommander.KNOB_VIRTUALIZER, false);
+            setKnobVisible(KnobCommander.KNOB_VIRTUALIZER, !speaker);
         } else {
             setKnobVisible(KnobCommander.KNOB_VIRTUALIZER, true);
         }

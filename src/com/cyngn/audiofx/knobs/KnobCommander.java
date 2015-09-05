@@ -39,7 +39,7 @@ public class KnobCommander {
     public void updateTrebleKnob(RadialKnob trebleKnob, boolean enabled) {
         if (trebleKnob != null) {
             trebleKnob.setValue(getTrebleStrength());
-            trebleKnob.setOn(isTrebleEffectEnabled(), false);
+            trebleKnob.setOn(isTrebleEffectEnabled());
             trebleKnob.setEnabled(enabled);
         }
     }
@@ -47,7 +47,7 @@ public class KnobCommander {
     public void updateBassKnob(RadialKnob bassKnob, boolean enabled) {
         if (bassKnob != null) {
             bassKnob.setValue(getBassStrength());
-            bassKnob.setOn(isBassEffectEnabled(), false);
+            bassKnob.setOn(isBassEffectEnabled());
             bassKnob.setEnabled(enabled);
         }
     }
@@ -55,7 +55,7 @@ public class KnobCommander {
     public void updateVirtualizerKnob(RadialKnob virtualizerKnob, boolean enabled) {
         if (virtualizerKnob != null) {
             virtualizerKnob.setValue(getVirtualizerStrength());
-            virtualizerKnob.setOn(isVirtualizerEffectEnabled(), false);
+            virtualizerKnob.setOn(isVirtualizerEffectEnabled());
             virtualizerKnob.setEnabled(enabled);
         }
     }
