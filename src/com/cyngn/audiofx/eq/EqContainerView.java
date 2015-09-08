@@ -112,6 +112,8 @@ public class EqContainerView extends FrameLayout
     }
 
     private void init() {
+        setLayerType(LAYER_TYPE_HARDWARE, null);
+
         final Resources r = getResources();
 
         mBarWidth = r.getDimensionPixelSize(R.dimen.eq_bar_width);
