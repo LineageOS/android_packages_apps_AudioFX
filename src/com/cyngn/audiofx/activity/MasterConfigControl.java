@@ -493,8 +493,10 @@ public class MasterConfigControl {
 
         mGlobalLevels[band] = dB;
 
-        // quickly convert decibel to millibel and send away to the service
-        mHandler.obtainMessage(MSG_SEND_EQ_OVERRIDE, band, (short) (dB * 100)).sendToTarget();
+        if (mUserDeviceOverride  == null || mUserDeviceOverride == mCurrentDevice) {
+            // quickly convert decibel to millibel and send away to the service
+            mHandler.obtainMessage(MSG_SEND_EQ_OVERRIDE, band, (short) (dB * 100)).sendToTarget();
+        }
 
         for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
             callback.onBandLevelChange(band, dB, systemChange);

@@ -90,6 +90,7 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
             public void onAudioOutputChanged(boolean firstChange, int outputType) {
                 if (firstChange) {
                     if (DEBUG) Log.d(TAG, "ignoring first audio output mode change.");
+                    checkClearUserDevice();
                     return;
                 }
                 mSystemDevice = null;
