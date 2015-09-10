@@ -42,7 +42,6 @@ import android.os.ParcelUuid;
 import android.os.Process;
 import android.util.ArrayMap;
 import android.util.Log;
-
 import com.cyngn.audiofx.AudioOutputChangeListener;
 import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
@@ -59,17 +58,38 @@ import java.util.Map;
 import java.util.Set;
 
 import static android.bluetooth.BluetoothAdapter.ERROR;
-import static com.cyngn.audiofx.Constants.*;
+import static com.cyngn.audiofx.Constants.AUDIOFX_GLOBAL_FILE;
+import static com.cyngn.audiofx.Constants.AUDIOFX_GLOBAL_HAS_BASSBOOST;
+import static com.cyngn.audiofx.Constants.AUDIOFX_GLOBAL_HAS_DTS;
+import static com.cyngn.audiofx.Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO;
+import static com.cyngn.audiofx.Constants.AUDIOFX_GLOBAL_HAS_VIRTUALIZER;
+import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_BASS_ENABLE;
+import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_BASS_STRENGTH;
+import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_EQ_PRESET;
+import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS;
+import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE;
+import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE;
+import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_REVERB_PRESET;
+import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_ENABLE;
+import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH;
+import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE;
+import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH;
+import static com.cyngn.audiofx.Constants.DEVICE_DEFAULT_GLOBAL_ENABLE;
+import static com.cyngn.audiofx.Constants.DEVICE_SPEAKER;
+import static com.cyngn.audiofx.Constants.EQUALIZER_BAND_LEVEL_RANGE;
+import static com.cyngn.audiofx.Constants.EQUALIZER_CENTER_FREQS;
+import static com.cyngn.audiofx.Constants.EQUALIZER_NUMBER_OF_BANDS;
+import static com.cyngn.audiofx.Constants.EQUALIZER_NUMBER_OF_PRESETS;
+import static com.cyngn.audiofx.Constants.EQUALIZER_PRESET;
+import static com.cyngn.audiofx.Constants.EQUALIZER_PRESET_NAMES;
+import static com.cyngn.audiofx.Constants.SAVED_DEFAULTS;
 
 /**
- * <p>This calls listen to events that affect DSP function and responds to them.</p>
- * <ol>
- * <li>new audio session declarations</li>
- * <li>headset plug / unplug events</li>
- * <li>preference update events.</li>
- * </ol>
+ * This service is responsible for applying all requested effects from the AudioFX UI.
  *
- * @author alankila
+ * Since the AudioFX UI allows for different configurations based on the current output device,
+ * the service is also responsible for applying the effects properly based on user configuration,
+ * and the current device output state.
  */
 public class AudioFxService extends Service {
 
@@ -211,8 +231,6 @@ public class AudioFxService extends Service {
                     mSessionsToRemove.clear();
 
                     update();
-                    mHandler.sendEmptyMessageDelayed(MSG_SELF_DESTRUCT, 10000);
-
                     break;
 
                 case MSG_UPDATE_DSP:
@@ -263,11 +281,9 @@ public class AudioFxService extends Service {
 
                 case MSG_SELF_DESTRUCT:
                     mHandler.removeMessages(MSG_SELF_DESTRUCT);
-                    if (mAudioSessions.isEmpty()
-                            && mSessionsToRemove.isEmpty()
-                            && mMostRecentSessionId <= 0) {
-                        Log.w(TAG, "self destructing, no sessions active and nothing to do.");
+                    if (mAudioSessions.isEmpty()) {
                         stopSelf();
+                        Log.w(TAG, "self destructing, no sessions active and nothing to do.");
                     } else {
                         if (DEBUG) {
                             Log.w(TAG, "failed to self destruct, mAudioSession size: "
@@ -305,7 +321,7 @@ public class AudioFxService extends Service {
         if (DEBUG) Log.i(TAG, "Starting service.");
 
         HandlerThread handlerThread = new HandlerThread(TAG + "-AUDIO",
-                android.os.Process.THREAD_PRIORITY_AUDIO);
+                Process.THREAD_PRIORITY_LESS_FAVORABLE);
         handlerThread.start();
 
         HandlerThread backgroundThread = new HandlerThread(TAG + "-BG_WORK",
@@ -367,31 +383,22 @@ public class AudioFxService extends Service {
                 if (DEBUG) Log.i(TAG, String.format("New audio session: %d, package: %s",
                         sessionId, pkg));
 
-                mHandler.removeMessages(MSG_SELF_DESTRUCT);
-
                 mSessionsToRemove.remove((Integer) sessionId);
                 mHandler.sendMessage(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId, 0));
 
-                return START_STICKY;
             } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
                 if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d, package: %s",
                         sessionId, pkg));
 
-                mHandler.removeMessages(MSG_SELF_DESTRUCT);
-
                 mSessionsToRemove.add(sessionId);
-                mHandler.sendMessageDelayed(
-                        Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId, 0),
-                        10000);
+                mHandler.sendMessage(Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId, 0));
 
-                return START_STICKY;
             }
         }
         if (DEBUG)
             Log.i(TAG, "onStartCommand() called with " + "intent = [" + intent + "], flags = ["
                     + flags + "], startId = [" + startId + "]");
-        mHandler.sendEmptyMessageDelayed(MSG_SELF_DESTRUCT, 10000);
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Override
@@ -411,16 +418,24 @@ public class AudioFxService extends Service {
         mBackgroundHandler.getLooper().quit();
     }
 
-    @Override
-    public boolean onUnbind(Intent intent) {
-        mHandler.sendEmptyMessageDelayed(MSG_SELF_DESTRUCT, 10000);
-
-        return super.onUnbind(intent);
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
         return new LocalBinder(this);
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        if (DEBUG) Log.d(TAG, "onTrimMemory: level=" + level);
+        switch (level) {
+            case TRIM_MEMORY_BACKGROUND:
+            case TRIM_MEMORY_MODERATE:
+            case TRIM_MEMORY_RUNNING_MODERATE:
+            case TRIM_MEMORY_COMPLETE:
+                if (DEBUG) Log.d(TAG, "killing service if no effects active.");
+                mHandler.sendEmptyMessageDelayed(MSG_SELF_DESTRUCT, 1000);
+                break;
+        }
     }
 
     // ======== Effects =============== //
@@ -605,32 +620,6 @@ public class AudioFxService extends Service {
         }
     }
 
-    /**
-     * There appears to be no way to find out what the current actual audio routing is.
-     * For instance, if a wired headset is plugged in, the following objects/classes are involved:
-     * </p>
-     * <ol>
-     * <li>wiredaccessoryobserver</li>
-     * <li>audioservice</li>
-     * <li>audiosystem</li>
-     * <li>audiopolicyservice</li>
-     * <li>audiopolicymanager</li>
-     * </ol>
-     * <p>Once the decision of new routing has been made by the policy manager, it is relayed to
-     * audiopolicyservice, which waits for some time to let application buffers drain, and then
-     * informs it to hardware. The full chain is:</p>
-     * <ol>
-     * <li>audiopolicymanager</li>
-     * <li>audiopolicyservice</li>
-     * <li>audiosystem</li>
-     * <li>audioflinger</li>
-     * <li>audioeffect (if any)</li>
-     * </ol>
-     * <p>However, the decision does not appear to be relayed to java layer, so we must
-     * make a guess about what the audio output routing is.</p>
-     *
-     * @return string token that identifies configuration to use
-     */
     public int getAudioOutputRouting() {
         if (mAudioPortListener != null) {
             return mAudioPortListener.getInternalAudioOutputRouting();
