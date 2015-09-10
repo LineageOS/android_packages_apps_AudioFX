@@ -80,26 +80,30 @@ public class EqSwipeController extends LinearLayout {
                 mVelocityTracker.addMovement(event);
                 break;
             case MotionEvent.ACTION_MOVE:
-                mVelocityTracker.addMovement(event);
-                mVelocityTracker.computeCurrentVelocity(1000);
-                float xVelocity = mVelocityTracker.getXVelocity(pointerId);
-                float yVelocity = mVelocityTracker.getYVelocity(pointerId);
+                if (mVelocityTracker != null) {
+                    mVelocityTracker.addMovement(event);
+                    mVelocityTracker.computeCurrentVelocity(1000);
+                    float xVelocity = mVelocityTracker.getXVelocity(pointerId);
+                    float yVelocity = mVelocityTracker.getYVelocity(pointerId);
 
-                if (!mBarActive
-                        && !MasterConfigControl.getInstance(getContext()).isChangingPresets()
-                        && System.currentTimeMillis() - mDownTime > SWIPE_THRESH
-                        && System.currentTimeMillis() - mDownTime < BAR_MAX_THRESH
-                        && Math.abs(xVelocity) < X_VELOCITY_THRESH
-                        && !MasterConfigControl.getInstance(getContext()).isEqualizerLocked()) {
-                    mBarActive = true;
-                    mBar = mEq.startTouchingBarUnder(event);
+                    if (!mBarActive
+                            && !MasterConfigControl.getInstance(getContext()).isChangingPresets()
+                            && System.currentTimeMillis() - mDownTime > SWIPE_THRESH
+                            && System.currentTimeMillis() - mDownTime < BAR_MAX_THRESH
+                            && Math.abs(xVelocity) < X_VELOCITY_THRESH
+                            && !MasterConfigControl.getInstance(getContext()).isEqualizerLocked()) {
+                        mBarActive = true;
+                        mBar = mEq.startTouchingBarUnder(event);
+                    }
                 }
 
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                mVelocityTracker.recycle();
-                mVelocityTracker = null;
+                if (mVelocityTracker != null) {
+                    mVelocityTracker.recycle();
+                    mVelocityTracker = null;
+                }
 
                 if (mBarActive) {
                     // reset state?
