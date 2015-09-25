@@ -51,6 +51,7 @@ public class ActivityMusic extends Activity {
     private List<ActivityStateListener> mGlobalToggleListeners = new ArrayList<>();
 
     private boolean mWaitingForService = true;
+    private SharedPreferences.OnSharedPreferenceChangeListener mServiceReadyObserver;
 
     public interface ActivityStateListener {
         public void onGlobalToggleChanged(final CompoundButton buttonView, boolean isChecked);
@@ -78,35 +79,45 @@ public class ActivityMusic extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        final SharedPreferences globalPrefs =
-                getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
+        final SharedPreferences globalPrefs = Constants.getGlobalPrefs(this);
         final boolean ready = globalPrefs
                 .getBoolean(Constants.SAVED_DEFAULTS, false);
 
         mWaitingForService = !ready;
         if (mWaitingForService) {
-            globalPrefs.registerOnSharedPreferenceChangeListener(
-                    new SharedPreferences.OnSharedPreferenceChangeListener() {
-                        @Override
-                        public void onSharedPreferenceChanged(
-                                SharedPreferences sharedPreferences, String key) {
-                            if (key.equals(Constants.SAVED_DEFAULTS)
-                                    && sharedPreferences.getBoolean(Constants.SAVED_DEFAULTS,
-                                    false)) {
-                                sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-                                init(savedInstanceState);
-                                setupDtsActionBar();
+            mServiceReadyObserver = new SharedPreferences.OnSharedPreferenceChangeListener() {
+                @Override
+                public void onSharedPreferenceChanged(
+                        SharedPreferences sharedPreferences, String key) {
+                    if (key.equals(Constants.SAVED_DEFAULTS)
+                            && sharedPreferences.getBoolean(Constants.SAVED_DEFAULTS,
+                            false)) {
+                        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+                        init(savedInstanceState);
+                        setupDtsActionBar();
 
-                                mWaitingForService = false;
-                                invalidateOptionsMenu();
-                            }
-                        }
-                    });
+                        mWaitingForService = false;
+                        invalidateOptionsMenu();
+                        mServiceReadyObserver = null;
+                    }
+                }
+            };
+            globalPrefs.registerOnSharedPreferenceChangeListener(mServiceReadyObserver);
             startService(new Intent(ActivityMusic.this, AudioFxService.class));
             // TODO add loading fragment if service initialization takes too long
         } else {
             init(savedInstanceState);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mServiceReadyObserver != null) {
+            Constants.getGlobalPrefs(this)
+                    .unregisterOnSharedPreferenceChangeListener(mServiceReadyObserver);
+            mServiceReadyObserver = null;
+        }
+        super.onDestroy();
     }
 
     private void init(Bundle savedInstanceState) {
@@ -271,9 +282,11 @@ public class ActivityMusic extends Activity {
     }
 
     public void setGlobalToggleChecked(boolean checked) {
-        mCurrentDeviceToggle.setOnCheckedChangeListener(null);
-        mCurrentDeviceToggle.setChecked(checked);
-        mCurrentDeviceToggle.setOnCheckedChangeListener(mGlobalEnableToggleListener);
+        if (mCurrentDeviceToggle != null) {
+            mCurrentDeviceToggle.setOnCheckedChangeListener(null);
+            mCurrentDeviceToggle.setChecked(checked);
+            mCurrentDeviceToggle.setOnCheckedChangeListener(mGlobalEnableToggleListener);
+        }
     }
 
     public void setCurrentMode(int currentMode) {
