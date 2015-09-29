@@ -17,6 +17,10 @@ package com.cyngn.audiofx;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import com.cyngn.audiofx.eq.EqUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Constants {
 
@@ -63,5 +67,71 @@ public class Constants {
 
     public static SharedPreferences getGlobalPrefs(Context context) {
         return context.getSharedPreferences(AUDIOFX_GLOBAL_FILE, 0);
+    }
+
+    public static List<Preset> getCustomPresets(Context ctx, int bands) {
+        ArrayList<Preset> presets = new ArrayList<Preset>();
+        final SharedPreferences presetPrefs = ctx.getSharedPreferences("custom_presets", 0);
+        String[] presetNames = presetPrefs.getString("preset_names", "").split("\\|");
+
+        for (int i = 0; i < presetNames.length; i++) {
+            String storedPresetString = presetPrefs.getString(presetNames[i], null);
+            if (storedPresetString == null) {
+                continue;
+            }
+            Preset.CustomPreset p = Preset.CustomPreset.fromString(storedPresetString);
+            presets.add(p);
+        }
+
+        return presets;
+    }
+
+    public static void saveCustomPresets(Context ctx, List<Preset> presets) {
+        final SharedPreferences.Editor presetPrefs = ctx.getSharedPreferences("custom_presets", 0).edit();
+        presetPrefs.clear();
+
+        StringBuffer presetNames = new StringBuffer();
+        for (int i = 0; i < presets.size(); i++) {
+            final Preset preset = presets.get(i);
+            if (preset instanceof Preset.CustomPreset
+                    && !(preset instanceof Preset.PermCustomPreset)) {
+                Preset.CustomPreset p = (Preset.CustomPreset) preset;
+                presetNames.append(p.getName());
+                presetNames.append("|");
+
+                presetPrefs.putString(p.getName(), p.toString());
+            }
+        }
+        if (presetNames.length() > 0) {
+            presetNames.deleteCharAt(presetNames.length() - 1);
+        }
+
+        presetPrefs.putString("preset_names", presetNames.toString());
+        presetPrefs.commit();
+    }
+
+    public static int[] getBandLevelRange(Context context) {
+        String savedCenterFreqs = context.getSharedPreferences("global", 0).getString("equalizer.band_level_range", null);
+        if (savedCenterFreqs == null || savedCenterFreqs.isEmpty()) {
+            return new int[]{-1500, 1500};
+        } else {
+            String[] split = savedCenterFreqs.split(";");
+            int[] freqs = new int[split.length];
+            for (int i = 0; i < split.length; i++) {
+                freqs[i] = Integer.valueOf(split[i]);
+            }
+            return freqs;
+        }
+    }
+
+    public static int[] getCenterFreqs(Context context, int eqBands) {
+        String savedCenterFreqs = context.getSharedPreferences("global", 0).getString("equalizer.center_freqs",
+                EqUtils.getZeroedBandsString(eqBands));
+        String[] split = savedCenterFreqs.split(";");
+        int[] freqs = new int[split.length];
+        for (int i = 0; i < split.length; i++) {
+            freqs[i] = Integer.valueOf(split[i]);
+        }
+        return freqs;
     }
 }

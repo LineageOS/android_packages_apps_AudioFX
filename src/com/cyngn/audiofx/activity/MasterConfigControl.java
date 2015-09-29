@@ -13,10 +13,12 @@ import android.widget.CompoundButton;
 
 import com.cyngn.audiofx.AudioOutputChangeListener;
 import com.cyngn.audiofx.Constants;
+import com.cyngn.audiofx.Preset;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.eq.EqUtils;
 import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.OutputDevice;
+import com.cyngn.audiofx.stats.UserSession;
 import libcore.util.Objects;
 
 import java.util.ArrayList;
@@ -160,7 +162,7 @@ public class MasterConfigControl {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isUserPreset()) {
-                        ((CustomPreset) mEqPresets.get(mCurrentPreset)).setLocked(isChecked);
+                        ((Preset.CustomPreset) mEqPresets.get(mCurrentPreset)).setLocked(isChecked);
                     }
                 }
             };
@@ -185,7 +187,7 @@ public class MasterConfigControl {
             public boolean handleMessage(Message msg) {
                 switch (msg.what) {
                     case MSG_SAVE_PRESETS:
-                        EqUtils.saveCustomPresets(mContext, mEqPresets);
+                        Constants.saveCustomPresets(mContext, mEqPresets);
                         break;
                     case MSG_SEND_EQ_OVERRIDE:
                         if (mService != null) {
@@ -213,8 +215,8 @@ public class MasterConfigControl {
         // setup eq
         int bands = Integer.parseInt(getGlobalPrefs()
                 .getString("equalizer.number_of_bands", "5"));
-        final int[] centerFreqs = EqUtils.getCenterFreqs(mContext, bands);
-        final int[] bandLevelRange = EqUtils.getBandLevelRange(mContext);
+        final int[] centerFreqs = Constants.getCenterFreqs(mContext, bands);
+        final int[] bandLevelRange = Constants.getBandLevelRange(mContext);
 
         float[] centerFreqsKHz = new float[centerFreqs.length];
         for (int i = 0; i < centerFreqs.length; i++) {
@@ -247,16 +249,16 @@ public class MasterConfigControl {
         String[] presetNames = getGlobalPrefs().getString("equalizer.preset_names", "").split("\\|");
         mPredefinedPresets = presetNames.length + 1; // we consider first EQ to be part of predefined
         for (int i = 0; i < numPresets; i++) {
-            mEqPresets.add(new StaticPreset(presetNames[i], getPersistedPresetLevels(i)));
+            mEqPresets.add(new Preset.StaticPreset(presetNames[i], getPersistedPresetLevels(i)));
         }
 
         // add custom preset
-        mEqPresets.add(new PermCustomPreset(mContext.getString(R.string.user),
+        mEqPresets.add(new Preset.PermCustomPreset(mContext.getString(R.string.user),
                 getPersistedCustomLevels()));
         mEQCustomPresetPosition = mEqPresets.size() - 1;
 
         // restore custom prefs
-        mEqPresets.addAll(EqUtils.getCustomPresets(mContext, mNumBands));
+        mEqPresets.addAll(Constants.getCustomPresets(mContext, mNumBands));
 
         // setup default preset for speaker
         mCurrentPreset = Integer.parseInt(getPrefs().getString(Constants.DEVICE_AUDIOFX_EQ_PRESET, "0"));
@@ -382,12 +384,12 @@ public class MasterConfigControl {
 
         String levels = EqUtils.floatLevelsToString(
                 EqUtils.convertDecibelsToMillibels(
-                        mEqPresets.get(mCurrentPreset).mLevels));
+                        mEqPresets.get(mCurrentPreset).getLevels()));
         getGlobalPrefs()
                 .edit()
                 .putString("custom", levels).apply();
 
-        ((PermCustomPreset) mEqPresets.get(mEQCustomPresetPosition)).setLevels(mGlobalLevels);
+        ((Preset.PermCustomPreset) mEqPresets.get(mEQCustomPresetPosition)).setLevels(mGlobalLevels);
         if (DEBUG)
             Log.i(TAG, "copyToCustom() wrote current preset levels to index: " + mEQCustomPresetPosition);
         setPreset(mEQCustomPresetPosition);
@@ -415,11 +417,15 @@ public class MasterConfigControl {
      * @return the index that the levels were copied to
      */
     private int addPreset(float[] levels) {
-        final int customPresets = EqUtils.getCustomPresets(mContext, mNumBands).size();
+        if (UserSession.getInstance() != null) {
+            UserSession.getInstance().presetCreated();
+        }
+
+        final int customPresets = Constants.getCustomPresets(mContext, mNumBands).size();
         // format the name so it's like "Custom <N>", start with "Custom 2"
         final String name = String.format(mContext.getString(R.string.user_n), customPresets + 2);
 
-        CustomPreset customPreset = new CustomPreset(name, levels, false);
+        Preset.CustomPreset customPreset = new Preset.CustomPreset(name, levels, false);
         mEqPresets.add(customPreset);
 
         for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
@@ -506,25 +512,25 @@ public class MasterConfigControl {
             // persist
 
             final Preset preset = mEqPresets.get(mCurrentPreset);
-            if (preset instanceof CustomPreset) {
+            if (preset instanceof Preset.CustomPreset) {
                 if (mAnimatingToCustom.get()) {
                     if (DEBUG) {
                         Log.d(TAG, "setLevel() not persisting new custom band becuase animating.");
                     }
                 } else {
-                    ((CustomPreset) preset).setLevel(band, dB);
-                    if (preset instanceof PermCustomPreset) {
+                    ((Preset.CustomPreset) preset).setLevel(band, dB);
+                    if (preset instanceof Preset.PermCustomPreset) {
                         // store these as millibels
                         String levels = EqUtils.floatLevelsToString(
                                 EqUtils.convertDecibelsToMillibels(
-                                        preset.mLevels));
+                                        preset.getLevels()));
                         getGlobalPrefs()
                                 .edit()
                                 .putString("custom", levels).apply();
                     }
                 }
                 // needs to be updated immediately here for the service.
-                final String levels = EqUtils.floatLevelsToString(preset.mLevels);
+                final String levels = EqUtils.floatLevelsToString(preset.getLevels());
                 mCurrentDevicePrefs.edit().putString(Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS,
                         levels).apply();
                 updateService();
@@ -541,7 +547,7 @@ public class MasterConfigControl {
      * @param newPresetIndex the new preset index.
      */
     public void setPreset(int newPresetIndex) {
-        mCurrentPreset = newPresetIndex;
+         mCurrentPreset = newPresetIndex;
         updateEqControls(); // do this before callback is propogated
         for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
             callback.onPresetChanged(newPresetIndex);
@@ -650,7 +656,7 @@ public class MasterConfigControl {
         String newLevels = null;
 
         if (mEqPresets.size() > presetIndex
-                && mEqPresets.get(presetIndex) instanceof PermCustomPreset) {
+                && mEqPresets.get(presetIndex) instanceof Preset.PermCustomPreset) {
             return getPersistedCustomLevels();
         } else {
             newLevels = getGlobalPrefs().getString("equalizer.preset." +
@@ -677,7 +683,7 @@ public class MasterConfigControl {
      * @return an array of floats[] with the given index's preset levels
      */
     public float[] getPresetLevels(int presetIndex) {
-        return mEqPresets.get(presetIndex).mLevels;
+        return mEqPresets.get(presetIndex).getLevels();
     }
 
     /**
@@ -689,7 +695,7 @@ public class MasterConfigControl {
     public int getAssociatedPresetColorHex(int index) {
         int r = -1;
         index = index % mEqPresets.size();
-        if (mEqPresets.get(index) instanceof CustomPreset) {
+        if (mEqPresets.get(index) instanceof Preset.CustomPreset) {
             r = R.color.preset_custom;
         } else {
             switch (index) {
@@ -751,7 +757,7 @@ public class MasterConfigControl {
 
     public String getLocalizedPresetName(int index) {
         // already localized
-        return localizePresetName(mEqPresets.get(index).mName);
+        return localizePresetName(mEqPresets.get(index).getName());
     }
 
     private final String localizePresetName(final String name) {
@@ -778,14 +784,18 @@ public class MasterConfigControl {
     }
 
     public boolean isEqualizerLocked() {
-        return getCurrentPreset() instanceof CustomPreset
-                && !(getCurrentPreset() instanceof PermCustomPreset)
-                && ((CustomPreset) getCurrentPreset()).isLocked();
+        return getCurrentPreset() instanceof Preset.CustomPreset
+                && !(getCurrentPreset() instanceof Preset.PermCustomPreset)
+                && ((Preset.CustomPreset) getCurrentPreset()).isLocked();
     }
 
     public void renameCurrentPreset(String s) {
+        if (UserSession.getInstance() != null) {
+            UserSession.getInstance().presetRenamed();
+        }
+
         if (isUserPreset()) {
-            ((CustomPreset) getCurrentPreset()).setName(s);
+            ((Preset.CustomPreset) getCurrentPreset()).setName(s);
         }
 
         // notify change
@@ -797,6 +807,10 @@ public class MasterConfigControl {
     }
 
     public boolean removePreset(int index) {
+        if (UserSession.getInstance() != null) {
+            UserSession.getInstance().presetRemoved();
+        }
+
         if (index > mEQCustomPresetPosition) {
             mEqPresets.remove(index);
             for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
@@ -838,123 +852,6 @@ public class MasterConfigControl {
 
     public EqControlState getEqControlState() {
         return mEqControlState;
-    }
-
-    public static class Preset {
-        public String mName;
-        protected final float[] mLevels;
-
-        private Preset(String name, float[] levels) {
-            this.mName = name;
-            mLevels = new float[levels.length];
-            for (int i = 0; i < levels.length; i++) {
-                mLevels[i] = levels[i];
-            }
-        }
-
-        public float getBandLevel(int band) {
-            return mLevels[band];
-        }
-
-        @Override
-        public String toString() {
-            return mName + "|" + EqUtils.floatLevelsToString(mLevels);
-        }
-
-        private static Preset fromString(String input) {
-            final String[] split = input.split("\\|");
-            if (split == null || split.length != 2) {
-                return null;
-            }
-            float[] levels = EqUtils.stringBandsToFloats(split[1]);
-            return new Preset(split[0], levels);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof Preset) {
-                Preset other = (Preset) o;
-                return other.mName.equals(mName);
-            }
-            return super.equals(o);
-        }
-    }
-
-    public static class StaticPreset extends Preset {
-        public StaticPreset(String name, float[] levels) {
-            super(name, levels);
-        }
-    }
-
-    public static class PermCustomPreset extends CustomPreset {
-
-        public PermCustomPreset(String name, float[] levels) {
-            super(name, levels, false);
-        }
-
-        @Override
-        public String toString() {
-            return mName + "|" + EqUtils.floatLevelsToString(mLevels);
-        }
-
-        public static PermCustomPreset fromString(String input) {
-            final String[] split = input.split("\\|");
-            if (split == null || split.length != 2) {
-                return null;
-            }
-            float[] levels = EqUtils.stringBandsToFloats(split[1]);
-            return new PermCustomPreset(split[0], levels);
-        }
-    }
-
-    public static class CustomPreset extends Preset {
-
-        private boolean mLocked;
-
-        public CustomPreset(String name, float[] levels, boolean locked) {
-            super(name, levels);
-            mLocked = locked;
-        }
-
-        public boolean isLocked() {
-            return mLocked;
-        }
-
-        public void setLocked(boolean locked) {
-            mLocked = locked;
-        }
-
-        public void setName(String name) {
-            mName = name;
-        }
-
-        public void setLevel(int band, float level) {
-            mLevels[band] = level;
-        }
-
-        public void setLevels(float[] levels) {
-            for (int i = 0; i < levels.length; i++) {
-                mLevels[i] = levels[i];
-            }
-        }
-
-        public float getLevel(int band) {
-            return mLevels[band];
-        }
-
-        @Override
-        public String toString() {
-            return super.toString() + "|" + mLocked;
-        }
-
-        public static CustomPreset fromString(String input) {
-            final String[] split = input.split("\\|");
-            if (split == null || split.length != 3) {
-                return null;
-            }
-            float[] levels = EqUtils.stringBandsToFloats(split[1]);
-            return new CustomPreset(split[0], levels, Boolean.valueOf(split[2]));
-        }
     }
 
     public List<OutputDevice> getBluetoothDevices() {

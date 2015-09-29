@@ -14,6 +14,7 @@ import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.knobs.KnobCommander;
 import com.cyngn.audiofx.knobs.KnobContainer;
 import com.cyngn.audiofx.service.OutputDevice;
+import com.cyngn.audiofx.stats.UserSession;
 
 public class ControlsFragment extends AudioFxBaseFragment {
 
@@ -29,6 +30,9 @@ public class ControlsFragment extends AudioFxBaseFragment {
             = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (mConfig.getMaxxVolumeEnabled() != isChecked) {
+                UserSession.getInstance().maxxVolumeToggled();
+            }
             mConfig.setMaxxVolumeEnabled(isChecked);
         }
     };

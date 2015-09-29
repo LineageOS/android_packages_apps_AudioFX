@@ -131,7 +131,7 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
 
         if (mTrebleContainer != null) {
             mTrebleKnob = (RadialKnob) mTrebleContainer.findViewById(R.id.knob);
-            mTrebleKnob.setTag(new KnobInfo(mTrebleKnob,
+            mTrebleKnob.setTag(new KnobInfo(KnobCommander.KNOB_TREBLE, mTrebleKnob,
                     mTrebleContainer.findViewById(R.id.label)));
             mTrebleKnob.setOnTouchListener(knobTouchListener);
             mTrebleKnob.setOnKnobChangeListener(
@@ -143,7 +143,7 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
         }
         if (mBassContainer != null) {
             mBassKnob = (RadialKnob) mBassContainer.findViewById(R.id.knob);
-            mBassKnob.setTag(new KnobInfo(mBassKnob, mBassContainer.findViewById(R.id.label)));
+            mBassKnob.setTag(new KnobInfo(KnobCommander.KNOB_BASS, mBassKnob, mBassContainer.findViewById(R.id.label)));
             mBassKnob.setOnTouchListener(knobTouchListener);
             mBassKnob.setOnKnobChangeListener(
                     KnobCommander.getInstance(getContext()).getRadialKnobCallback(
@@ -156,7 +156,7 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
         }
         if (mVirtualizerContainer != null) {
             mVirtualizerKnob = (RadialKnob) mVirtualizerContainer.findViewById(R.id.knob);
-            mVirtualizerKnob.setTag(new KnobInfo(mVirtualizerKnob,
+            mVirtualizerKnob.setTag(new KnobInfo(KnobCommander.KNOB_VIRTUALIZER, mVirtualizerKnob,
                     mVirtualizerContainer.findViewById(R.id.label)));
             mVirtualizerKnob.setOnTouchListener(knobTouchListener);
             mVirtualizerKnob.setOnKnobChangeListener(
@@ -349,12 +349,14 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
     }
 
     public static class KnobInfo {
+        int whichKnob;
         RadialKnob knob;
         View label;
 
-        public KnobInfo(RadialKnob knob, View label) {
+        public KnobInfo(int whichKnob, RadialKnob knob, View label) {
             this.knob = knob;
             this.label = label;
+            this.whichKnob = whichKnob;
         }
     }
 

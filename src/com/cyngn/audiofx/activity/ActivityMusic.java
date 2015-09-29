@@ -20,12 +20,17 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import com.cyanogen.ambient.analytics.Event;
+import com.cyngn.audiofx.AudioFxApplication;
 import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.fragment.AudioFxFragment;
 import com.cyngn.audiofx.fragment.DTSFragment;
+import com.cyngn.audiofx.knobs.KnobCommander;
 import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.DtsControl;
+import com.cyngn.audiofx.stats.AppState;
+import com.cyngn.audiofx.stats.UserSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +45,7 @@ public class ActivityMusic extends Activity {
 
     public static final String TAG_AUDIOFX = "audiofx";
     public static final String TAG_DTS = "dts";
+    public static final String EXTRA_CALLING_PACKAGE = "audiofx::extra_calling_package";
 
     private int mCurrentMode = CURRENT_MODE_AUDIOFX;
     private Spinner mSpinner;
@@ -47,6 +53,7 @@ public class ActivityMusic extends Activity {
 
     private CheckBox mCurrentDeviceToggle;
     MasterConfigControl mConfig;
+    String mCallingPackage;
 
     private List<ActivityStateListener> mGlobalToggleListeners = new ArrayList<>();
 
@@ -64,6 +71,9 @@ public class ActivityMusic extends Activity {
         @Override
         public void onCheckedChanged(final CompoundButton buttonView,
                                      final boolean isChecked) {
+            if (UserSession.getInstance() != null) {
+                UserSession.getInstance().deviceEnabledDisabled();
+            }
             for (ActivityStateListener listener : mGlobalToggleListeners) {
                 listener.onGlobalToggleChanged(buttonView, isChecked);
             }
@@ -76,8 +86,10 @@ public class ActivityMusic extends Activity {
             Log.i(TAG, "onCreate() called with "
                     + "savedInstanceState = [" + savedInstanceState + "]");
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+
+        mCallingPackage = getIntent().getStringExtra(EXTRA_CALLING_PACKAGE);
+        Log.i(TAG, "calling package: " + mCallingPackage);
 
         final SharedPreferences globalPrefs = Constants.getGlobalPrefs(this);
         final boolean ready = globalPrefs
@@ -108,6 +120,13 @@ public class ActivityMusic extends Activity {
         } else {
             init(savedInstanceState);
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // should null it out if one was there, compat redirector with package will go through onCreate
+        mCallingPackage = intent.getStringExtra(EXTRA_CALLING_PACKAGE);
     }
 
     @Override
@@ -214,12 +233,27 @@ public class ActivityMusic extends Activity {
         if (DEBUG) Log.i(TAG, "onResume() called with " + "");
         super.onResume();
 
+        // initiate a new session
+        new UserSession(mCallingPackage);
+
         if (mWaitingForService) {
             return;
         }
 
         // action bar controls need to live beyond all fragments
         setupDtsActionBar();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (DEBUG) Log.d(TAG, "Session: " + UserSession.getInstance());
+
+        final Event.Builder builder = new Event.Builder("session", "ended");
+        UserSession.getInstance().append(builder);
+        AppState.appendState(mConfig, KnobCommander.getInstance(this), builder);
+        ((AudioFxApplication)getApplicationContext()).sendEvent(builder.build());
     }
 
     @Override

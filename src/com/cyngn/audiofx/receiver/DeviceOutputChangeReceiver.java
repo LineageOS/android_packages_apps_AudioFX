@@ -3,8 +3,6 @@ package com.cyngn.audiofx.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
-import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.OutputDevice;

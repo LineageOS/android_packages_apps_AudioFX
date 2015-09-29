@@ -36,6 +36,7 @@ import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.receiver.DeviceOutputChangeReceiver;
 import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.OutputDevice;
+import com.cyngn.audiofx.stats.UserSession;
 import com.cyngn.audiofx.widget.InterceptableLinearLayout;
 
 import java.util.List;
@@ -319,6 +320,7 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
 
         }
         if (newDevice != null) {
+            UserSession.getInstance().deviceChanged();
             mDeviceChanging = true;
             if (item.isCheckable()) {
                 item.setChecked(!item.isChecked());

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.cyngn.audiofx.activity.MasterConfigControl;
+import com.cyngn.audiofx.Preset;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,72 +14,6 @@ public class EqUtils {
 
     private static final String TAG = EqUtils.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
-
-    public static List<MasterConfigControl.Preset> getCustomPresets(Context ctx, int bands) {
-        ArrayList<MasterConfigControl.Preset> presets = new ArrayList<MasterConfigControl.Preset>();
-        final SharedPreferences presetPrefs = ctx.getSharedPreferences("custom_presets", 0);
-        String[] presetNames = presetPrefs.getString("preset_names", "").split("\\|");
-
-        for (int i = 0; i < presetNames.length; i++) {
-            String storedPresetString = presetPrefs.getString(presetNames[i], null);
-            if (storedPresetString == null) {
-                continue;
-            }
-            MasterConfigControl.CustomPreset p = MasterConfigControl.CustomPreset.fromString(storedPresetString);
-            presets.add(p);
-        }
-
-        return presets;
-    }
-
-    public static void saveCustomPresets(Context ctx, List<MasterConfigControl.Preset> presets) {
-        final SharedPreferences.Editor presetPrefs = ctx.getSharedPreferences("custom_presets", 0).edit();
-        presetPrefs.clear();
-
-        StringBuffer presetNames = new StringBuffer();
-        for (int i = 0; i < presets.size(); i++) {
-            final MasterConfigControl.Preset preset = presets.get(i);
-            if (preset instanceof MasterConfigControl.CustomPreset
-                    && !(preset instanceof MasterConfigControl.PermCustomPreset)) {
-                MasterConfigControl.CustomPreset p = (MasterConfigControl.CustomPreset) preset;
-                presetNames.append(p.mName);
-                presetNames.append("|");
-
-                presetPrefs.putString(p.mName, p.toString());
-            }
-        }
-        if (presetNames.length() > 0) {
-            presetNames.deleteCharAt(presetNames.length() - 1);
-        }
-
-        presetPrefs.putString("preset_names", presetNames.toString());
-        presetPrefs.commit();
-    }
-
-    public static int[] getBandLevelRange(Context context) {
-        String savedCenterFreqs = context.getSharedPreferences("global", 0).getString("equalizer.band_level_range", null);
-        if (savedCenterFreqs == null || savedCenterFreqs.isEmpty()) {
-            return new int[]{-1500, 1500};
-        } else {
-            String[] split = savedCenterFreqs.split(";");
-            int[] freqs = new int[split.length];
-            for (int i = 0; i < split.length; i++) {
-                freqs[i] = Integer.valueOf(split[i]);
-            }
-            return freqs;
-        }
-    }
-
-    public static int[] getCenterFreqs(Context context, int eqBands) {
-        String savedCenterFreqs = context.getSharedPreferences("global", 0).getString("equalizer.center_freqs",
-                getZeroedBandsString(eqBands));
-        String[] split = savedCenterFreqs.split(";");
-        int[] freqs = new int[split.length];
-        for (int i = 0; i < split.length; i++) {
-            freqs[i] = Integer.valueOf(split[i]);
-        }
-        return freqs;
-    }
 
     public static String getZeroedBandsString(int length) {
         StringBuffer buff = new StringBuffer();

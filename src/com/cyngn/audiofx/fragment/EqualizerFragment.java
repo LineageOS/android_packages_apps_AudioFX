@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import com.cyngn.audiofx.Preset;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.eq.EqContainerView;
@@ -24,8 +25,8 @@ import com.cyngn.audiofx.preset.InfinitePagerAdapter;
 import com.cyngn.audiofx.preset.InfiniteViewPager;
 import com.cyngn.audiofx.preset.PresetPagerAdapter;
 import com.cyngn.audiofx.service.OutputDevice;
+import com.cyngn.audiofx.stats.UserSession;
 import com.viewpagerindicator.CirclePageIndicator;
-import com.viewpagerindicator.PageIndicator;
 
 public class EqualizerFragment extends AudioFxBaseFragment
         implements MasterConfigControl.EqUpdatedCallback {
@@ -103,10 +104,10 @@ public class EqualizerFragment extends AudioFxBaseFragment
 
     private void removeCurrentCustomPreset(boolean showWarning) {
         if (showWarning) {
-            MasterConfigControl.Preset p = mConfig.getCurrentPreset();
+            Preset p = mConfig.getCurrentPreset();
             new AlertDialog.Builder(getActivity())
                     .setMessage(String.format(getString(
-                            R.string.remove_custom_preset_warning_message), p.mName))
+                            R.string.remove_custom_preset_warning_message), p.getName()))
                     .setNegativeButton(android.R.string.no, null)
                     .setPositiveButton(android.R.string.yes,
                             new DialogInterface.OnClickListener() {
@@ -134,7 +135,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
         AlertDialog.Builder renameDialog = new AlertDialog.Builder(getActivity());
         renameDialog.setTitle(R.string.rename);
         final EditText newName = new EditText(getActivity());
-        newName.setText(mConfig.getCurrentPreset().mName);
+        newName.setText(mConfig.getCurrentPreset().getName());
         renameDialog.setView(newName);
         renameDialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
@@ -459,6 +460,9 @@ public class EqualizerFragment extends AudioFxBaseFragment
             mSelectedPosition = position;
             if (!mDeviceChanging) {
                 mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
+                if (UserSession.getInstance() != null) {
+                    UserSession.getInstance().presetSelected();
+                }
             }
         }
 

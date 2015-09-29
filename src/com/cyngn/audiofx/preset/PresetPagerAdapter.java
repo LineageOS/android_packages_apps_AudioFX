@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.cyngn.audiofx.Preset;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 
@@ -39,7 +40,7 @@ public class PresetPagerAdapter extends PagerAdapter {
     @Override
     public int getItemPosition(Object object) {
         View v = (View) object;
-        int index = mConfig.indexOf(((MasterConfigControl.Preset) v.getTag()));
+        int index = mConfig.indexOf(((Preset) v.getTag()));
         if (index == -1) {
             return POSITION_NONE;
         } else {

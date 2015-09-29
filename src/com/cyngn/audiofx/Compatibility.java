@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import com.cyngn.audiofx.activity.ActivityMusic;
+import com.cyngn.audiofx.stats.UserSession;
 
 import java.util.List;
 
@@ -80,6 +81,8 @@ public class Compatibility {
             } else {
                 i.setComponent(new ComponentName(defPackage, defName));
             }
+
+            i.putExtra(ActivityMusic.EXTRA_CALLING_PACKAGE, getCallingPackage());
             startActivity(i);
             finish();
         }

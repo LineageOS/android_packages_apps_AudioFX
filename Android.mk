@@ -10,6 +10,14 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
 LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4
 
+LOCAL_PROGUARD_ENABLED := disabled
+
+LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, res)
+LOCAL_AAPT_FLAGS := --auto-add-overlay
+LOCAL_AAPT_FLAGS += --extra-packages com.cyanogen.ambient
+
+LOCAL_STATIC_JAVA_AAR_LIBRARIES := ambientsdk
+
 LOCAL_PRIVILEGED_MODULE := true
 
 # Sign the package when not using test-keys
