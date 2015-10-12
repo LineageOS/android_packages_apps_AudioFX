@@ -41,4 +41,6 @@
   <string name="device_speaker">Səsucaldan</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
+  <string name="device_wireless">Simsiz</string>
+  <string name="reverb">Əks-səda</string>
 </resources>
