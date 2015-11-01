@@ -176,12 +176,6 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
     @Override
     public void onResume() {
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(AudioFxService.ACTION_BLUETOOTH_DEVICES_UPDATED);
-        filter.addAction(AudioManager.ACTION_DIGITAL_AUDIO_DOCK_PLUG);
-        filter.addAction(AudioManager.ACTION_ANALOG_AUDIO_DOCK_PLUG);
-        filter.addAction(AudioManager.ACTION_USB_AUDIO_DEVICE_PLUG);
-        getActivity().registerReceiver(mDevicesChangedReceiver, filter);
         mConfig.addEqStateChangeCallback(this);
 
         mConfig.bindService();
@@ -202,7 +196,6 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
 
     @Override
     public void onPause() {
-        getActivity().unregisterReceiver(mDevicesChangedReceiver);
         mConfig.removeEqStateChangeCallback(this);
         mConfig.unbindService();
         mConfig.setCurrentDevice(null, true);
@@ -417,27 +410,6 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         }
         mColorChangeAnimator.start();
     }
-
-    private BroadcastReceiver mDevicesChangedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (AudioFxService.ACTION_BLUETOOTH_DEVICES_UPDATED.equals(intent.getAction())) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mBluetoothDevices = mConfig.getBluetoothDevices();
-                        getActivity().invalidateOptionsMenu();
-                    }
-                });
-            } else if (AudioManager.ACTION_DIGITAL_AUDIO_DOCK_PLUG.equals(intent.getAction())
-                    || AudioManager.ACTION_ANALOG_AUDIO_DOCK_PLUG.equals(intent.getAction())
-                    || AudioManager.ACTION_USB_AUDIO_DEVICE_PLUG.equals(intent.getAction())) {
-                boolean connected = intent.getIntExtra("state", 0) == 1;
-                mUsbDeviceConnected = connected;
-                getActivity().invalidateOptionsMenu();
-            }
-        }
-    };
 
     @Override
     public void onBandLevelChange(int band, float dB, boolean fromSystem) {
