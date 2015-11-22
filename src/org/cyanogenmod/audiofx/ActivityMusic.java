@@ -16,9 +16,13 @@
 
 package org.cyanogenmod.audiofx;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.*;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.AudioEffect.Descriptor;
@@ -101,6 +105,8 @@ public class ActivityMusic extends Activity {
 
     private Toast mCurrentToast;
 
+    private int REQUEST_PERMISSION = 7;
+
     HeadsetService mService;
 
     private String mCurrentDevice = "speaker"; // the sensible default
@@ -167,6 +173,8 @@ public class ActivityMusic extends Activity {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         startService(new Intent(this, HeadsetService.class));
+
+        checkAudioFxPermissions();
 
         // Init context to be used in listeners
         mContext = this;
@@ -787,6 +795,45 @@ public class ActivityMusic extends Activity {
         getPrefs().edit().putString("audiofx.reverb.preset", String.valueOf(preset)).apply();
         updateService();
     }
+
+    private void checkAudioFxPermissions() {
+        if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
+            != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO},REQUEST_PERMISSION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+            String permissions[], int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSION) {
+            if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.v(TAG, "Microphone permission granted.");
+            } else {
+                Log.w(TAG, "Microphone permission denied, giving user a hint...");
+                new AlertDialog.Builder(this).setTitle(getResources().getString(R.string.denied_title))
+                    .setMessage(getResources().getString(R.string.denied_message))
+                    .setPositiveButton(getResources().getString(R.string.allow),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                checkAudioFxPermissions();
+                            }
+                        })
+                    .setNegativeButton(getResources().getString(R.string.dismiss),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.w(TAG, "No microphone for audioFX...");
+                            }
+                        })
+                    .show();
+            }
+        }
+    }
+
+
 
     private void showHeadsetMsg() {
         // clear the toast
