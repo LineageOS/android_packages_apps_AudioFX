@@ -16,9 +16,11 @@
 
 package org.cyanogenmod.audiofx;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.*;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.AudioEffect.Descriptor;
@@ -26,6 +28,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -168,6 +172,8 @@ public class ActivityMusic extends Activity {
         super.onCreate(savedInstanceState);
         startService(new Intent(this, HeadsetService.class));
 
+        checkAudioFxPermissions();
+
         // Init context to be used in listeners
         mContext = this;
         // Receive intent
@@ -280,8 +286,7 @@ public class ActivityMusic extends Activity {
         ab.setCustomView(mToggleSwitch, params);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setDisplayShowTitleEnabled(false);
-        ab.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
-                        | ActionBar.DISPLAY_SHOW_CUSTOM
+        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM
         );
 
         // initialize views
@@ -787,6 +792,16 @@ public class ActivityMusic extends Activity {
         getPrefs().edit().putString("audiofx.reverb.preset", String.valueOf(preset)).apply();
         updateService();
     }
+
+    private void checkAudioFxPermissions() {
+        int REQUEST_PERMISSION = 7;
+
+        if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
+            != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO},REQUEST_PERMISSION);
+        }
+    }
+
 
     private void showHeadsetMsg() {
         // clear the toast
