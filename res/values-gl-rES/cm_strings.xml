@@ -20,9 +20,14 @@
   <string name="classical">Clásica</string>
   <string name="dance">Dance</string>
   <string name="flat">Plano</string>
+  <string name="folk">Folk</string>
+  <string name="heavy_metal">Heavy Metal</string>
+  <string name="hip_hop">Hip Hop</string>
   <string name="jazz">Jazz</string>
+  <string name="pop">Pop</string>
   <string name="rock">Rock</string>
   <string name="ci_extreme">Electrónica</string>
+  <string name="small_speakers">Altofalantes pequenos</string>
   <string name="user">Personalizado</string>
   <string name="none">Ningunha</string>
   <string name="smallroom">Cuarto pequeno</string>
@@ -30,7 +35,14 @@
   <string name="largeroom">Cuarto grande</string>
   <string name="mediumhall">Sala mediana</string>
   <string name="largehall">Sala grande</string>
+  <string name="plate">Disco</string>
+  <string name="power_on_prompt">Prema o botón de acendido na esquina dereita.</string>
+  <string name="effect_unavalable_for_speaker">O efecto non está dispoñíbel no modo altavoz.</string>
+  <string name="device_headset">Auriculares</string>
   <string name="device_speaker">Altofalante</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
+  <string name="device_wireless">Sen fíos</string>
+  <string name="reverb">Reverberar</string>
+  <string name="eq_preset">Ecualizador predefinido</string>
 </resources>
