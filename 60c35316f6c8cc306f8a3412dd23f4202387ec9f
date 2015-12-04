@@ -56,6 +56,23 @@
       "revId": "60c35316f6c8cc306f8a3412dd23f4202387ec9f",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bf8cb3f7_3b69d024",
+        "filename": "src/org/cyanogenmod/audiofx/ActivityMusic.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 802,
+      "author": {
+        "id": 68
+      },
+      "writtenOn": "2015-12-04T21:03:20Z",
+      "side": 1,
+      "message": "What about if it isn\u0027t granted? Is the permission required for the app to operate? If so, an error dialog should show up and the app needs to be terminated or it will crash when attempting to use the permission.",
+      "revId": "60c35316f6c8cc306f8a3412dd23f4202387ec9f",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
     }
   ]
 }
