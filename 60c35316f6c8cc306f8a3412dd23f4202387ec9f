@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bf8cb3f7_bb7de0e8",
+        "filename": "Android.mk",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 68
+      },
+      "writtenOn": "2015-12-04T21:02:02Z",
+      "side": 1,
+      "message": "You  don\u0027t need to use the support library, the minimum sdk is 23 so we can call the non-wrapped APIs directly.",
+      "range": {
+        "startLine": 8,
+        "startChar": 11,
+        "endLine": 8,
+        "endChar": 12
+      },
+      "revId": "60c35316f6c8cc306f8a3412dd23f4202387ec9f",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bf8cb3f7_5b8294ca",
+        "filename": "src/org/cyanogenmod/audiofx/ActivityMusic.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 68
+      },
+      "writtenOn": "2015-12-04T21:02:02Z",
+      "side": 1,
+      "message": "Neither is needed. You aren\u0027t using the symbols.",
+      "revId": "60c35316f6c8cc306f8a3412dd23f4202387ec9f",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bf8cb3f7_7b8758d9",
+        "filename": "src/org/cyanogenmod/audiofx/ActivityMusic.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 68
+      },
+      "writtenOn": "2015-12-04T21:02:02Z",
+      "side": 1,
+      "message": "leftover from the ui change.",
+      "revId": "60c35316f6c8cc306f8a3412dd23f4202387ec9f",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
