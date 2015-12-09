@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Electronică</string>
+  <string name="electronic">Electronică</string>
   <string name="small_speakers">Difuzoare Mici</string>
-  <string name="user">Particularizat</string>
+  <string name="custom">Particularizat</string>
   <string name="none">Niciunul</string>
   <string name="smallroom">Cameră mică</string>
   <string name="mediumroom">Cameră medie</string>

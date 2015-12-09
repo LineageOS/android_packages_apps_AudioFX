@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronisk</string>
+  <string name="electronic">Elektronisk</string>
   <string name="small_speakers">Små høyttalere</string>
-  <string name="user">Egendefinert</string>
+  <string name="custom">Egendefinert</string>
   <string name="none">Ingen</string>
   <string name="smallroom">Lite rom</string>
   <string name="mediumroom">Medium rom</string>

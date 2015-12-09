@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Electrònica</string>
+  <string name="electronic">Electrònica</string>
   <string name="small_speakers">Altaveus petits</string>
-  <string name="user">Personalitzat</string>
+  <string name="custom">Personalitzat</string>
   <string name="none">Cap</string>
   <string name="smallroom">Habitació petita</string>
   <string name="mediumroom">Habitació mitjana</string>

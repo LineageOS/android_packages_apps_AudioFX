@@ -26,9 +26,9 @@
   <string name="jazz">جاز</string>
   <string name="pop">مودا نەغمە</string>
   <string name="rock">تولغىما ئۇسسۇل</string>
-  <string name="ci_extreme">ئېلېكتىرونلۇق</string>
+  <string name="electronic">ئېلېكتىرونلۇق</string>
   <string name="small_speakers">كىچىك ياڭراتقۇلار</string>
-  <string name="user">ئىختىيارىي</string>
+  <string name="custom">ئىختىيارىي</string>
   <string name="none">يوق</string>
   <string name="smallroom">كىچىك ئۆي</string>
   <string name="mediumroom">ئوتتۇرىھال ئۆي</string>

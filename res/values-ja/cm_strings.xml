@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Electronic</string>
+  <string name="electronic">Electronic</string>
   <string name="small_speakers">Small speakers</string>
-  <string name="user">カスタム</string>
+  <string name="custom">カスタム</string>
   <string name="none">なし</string>
   <string name="smallroom">小さい部屋</string>
   <string name="mediumroom">中くらいの部屋</string>

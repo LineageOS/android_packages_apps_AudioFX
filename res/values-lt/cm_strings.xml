@@ -26,9 +26,9 @@
   <string name="jazz">Džiazas</string>
   <string name="pop">Popsas</string>
   <string name="rock">Rokas</string>
-  <string name="ci_extreme">Elektronika</string>
+  <string name="electronic">Elektronika</string>
   <string name="small_speakers">Maži garsiakalbiai</string>
-  <string name="user">Priskirtas</string>
+  <string name="custom">Priskirtas</string>
   <string name="none">Joks</string>
   <string name="smallroom">Mažas kambarys</string>
   <string name="mediumroom">Vidutinio dydžio kambarys</string>

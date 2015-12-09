@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronická</string>
+  <string name="electronic">Elektronická</string>
   <string name="small_speakers">Malé reproduktory</string>
-  <string name="user">Vlastní</string>
+  <string name="custom">Vlastní</string>
   <string name="none">Žádný</string>
   <string name="smallroom">Malá místnost</string>
   <string name="mediumroom">Střední místnost</string>

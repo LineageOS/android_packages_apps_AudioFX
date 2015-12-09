@@ -17,14 +17,10 @@
 <resources>
   <string name="app_name">دەنگڕێخەر</string>
   <string name="no_effects">کاریگەر لەکارەنیە.</string>
-  <string name="main_toggle_effects_title">کاریگه‌ری ده‌نگ</string>
   <string name="eq_dialog_title">دەنگڕێخەر</string>
   <string name="headset_plug">تکایه‌ بیستۆکی پێوه‌بکه‌ بۆ کاریگه‌ری.</string>
   <string name="bass_boost_strength">زیادکردنی دەنگی دور</string>
   <string name="virtualizer_strength">دەوردانی دەنگ</string>
-  <string name="pr_title">هەمیشەی:</string>
-  <string name="pr_summary">زیادکردنی کاریگەری دەنگ</string>
-  <string name="pr_dialog_title">هەمیشە ڕێخستن</string>
   <string name="setup">دامه‌زراندن</string>
   <string name="picker_title">پەڕەی ڕێکخستنی کاریگەری دەنگ\"</string>
 </resources>

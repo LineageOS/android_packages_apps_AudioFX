@@ -26,8 +26,8 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronska</string>
-  <string name="user">Prilagođeno</string>
+  <string name="electronic">Elektronska</string>
+  <string name="custom">Prilagođeno</string>
   <string name="none">Ništa</string>
   <string name="smallroom">Mala soba</string>
   <string name="mediumroom">Srednja soba</string>

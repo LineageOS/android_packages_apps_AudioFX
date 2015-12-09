@@ -26,9 +26,9 @@
   <string name="jazz">Джаз</string>
   <string name="pop">Поп</string>
   <string name="rock">Рок</string>
-  <string name="ci_extreme">Электронная музыка</string>
+  <string name="electronic">Электронная музыка</string>
   <string name="small_speakers">Маленькие динамики</string>
-  <string name="user">Пользовательские настр.</string>
+  <string name="custom">Пользовательские настр.</string>
   <string name="none">Нет</string>
   <string name="smallroom">Маленькая комната</string>
   <string name="mediumroom">Средняя комната</string>

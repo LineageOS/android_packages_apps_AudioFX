@@ -26,9 +26,9 @@
   <string name="jazz">Τζαζ</string>
   <string name="pop">Ποπ</string>
   <string name="rock">Ροκ</string>
-  <string name="ci_extreme">Ηλεκτρονική</string>
+  <string name="electronic">Ηλεκτρονική</string>
   <string name="small_speakers">Μικρά ηχεία</string>
-  <string name="user">Προσαρμοσμένο</string>
+  <string name="custom">Προσαρμοσμένο</string>
   <string name="none">Κανένα</string>
   <string name="smallroom">Μικρό δωμάτιο</string>
   <string name="mediumroom">Μεσαίο δωμάτιο</string>

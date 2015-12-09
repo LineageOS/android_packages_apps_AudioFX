@@ -300,9 +300,9 @@ public class ActivityMusic extends Activity {
         for (short i = 0; i < numPresets; i++) {
             mEQPresetNames[i] = localizePresetName(presetNames[i]);
         }
-        mEQPresetNames[numPresets] = getString(R.string.ci_extreme);
+        mEQPresetNames[numPresets] = getString(R.string.electronic);
         mEQPresetNames[numPresets + 1] = getString(R.string.small_speakers);
-        mEQPresetNames[numPresets + 2] = getString(R.string.user);
+        mEQPresetNames[numPresets + 2] = getString(R.string.custom);
         mEQCustomPresetPosition = numPresets + 2;
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.equalizer_presets,

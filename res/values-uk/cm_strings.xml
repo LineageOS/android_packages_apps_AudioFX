@@ -26,9 +26,9 @@
   <string name="jazz">Джаз</string>
   <string name="pop">Поп</string>
   <string name="rock">Рок</string>
-  <string name="ci_extreme">Електронна</string>
+  <string name="electronic">Електронна</string>
   <string name="small_speakers">Маленькі динаміки</string>
-  <string name="user">Користувач</string>
+  <string name="custom">Користувач</string>
   <string name="none">Немає</string>
   <string name="smallroom">Мала кімната</string>
   <string name="mediumroom">Середня кімната</string>

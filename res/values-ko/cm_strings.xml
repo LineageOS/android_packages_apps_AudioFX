@@ -26,9 +26,9 @@
   <string name="jazz">재즈</string>
   <string name="pop">팝</string>
   <string name="rock">락</string>
-  <string name="ci_extreme">일렉트로닉</string>
+  <string name="electronic">일렉트로닉</string>
   <string name="small_speakers">작은 스피커</string>
-  <string name="user">사용자 정의</string>
+  <string name="custom">사용자 정의</string>
   <string name="none">없음</string>
   <string name="smallroom">작은 방</string>
   <string name="mediumroom">중간 방</string>

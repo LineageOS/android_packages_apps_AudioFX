@@ -26,9 +26,9 @@
   <string name="jazz">Džezs</string>
   <string name="pop">Pops</string>
   <string name="rock">Roks</string>
-  <string name="ci_extreme">Elektronika</string>
+  <string name="electronic">Elektronika</string>
   <string name="small_speakers">Mazi skaļruņi</string>
-  <string name="user">Pielāgots</string>
+  <string name="custom">Pielāgots</string>
   <string name="none">Nekas</string>
   <string name="smallroom">Maza istaba</string>
   <string name="mediumroom">Vidēja istaba</string>

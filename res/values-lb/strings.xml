@@ -17,14 +17,10 @@
 <resources>
   <string name="app_name">TounFX</string>
   <string name="no_effects">Effekter net disponibel.</string>
-  <string name="main_toggle_effects_title">Touneffekter</string>
   <string name="eq_dialog_title">TounFX</string>
   <string name="headset_plug">Schléiss Kopfhörer u fir dës Effekter.</string>
   <string name="bass_boost_strength">Bassunhiewung</string>
   <string name="virtualizer_strength">Surround-Toun</string>
-  <string name="pr_title">Halleffekt:</string>
-  <string name="pr_summary">Zousätzlech Raum-Halleffekter</string>
-  <string name="pr_dialog_title">Virastellunge fir den Hall</string>
   <string name="setup">Astellen</string>
   <string name="picker_title">Steierelementer fir Touneffekter</string>
 </resources>

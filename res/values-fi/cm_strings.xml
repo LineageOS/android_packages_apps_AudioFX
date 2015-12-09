@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektroninen</string>
+  <string name="electronic">Elektroninen</string>
   <string name="small_speakers">Pienet kaiuttimet</string>
-  <string name="user">Muokattu</string>
+  <string name="custom">Muokattu</string>
   <string name="none">Ei mitään</string>
   <string name="smallroom">Pieni huone</string>
   <string name="mediumroom">Keskikokoinen huone</string>

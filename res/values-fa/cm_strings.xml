@@ -26,9 +26,9 @@
   <string name="jazz">جاز</string>
   <string name="pop">پاپ</string>
   <string name="rock">راک</string>
-  <string name="ci_extreme">الکترونیک</string>
+  <string name="electronic">الکترونیک</string>
   <string name="small_speakers">بلندگوهای کوچک</string>
-  <string name="user">سفارشی</string>
+  <string name="custom">سفارشی</string>
   <string name="none">هیچ‌کدام</string>
   <string name="smallroom">اتاق کوچک</string>
   <string name="mediumroom">اتاق متوسط</string>

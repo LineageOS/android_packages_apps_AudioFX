@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronska</string>
+  <string name="electronic">Elektronska</string>
   <string name="small_speakers">Majhni zvočniki</string>
-  <string name="user">Po meri</string>
+  <string name="custom">Po meri</string>
   <string name="none">Brez</string>
   <string name="smallroom">Majhna soba</string>
   <string name="mediumroom">Srednja soba</string>

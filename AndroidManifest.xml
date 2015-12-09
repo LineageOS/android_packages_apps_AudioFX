@@ -42,7 +42,7 @@
 
     <application
             android:icon="@mipmap/ic_launcher_audiofx"
-            android:label="@string/app_name"
+            android:label="@string/app_name_cm"
             android:supportsRtl="true"
             android:hardwareAccelerated="true"
             android:persistent="true"
@@ -50,7 +50,7 @@
         <activity
                 android:name=".ActivityMusic"
                 android:theme="@style/AppTheme"
-                android:label="@string/eq_dialog_title"
+                android:label="@string/app_name_cm"
                 android:launchMode="singleTop"
                 android:noHistory="false">
             <intent-filter>
