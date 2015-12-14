@@ -27,7 +27,9 @@ public class ServiceDispatcher extends BroadcastReceiver {
 
         service.setAction(action);
         context.startService(service);
-        Log.d("AudioFX-Dispatcher", "Received " + action);
+        if (AudioFxService.DEBUG) {
+            Log.d("AudioFX-Dispatcher", "Received " + action);
+        }
 
     }
 }

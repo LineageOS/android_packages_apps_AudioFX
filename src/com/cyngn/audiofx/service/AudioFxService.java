@@ -76,6 +76,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -116,6 +117,8 @@ public class AudioFxService extends Service {
 
     private static final int TILE_ID = 555;
 
+    private static final int REMOVE_SESSIONS_DELAY = 10000;
+
     private final Map<Integer, EffectSet> mAudioSessions
             = Collections.synchronizedMap(new ArrayMap<Integer, EffectSet>());
 
@@ -135,7 +138,7 @@ public class AudioFxService extends Service {
     // audio priority handler messages
     private static final int MSG_UPDATE_DSP = 100;
     private static final int MSG_ADD_SESSION = 101;
-    private static final int MSG_REMOVE_SESSION = 102;
+    private static final int MSG_REMOVE_SESSIONS = 102;
     private static final int MSG_UPDATE_FOR_SESSION = 103;
     private static final int MSG_SELF_DESTRUCT = 104;
 
@@ -227,21 +230,26 @@ public class AudioFxService extends Service {
                     update(ALL_CHANGED);
                     break;
 
-                case MSG_REMOVE_SESSION:
-                    for (Integer id : mSessionsToRemove) {
+                case MSG_REMOVE_SESSIONS:
+
+                    // TODO we may still have lingering sessions that weren't properly closed
+                    // by the effect requester, those would be in mAudioSessions.
+                    // add an effect creation time and maybe an effect decay length where
+                    // we can consider the session dead after a certain period of time
+                    final Iterator<Integer> iterator = mSessionsToRemove.iterator();
+                    while (iterator.hasNext()) {
+                        Integer id = iterator.next();
+                        if (mMostRecentSessionId == id) {
+                            if (DEBUG) Log.d(TAG, "not removing most recent session id.");
+                            continue;
+                        }
                         EffectSet gone = mAudioSessions.remove(id);
                         if (gone != null) {
                             if (DEBUG) Log.d(TAG, "removed EffectSet for sessionId=" + id);
                             gone.release();
                         }
-                        if (mMostRecentSessionId == id) {
-                            if (DEBUG) Log.d(TAG, "resetting most recent session ID");
-                            mMostRecentSessionId = -1;
-                        }
+                        iterator.remove();
                     }
-                    mSessionsToRemove.clear();
-
-                    update(ALL_CHANGED);
                     break;
 
                 case MSG_UPDATE_DSP:
@@ -397,8 +405,8 @@ public class AudioFxService extends Service {
                             sessionId, pkg));
 
                     mSessionsToRemove.add(sessionId);
-                    mHandler.sendMessage(Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId, 0));
-
+                    mHandler.removeMessages(MSG_REMOVE_SESSIONS);
+                    mHandler.sendEmptyMessageDelayed(MSG_REMOVE_SESSIONS, REMOVE_SESSIONS_DELAY);
                 }
             }
         }
