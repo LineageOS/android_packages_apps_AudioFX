@@ -16,33 +16,6 @@
      limitations under the License.
 -->
 <resources>
-  <string name="normal">Bình thường</string>
-  <string name="classical">Cổ điển</string>
-  <string name="dance">Dance</string>
-  <string name="flat">Flat</string>
   <string name="folk">Dân ca</string>
-  <string name="heavy_metal">Heavy Metal</string>
-  <string name="hip_hop">Hip Hop</string>
-  <string name="jazz">Jazz</string>
-  <string name="pop">Pop</string>
-  <string name="rock">Rock</string>
-  <string name="ci_extreme">Electronic</string>
-  <string name="small_speakers">Loa nhỏ</string>
-  <string name="user">Tùy chỉnh</string>
-  <string name="none">Không</string>
-  <string name="smallroom">Phòng nhỏ</string>
-  <string name="mediumroom">Phòng trung bình</string>
-  <string name="largeroom">Phòng lớn</string>
-  <string name="mediumhall">Hội trường trung bình</string>
-  <string name="largehall">Hội trường lớn</string>
-  <string name="plate">Đĩa</string>
-  <string name="power_on_prompt">Nhấn nút bật ở trên cùng bên phải.</string>
-  <string name="effect_unavalable_for_speaker">Hiệu ứng không khả dụng với chế độ Loa ngoài.</string>
-  <string name="device_headset">Tai nghe</string>
-  <string name="device_speaker">Loa ngoài</string>
-  <string name="device_usb">USB</string>
-  <string name="device_bluetooth">Bluetooth</string>
-  <string name="device_wireless">Không dây</string>
-  <string name="reverb">Âm vang</string>
   <string name="eq_preset">Cài sẵn bộ chỉnh âm</string>
 </resources>
