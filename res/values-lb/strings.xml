@@ -15,9 +15,7 @@
      limitations under the License.
 -->
 <resources>
-  <string name="app_name">TounFX</string>
   <string name="no_effects">Effekter net disponibel.</string>
-  <string name="eq_dialog_title">TounFX</string>
   <string name="headset_plug">Schléiss Kopfhörer u fir dës Effekter.</string>
   <string name="bass_boost_strength">Bassunhiewung</string>
   <string name="virtualizer_strength">Surround-Toun</string>

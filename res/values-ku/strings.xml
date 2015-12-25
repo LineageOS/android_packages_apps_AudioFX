@@ -15,9 +15,7 @@
      limitations under the License.
 -->
 <resources>
-  <string name="app_name">دەنگڕێخەر</string>
   <string name="no_effects">کاریگەر لەکارەنیە.</string>
-  <string name="eq_dialog_title">دەنگڕێخەر</string>
   <string name="headset_plug">تکایه‌ بیستۆکی پێوه‌بکه‌ بۆ کاریگه‌ری.</string>
   <string name="bass_boost_strength">زیادکردنی دەنگی دور</string>
   <string name="virtualizer_strength">دەوردانی دەنگ</string>

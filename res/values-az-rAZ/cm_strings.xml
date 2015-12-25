@@ -28,6 +28,7 @@
   <string name="rock">Rok</string>
   <string name="electronic">Elektronik</string>
   <string name="small_speakers">Kiçik səsucaldanlar</string>
+  <string name="custom">Özəl</string>
   <string name="none">Yoxdur</string>
   <string name="smallroom">Balaca otaq</string>
   <string name="mediumroom">Orta otaq</string>
@@ -41,4 +42,7 @@
   <string name="device_speaker">Səsucaldan</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
+  <string name="device_wireless">Simsiz</string>
+  <string name="reverb">Əks-səda</string>
+  <string name="eq_preset">Ekvalayzer hazır tənzimləmələri</string>
 </resources>
