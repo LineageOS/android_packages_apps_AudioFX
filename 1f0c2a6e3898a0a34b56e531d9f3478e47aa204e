@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7f7f9b97_62455b17",
+        "filename": "res/values/strings.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2015-12-26T23:20:21Z",
+      "side": 1,
+      "message": "This is very generic, should explain why we need this permission.",
+      "range": {
+        "startLine": 37,
+        "startChar": 34,
+        "endLine": 37,
+        "endChar": 111
+      },
+      "revId": "1f0c2a6e3898a0a34b56e531d9f3478e47aa204e",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7f7f9b97_024a6726",
+        "filename": "src/org/cyanogenmod/audiofx/ActivityMusic.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 802,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2015-12-26T23:20:21Z",
+      "side": 1,
+      "message": "100 chars here and below",
+      "revId": "1f0c2a6e3898a0a34b56e531d9f3478e47aa204e",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
