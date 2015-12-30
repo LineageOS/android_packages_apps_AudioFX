@@ -34,5 +34,4 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     android:textSize="16dip"
     android:paddingStart="16dip"
     android:paddingEnd="16dip"
-    android:gravity="center"
     android:textColor="@color/grey" />

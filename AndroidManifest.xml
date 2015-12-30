@@ -17,10 +17,10 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         package="org.cyanogenmod.audiofx"
         android:installLocation="auto"
-        android:versionName="1.4.0"
-        android:versionCode="10400">
+        android:versionName="1.4.3"
+        android:versionCode="10403">
 
-    <uses-sdk android:minSdkVersion="21"/>
+    <uses-sdk android:minSdkVersion="23"/>
 
     <uses-feature android:name="android.software.leanback"
     android:required="false" />

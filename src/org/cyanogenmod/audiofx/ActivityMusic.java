@@ -215,10 +215,8 @@ public class ActivityMusic extends Activity {
 
         // fix up labels
         TextView reverbLabel = (TextView) findViewById(R.id.reverb_label);
-        reverbLabel.setText("- " + reverbLabel.getText() + " -");
 
         TextView eqPresetLabel = (TextView) findViewById(R.id.eq_preset_label);
-        eqPresetLabel.setText("- " + eqPresetLabel.getText() + " -");
 
         // setup actionbar on off switch
         mToggleSwitch = new Switch(this);
@@ -280,9 +278,7 @@ public class ActivityMusic extends Activity {
         ab.setCustomView(mToggleSwitch, params);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setDisplayShowTitleEnabled(false);
-        ab.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
-                        | ActionBar.DISPLAY_SHOW_CUSTOM
-        );
+        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 
         // initialize views
         mEqualizerSurface = (EqualizerSurface) findViewById(R.id.frequencyResponse);
