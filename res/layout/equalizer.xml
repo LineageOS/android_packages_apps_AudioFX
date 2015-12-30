@@ -4,9 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center"
-    android:background="#cc191919"
-        >
+    android:background="@android:color/white">
 
     <org.cyanogenmod.audiofx.widget.EqualizerSurface
         android:id="@+id/frequencyResponse"
