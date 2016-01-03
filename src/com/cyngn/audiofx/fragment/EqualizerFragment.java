@@ -26,7 +26,7 @@ import com.cyngn.audiofx.preset.InfiniteViewPager;
 import com.cyngn.audiofx.preset.PresetPagerAdapter;
 import com.cyngn.audiofx.service.OutputDevice;
 import com.cyngn.audiofx.stats.UserSession;
-import com.viewpagerindicator.CirclePageIndicator;
+import com.cyngn.audiofx.viewpagerindicator.CirclePageIndicator;
 
 public class EqualizerFragment extends AudioFxBaseFragment
         implements MasterConfigControl.EqUpdatedCallback {
