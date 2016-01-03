@@ -93,19 +93,14 @@
             <intent-filter>
                 <action android:name="android.media.action.OPEN_AUDIO_EFFECT_CONTROL_SESSION"/>
                 <action android:name="android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION"/>
+                <action android:name="android.media.AUDIO_BECOMING_NOISY"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
 
         <receiver android:name=".service.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name=".receiver.DeviceOutputChangeReceiver"
-                  android:exported="false">
-            <intent-filter>
-                <action android:name="org.cyanogenmod.audiofx.ACTION_DEVICE_OUTPUT_CHANGED"/>
             </intent-filter>
         </receiver>
 

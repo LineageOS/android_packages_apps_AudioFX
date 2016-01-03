@@ -21,24 +21,7 @@
             android:showAsAction="ifRoom">
         <menu>
             <group android:id="@+id/device_group">
-                <item
-                        android:id="@+id/device_speaker"
-                        android:checkable="true"
-                        android:icon="@drawable/ic_action_dsp_icons_speaker"
-                        android:title="@string/device_speaker"/>
-                <item
-                        android:id="@+id/device_headset"
-                        android:checkable="true"
-                        android:icon="@drawable/ic_action_dsp_icons_headphones"
-                        android:title="@string/device_headset"/>
-
-                <item
-                        android:id="@+id/device_usb"
-                        android:checkable="true"
-                        android:icon="@drawable/ic_action_dsp_icons_usb"
-                        android:title="@string/device_usb"/>
             </group>
-
         </menu>
     </item>
 </menu>

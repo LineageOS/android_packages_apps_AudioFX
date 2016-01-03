@@ -17,6 +17,7 @@ package com.cyngn.audiofx.knobs;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.media.AudioDeviceInfo;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -29,11 +30,13 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.MasterConfigControl;
-import com.cyngn.audiofx.service.OutputDevice;
+import com.cyngn.audiofx.activity.StateCallbacks;
 
-public class KnobContainer extends LinearLayout implements MasterConfigControl.EqUpdatedCallback {
+public class KnobContainer extends LinearLayout
+        implements StateCallbacks.DeviceChangedCallback {
 
     private static final String TAG = KnobContainer.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
@@ -314,27 +317,17 @@ public class KnobContainer extends LinearLayout implements MasterConfigControl.E
     }
 
     @Override
-    public void onBandLevelChange(int band, float dB, boolean fromSystem) {
-
+    public void onDeviceChanged(AudioDeviceInfo device, boolean userChange) {
+        if (device != null) {
+            updateKnobs(device);
+        }
     }
 
-    @Override
-    public void onPresetChanged(int newPresetIndex) {
-
-    }
-
-    @Override
-    public void onPresetsChanged() {
-
-    }
-
-    @Override
-    public void onDeviceChanged(OutputDevice device, boolean userChange) {
-        updateKnobs(device);
-    }
-
-    private void updateKnobs(OutputDevice device) {
-        final boolean speaker = device.getDeviceType() == OutputDevice.DEVICE_SPEAKER;
+    private void updateKnobs(AudioDeviceInfo device) {
+        if (device == null) {
+            return;
+        }
+        final boolean speaker = device.getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER;
         final boolean maxxAudio = MasterConfigControl.getInstance(mContext).hasMaxxAudio();
 
         mKnobCommander.updateTrebleKnob(mTrebleKnob, true); // maxx audio only knob for now

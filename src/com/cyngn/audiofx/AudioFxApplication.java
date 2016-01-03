@@ -16,13 +16,11 @@
 package com.cyngn.audiofx;
 
 import android.app.Application;
-import android.content.Intent;
-
 import android.util.Log;
+
 import com.cyanogen.ambient.analytics.AnalyticsServices;
 import com.cyanogen.ambient.analytics.Event;
 import com.cyanogen.ambient.common.api.AmbientApiClient;
-import com.cyngn.audiofx.service.AudioFxService;
 
 public class AudioFxApplication extends Application {
 

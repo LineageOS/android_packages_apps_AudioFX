@@ -6,10 +6,9 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.MeasureSpec;
 
 import com.cyngn.audiofx.R;
+import com.cyngn.audiofx.activity.EqualizerManager;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 
 /**
@@ -18,7 +17,7 @@ import com.cyngn.audiofx.activity.MasterConfigControl;
  */
 public class InfiniteViewPager extends ViewPager {
 
-    MasterConfigControl mConfig;
+    private final EqualizerManager mEqManager;
 
     @Override
     public boolean hasOverlappingRendering() {
@@ -27,17 +26,17 @@ public class InfiniteViewPager extends ViewPager {
 
     public InfiniteViewPager(Context context) {
         super(context);
-        mConfig = MasterConfigControl.getInstance(context);
+        mEqManager = MasterConfigControl.getInstance(context).getEqualizerManager();
     }
 
     public InfiniteViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mConfig = MasterConfigControl.getInstance(context);
+        mEqManager = MasterConfigControl.getInstance(context).getEqualizerManager();
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (mConfig.isAnimatingToCustom()) {
+        if (mEqManager.isAnimatingToCustom()) {
             return false;
         }
         return super.onInterceptTouchEvent(ev);
@@ -53,7 +52,7 @@ public class InfiniteViewPager extends ViewPager {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        if (mConfig.isAnimatingToCustom()) {
+        if (mEqManager.isAnimatingToCustom()) {
             return false;
         }
         boolean result;

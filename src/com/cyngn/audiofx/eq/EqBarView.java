@@ -4,19 +4,20 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import com.cyngn.audiofx.R;
-import com.cyngn.audiofx.activity.MasterConfigControl;
-import com.cyngn.audiofx.service.OutputDevice;
 
-public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpdatedCallback {
+import com.cyngn.audiofx.R;
+import com.cyngn.audiofx.activity.EqualizerManager;
+import com.cyngn.audiofx.activity.MasterConfigControl;
+import com.cyngn.audiofx.activity.StateCallbacks;
+
+public class EqBarView extends FrameLayout implements StateCallbacks.EqUpdatedCallback {
 
     private static final String TAG = EqBarView.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
-    MasterConfigControl mConfig;
+    private EqualizerManager mEqManager;
 
     private float mNormalWidth;
     private float mParentHeight = -1;
@@ -45,7 +46,7 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
     }
 
     private void init() {
-        mConfig = MasterConfigControl.getInstance(mContext);
+        mEqManager = MasterConfigControl.getInstance(mContext).getEqualizerManager();
         mNormalWidth = getResources().getDimension(R.dimen.eq_bar_width);
     }
 
@@ -68,8 +69,8 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
         if (DEBUG) Log.d(TAG, "updateHeight()");
 
         if (getInfo() != null) {
-            float level = mConfig.getLevel(getIndex());
-            float yProjection = 1 - mConfig.projectY(level);
+            float level = mEqManager.getLevel(getIndex());
+            float yProjection = 1 - mEqManager.projectY(level);
             float height = (yProjection * (mParentHeight));
             mPosY = height;
 
@@ -101,8 +102,8 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
         mUserInteracting = true;
 
         if (DEBUG) Log.d(TAG, "initial level: " + mInitialLevel);
-        mInitialLevel = (1 - (mPosY / mParentHeight)) * (mConfig.getMinDB() - mConfig.getMaxDB())
-                - mConfig.getMinDB();
+        mInitialLevel = (1 - (mPosY / mParentHeight)) * (mEqManager.getMinDB() - mEqManager.getMaxDB())
+                - mEqManager.getMinDB();
 
         updateWidth((int) (mNormalWidth * 2));
     }
@@ -129,7 +130,7 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (mConfig.isEqualizerLocked()) {
+        if (mEqManager.isEqualizerLocked()) {
             return false;
         }
 
@@ -154,18 +155,18 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
                 mLastTouchY = y;
 
                 int wy = (int) mParentHeight;
-                float level = (1 - (mPosY / wy)) * (mConfig.getMinDB() - mConfig.getMaxDB())
-                        - mConfig.getMinDB();
+                float level = (1 - (mPosY / wy)) * (mEqManager.getMinDB() - mEqManager.getMaxDB())
+                        - mEqManager.getMinDB();
 
                 if (DEBUG) Log.d(TAG, "new level: " + level);
-                if (level < mConfig.getMinDB()) {
-                    level = mConfig.getMinDB();
-                } else if (level > mConfig.getMaxDB()) {
-                    level = mConfig.getMaxDB();
+                if (level < mEqManager.getMinDB()) {
+                    level = mEqManager.getMinDB();
+                } else if (level > mEqManager.getMaxDB()) {
+                    level = mEqManager.getMaxDB();
                 }
 
                 if (mInitialLevel != level) {
-                    mConfig.setLevel(getInfo().mIndex, level, false);
+                    mEqManager.setLevel(getInfo().mIndex, level, false);
                 } else {
                     updateHeight();
                 }
@@ -202,11 +203,6 @@ public class EqBarView extends FrameLayout implements MasterConfigControl.EqUpda
 
     @Override
     public void onPresetsChanged() {
-
-    }
-
-    @Override
-    public void onDeviceChanged(OutputDevice deviceId, boolean userChange) {
 
     }
 }

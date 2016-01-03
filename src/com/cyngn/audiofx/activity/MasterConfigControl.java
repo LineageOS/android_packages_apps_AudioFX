@@ -1,30 +1,35 @@
 package com.cyngn.audiofx.activity;
 
+import static android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP;
+import static android.media.AudioDeviceInfo.TYPE_BLUETOOTH_SCO;
+import static android.media.AudioDeviceInfo.TYPE_DOCK;
+import static android.media.AudioDeviceInfo.TYPE_IP;
+import static android.media.AudioDeviceInfo.TYPE_LINE_ANALOG;
+import static android.media.AudioDeviceInfo.TYPE_LINE_DIGITAL;
+import static android.media.AudioDeviceInfo.TYPE_USB_ACCESSORY;
+import static android.media.AudioDeviceInfo.TYPE_USB_DEVICE;
+import static android.media.AudioDeviceInfo.TYPE_WIRED_HEADPHONES;
+import static android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET;
+import static android.media.AudioDeviceInfo.convertDeviceTypeToInternalDevice;
+
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.os.Handler;
+import android.media.AudioDeviceInfo;
+import android.media.AudioManager;
 import android.os.IBinder;
-import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.CompoundButton;
 
-import com.cyngn.audiofx.AudioOutputChangeListener;
 import com.cyngn.audiofx.Constants;
-import com.cyngn.audiofx.Preset;
-import com.cyngn.audiofx.R;
-import com.cyngn.audiofx.eq.EqUtils;
 import com.cyngn.audiofx.service.AudioFxService;
-import com.cyngn.audiofx.service.OutputDevice;
-import com.cyngn.audiofx.stats.UserSession;
-import libcore.util.Objects;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Master configuration class for AudioFX.
@@ -42,133 +47,20 @@ public class MasterConfigControl {
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     private static final boolean SERVICE_DEBUG = false;
 
-    private final Handler mHandler;
-    private static final int MSG_SAVE_PRESETS = 1;
-    private static final int MSG_SEND_EQ_OVERRIDE = 2;
-
-    private Context mContext;
+    private final Context mContext;
 
     private boolean mHasMaxxAudio;
-    private float mMinFreq;
-    private float mMaxFreq;
-
-    private float mMinDB;
-    private float mMaxDB;
-    private int mNumBands;
-    private CompoundButton.OnCheckedChangeListener mLockChangeListener;
-
-    EqControlState mEqControlState = new EqControlState();
 
     private AudioFxService.LocalBinder mService;
     private ServiceConnection mServiceConnection;
-    private AudioOutputChangeListener mServiceOutputListener;
+    private int mServiceRefCount = 0;
 
-    public boolean bindService() {
-        if (SERVICE_DEBUG) Log.i(TAG, "bindService()");
-        if (mServiceConnection == null) {
-            mServiceConnection = new ServiceConnection() {
-                @Override
-                public void onServiceConnected(ComponentName name, IBinder binder) {
-                    if (SERVICE_DEBUG) Log.i(TAG, "onServiceConnected ");
-                    mService = ((AudioFxService.LocalBinder) binder);
-                    mServiceOutputListener.register();
-                }
+    private AudioDeviceInfo mCurrentDevice;
+    private AudioDeviceInfo mUserDeviceOverride;
 
-                @Override
-                public void onServiceDisconnected(ComponentName name) {
-                    if (SERVICE_DEBUG) Log.w(TAG, "onServiceDisconnected ");
-                    mServiceOutputListener.unregister();
-                    mService = null;
-                }
-            };
-        }
-        Intent serviceIntent = new Intent(mContext, AudioFxService.class);
-        return mContext.bindService(serviceIntent, mServiceConnection,
-                        Context.BIND_AUTO_CREATE);
-    }
-
-    public void unbindService() {
-        if (SERVICE_DEBUG) Log.i(TAG, "unbindService() called");
-        if (mServiceConnection != null && isServiceBound()) {
-            mContext.unbindService(mServiceConnection);
-        }
-        mService = null;
-    }
-
-    public boolean isServiceBound() {
-        return mService != null;
-    }
-
-    public void updateService() {
-        if (mService != null) {
-            mService.update();
-        }
-    }
-
-    public boolean isUserPreset() {
-        boolean result = mCurrentPreset >= mPredefinedPresets;
-        /*if (DEBUG) {
-            Log.i(TAG, "isUserPreset(), current preset: " + mCurrentPreset);
-            Log.i(TAG, "----> predefined presets: " + mPredefinedPresets);
-            Log.d(TAG, "----> RESULT: " + result);
-        }*/
-        return result;
-    }
-
-    public boolean isCustomPreset() {
-        return mCurrentPreset == mEQCustomPresetPosition;
-    }
-
-    /*
-     * presets from the library custom preset.
-     */
-    private int mPredefinedPresets;
-    private float[] mCenterFreqs;
-    private float[] mGlobalLevels;
-
-    private AtomicBoolean mAnimatingToCustom = new AtomicBoolean(false);
-
-    // whether we are in between presets, animating them and such
-    private boolean mChangingPreset = false;
-
-    private int mCurrentPreset;
-    private SharedPreferences mCurrentDevicePrefs;
-
-    ArrayList<EqUpdatedCallback> mEqUpdateCallbacks;
-
-    private List<OutputDevice> mCachedBluetoothDevices;
-    private OutputDevice mCurrentDevice =
-            new OutputDevice(OutputDevice.DEVICE_SPEAKER); // default!
-    private OutputDevice mUserDeviceOverride;
-
-    private final ArrayList<Preset> mEqPresets = new ArrayList<Preset>();
-    private int mEQCustomPresetPosition;
-
-    private String mZeroedBandString;
-
-
-    public void setCurrentDeviceEnabled(boolean isChecked) {
-        getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE, isChecked).apply();
-        updateService();
-    }
-
-    public boolean isCurrentDeviceEnabled() {
-        return getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE, false);
-    }
-
-    public CompoundButton.OnCheckedChangeListener getLockChangeListener() {
-        if (mLockChangeListener == null) {
-            mLockChangeListener = new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isUserPreset()) {
-                        ((Preset.CustomPreset) mEqPresets.get(mCurrentPreset)).setLocked(isChecked);
-                    }
-                }
-            };
-        }
-        return mLockChangeListener;
-    }
+    private final StateCallbacks mCallbacks;
+    private final EqualizerManager mEqManager;
+    private final AudioManager mAudioManager;
 
     private static MasterConfigControl sInstance;
 
@@ -182,152 +74,107 @@ public class MasterConfigControl {
     private MasterConfigControl(Context context) {
         mContext = context.getApplicationContext();
 
-        mHandler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                switch (msg.what) {
-                    case MSG_SAVE_PRESETS:
-                        Constants.saveCustomPresets(mContext, mEqPresets);
-                        break;
-                    case MSG_SEND_EQ_OVERRIDE:
-                        if (mService != null) {
-                            mService.setOverrideLevels((short)msg.arg1, (short) msg.arg2);
-                        }
-                }
-                return true;
-            }}, true);
+        mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 
-        mServiceOutputListener = new AudioOutputChangeListener(mContext) {
-            @Override
-            public void onAudioOutputChanged(boolean firstChange, int outputType) {
-                if (mService != null) {
-                    setCurrentDevice(mService.getCurrentDevice(), false);
-                }
-            }
-        };
-
-        initialize();
-    }
-
-    private synchronized void initialize() {
-        mCurrentDevicePrefs = getPrefs();
-
-        // setup eq
-        int bands = Integer.parseInt(getGlobalPrefs()
-                .getString("equalizer.number_of_bands", "5"));
-        final int[] centerFreqs = Constants.getCenterFreqs(mContext, bands);
-        final int[] bandLevelRange = Constants.getBandLevelRange(mContext);
-
-        float[] centerFreqsKHz = new float[centerFreqs.length];
-        for (int i = 0; i < centerFreqs.length; i++) {
-            centerFreqsKHz[i] = (float) centerFreqs[i] / 1000.0f;
-        }
-
-        mMinDB = bandLevelRange[0] / 100;
-        mMaxDB = bandLevelRange[1] / 100;
-
-        mNumBands = centerFreqsKHz.length;
-        mGlobalLevels = new float[mNumBands];
-        for (int i = 0; i < mGlobalLevels.length; i++) {
-            mGlobalLevels[i] = 0;
-        }
-
-        mZeroedBandString = EqUtils.getZeroedBandsString(getNumBands());
-
-        mCenterFreqs = Arrays.copyOf(centerFreqsKHz, mNumBands);
-        System.arraycopy(centerFreqsKHz, 0, mCenterFreqs, 0, mNumBands);
-        mMinFreq = mCenterFreqs[0] / 2;
-        mMaxFreq = (float) Math.pow(mCenterFreqs[mNumBands - 1], 2) / mCenterFreqs[mNumBands - 2] / 2;
-
-        mEqUpdateCallbacks = new ArrayList<EqUpdatedCallback>();
-
-        // setup equalizer presets
-        final int numPresets = Integer.parseInt(getGlobalPrefs()
-                .getString("equalizer.number_of_presets", "0"));
-
-        // add library-provided presets
-        String[] presetNames = getGlobalPrefs().getString("equalizer.preset_names", "").split("\\|");
-        mPredefinedPresets = presetNames.length + 1; // we consider first EQ to be part of predefined
-        for (int i = 0; i < numPresets; i++) {
-            mEqPresets.add(new Preset.StaticPreset(presetNames[i], getPersistedPresetLevels(i)));
-        }
-
-        // add custom preset
-        mEqPresets.add(new Preset.PermCustomPreset(mContext.getString(R.string.user),
-                getPersistedCustomLevels()));
-        mEQCustomPresetPosition = mEqPresets.size() - 1;
-
-        // restore custom prefs
-        mEqPresets.addAll(Constants.getCustomPresets(mContext, mNumBands));
-
-        // setup default preset for speaker
-        mCurrentPreset = Integer.parseInt(getPrefs().getString(Constants.DEVICE_AUDIOFX_EQ_PRESET, "0"));
-        if (mCurrentPreset > mEqPresets.size() - 1) {
-            mCurrentPreset = 0;
-        }
-        setPreset(mCurrentPreset);
+        mCallbacks = new StateCallbacks(this);
+        mEqManager = new EqualizerManager(context, this);
 
         mHasMaxxAudio = getGlobalPrefs()
                 .getBoolean(Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false);
     }
 
-    public SharedPreferences getGlobalPrefs() {
-        return mContext.getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
-    }
-
-    public boolean isChangingPresets() {
-        return mChangingPreset;
-    }
-
-    public void setChangingPresets(boolean changing) {
-        if (mChangingPreset != changing) {
-            mChangingPreset = changing;
-            if (changing) {
-                mEqControlState.saveVisible = false;
-                mEqControlState.removeVisible = false;
-                mEqControlState.renameVisible = false;
-                mEqControlState.unlockVisible = false;
-                if (mEqCallback != null) {
-                    mEqCallback.updateEqState();
+    public synchronized boolean bindService() {
+        boolean conn = true;
+        if (SERVICE_DEBUG) Log.i(TAG, "bindService() refCount=" + mServiceRefCount);
+        if (mServiceConnection == null && mServiceRefCount == 0) {
+            mServiceConnection = new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder binder) {
+                    if (SERVICE_DEBUG) Log.i(TAG, "onServiceConnected refCount=" + mServiceRefCount);
+                    mService = ((AudioFxService.LocalBinder) binder);
+                    LocalBroadcastManager.getInstance(mContext).registerReceiver(
+                            mDeviceChangeReceiver,
+                            new IntentFilter(AudioFxService.ACTION_DEVICE_OUTPUT_CHANGED));
                 }
-            } else {
-                updateEqControls();
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+                    if (SERVICE_DEBUG) Log.w(TAG, "onServiceDisconnected refCount =" + mServiceRefCount);
+                    LocalBroadcastManager.getInstance(mContext).unregisterReceiver(
+                            mDeviceChangeReceiver);
+                    mService = null;
+                }
+            };
+
+            Intent serviceIntent = new Intent(mContext, AudioFxService.class);
+            conn =  mContext.bindService(serviceIntent, mServiceConnection,
+                    Context.BIND_AUTO_CREATE);
+        }
+        if (conn) {
+            mServiceRefCount++;
+        }
+        return mServiceRefCount > 0;
+    }
+
+    public synchronized void unbindService() {
+        if (SERVICE_DEBUG) Log.i(TAG, "unbindService() called refCount=" + mServiceRefCount);
+        if (mServiceRefCount > 0) {
+            mServiceRefCount--;
+            if (mServiceRefCount == 0) {
+                mContext.unbindService(mServiceConnection);
+                mService = null;
+                mServiceConnection = null;
             }
         }
     }
 
-    public boolean isAnimatingToCustom() {
-        return mAnimatingToCustom.get();
+    public boolean checkService() {
+        if (mService == null && mServiceRefCount == 0) {
+            Log.e(TAG,  "Service went away, rebinding");
+            bindService();
+        }
+        return mService != null;
     }
 
-    public void setAnimatingToCustom(boolean animating) {
-        mAnimatingToCustom.set(animating);
-        if (!animating) {
-            // finished animation
-            updateEqControls();
+    private final BroadcastReceiver mDeviceChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int device = intent.getIntExtra("device", -1);
+            Log.d(TAG, "deviceChanged: " + device);
+            if (device > -1) {
+                AudioDeviceInfo info = getDeviceById(device);
+                if (info != null) {
+                    setCurrentDevice(info, false);
+                }
+            }
+        }
+    };
+
+    public void updateService() {
+        if (checkService()) {
+            mService.update();
         }
     }
 
-    private void savePresetsDelayed() {
-        mHandler.sendEmptyMessageDelayed(MSG_SAVE_PRESETS, 500);
+    public StateCallbacks getCallbacks() {
+        return mCallbacks;
     }
 
-    public int indexOf(Preset p) {
-        return mEqPresets.indexOf(p);
+    public EqualizerManager getEqualizerManager() {
+        return mEqManager;
     }
 
-    public OutputDevice getSystemDevice() {
-        return mCurrentDevice;
+    public void setCurrentDeviceEnabled(boolean isChecked) {
+        getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE, isChecked).apply();
+        updateService();
     }
 
-    /**
-     * @return returns the current device key that's in use
-     */
-    public OutputDevice getCurrentDevice() {
-        if (mUserDeviceOverride != null) {
-            return mUserDeviceOverride;
-        }
-        return mCurrentDevice;
+    public boolean isCurrentDeviceEnabled() {
+        return getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE, false);
+    }
+
+    public SharedPreferences getGlobalPrefs() {
+        return mContext.getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
     }
 
     /**
@@ -336,504 +183,91 @@ public class MasterConfigControl {
      *
      * @param audioOutputRouting the new device key
      */
-    public synchronized void setCurrentDevice(OutputDevice audioOutputRouting, boolean userSwitch) {
-        final OutputDevice previousDevice = getCurrentDevice();
+    public synchronized void setCurrentDevice(AudioDeviceInfo device, final boolean userSwitch) {
+
+        final AudioDeviceInfo current = getCurrentDevice();
+
+        Log.d(TAG, "setCurrentDevice fromUser=" + userSwitch +
+                " cur=" + (current == null ? null : current.getType()) +
+                " new=" + (device == null ? null : device.getType()));
 
         if (userSwitch) {
-            mUserDeviceOverride = audioOutputRouting;
+            mUserDeviceOverride = device;
         } else {
-            mCurrentDevice = audioOutputRouting;
+            if (device != null) {
+                mCurrentDevice = device;
+            }
+            mUserDeviceOverride = null;
         }
 
-        mCurrentDevicePrefs = getPrefs();
-        if (Objects.equal(previousDevice, getCurrentDevice())) {
+        if (current != null && device != null &&
+                device.getId() == current.getId()) {
             // nothing to do
             return;
         }
 
-        // need to update the current preset based on the device here.
-        int newPreset = Integer.parseInt(getPrefs().getString(Constants.DEVICE_AUDIOFX_EQ_PRESET,
-                "0"));
-        if (newPreset > mEqPresets.size() - 1) {
-            newPreset = 0;
+        mEqManager.onPreDeviceChanged();
+
+        mCallbacks.notifyDeviceChanged(device, userSwitch);
+
+        mEqManager.onPostDeviceChanged();
+    }
+
+    public AudioDeviceInfo getSystemDevice() {
+        if (mCurrentDevice == null) {
+            final int forMusic = mAudioManager.getDevicesForStream(AudioManager.STREAM_MUSIC);
+            for (AudioDeviceInfo ai : getConnectedDevices()) {
+                if ((convertDeviceTypeToInternalDevice(ai.getType()) & forMusic) > 0) {
+                    return ai;
+                }
+            }
         }
+        return mCurrentDevice;
+    }
 
-        // this should be ready to go for callbacks to query the new device preset below
-        mCurrentPreset = newPreset;
+    public boolean isUserDeviceOverride() {
+        return mUserDeviceOverride != null;
+    }
 
-        for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
-            callback.onDeviceChanged(getCurrentDevice(), userSwitch);
+    public AudioDeviceInfo getCurrentDevice() {
+        if (isUserDeviceOverride()) {
+            return mUserDeviceOverride;
         }
-
-        setPreset(newPreset);
+        return getSystemDevice();
     }
 
-    public Preset getCurrentPreset() {
-        return mEqPresets.get(mCurrentPreset);
-    }
-
-    /**
-     * Copy current config levels from the current preset into custom values since the user has
-     * initiated some change. Then update the current preset to 'custom'.
-     */
-    public int copyToCustom() {
-        updateGlobalLevels(mCurrentPreset);
-        if (DEBUG) {
-            Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(mGlobalLevels));
+    public AudioDeviceInfo getDeviceById(int id) {
+        for (AudioDeviceInfo ai : mAudioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
+            if (ai.getId() == id) {
+                return ai;
+            }
         }
-
-        String levels = EqUtils.floatLevelsToString(
-                EqUtils.convertDecibelsToMillibels(
-                        mEqPresets.get(mCurrentPreset).getLevels()));
-        getGlobalPrefs()
-                .edit()
-                .putString("custom", levels).apply();
-
-        ((Preset.PermCustomPreset) mEqPresets.get(mEQCustomPresetPosition)).setLevels(mGlobalLevels);
-        if (DEBUG)
-            Log.i(TAG, "copyToCustom() wrote current preset levels to index: " + mEQCustomPresetPosition);
-        setPreset(mEQCustomPresetPosition);
-        savePresetsDelayed();
-        return mEQCustomPresetPosition;
+        return null;
     }
 
-    public int addPresetFromCustom() {
-        updateGlobalLevels(mEQCustomPresetPosition);
-        if (DEBUG) {
-            Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(mGlobalLevels));
+    public List<AudioDeviceInfo> getConnectedDevices(int... filter) {
+        final List<AudioDeviceInfo> devices = new ArrayList<AudioDeviceInfo>();
+        for (AudioDeviceInfo ai : mAudioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
+            if (filter.length == 0) {
+                devices.add(ai);
+            } else {
+                for (int i = 0; i < filter.length; i++) {
+                    if (ai.getType() == filter[i]) {
+                        devices.add(ai);
+                        continue;
+                    }
+                }
+            }
         }
-
-        int writtenToIndex = addPreset(mGlobalLevels);
-        if (DEBUG)
-            Log.i(TAG, "addPresetFromCustom() wrote current preset levels to index: " + writtenToIndex);
-        setPreset(writtenToIndex);
-        savePresetsDelayed();
-        return writtenToIndex;
+        return devices;
     }
 
-    /**
-     * Loops through all presets. And finds the first preset that can be written to.
-     * If one is not found, then one is inserted, and that new index is returned.
-     * @return the index that the levels were copied to
-     */
-    private int addPreset(float[] levels) {
-        if (UserSession.getInstance() != null) {
-            UserSession.getInstance().presetCreated();
-        }
-
-        final int customPresets = Constants.getCustomPresets(mContext, mNumBands).size();
-        // format the name so it's like "Custom <N>", start with "Custom 2"
-        final String name = String.format(mContext.getString(R.string.user_n), customPresets + 2);
-
-        Preset.CustomPreset customPreset = new Preset.CustomPreset(name, levels, false);
-        mEqPresets.add(customPreset);
-
-        for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
-            callback.onPresetsChanged();
-        }
-
-        return mEqPresets.size() - 1;
-    }
-
-
-    /**
-     * Implement this callback to receive any changes called to the MasterConfigControl instance
-     */
-    public interface EqUpdatedCallback {
-        /**
-         * A band level has been changed
-         *
-         * @param band       the band index which changed
-         * @param dB         the new decibel value
-         * @param fromSystem whether the event was from the system or from the user
-         */
-        public void onBandLevelChange(int band, float dB, boolean fromSystem);
-
-        /**
-         * The preset has been set
-         *
-         * @param newPresetIndex the new preset index.
-         */
-        public void onPresetChanged(int newPresetIndex);
-
-        public void onPresetsChanged();
-
-        public void onDeviceChanged(OutputDevice device, boolean userChange);
-    }
-
-    /**
-     * Add a call back to be notified.
-     *
-     * @param callback
-     */
-    public synchronized void addEqStateChangeCallback(EqUpdatedCallback callback) {
-        mEqUpdateCallbacks.add(callback);
-        callback.onDeviceChanged(getCurrentDevice(), false);
-    }
-
-    /**
-     * remove a callback that has been added before.
-     *
-     * @param callback
-     */
-    public synchronized void removeEqStateChangeCallback(EqUpdatedCallback callback) {
-        mEqUpdateCallbacks.remove(callback);
+    public String getCurrentDeviceIdentifier() {
+        return getDeviceIdentifierString(getCurrentDevice());
     }
 
     public SharedPreferences getPrefs() {
-        return mContext.getSharedPreferences(
-                getCurrentDevice().getDevicePreferenceName(mContext), 0);
-    }
-
-    /**
-     * Set a new level!
-     * <p/>
-     * This call will be propogated to all listeners registered with addEqStateChangeCallback().
-     *
-     * @param band         the band index the band index which changed
-     * @param dB           the new decibel value
-     * @param systemChange is this change generated by the system?
-     */
-    public void setLevel(int band, float dB, boolean systemChange) {
-        //if (DEBUG) Log.i(TAG, "setLevel(" + band + ", " + dB + ", " + systemChange + ")");
-
-        mGlobalLevels[band] = dB;
-
-        if (systemChange
-                && (mUserDeviceOverride  == null || mUserDeviceOverride == mCurrentDevice)) {
-            // quickly convert decibel to millibel and send away to the service
-            mHandler.obtainMessage(MSG_SEND_EQ_OVERRIDE, band, (short) (dB * 100)).sendToTarget();
-        }
-
-        for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
-            callback.onBandLevelChange(band, dB, systemChange);
-        }
-        if (!systemChange) { // user is touching
-            // persist
-
-            final Preset preset = mEqPresets.get(mCurrentPreset);
-            if (preset instanceof Preset.CustomPreset) {
-                if (mAnimatingToCustom.get()) {
-                    if (DEBUG) {
-                        Log.d(TAG, "setLevel() not persisting new custom band becuase animating.");
-                    }
-                } else {
-                    ((Preset.CustomPreset) preset).setLevel(band, dB);
-                    if (preset instanceof Preset.PermCustomPreset) {
-                        // store these as millibels
-                        String levels = EqUtils.floatLevelsToString(
-                                EqUtils.convertDecibelsToMillibels(
-                                        preset.getLevels()));
-                        getGlobalPrefs()
-                                .edit()
-                                .putString("custom", levels).apply();
-                    }
-                }
-                // needs to be updated immediately here for the service.
-                final String levels = EqUtils.floatLevelsToString(preset.getLevels());
-                mCurrentDevicePrefs.edit().putString(Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS,
-                        levels).apply();
-                updateService();
-            }
-            savePresetsDelayed();
-        }
-    }
-
-    /**
-     * Set a new preset index.
-     * <p/>
-     * This call will be propogated to all listeners registered with addEqStateChangeCallback().
-     *
-     * @param newPresetIndex the new preset index.
-     */
-    public void setPreset(int newPresetIndex) {
-         mCurrentPreset = newPresetIndex;
-        updateEqControls(); // do this before callback is propogated
-        for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
-            callback.onPresetChanged(newPresetIndex);
-        }
-        // persist
-        getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_EQ_PRESET, String.valueOf(newPresetIndex)).apply();
-
-        // update mGlobalLevels
-        float[] newlevels = getPresetLevels(newPresetIndex);
-        for (int i = 0; i < newlevels.length; i++) {
-            setLevel(i, newlevels[i], true);
-        }
-
-        getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS,
-                EqUtils.floatLevelsToString(newlevels)).apply();
-
-        updateService();
-    }
-
-    private void updateEqControls() {
-        //boolean removeVisible, boolean renameVisible, boolean exportVisible
-        mEqControlState.saveVisible = mEQCustomPresetPosition == mCurrentPreset;
-        final boolean userPreset = isUserPreset();
-        mEqControlState.removeVisible = userPreset;
-        mEqControlState.renameVisible = userPreset;
-        mEqControlState.unlockVisible = userPreset;
-        if (mEqCallback != null) {
-            mEqCallback.updateEqState();
-        }
-    }
-
-    /**
-     * @return Get the current preset index
-     */
-    public int getCurrentPresetIndex() {
-        return mCurrentPreset;
-    }
-
-    /*===============
-     * eq methods
-     *===============*/
-
-    public float projectX(double freq) {
-        double pos = Math.log(freq);
-        double minPos = Math.log(mMinFreq);
-        double maxPos = Math.log(mMaxFreq);
-        return (float) ((pos - minPos) / (maxPos - minPos));
-    }
-
-    public double reverseProjectX(float pos) {
-        double minPos = Math.log(mMinFreq);
-        double maxPos = Math.log(mMaxFreq);
-        return Math.exp(pos * (maxPos - minPos) + minPos);
-    }
-
-    public float projectY(double dB) {
-        double pos = (dB - mMinDB) / (mMaxDB - mMinDB);
-        return (float) (1 - pos);
-    }
-
-    public static double lin2dB(double rho) {
-        return rho != 0 ? Math.log(rho) / Math.log(10) * 20 : -99.9;
-    }
-
-    public float getMinFreq() {
-        return mMinFreq;
-    }
-
-    public float getMaxFreq() {
-        return mMaxFreq;
-    }
-
-    public float getMinDB() {
-        return mMinDB;
-    }
-
-    public float getMaxDB() {
-        return mMaxDB;
-    }
-
-    public int getNumBands() {
-        return mNumBands;
-    }
-
-    public float getCenterFreq(int band) {
-        return mCenterFreqs[band];
-    }
-
-    public float[] getCenterFreqs() {
-        return mCenterFreqs;
-    }
-
-    public float[] getLevels() {
-        return mGlobalLevels;
-    }
-
-    public float getLevel(int band) {
-        return mGlobalLevels[band];
-    }
-
-    /*===============
-     * preset methods
-     *===============*/
-
-    public float[] getPersistedPresetLevels(int presetIndex) {
-        String newLevels = null;
-
-        if (mEqPresets.size() > presetIndex
-                && mEqPresets.get(presetIndex) instanceof Preset.PermCustomPreset) {
-            return getPersistedCustomLevels();
-        } else {
-            newLevels = getGlobalPrefs().getString("equalizer.preset." +
-                            presetIndex,
-                    mZeroedBandString);
-        }
-        // stored as millibels, convert to decibels
-        float[] levels = EqUtils.stringBandsToFloats(newLevels);
-        return EqUtils.convertMillibelsToDecibels(levels);
-    }
-
-    private float[] getPersistedCustomLevels() {
-        String newLevels = getGlobalPrefs().getString("custom",
-                mZeroedBandString);
-        // stored as millibels, convert to decibels
-        float[] levels = EqUtils.stringBandsToFloats(newLevels);
-        return EqUtils.convertMillibelsToDecibels(levels);
-    }
-
-    /**
-     * Get preset levels in decibels for a given index
-     *
-     * @param presetIndex index which to fetch preset levels for
-     * @return an array of floats[] with the given index's preset levels
-     */
-    public float[] getPresetLevels(int presetIndex) {
-        return mEqPresets.get(presetIndex).getLevels();
-    }
-
-    /**
-     * Helper method which maps a preset index to a color value.
-     *
-     * @param index the preset index which to fetch a color for
-     * @return a color which is associated with this preset.
-     */
-    public int getAssociatedPresetColorHex(int index) {
-        int r = -1;
-        index = index % mEqPresets.size();
-        if (mEqPresets.get(index) instanceof Preset.CustomPreset) {
-            r = R.color.preset_custom;
-        } else {
-            switch (index) {
-                case 0:
-                    r = R.color.preset_normal;
-                    break;
-                case 1:
-                    r = R.color.preset_classical;
-                    break;
-                case 2:
-                    r = R.color.preset_dance;
-                    break;
-                case 3:
-                    r = R.color.preset_flat;
-                    break;
-                case 4:
-                    r = R.color.preset_folk;
-                    break;
-                case 5:
-                    r = R.color.preset_metal;
-                    break;
-                case 6:
-                    r = R.color.preset_hiphop;
-                    break;
-                case 7:
-                    r = R.color.preset_jazz;
-                    break;
-                case 8:
-                    r = R.color.preset_pop;
-                    break;
-                case 9:
-                    r = R.color.preset_rock;
-                    break;
-                case 10:
-                    r = R.color.preset_electronic;
-                    break;
-                case 11:
-                    r = R.color.preset_small_speakers;
-                    break;
-                default:
-                    return r;
-            }
-        }
-        return mContext.getResources().getColor(r);
-    }
-
-    /**
-     * Get total number of presets
-     *
-     * @return int value with total number of presets
-     */
-    public int getPresetCount() {
-        return mEqPresets.size();
-    }
-
-    public Preset getPreset(int index) {
-        return mEqPresets.get(index);
-    }
-
-    public String getLocalizedPresetName(int index) {
-        // already localized
-        return localizePresetName(mEqPresets.get(index).getName());
-    }
-
-    private final String localizePresetName(final String name) {
-        // missing electronic, multimedia, small speakers, custom
-        final String[] names = {
-                "Normal", "Classical", "Dance", "Flat", "Folk",
-                "Heavy Metal", "Hip Hop", "Jazz", "Pop", "Rock",
-                "Electronic", "Small speakers", "Multimedia",
-                "Custom"
-        };
-        final int[] ids = {
-                R.string.normal, R.string.classical, R.string.dance, R.string.flat, R.string.folk,
-                R.string.heavy_metal, R.string.hip_hop, R.string.jazz, R.string.pop, R.string.rock,
-                R.string.ci_extreme, R.string.small_speakers, R.string.multimedia,
-                R.string.user
-        };
-
-        for (int i = names.length - 1; i >= 0; --i) {
-            if (names[i].equalsIgnoreCase(name)) {
-                return mContext.getString(ids[i]);
-            }
-        }
-        return name;
-    }
-
-    public boolean isEqualizerLocked() {
-        return getCurrentPreset() instanceof Preset.CustomPreset
-                && !(getCurrentPreset() instanceof Preset.PermCustomPreset)
-                && ((Preset.CustomPreset) getCurrentPreset()).isLocked();
-    }
-
-    public void renameCurrentPreset(String s) {
-        if (UserSession.getInstance() != null) {
-            UserSession.getInstance().presetRenamed();
-        }
-
-        if (isUserPreset()) {
-            ((Preset.CustomPreset) getCurrentPreset()).setName(s);
-        }
-
-        // notify change
-        for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
-            callback.onPresetsChanged();
-        }
-
-        savePresetsDelayed();
-    }
-
-    public boolean removePreset(int index) {
-        if (UserSession.getInstance() != null) {
-            UserSession.getInstance().presetRemoved();
-        }
-
-        if (index > mEQCustomPresetPosition) {
-            mEqPresets.remove(index);
-            for (EqUpdatedCallback callback : mEqUpdateCallbacks) {
-                callback.onPresetsChanged();
-            }
-            if (mCurrentPreset == index) {
-                if (DEBUG) {
-                    Log.w(TAG, "removePreset() called on current preset, changing preset");
-                }
-                updateGlobalLevels(mCurrentPreset - 1);
-                setPreset(mCurrentPreset - 1);
-            }
-            savePresetsDelayed();
-            return true;
-        }
-        return false;
-    }
-
-    private void updateGlobalLevels(int presetIndexToCopy) {
-        final float[] presetLevels = getPresetLevels(presetIndexToCopy);
-        for (int i = 0; i < mGlobalLevels.length; i++) {
-            mGlobalLevels[i] = presetLevels[i];
-        }
+        return mContext.getSharedPreferences(getCurrentDeviceIdentifier(), 0);
     }
 
     public boolean hasMaxxAudio() {
@@ -849,32 +283,33 @@ public class MasterConfigControl {
         updateService();
     }
 
-
-    public EqControlState getEqControlState() {
-        return mEqControlState;
-    }
-
-    public List<OutputDevice> getBluetoothDevices() {
-        if (mService != null) {
-            return mCachedBluetoothDevices = mService.getBluetoothDevices();
+    void overrideEqLevels(short band, short level) {
+        if (checkService()) {
+            mService.setOverrideLevels(band, level);
         }
-        return mCachedBluetoothDevices;
     }
 
-    public static class EqControlState {
-        public boolean removeVisible;
-        public boolean renameVisible;
-        public boolean unlockVisible;
-        public boolean saveVisible;
-    }
-
-    public void setEqControlCallback(EqControlStateCallback cb) {
-        mEqCallback = cb;
-    }
-
-    private EqControlStateCallback mEqCallback;
-
-    public interface EqControlStateCallback {
-        public void updateEqState();
+    public static String getDeviceIdentifierString(AudioDeviceInfo info) {
+        int type = info == null ? -1 : info.getType();
+        switch (type) {
+            case TYPE_WIRED_HEADSET:
+            case TYPE_WIRED_HEADPHONES:
+                return "headset";
+            case TYPE_LINE_ANALOG:
+            case TYPE_LINE_DIGITAL:
+                // FIXME: support line-out
+                return "headset";
+            case TYPE_BLUETOOTH_SCO:
+            case TYPE_BLUETOOTH_A2DP:
+                return "bluetooth";
+            case TYPE_USB_DEVICE:
+            case TYPE_USB_ACCESSORY:
+            case TYPE_DOCK:
+                return "usb";
+            case TYPE_IP:
+                return "wireless";
+            default:
+                return "speaker";
+        }
     }
 }

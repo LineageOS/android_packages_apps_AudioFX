@@ -24,23 +24,24 @@ import android.widget.TextView;
 
 import com.cyngn.audiofx.Preset;
 import com.cyngn.audiofx.R;
+import com.cyngn.audiofx.activity.EqualizerManager;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 
 public class PresetPagerAdapter extends PagerAdapter {
 
-    Context mContext;
-    MasterConfigControl mConfig;
+    private final Context mContext;
+    private final EqualizerManager mEqManager;
 
     public PresetPagerAdapter(Context context) {
         super();
         mContext = context;
-        mConfig = MasterConfigControl.getInstance(mContext);
+        mEqManager = MasterConfigControl.getInstance(mContext).getEqualizerManager();
     }
 
     @Override
     public int getItemPosition(Object object) {
         View v = (View) object;
-        int index = mConfig.indexOf(((Preset) v.getTag()));
+        int index = mEqManager.indexOf(((Preset) v.getTag()));
         if (index == -1) {
             return POSITION_NONE;
         } else {
@@ -53,8 +54,8 @@ public class PresetPagerAdapter extends PagerAdapter {
         View view = LayoutInflater.from(mContext)
                 .inflate(R.layout.preset_adapter_row, container, false);
         TextView tv = (TextView) view;
-        tv.setText(mConfig.getLocalizedPresetName(position));
-        tv.setTag(mConfig.getPreset(position));
+        tv.setText(mEqManager.getLocalizedPresetName(position));
+        tv.setTag(mEqManager.getPreset(position));
         container.addView(tv);
         return view;
     }
@@ -68,7 +69,7 @@ public class PresetPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return mConfig.getPresetCount();
+        return mEqManager.getPresetCount();
     }
 
     @Override

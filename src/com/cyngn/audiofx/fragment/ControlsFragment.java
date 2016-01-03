@@ -1,19 +1,19 @@
 package com.cyngn.audiofx.fragment;
 
 import android.annotation.Nullable;
+import android.media.AudioDeviceInfo;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.knobs.KnobCommander;
 import com.cyngn.audiofx.knobs.KnobContainer;
-import com.cyngn.audiofx.service.OutputDevice;
 import com.cyngn.audiofx.stats.UserSession;
 
 public class ControlsFragment extends AudioFxBaseFragment {
@@ -22,7 +22,6 @@ public class ControlsFragment extends AudioFxBaseFragment {
     private static final boolean DEBUG = false;
 
     KnobCommander mKnobCommander;
-    Handler mHandler;
     KnobContainer mKnobContainer;
     CheckBox mMaxxVolumeSwitch;
 
@@ -41,21 +40,19 @@ public class ControlsFragment extends AudioFxBaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mHandler = new Handler();
         mKnobCommander = KnobCommander.getInstance(getActivity());
-
     }
 
     @Override
     public void onPause() {
-        MasterConfigControl.getInstance(getActivity()).removeEqStateChangeCallback(mKnobContainer);
+        MasterConfigControl.getInstance(getActivity()).getCallbacks().removeDeviceChangedCallback(mKnobContainer);
         super.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        MasterConfigControl.getInstance(getActivity()).addEqStateChangeCallback(mKnobContainer);
+        MasterConfigControl.getInstance(getActivity()).getCallbacks().addDeviceChangedCallback(mKnobContainer);
     }
 
     @Override
@@ -67,11 +64,11 @@ public class ControlsFragment extends AudioFxBaseFragment {
 
 
     public void updateEnabledState() {
-        final OutputDevice device = mConfig.getCurrentDevice();
+        final AudioDeviceInfo device = mConfig.getCurrentDevice();
         boolean currentDeviceEnabled = mConfig.isCurrentDeviceEnabled();
 
         if (DEBUG) {
-            Log.d(TAG, "updating with current device: " + device);
+            Log.d(TAG, "updating with current device: " + device.getType());
         }
 
         if (mMaxxVolumeSwitch != null) {

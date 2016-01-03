@@ -7,6 +7,7 @@ import android.annotation.Nullable;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioDeviceInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
@@ -17,32 +18,36 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import com.cyngn.audiofx.Preset;
 import com.cyngn.audiofx.R;
+import com.cyngn.audiofx.activity.EqualizerManager;
 import com.cyngn.audiofx.activity.MasterConfigControl;
+import com.cyngn.audiofx.activity.StateCallbacks;
 import com.cyngn.audiofx.eq.EqContainerView;
 import com.cyngn.audiofx.preset.InfinitePagerAdapter;
 import com.cyngn.audiofx.preset.InfiniteViewPager;
 import com.cyngn.audiofx.preset.PresetPagerAdapter;
-import com.cyngn.audiofx.service.OutputDevice;
 import com.cyngn.audiofx.stats.UserSession;
 import com.cyngn.audiofx.viewpagerindicator.CirclePageIndicator;
 
 public class EqualizerFragment extends AudioFxBaseFragment
-        implements MasterConfigControl.EqUpdatedCallback {
+        implements StateCallbacks.DeviceChangedCallback, StateCallbacks.EqUpdatedCallback {
+
     private static final String TAG = ControlsFragment.class.getSimpleName();
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_VIEWPAGER = false;
 
     private final ArgbEvaluator mArgbEval = new ArgbEvaluator();
 
-    Handler mHandler;
     public EqContainerView mEqContainer;
     InfiniteViewPager mPresetPager;
     CirclePageIndicator mPresetPageIndicator;
     PresetPagerAdapter mDataAdapter;
     InfinitePagerAdapter mInfiniteAdapter;
     int mCurrentRealPage;
+
+    private Handler mHandler;
 
     // whether we are in the middle of animating while switching devices
     boolean mDeviceChanging;
@@ -60,20 +65,25 @@ public class EqualizerFragment extends AudioFxBaseFragment
     // current selected index
     public int mSelectedPosition = 0;
 
+    private MasterConfigControl mConfig;
+    private EqualizerManager mEqManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mHandler = new Handler();
+        mConfig = MasterConfigControl.getInstance(getActivity());
+        mEqManager = mConfig.getEqualizerManager();
 
-        mSelectedPositionBands = mConfig.getPersistedPresetLevels(mConfig.getCurrentPresetIndex());
+        mHandler = new Handler();
+        mSelectedPositionBands = mEqManager.getPersistedPresetLevels(mEqManager.getCurrentPresetIndex());
     }
 
     @Override
     public void onPause() {
         mEqContainer.stopListening();
-        mConfig.removeEqStateChangeCallback(this);
+        mConfig.getCallbacks().removeDeviceChangedCallback(this);
+        mConfig.getCallbacks().removeEqUpdatedCallback(this);
         super.onPause();
     }
 
@@ -81,8 +91,8 @@ public class EqualizerFragment extends AudioFxBaseFragment
     public void onResume() {
         super.onResume();
         mEqContainer.startListening();
-        mConfig.addEqStateChangeCallback(this);
-
+        mConfig.getCallbacks().addEqUpdatedCallback(this);
+        mConfig.getCallbacks().addDeviceChangedCallback(this);
         mPresetPageIndicator.notifyDataSetChanged();
         mDataAdapter.notifyDataSetChanged();
     }
@@ -104,7 +114,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
 
     private void removeCurrentCustomPreset(boolean showWarning) {
         if (showWarning) {
-            Preset p = mConfig.getCurrentPreset();
+            Preset p = mEqManager.getCurrentPreset();
             new AlertDialog.Builder(getActivity())
                     .setMessage(String.format(getString(
                             R.string.remove_custom_preset_warning_message), p.getName()))
@@ -121,8 +131,8 @@ public class EqualizerFragment extends AudioFxBaseFragment
             return;
         }
 
-        final int currentIndexBeforeRemove = mConfig.getCurrentPresetIndex();
-        if (mConfig.removePreset(currentIndexBeforeRemove)) {
+        final int currentIndexBeforeRemove = mEqManager.getCurrentPresetIndex();
+        if (mEqManager.removePreset(currentIndexBeforeRemove)) {
             mInfiniteAdapter.notifyDataSetChanged();
             mDataAdapter.notifyDataSetChanged();
             mPresetPageIndicator.notifyDataSetChanged();
@@ -135,14 +145,14 @@ public class EqualizerFragment extends AudioFxBaseFragment
         AlertDialog.Builder renameDialog = new AlertDialog.Builder(getActivity());
         renameDialog.setTitle(R.string.rename);
         final EditText newName = new EditText(getActivity());
-        newName.setText(mConfig.getCurrentPreset().getName());
+        newName.setText(mEqManager.getCurrentPreset().getName());
         renameDialog.setView(newName);
         renameDialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface d, int which) {
-                mConfig.renameCurrentPreset(newName.getText().toString());
+                mEqManager.renameCurrentPreset(newName.getText().toString());
                 final TextView viewWithTag = (TextView) mPresetPager
-                        .findViewWithTag(mConfig.getCurrentPreset());
+                        .findViewWithTag(mEqManager.getCurrentPreset());
                 viewWithTag.setText(newName.getText().toString());
                 mDataAdapter.notifyDataSetChanged();
                 mPresetPager.invalidate();
@@ -180,7 +190,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
                     @Override
                     public void onClick(View v) {
 
-                        final int newidx = mConfig.addPresetFromCustom();
+                        final int newidx = mEqManager.addPresetFromCustom();
                         mInfiniteAdapter.notifyDataSetChanged();
                         mDataAdapter.notifyDataSetChanged();
                         mPresetPageIndicator.notifyDataSetChanged();
@@ -193,7 +203,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (mConfig.isUserPreset()) {
+                        if (mEqManager.isUserPreset()) {
                             openRenameDialog();
                         }
                     }
@@ -208,7 +218,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
                 }
         );
 
-        mSelectedPosition = mConfig.getCurrentPresetIndex();
+        mSelectedPosition = mEqManager.getCurrentPresetIndex();
 
         mDataAdapter = new PresetPagerAdapter(getActivity());
         mInfiniteAdapter = new InfinitePagerAdapter(mDataAdapter);
@@ -240,14 +250,14 @@ public class EqualizerFragment extends AudioFxBaseFragment
         // call backs we get when bands are changing, check if the user is physically touching them
         // and set the preset to "custom" and do proper animations.
         if (!fromSystem) { // from user
-            if (!mConfig.isCustomPreset() // not on custom already
-                    && !mConfig.isUserPreset() // or not on a user preset
-                    && !mConfig.isAnimatingToCustom()) { // and animation hasn't started
+            if (!mEqManager.isCustomPreset() // not on custom already
+                    && !mEqManager.isUserPreset() // or not on a user preset
+                    && !mEqManager.isAnimatingToCustom()) { // and animation hasn't started
                 if (DEBUG) Log.w(TAG, "met conditions to start an animation to custom trigger");
                 // view pager is infinite, so we can't set the item to 0. find NEXT 0
-                mConfig.setAnimatingToCustom(true);
+                mEqManager.setAnimatingToCustom(true);
 
-                final int newIndex = mConfig.copyToCustom();
+                final int newIndex = mEqManager.copyToCustom();
 
                 mInfiniteAdapter.notifyDataSetChanged();
                 mDataAdapter.notifyDataSetChanged();
@@ -255,7 +265,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
                 // do background transition manually as viewpager can't handle this bg change
                 final Integer colorTo = !mConfig.isCurrentDeviceEnabled()
                         ? getDisabledColor()
-                        : mConfig.getAssociatedPresetColorHex(newIndex);
+                        : mEqManager.getAssociatedPresetColorHex(newIndex);
                 final Animator.AnimatorListener listener = new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animation) {
@@ -296,8 +306,8 @@ public class EqualizerFragment extends AudioFxBaseFragment
     }
 
     @Override
-    public void onDeviceChanged(OutputDevice deviceId, boolean userChange) {
-        int diff = mConfig.getCurrentPresetIndex() - mSelectedPosition;
+    public void onDeviceChanged(AudioDeviceInfo device, boolean userChange) {
+        int diff = mEqManager.getCurrentPresetIndex() - mSelectedPosition;
         final boolean samePage = diff == 0;
         diff = mDataAdapter.getCount() + diff;
         if (DEBUG) {
@@ -309,18 +319,18 @@ public class EqualizerFragment extends AudioFxBaseFragment
         final int newPage = mCurrentRealPage + diff;
         if (DEBUG) Log.d(TAG, "mCurrentRealPage After: " + newPage);
 
-        mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
-        final float[] targetBandLevels = mConfig.getPresetLevels(mConfig.getCurrentPresetIndex());
+        mSelectedPositionBands = mEqManager.getPresetLevels(mSelectedPosition);
+        final float[] targetBandLevels = mEqManager.getPresetLevels(mEqManager.getCurrentPresetIndex());
 
         // do background transition manually as viewpager can't handle this bg change
         final Integer colorTo = !mConfig.isCurrentDeviceEnabled()
                 ? getDisabledColor()
-                : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
+                : mEqManager.getAssociatedPresetColorHex(mEqManager.getCurrentPresetIndex());
 
         final Animator.AnimatorListener animatorListener = new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-                mConfig.setChangingPresets(true);
+                mEqManager.setChangingPresets(true);
 
                 mDeviceChanging = true;
 
@@ -331,10 +341,10 @@ public class EqualizerFragment extends AudioFxBaseFragment
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                mConfig.setChangingPresets(false);
+                mEqManager.setChangingPresets(false);
 
-                mSelectedPosition = mConfig.getCurrentPresetIndex();
-                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
+                mSelectedPosition = mEqManager.getCurrentPresetIndex();
+                mSelectedPositionBands = mEqManager.getPresetLevels(mSelectedPosition);
 
                 mDeviceChanging = false;
             }
@@ -356,13 +366,13 @@ public class EqualizerFragment extends AudioFxBaseFragment
             public void onAnimationUpdate(ValueAnimator animator) {
                 super.onAnimationUpdate(animator);
 
-                final int N = mConfig.getNumBands();
+                final int N = mEqManager.getNumBands();
                 for (int i = 0; i < N; i++) { // animate bands
                     float delta = targetBandLevels[i] - mSelectedPositionBands[i];
                     float newBandLevel = mSelectedPositionBands[i]
                             + (delta * animator.getAnimatedFraction());
                     //if (DEBUG_VIEWPAGER) Log.d(TAG, i + ", delta: " + delta + ", newBandLevel: " + newBandLevel);
-                    mConfig.setLevel(i, newBandLevel, true);
+                    mEqManager.setLevel(i, newBandLevel, true);
                 }
             }
         };
@@ -385,7 +395,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
             Integer colorFrom;
             Integer colorTo;
 
-            if (newPosition == mAnimatingToRealPageTarget && mConfig.isAnimatingToCustom()) {
+            if (newPosition == mAnimatingToRealPageTarget && mEqManager.isAnimatingToCustom()) {
                 if (DEBUG_VIEWPAGER) Log.w(TAG, "settling var set to true");
                 mJustGotToCustomAndSettling = true;
                 mAnimatingToRealPageTarget = -1;
@@ -394,7 +404,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
             newPosition = newPosition % mDataAdapter.getCount();
 
 
-            if (mConfig.isAnimatingToCustom() || mDeviceChanging) {
+            if (mEqManager.isAnimatingToCustom() || mDeviceChanging) {
                 if (DEBUG_VIEWPAGER)
                     Log.i(TAG, "ignoring onPageScrolled because animating to custom or device is changing");
                 return;
@@ -406,7 +416,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
                 mSelectedPosition = newPosition;
                 // mSelectedPositionBands will be reset by setPreset() below calling back to onPresetChanged()
 
-                mConfig.setPreset(mSelectedPosition);
+                mEqManager.setPreset(mSelectedPosition);
             }
 
             if (newPosition < mSelectedPosition || (newPosition == mDataAdapter.getCount() - 1)
@@ -415,7 +425,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
                 positionOffset = (1 - positionOffset);
                 //Log.v(TAG, "<<<<<< positionOffset: " + positionOffset + " (last offset: " + mLastOffset + ")");
                 toPos = newPosition;
-                colorTo = mConfig.getAssociatedPresetColorHex(toPos);
+                colorTo = mEqManager.getAssociatedPresetColorHex(toPos);
             } else {
                 // scrolling right >>>>>
                 //Log.v(TAG, ">>>>>>> positionOffset: " + positionOffset + " (last offset: " + mLastOffset + ")");
@@ -424,27 +434,27 @@ public class EqualizerFragment extends AudioFxBaseFragment
                     toPos = 0;
                 }
 
-                colorTo = mConfig.getAssociatedPresetColorHex(toPos);
+                colorTo = mEqManager.getAssociatedPresetColorHex(toPos);
             }
 
             if (!mDeviceChanging && mConfig.isCurrentDeviceEnabled()) {
-                colorFrom = mConfig.getAssociatedPresetColorHex(mSelectedPosition);
+                colorFrom = mEqManager.getAssociatedPresetColorHex(mSelectedPosition);
                 setBackgroundColor((Integer) mArgbEval.evaluate(positionOffset, colorFrom, colorTo),
                         true);
             }
 
             if (mSelectedPositionBands == null) {
-                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
+                mSelectedPositionBands = mEqManager.getPresetLevels(mSelectedPosition);
             }
             // get current bands
-            float[] finalPresetLevels = mConfig.getPresetLevels(toPos);
+            float[] finalPresetLevels = mEqManager.getPresetLevels(toPos);
 
-            final int N = mConfig.getNumBands();
+            final int N = mEqManager.getNumBands();
             for (int i = 0; i < N; i++) { // animate bands
                 float delta = finalPresetLevels[i] - mSelectedPositionBands[i];
                 float newBandLevel = mSelectedPositionBands[i] + (delta * positionOffset);
                 //if (DEBUG_VIEWPAGER) Log.d(TAG, i + ", delta: " + delta + ", newBandLevel: " + newBandLevel);
-                mConfig.setLevel(i, newBandLevel, true);
+                mEqManager.setLevel(i, newBandLevel, true);
             }
             mLastOffset = positionOffset;
 
@@ -459,7 +469,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
             mFakePager.setCurrentItem(position);
             mSelectedPosition = position;
             if (!mDeviceChanging) {
-                mSelectedPositionBands = mConfig.getPresetLevels(mSelectedPosition);
+                mSelectedPositionBands = mEqManager.getPresetLevels(mSelectedPosition);
                 if (UserSession.getInstance() != null) {
                     UserSession.getInstance().presetSelected();
                 }
@@ -480,20 +490,20 @@ public class EqualizerFragment extends AudioFxBaseFragment
                 if (DEBUG_VIEWPAGER)
                     Log.w(TAG, "onPageScrollChanged() setting animating to custom = false");
                 mJustGotToCustomAndSettling = false;
-                mConfig.setChangingPresets(false);
-                mConfig.setAnimatingToCustom(false);
+                mEqManager.setChangingPresets(false);
+                mEqManager.setAnimatingToCustom(false);
             } else {
                 if (mState == ViewPager.SCROLL_STATE_IDLE) {
                     animateBackgroundColorTo(!mConfig.isCurrentDeviceEnabled()
                                     ? getDisabledColor()
-                                    : mConfig.getAssociatedPresetColorHex(mSelectedPosition),
+                                    : mEqManager.getAssociatedPresetColorHex(mSelectedPosition),
                             null, null);
 
-                    mConfig.setChangingPresets(false);
-                    mConfig.setPreset(mSelectedPosition);
+                    mEqManager.setChangingPresets(false);
+                    mEqManager.setPreset(mSelectedPosition);
                 } else {
                     // not idle
-                    mConfig.setChangingPresets(true);
+                    mEqManager.setChangingPresets(true);
                 }
             }
         }

@@ -8,6 +8,7 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -21,15 +22,17 @@ import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+
 import com.cyngn.audiofx.R;
+import com.cyngn.audiofx.activity.EqualizerManager;
 import com.cyngn.audiofx.activity.MasterConfigControl;
-import com.cyngn.audiofx.service.OutputDevice;
+import com.cyngn.audiofx.activity.StateCallbacks;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EqContainerView extends FrameLayout
-        implements MasterConfigControl.EqUpdatedCallback, MasterConfigControl.EqControlStateCallback {
+        implements StateCallbacks.EqUpdatedCallback, StateCallbacks.EqControlStateCallback {
 
     private static final String TAG = EqContainerView.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
@@ -37,6 +40,7 @@ public class EqContainerView extends FrameLayout
     private int mWidth;
     private int mHeight;
     private MasterConfigControl mConfig;
+    private EqualizerManager mEqManager;
     private List<EqBandInfo> mBandInfo;
     private List<EqBarView> mBarViews;
     private List<Integer> mSelectedBands;
@@ -48,6 +52,11 @@ public class EqContainerView extends FrameLayout
     private ViewGroup mControls;
     private boolean mControlsVisible;
 
+    private boolean mSaveVisible;
+    private boolean mRemoveVisible;
+    private boolean mRenameVisible;
+    private boolean mUnlockVisible;
+
     private int mSelectedBandColor;
     private boolean mFirstLayout = true;
 
@@ -57,6 +66,8 @@ public class EqContainerView extends FrameLayout
     private Paint mCenterLinePaint;
     private Path mDashPath;
 
+    private Handler mHandler;
+
     private Runnable mVibrateRunnable = new Runnable() {
         @Override
         public void run() {
@@ -64,6 +75,7 @@ public class EqContainerView extends FrameLayout
             v.vibrate(30);
         }
     };
+
     private int mPaddingTop;
     private int mPaddingBottom;
     private int mBarWidth;
@@ -73,9 +85,9 @@ public class EqContainerView extends FrameLayout
     public void stopListening() {
         for (EqBarView barView : mBarViews) {
             barView.setTag(null);
-            mConfig.removeEqStateChangeCallback(barView);
+            mConfig.getCallbacks().removeEqUpdatedCallback(barView);
         }
-        mConfig.removeEqStateChangeCallback(this);
+        mConfig.getCallbacks().removeEqUpdatedCallback(this);
     }
 
     public void startListening() {
@@ -83,9 +95,9 @@ public class EqContainerView extends FrameLayout
 
             final EqBarView eqBarView = mBarViews.get(i);
             eqBarView.setTag(mBandInfo.get(i));
-            mConfig.addEqStateChangeCallback(eqBarView);
+            mConfig.getCallbacks().addEqUpdatedCallback(eqBarView);
         }
-        mConfig.addEqStateChangeCallback(this);
+        mConfig.getCallbacks().addEqUpdatedCallback(this);
     }
 
     public static class EqBandInfo {
@@ -114,6 +126,8 @@ public class EqContainerView extends FrameLayout
     private void init() {
         setLayerType(LAYER_TYPE_HARDWARE, null);
 
+        mHandler = new Handler();
+
         final Resources r = getResources();
 
         mBarWidth = r.getDimensionPixelSize(R.dimen.eq_bar_width);
@@ -129,6 +143,8 @@ public class EqContainerView extends FrameLayout
         mPaddingBottom = selectedBoxTextSize + mBarBottomGrabSpacePadding;
 
         mConfig = MasterConfigControl.getInstance(mContext);
+        mEqManager = mConfig.getEqualizerManager();
+
         mBarViews = new ArrayList<>();
         mBandInfo = new ArrayList<>();
         mSelectedBands = new ArrayList<>();
@@ -182,7 +198,7 @@ public class EqContainerView extends FrameLayout
         mControls = (ViewGroup) findViewById(R.id.eq_controls);
 
         mLockBox = (CheckBox) findViewById(R.id.lock);
-        mLockBox.setOnCheckedChangeListener(mConfig.getLockChangeListener());
+        mLockBox.setOnCheckedChangeListener(mEqManager.getLockChangeListener());
 
         mRenameControl = (ImageView) findViewById(R.id.rename);
         mRemoveControl = (ImageView) findViewById(R.id.remove);
@@ -194,16 +210,14 @@ public class EqContainerView extends FrameLayout
         if (DEBUG) Log.d(TAG, "onAttachedToWindow()");
         super.onAttachedToWindow();
 
-        mConfig.setEqControlCallback(this);
-        mConfig.addEqStateChangeCallback(this);
-        onPresetChanged(mConfig.getCurrentPresetIndex()); // update initial state
+        mConfig.getCallbacks().addEqControlStateCallback(this);
+        onPresetChanged(mEqManager.getCurrentPresetIndex()); // update initial state
     }
 
     @Override
     protected void onDetachedFromWindow() {
         if (DEBUG) Log.d(TAG, "onDetachedFromWindow()");
-        mConfig.removeEqStateChangeCallback(this);
-        mConfig.setEqControlCallback(null);
+        mConfig.getCallbacks().removeEqControlStateCallback(this);
         super.onDetachedFromWindow();
     }
 
@@ -217,7 +231,7 @@ public class EqContainerView extends FrameLayout
             mFirstLayout = false;
             mBarViews.clear();
 
-            for (int i = 0; i < mConfig.getNumBands(); i++) {
+            for (int i = 0; i < mEqManager.getNumBands(); i++) {
                 final EqBandInfo band = new EqBandInfo();
                 band.mIndex = i;
                 mBandInfo.add(band);
@@ -228,7 +242,7 @@ public class EqContainerView extends FrameLayout
                 bar.setOnTouchListener(new OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
-                        if (mConfig.isEqualizerLocked()) {
+                        if (mEqManager.isEqualizerLocked()) {
                             return false;
                         }
                         switch (event.getActionMasked()) {
@@ -259,7 +273,7 @@ public class EqContainerView extends FrameLayout
                 addView(bar, getFrameParams(i));
                 bar.setParentHeight(mHeight, getTop());
 
-                final float freq = mConfig.getCenterFreq(i);
+                final float freq = mEqManager.getCenterFreq(i);
                 String frequencyText = String.format(freq < 1000 ? "%.0f" : "%.0fk",
                         freq < 1000 ? freq : freq / 1000);
                 band.mFreq = frequencyText;
@@ -328,8 +342,8 @@ public class EqContainerView extends FrameLayout
 
         int dashY = bottom - mPaddingBottom - (mHeight / 2);
 
-        final int widthOfBars = (mConfig.getNumBands() * mBarWidth)
-                + ((mConfig.getNumBands() - 1) * mBarSeparation);
+        final int widthOfBars = (mEqManager.getNumBands() * mBarWidth)
+                + ((mEqManager.getNumBands() - 1) * mBarSeparation);
         final int freeSpace = mWidth - widthOfBars;
 
         int mCurLeft = (freeSpace / 2);
@@ -403,7 +417,7 @@ public class EqContainerView extends FrameLayout
     }
 
     private void updateSelectedBands() {
-        for (int i = 0; i < mConfig.getNumBands(); i++) {
+        for (int i = 0; i < mEqManager.getNumBands(); i++) {
             EqBandInfo tag = mBandInfo.get(i);
             final EqBarView bar = (EqBarView) findViewWithTag(tag);
             if (bar != null) {
@@ -426,7 +440,7 @@ public class EqContainerView extends FrameLayout
 
     private FrameLayout.LayoutParams getFrameParams(int index) {
         int width = getResources().getDimensionPixelSize(R.dimen.eq_bar_width);
-        int height = Math.round((1 - mConfig.projectY(mConfig.getLevel(index))) * mHeight);
+        int height = Math.round((1 - mEqManager.projectY(mEqManager.getLevel(index))) * mHeight);
         FrameLayout.LayoutParams ll = new FrameLayout.LayoutParams(width, height);
         ll.gravity = Gravity.TOP;
         return ll;
@@ -442,26 +456,29 @@ public class EqContainerView extends FrameLayout
     @Override
     public void onPresetChanged(int newPresetIndex) {
         updateEqState();
-        if (mConfig.isUserPreset()) {
-            mLockBox.setChecked(mConfig.isEqualizerLocked());
+        if (mEqManager.isUserPreset()) {
+            mLockBox.setChecked(mEqManager.isEqualizerLocked());
         }
     }
 
     @Override
-    public void updateEqState() {
-        boolean controlsVisible = mConfig.isUserPreset() || mConfig.isCustomPreset();
-        mControlsVisible = controlsVisible; // persist this.
-        if (!mSelectedBands.isEmpty()) {
-            // selected bands, force override to hide controls
-            controlsVisible = false;
-        }
-        setControlsVisible(controlsVisible, false);
+    public void updateEqState(boolean saveVisible, boolean removeVisible,
+            boolean renameVisible, boolean unlockVisible) {
+        mControlsVisible = mEqManager.isUserPreset() || mEqManager.isCustomPreset();
+        mSaveVisible = saveVisible;
+        mRemoveVisible = removeVisible;
+        mRenameVisible = renameVisible;
+        mUnlockVisible = unlockVisible;
+        updateEqState();
+    }
 
-        MasterConfigControl.EqControlState state = mConfig.getEqControlState();
-        animateControl(mLockBox, state.unlockVisible);
-        animateControl(mRemoveControl, state.removeVisible);
-        animateControl(mRenameControl, state.renameVisible);
-        animateControl(mSaveControl, state.saveVisible);
+    public void updateEqState() {
+        setControlsVisible(mControlsVisible && !mSelectedBands.isEmpty(), false);
+
+        animateControl(mLockBox, mUnlockVisible);
+        animateControl(mRemoveControl, mRemoveVisible);
+        animateControl(mRenameControl, mRenameVisible);
+        animateControl(mSaveControl, mSaveVisible);
     }
 
     private void animateControl(final View v, boolean visible) {
@@ -486,10 +503,6 @@ public class EqContainerView extends FrameLayout
 
     @Override
     public void onPresetsChanged() {
-    }
-
-    @Override
-    public void onDeviceChanged(OutputDevice deviceId, boolean userChange) {
     }
 
     public void setControlsVisible(boolean visible, boolean keepChange) {

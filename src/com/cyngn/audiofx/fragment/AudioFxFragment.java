@@ -5,21 +5,11 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.Nullable;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.media.AudioPatch;
-import android.media.AudioPort;
-import android.os.AsyncTask;
+import android.media.AudioDeviceInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.format.DateUtils;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,24 +19,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import com.cyngn.audiofx.AudioOutputChangeListener;
+
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.ActivityMusic;
+import com.cyngn.audiofx.activity.EqualizerManager;
 import com.cyngn.audiofx.activity.MasterConfigControl;
-import com.cyngn.audiofx.receiver.DeviceOutputChangeReceiver;
-import com.cyngn.audiofx.service.AudioFxService;
-import com.cyngn.audiofx.service.OutputDevice;
+import com.cyngn.audiofx.activity.StateCallbacks;
 import com.cyngn.audiofx.stats.UserSession;
 import com.cyngn.audiofx.widget.InterceptableLinearLayout;
 
 import java.util.List;
 import java.util.Map;
 
-public class AudioFxFragment extends Fragment implements MasterConfigControl.EqUpdatedCallback,
-        ActivityMusic.ActivityStateListener {
+public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityStateListener,
+        StateCallbacks.DeviceChangedCallback {
 
     private static final String TAG = AudioFxFragment.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     public static final String TAG_EQUALIZER = "equalizer";
     public static final String TAG_CONTROLS = "controls";
@@ -61,10 +50,6 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
 
     // current selected index
     public int mSelectedPosition = 0;
-    private Map<Integer, OutputDevice> mBluetoothMap
-            = new ArrayMap<Integer, OutputDevice>();
-    List<OutputDevice> mBluetoothDevices = null;
-    private boolean mUsbDeviceConnected;
 
     EqualizerFragment mEqFragment;
     ControlsFragment mControlFragment;
@@ -74,54 +59,46 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
 
     private int mDisabledColor;
 
-    MasterConfigControl mConfig;
+    private MasterConfigControl mConfig;
+    private EqualizerManager mEqManager;
 
     private int mCurrentMode;
 
-    OutputDevice mSystemDevice;
-    OutputDevice mUserSelection;
-    private AudioOutputChangeListener mAudioListener;
+    private AudioDeviceInfo mSystemDevice;
+    private AudioDeviceInfo mUserSelection;
+
+    private final Map<MenuItem, AudioDeviceInfo> mMenuItems = new ArrayMap<MenuItem, AudioDeviceInfo>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAudioListener = new AudioOutputChangeListener(getActivity()) {
-            @Override
-            public void onAudioOutputChanged(boolean firstChange, int outputType) {
-                if (firstChange) {
-                    if (DEBUG) Log.d(TAG, "ignoring first audio output mode change.");
-                    checkClearUserDevice();
-                    return;
-                }
-                mSystemDevice = null;
-                // clear out user change to update to the current actual device, which has changed
-                mConfig.setCurrentDevice(mUserSelection = null, true);
-            }
-        };
+        mConfig = MasterConfigControl.getInstance(getActivity());
+        mEqManager = mConfig.getEqualizerManager();
 
         if (savedInstanceState != null) {
-            mUserSelection = savedInstanceState.getParcelable("user_device");
-            mSystemDevice = savedInstanceState.getParcelable("system_device");
+            int user = savedInstanceState.getInt("user_device");
+            mUserSelection = mConfig.getDeviceById(user);
+            int system = savedInstanceState.getInt("system_device");
+            mSystemDevice = mConfig.getDeviceById(system);
         }
 
-        mConfig = MasterConfigControl.getInstance(getActivity());
         mHandler = new Handler();
         mDisabledColor = getResources().getColor(R.color.disabled_eq);
+
+       // mConfig.bindService(); // bind early
 
         setHasOptionsMenu(true);
         ((ActivityMusic) getActivity()).addToggleListener(this);
 
         mCurrentMode = ((ActivityMusic) getActivity()).getCurrentMode();
-
-        mConfig.bindService(); // bind early
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("user_device", mUserSelection);
-        outState.putParcelable("system_device", mSystemDevice);
+        outState.putInt("user_device", mUserSelection == null ? -1 : mUserSelection.getId());
+        outState.putInt("system_device", mSystemDevice == null ? -1 : mSystemDevice.getId());
     }
 
     @Override
@@ -165,42 +142,29 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         return createNewFrags;
     }
 
-    private void checkClearUserDevice() {
-        if (mSystemDevice != null && !mConfig.getSystemDevice().equals(mSystemDevice)) {
-            mSystemDevice = null;
-            mUserSelection = null;
-        }
-        mConfig.setCurrentDevice(mUserSelection, true);
-    }
-
     @Override
     public void onResume() {
 
-        mConfig.addEqStateChangeCallback(this);
-
         mConfig.bindService();
 
+        mConfig.getCallbacks().addDeviceChangedCallback(this);
+
         updateEnabledState();
-
-        mAudioListener.register();
-
-        checkClearUserDevice();
 
         super.onResume();
 
         mCurrentBackgroundColor = !mConfig.isCurrentDeviceEnabled()
                 ? mDisabledColor
-                : mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex());
+                : mEqManager.getAssociatedPresetColorHex(
+                        mEqManager.getCurrentPresetIndex());
         updateBackgroundColors(mCurrentBackgroundColor, false);
     }
 
     @Override
     public void onPause() {
-        mConfig.removeEqStateChangeCallback(this);
+        mConfig.getCallbacks().removeDeviceChangedCallback(this);
         mConfig.unbindService();
-        mConfig.setCurrentDevice(null, true);
 
-        mAudioListener.unregister();
         super.onPause();
     }
 
@@ -238,88 +202,89 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.devices, menu);
         mMenuDevices = menu.findItem(R.id.devices);
-        mBluetoothDevices = mConfig.getBluetoothDevices();
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        final OutputDevice currentDevice = mConfig.getCurrentDevice();
-        updateActionBarDeviceIcon();
+        mMenuDevices.getSubMenu().clear();
+        mMenuItems.clear();
 
-        final MenuItem usb = menu.findItem(R.id.device_usb);
-        usb.setVisible(mUsbDeviceConnected);
+        final AudioDeviceInfo currentDevice = mConfig.getCurrentDevice();
 
-        // select proper device
         MenuItem selectedItem = null;
 
-        if (mBluetoothDevices != null) {
-            // remove previous bluetooth entries
-            for (Integer id : mBluetoothMap.keySet()) {
-                mMenuDevices.getSubMenu().removeItem(id);
-            }
-            mBluetoothMap.clear();
+        List<AudioDeviceInfo> speakerDevices = mConfig.getConnectedDevices(
+                AudioDeviceInfo.TYPE_BUILTIN_SPEAKER);
+        if (speakerDevices.size() > 0) {
+            AudioDeviceInfo ai = speakerDevices.get(0);
+            int viewId = View.generateViewId();
+            MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
+                    Menu.NONE, R.string.device_speaker);
+            item.setIcon(R.drawable.ic_action_dsp_icons_speaker);
+            mMenuItems.put(item, ai);
+            selectedItem = item;
+        }
 
-            for (int i = 0; i < mBluetoothDevices.size(); i++) {
-                int viewId = View.generateViewId();
-                mBluetoothMap.put(viewId, mBluetoothDevices.get(i));
-                MenuItem item = mMenuDevices.getSubMenu().add(R.id.device_group, viewId, i,
-                        mBluetoothDevices.get(i).getDisplayName());
-                if (mBluetoothDevices.get(i).equals(currentDevice)) {
-                    selectedItem = item;
-                }
-                item.setIcon(R.drawable.ic_action_dsp_icons_bluetoof);
+        List<AudioDeviceInfo> headsetDevices = mConfig.getConnectedDevices(
+                AudioDeviceInfo.TYPE_WIRED_HEADPHONES, AudioDeviceInfo.TYPE_WIRED_HEADSET);
+        if (headsetDevices.size() > 0) {
+            AudioDeviceInfo ai = headsetDevices.get(0);
+            int viewId = View.generateViewId();
+            MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
+                    Menu.NONE, R.string.device_headset);
+            item.setIcon(R.drawable.ic_action_dsp_icons_headphones);
+            mMenuItems.put(item, ai);
+            if (currentDevice.getId() == ai.getId()) {
+                selectedItem = item;
             }
         }
-        mMenuDevices.getSubMenu().setGroupCheckable(R.id.device_group, true, true);
 
-        switch (currentDevice.getDeviceType()) {
-            case OutputDevice.DEVICE_SPEAKER:
-                selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_speaker);
-                break;
-            case OutputDevice.DEVICE_USB:
-                selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_usb);
-                break;
-            case OutputDevice.DEVICE_HEADSET:
-                selectedItem = mMenuDevices.getSubMenu().findItem(R.id.device_headset);
-                break;
+        List<AudioDeviceInfo> bluetoothDevices = mConfig.getConnectedDevices(
+                AudioDeviceInfo.TYPE_BLUETOOTH_A2DP, AudioDeviceInfo.TYPE_BLUETOOTH_SCO);
+        for (AudioDeviceInfo ai : bluetoothDevices) {
+            int viewId = View.generateViewId();
+            MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
+                    Menu.NONE, ai.getProductName());
+            item.setIcon(R.drawable.ic_action_dsp_icons_bluetoof);
+            mMenuItems.put(item, ai);
+            if (currentDevice.getId() == ai.getId()) {
+                selectedItem = item;
+            }
         }
-        if (selectedItem != null) {
-            selectedItem.setChecked(true);
+
+        List<AudioDeviceInfo> usbDevices = mConfig.getConnectedDevices(
+                AudioDeviceInfo.TYPE_USB_ACCESSORY, AudioDeviceInfo.TYPE_USB_DEVICE);
+        for (AudioDeviceInfo ai : usbDevices) {
+            int viewId = View.generateViewId();
+            MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
+                    Menu.NONE, ai.getProductName());
+            item.setIcon(R.drawable.ic_action_device_usb);
+            mMenuItems.put(item,  ai);
+            if (currentDevice.getId() == ai.getId()) {
+                selectedItem = item;
+            }
         }
+
+        mMenuDevices.getSubMenu().setGroupCheckable(R.id.devices, true, true);
+
+        selectedItem.setChecked(true);
+        mMenuDevices.setIcon(selectedItem.getIcon());
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        OutputDevice newDevice = null;
+        AudioDeviceInfo device = mMenuItems.get(item);
 
-        switch (item.getItemId()) {
-            case R.id.device_headset:
-                newDevice = new OutputDevice(OutputDevice.DEVICE_HEADSET);
-                break;
-
-            case R.id.device_usb:
-                newDevice = new OutputDevice(OutputDevice.DEVICE_USB);
-                break;
-
-            case R.id.device_speaker:
-                newDevice = new OutputDevice(OutputDevice.DEVICE_SPEAKER);
-                break;
-
-            default:
-                newDevice = mBluetoothMap.get(item.getItemId());
-                break;
-
-        }
-        if (newDevice != null) {
+        if (device != null) {
             UserSession.getInstance().deviceChanged();
             mDeviceChanging = true;
             if (item.isCheckable()) {
                 item.setChecked(!item.isChecked());
             }
             mSystemDevice = mConfig.getSystemDevice();
-            mUserSelection = newDevice;
+            mUserSelection = device;
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -412,59 +377,9 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
     }
 
     @Override
-    public void onBandLevelChange(int band, float dB, boolean fromSystem) {
-
-    }
-
-    @Override
-    public void onPresetChanged(int newPresetIndex) {
-
-    }
-
-    @Override
-    public void onPresetsChanged() {
-
-    }
-
-    @Override
-    public void onDeviceChanged(OutputDevice deviceId, boolean userChange) {
+    public void onDeviceChanged(AudioDeviceInfo device, boolean userChange) {
         updateEnabledState();
         getActivity().invalidateOptionsMenu();
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                checkClearUserDevice();
-            }
-        });
-    }
-
-    private void updateActionBarDeviceIcon() {
-        if (mMenuDevices != null) {
-            int icon = 0;
-            switch (mConfig.getCurrentDevice().getDeviceType()) {
-                case OutputDevice.DEVICE_HEADSET:
-                    icon = R.drawable.ic_action_dsp_icons_headphones;
-                    break;
-
-                case OutputDevice.DEVICE_SPEAKER:
-                    icon = R.drawable.ic_action_dsp_icons_speaker;
-                    break;
-
-                case OutputDevice.DEVICE_USB:
-                    icon = R.drawable.ic_action_dsp_icons_usb;
-                    break;
-
-                case OutputDevice.DEVICE_BLUETOOTH:
-                    icon = R.drawable.ic_action_dsp_icons_bluetoof;
-                    break;
-
-                case OutputDevice.DEVICE_WIRELESS:
-                    // TODO add wireless back
-                    break;
-
-            }
-            mMenuDevices.setIcon(icon);
-        }
     }
 
     private ValueAnimator.AnimatorUpdateListener mColorUpdateListener
@@ -504,7 +419,7 @@ public class AudioFxFragment extends Fragment implements MasterConfigControl.EqU
             }
         };
         final Integer colorTo = checked
-                ? mConfig.getAssociatedPresetColorHex(mConfig.getCurrentPresetIndex())
+                ? mEqManager.getAssociatedPresetColorHex(mEqManager.getCurrentPresetIndex())
                 : mDisabledColor;
         animateBackgroundColorTo(colorTo,
                 animatorListener, null);
