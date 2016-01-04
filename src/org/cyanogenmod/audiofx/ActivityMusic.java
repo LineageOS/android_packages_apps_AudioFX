@@ -277,12 +277,9 @@ public class ActivityMusic extends Activity {
         mStateChangeUpdate = true;
         ab.setSelectedNavigationItem(getCurrentDeviceIndex());
 
-        ab.setCustomView(mToggleSwitch, params);
-        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setCustomView(mToggleSwitch, params);;
         ab.setDisplayShowTitleEnabled(false);
-        ab.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
-                        | ActionBar.DISPLAY_SHOW_CUSTOM
-        );
+        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 
         // initialize views
         mEqualizerSurface = (EqualizerSurface) findViewById(R.id.frequencyResponse);
@@ -495,16 +492,6 @@ public class ActivityMusic extends Activity {
 
     private final String localizeDevice(String device) {
         return getString(mContext.getResources().getIdentifier("device_" + device, "string", getPackageName()));
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
