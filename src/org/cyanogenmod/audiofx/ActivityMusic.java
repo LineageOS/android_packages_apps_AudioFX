@@ -28,7 +28,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -222,9 +221,6 @@ public class ActivityMusic extends Activity {
 
         // setup actionbar on off switch
         mToggleSwitch = new Switch(this);
-        final int padding = getResources().getDimensionPixelSize(
-                R.dimen.action_bar_switch_padding);
-        mToggleSwitch.setPaddingRelative(0, 0, padding, 0);
         mToggleSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(final CompoundButton buttonView,
@@ -278,11 +274,8 @@ public class ActivityMusic extends Activity {
         ab.setSelectedNavigationItem(getCurrentDeviceIndex());
 
         ab.setCustomView(mToggleSwitch, params);
-        ab.setDisplayHomeAsUpEnabled(true);
         ab.setDisplayShowTitleEnabled(false);
-        ab.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP
-                        | ActionBar.DISPLAY_SHOW_CUSTOM
-        );
+        ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 
         // initialize views
         mEqualizerSurface = (EqualizerSurface) findViewById(R.id.frequencyResponse);
@@ -495,16 +488,6 @@ public class ActivityMusic extends Activity {
 
     private final String localizeDevice(String device) {
         return getString(mContext.getResources().getIdentifier("device_" + device, "string", getPackageName()));
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
