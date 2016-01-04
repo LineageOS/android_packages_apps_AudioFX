@@ -18,4 +18,31 @@
 <resources>
   <string name="normal">ปกติ</string>
   <string name="classical">คลาสสิก</string>
+  <string name="dance">แดนซ์</string>
+  <string name="flat">เรียบ</string>
+  <string name="folk">โฟล์ค</string>
+  <string name="heavy_metal">เฮฟวี่เมทัล</string>
+  <string name="hip_hop">ฮิปฮอป</string>
+  <string name="jazz">แจ๊ส</string>
+  <string name="pop">ป๊อป</string>
+  <string name="rock">ร็อค</string>
+  <string name="ci_extreme">อิเล็กทรอนิก</string>
+  <string name="small_speakers">ลำโพงเล็ก</string>
+  <string name="user">กำหนดเอง</string>
+  <string name="none">ไม่มี</string>
+  <string name="smallroom">ห้องขนาดเล็ก</string>
+  <string name="mediumroom">ห้องขนาดกลาง</string>
+  <string name="largeroom">ห้องขนาดใหญ่</string>
+  <string name="mediumhall">โถงขนาดกลาง</string>
+  <string name="largehall">โถงขนาดใหญ่</string>
+  <string name="plate">เวที</string>
+  <string name="power_on_prompt">กดปุ่มเพาเวอร์ด้านบนขวา</string>
+  <string name="effect_unavalable_for_speaker">เอฟเฟกต์นี้ไม่สามารถใช้ได้กับรูปแบบลำโพง</string>
+  <string name="device_headset">หูฟัง</string>
+  <string name="device_speaker">ลำโพง</string>
+  <string name="device_usb">USB</string>
+  <string name="device_bluetooth">บลูทูธ</string>
+  <string name="device_wireless">แบบไร้สาย</string>
+  <string name="reverb">เสียงก้อง</string>
+  <string name="eq_preset">ชุดรูปแบบปรับแต่งเสียง</string>
 </resources>
