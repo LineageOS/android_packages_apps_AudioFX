@@ -51,12 +51,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.AudioDeviceInfo;
-import android.media.AudioManager;
 import android.media.audiofx.AudioEffect;
-import android.media.audiofx.BassBoost;
-import android.media.audiofx.Equalizer;
 import android.media.audiofx.PresetReverb;
-import android.media.audiofx.Virtualizer;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -71,6 +67,8 @@ import android.util.Log;
 import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.MasterConfigControl;
+import com.cyngn.audiofx.backends.EffectSet;
+import com.cyngn.audiofx.backends.EffectsFactory;
 import com.cyngn.audiofx.eq.EqUtils;
 
 import java.lang.ref.WeakReference;
@@ -117,8 +115,6 @@ public class AudioFxService extends Service {
 
     BluetoothAdapter mBluetoothAdapter;
     DtsControl mDts;
-
-    private AudioManager mAudioManager;
 
     private AudioDeviceInfo mCurrentDevice;
     private AudioDeviceInfo mPreviousDevice;
@@ -210,7 +206,7 @@ public class AudioFxService extends Service {
                 case MSG_ADD_SESSION:
                     if (!mAudioSessions.containsKey(msg.arg1)) {
                         if (DEBUG) Log.d(TAG, "added new EffectSet for sessionId=" + msg.arg1);
-                        mAudioSessions.put(msg.arg1, new EffectSet(msg.arg1));
+                        mAudioSessions.put(msg.arg1, EffectsFactory.createEffectSet(msg.arg1));
                     }
                     mMostRecentSessionId = msg.arg1;
                     if (DEBUG) Log.d(TAG, "new most recent sesssionId=" + msg.arg1);
@@ -425,172 +421,6 @@ public class AudioFxService extends Service {
         }
     }
 
-    // ======== Effects =============== //
-
-    /**
-     * Helper class representing the full complement of effects attached to one
-     * audio session.
-     *
-     * @author alankila
-     */
-    public static class EffectSet {
-        /**
-         * Session-specific equalizer
-         */
-        public final Equalizer mEqualizer;
-        /**
-         * Session-specific bassboost
-         */
-        public final BassBoost mBassBoost;
-        /**
-         * Session-specific virtualizer
-         */
-        public final Virtualizer mVirtualizer;
-
-        public final PresetReverb mPresetReverb;
-
-        public MaxxAudioEffects mMaxxAudioEffects;
-
-        private short mEqNumPresets = -1;
-        private short mEqNumBands = -1;
-
-        private final int mSessionId;
-
-        public EffectSet(int sessionId) {
-            mSessionId = sessionId;
-
-            try {
-                mMaxxAudioEffects = new MaxxAudioEffects(1000, sessionId);
-            } catch (Exception e) {
-                mMaxxAudioEffects = null;
-                if (DEBUG) Log.w(TAG, "Unable to initialize MaxxAudio library!");
-            }
-
-            mEqualizer = new Equalizer(1000, sessionId);
-
-            if (mMaxxAudioEffects == null) {
-                mBassBoost = new BassBoost(1000, sessionId);
-                mVirtualizer = new Virtualizer(1000, sessionId);
-            } else {
-                // Maxx effects aren't using Android API anymore
-                mBassBoost = null;
-                mVirtualizer = null;
-            }
-
-            if (ENABLE_REVERB) {
-                mPresetReverb = new PresetReverb(1000, sessionId);
-            } else {
-                mPresetReverb = null;
-            }
-        }
-
-        public boolean hasMaxxAudio() {
-            return mMaxxAudioEffects != null;
-        }
-
-        public boolean hasVirtualizer() {
-            if (hasMaxxAudio()) {
-                return true;
-            }
-            return mVirtualizer.getStrengthSupported();
-        }
-
-        public boolean hasBassBoost() {
-            if (hasMaxxAudio()) {
-                return true;
-            }
-            return mBassBoost.getStrengthSupported();
-        }
-
-        /*
-         * Take lots of care to not poke values that don't need
-         * to be poked- this can cause audible pops.
-         */
-
-        public void enableEqualizer(boolean enable) {
-            mEqualizer.setEnabled(enable);
-        }
-
-        public void setEqualizerLevels(short[] levels) {
-            if (mEqualizer.getEnabled()) {
-                for (short i = 0; i < levels.length; i++) {
-                    mEqualizer.setBandLevel(i, levels[i]);
-                }
-            }
-        }
-
-        public short getNumEqualizerBands() {
-            if (mEqNumBands < 0) {
-                mEqNumBands = mEqualizer.getNumberOfBands();
-            }
-            return mEqNumBands;
-        }
-
-        public short getNumEqualizerPresets() {
-            if (mEqNumPresets < 0) {
-                mEqNumPresets = mEqualizer.getNumberOfPresets();
-            }
-            return mEqNumPresets;
-        }
-
-        public void enableBassBoost(boolean enable) {
-            if (hasMaxxAudio()) {
-                mMaxxAudioEffects.setMaxBassEnabled(enable);
-            } else {
-                mBassBoost.setEnabled(enable);
-            }
-        }
-
-        public void setBassBoostStrength(short strength) {
-            if (hasMaxxAudio()) {
-                mMaxxAudioEffects.setMaxxBassStrength(strength);
-            } else {
-                mBassBoost.setStrength(strength);
-            }
-        }
-
-        public void enableVirtualizer(boolean enable) {
-            if (hasMaxxAudio()) {
-                mMaxxAudioEffects.setMaxxSpaceEnabled(enable);
-            } else {
-                mVirtualizer.setEnabled(enable);
-            }
-        }
-
-        public void setVirtualizerStrength(short strength) {
-            if (hasMaxxAudio()) {
-                mMaxxAudioEffects.setMaxxSpaceStrength(strength);
-            } else {
-                mVirtualizer.setStrength(strength);
-            }
-        }
-
-        public void enableReverb(boolean enable) {
-            if (mPresetReverb != null) {
-                mPresetReverb.setEnabled(enable);
-            }
-        }
-
-        public void setReverbPreset(short preset) {
-            if (mPresetReverb != null) {
-                mPresetReverb.setPreset(preset);
-            }
-        }
-
-        public void release() {
-            mEqualizer.release();
-            if (mPresetReverb != null) {
-                mPresetReverb.release();
-            }
-            if (mMaxxAudioEffects != null) {
-                mMaxxAudioEffects.release();
-            } else {
-                mBassBoost.release();
-                mVirtualizer.release();
-            }
-        }
-    }
-
     // ======== DSP UPDATE METHODS BELOW ============= //
 
     /**
@@ -599,9 +429,7 @@ public class AudioFxService extends Service {
      */
     private synchronized void updateEqBand(short band, short level, EffectSet effectSet) {
         if (effectSet != null) {
-            if (effectSet.mEqualizer.getEnabled()) {
-                effectSet.mEqualizer.setBandLevel(band, level);
-            }
+            effectSet.setEqualizerBandLevel(band, level);
         }
     }
 
@@ -675,35 +503,34 @@ public class AudioFxService extends Service {
             Log.e(TAG, "Error enabling virtualizer!");
         }
 
-        // maxx audio effects
+        // extended audio effects
         try {
-            if (session.hasMaxxAudio()) {
+            if (session.hasTrebleBoost()) {
                 // treble
-                session.mMaxxAudioEffects.setMaxxTrebleEnabled(
+                session.enableTrebleBoost(
                         globalEnabled && prefs.getBoolean(DEVICE_AUDIOFX_TREBLE_ENABLE, false));
-                session.mMaxxAudioEffects.setMaxxTrebleStrength(Short.valueOf(
+                session.setTrebleBoostStrength(Short.valueOf(
                         prefs.getString(DEVICE_AUDIOFX_TREBLE_STRENGTH, "0")));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error enabling treble boost!", e);
+        }
 
+        try {
+            if (session.hasVolumeBoost()) {
                 // maxx volume
-                session.mMaxxAudioEffects.setMaxxVolumeEnabled(
+                session.enableVolumeBoost(
                         globalEnabled && prefs.getBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, false));
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error enabling maxx audio effects!", e);
+            Log.e(TAG, "Error enabling volume boost!", e);
         }
     }
 
     private void disableAllEffects() {
         final Collection<EffectSet> values = mAudioSessions.values();
         for (EffectSet effectSet : values) {
-            effectSet.enableBassBoost(false);
-            effectSet.enableEqualizer(false);
-            effectSet.enableVirtualizer(false);
-            effectSet.enableReverb(false);
-            if (effectSet.hasMaxxAudio()) {
-                effectSet.mMaxxAudioEffects.setMaxxTrebleEnabled(false);
-                effectSet.mMaxxAudioEffects.setMaxxVolumeEnabled(false);
-            }
+            effectSet.disableAll();
         }
     }
 
@@ -734,7 +561,7 @@ public class AudioFxService extends Service {
         if (prefs.getBoolean(SAVED_DEFAULTS, false) && !needsPrefsUpdate) {
             return;
         }
-        EffectSet temp = new EffectSet(0);
+        EffectSet temp = EffectsFactory.createEffectSet(0);
 
         final int numBands = temp.getNumEqualizerBands();
         final int numPresets = temp.getNumEqualizerPresets();
@@ -743,7 +570,7 @@ public class AudioFxService extends Service {
         editor.putString(EQUALIZER_NUMBER_OF_BANDS, String.valueOf(numBands));
 
         // range
-        short[] rangeShortArr = temp.mEqualizer.getBandLevelRange();
+        short[] rangeShortArr = temp.getEqualizerBandLevelRange();
         editor.putString(EQUALIZER_BAND_LEVEL_RANGE, rangeShortArr[0]
                 + ";" + rangeShortArr[1]);
 
@@ -751,7 +578,7 @@ public class AudioFxService extends Service {
         StringBuilder centerFreqs = new StringBuilder();
         // audiofx.global.centerfreqs
         for (short i = 0; i < numBands; i++) {
-            centerFreqs.append(temp.mEqualizer.getCenterFreq(i));
+            centerFreqs.append(temp.getCenterFrequency(i));
             centerFreqs.append(";");
 
         }
@@ -761,17 +588,17 @@ public class AudioFxService extends Service {
         // populate preset names
         StringBuilder presetNames = new StringBuilder();
         for (int i = 0; i < numPresets; i++) {
-            String presetName = temp.mEqualizer.getPresetName((short) i);
+            String presetName = temp.getEqualizerPresetName((short) i);
             presetNames.append(presetName);
             presetNames.append("|");
 
             // populate preset band values
             StringBuilder presetBands = new StringBuilder();
-            temp.mEqualizer.usePreset((short) i);
+            temp.useEqualizerPreset((short) i);
 
             for (int j = 0; j < numBands; j++) {
                 // loop through preset bands
-                presetBands.append(temp.mEqualizer.getBandLevel((short) j));
+                presetBands.append(temp.getEqualizerBandLevel((short) j));
                 presetBands.append(";");
             }
             presetBands.deleteCharAt(presetBands.length() - 1);
@@ -783,7 +610,7 @@ public class AudioFxService extends Service {
 
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost());
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.hasMaxxAudio());
+        editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.getBrand() == EffectsFactory.MAXXAUDIO);
         temp.release();
         editor.commit();
 
