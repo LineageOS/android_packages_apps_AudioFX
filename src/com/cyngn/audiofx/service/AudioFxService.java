@@ -467,8 +467,16 @@ public class AudioFxService extends Service {
             }
 
             mEqualizer = new Equalizer(1000, sessionId);
-            mBassBoost = new BassBoost(1000, sessionId);
-            mVirtualizer = new Virtualizer(1000, sessionId);
+
+            if (mMaxxAudioEffects == null) {
+                mBassBoost = new BassBoost(1000, sessionId);
+                mVirtualizer = new Virtualizer(1000, sessionId);
+            } else {
+                // Maxx effects aren't using Android API anymore
+                mBassBoost = null;
+                mVirtualizer = null;
+            }
+
             if (ENABLE_REVERB) {
                 mPresetReverb = new PresetReverb(1000, sessionId);
             } else {
@@ -481,10 +489,16 @@ public class AudioFxService extends Service {
         }
 
         public boolean hasVirtualizer() {
+            if (hasMaxxAudio()) {
+                return true;
+            }
             return mVirtualizer.getStrengthSupported();
         }
 
         public boolean hasBassBoost() {
+            if (hasMaxxAudio()) {
+                return true;
+            }
             return mBassBoost.getStrengthSupported();
         }
 
@@ -520,19 +534,35 @@ public class AudioFxService extends Service {
         }
 
         public void enableBassBoost(boolean enable) {
-            mBassBoost.setEnabled(enable);
+            if (hasMaxxAudio()) {
+                mMaxxAudioEffects.setMaxBassEnabled(enable);
+            } else {
+                mBassBoost.setEnabled(enable);
+            }
         }
 
         public void setBassBoostStrength(short strength) {
-            mBassBoost.setStrength(strength);
+            if (hasMaxxAudio()) {
+                mMaxxAudioEffects.setMaxxBassStrength(strength);
+            } else {
+                mBassBoost.setStrength(strength);
+            }
         }
 
         public void enableVirtualizer(boolean enable) {
-            mVirtualizer.setEnabled(enable);
+            if (hasMaxxAudio()) {
+                mMaxxAudioEffects.setMaxxSpaceEnabled(enable);
+            } else {
+                mVirtualizer.setEnabled(enable);
+            }
         }
 
         public void setVirtualizerStrength(short strength) {
-            mVirtualizer.setStrength(strength);
+            if (hasMaxxAudio()) {
+                mMaxxAudioEffects.setMaxxSpaceStrength(strength);
+            } else {
+                mVirtualizer.setStrength(strength);
+            }
         }
 
         public void enableReverb(boolean enable) {
@@ -549,13 +579,14 @@ public class AudioFxService extends Service {
 
         public void release() {
             mEqualizer.release();
-            mBassBoost.release();
-            mVirtualizer.release();
             if (mPresetReverb != null) {
                 mPresetReverb.release();
             }
             if (mMaxxAudioEffects != null) {
                 mMaxxAudioEffects.release();
+            } else {
+                mBassBoost.release();
+                mVirtualizer.release();
             }
         }
     }
