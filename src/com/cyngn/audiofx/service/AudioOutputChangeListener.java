@@ -45,23 +45,22 @@ abstract class AudioOutputChangeListener extends AudioDeviceCallback {
         AudioDeviceInfo device = getCurrentDevice();
 
         if (device == null) {
-            Log.d(TAG,  "Unable to determine audio device!");
+            Log.w(TAG,  "Unable to determine audio device!");
             return;
+        }
+
+        if (mInitial || device.getId() != mLastDevice) {
+            Log.d(TAG, "onAudioOutputChanged id: " + device.getId() +
+                    " type: " + device.getType() +
+                    " name: " + device.getProductName() +
+                    " address: " + device.getAddress() +
+                    " [" + device.toString() + "]");
+            mLastDevice = device.getId();
+            onAudioOutputChanged(mInitial, device);
         }
 
         if (mInitial) {
             mInitial = false;
-        }
-
-        Log.d(TAG, "onAudioOutputChanged id: " + device.getId() +
-                   " type: " + device.getType() +
-                   " name: " + device.getProductName() +
-                   " address: " + device.getAddress() +
-                   " [" + device.toString() + "]");
-
-        if (device.getId() != mLastDevice) {
-            mLastDevice = device.getId();
-            onAudioOutputChanged(mInitial, device);
         }
     }
 

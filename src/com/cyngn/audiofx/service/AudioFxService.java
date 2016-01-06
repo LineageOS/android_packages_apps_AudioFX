@@ -44,10 +44,7 @@ import static com.cyngn.audiofx.Constants.SAVED_DEFAULTS;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.AudioDeviceInfo;
@@ -97,9 +94,10 @@ public class AudioFxService extends Service {
     public static final String ACTION_DEVICE_OUTPUT_CHANGED
             = "org.cyanogenmod.audiofx.ACTION_DEVICE_OUTPUT_CHANGED";
 
-    public static final String EXTRA_DEVICE = "device";
+    public static final String ACTION_REAPPLY_DEFAULTS
+            = "com.cyngn.audiofx.action.REAPPLY_DEFAULTS";
 
-    private static final int CURRENT_PREFS_INT_VERSION = 1;
+    public static final String EXTRA_DEVICE = "device";
 
     private final Map<Integer, EffectSet> mAudioSessions
             = Collections.synchronizedMap(new ArrayMap<Integer, EffectSet>());
@@ -361,24 +359,28 @@ public class AudioFxService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.getAction() != null) {
-            String action = intent.getAction();
-            int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
-            String pkg = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
+            if (ACTION_REAPPLY_DEFAULTS.equals(intent.getAction())) {
+                saveAndApplyDefaults(false);
+            } else {
+                String action = intent.getAction();
+                int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
+                String pkg = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
 
-            if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
-                if (DEBUG) Log.i(TAG, String.format("New audio session: %d, package: %s",
-                        sessionId, pkg));
+                if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
+                    if (DEBUG) Log.i(TAG, String.format("New audio session: %d, package: %s",
+                            sessionId, pkg));
 
-                mSessionsToRemove.remove((Integer) sessionId);
-                mHandler.sendMessage(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId, 0));
+                    mSessionsToRemove.remove((Integer) sessionId);
+                    mHandler.sendMessage(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId, 0));
 
-            } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
-                if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d, package: %s",
-                        sessionId, pkg));
+                } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
+                    if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d, package: %s",
+                            sessionId, pkg));
 
-                mSessionsToRemove.add(sessionId);
-                mHandler.sendMessage(Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId, 0));
+                    mSessionsToRemove.add(sessionId);
+                    mHandler.sendMessage(Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId, 0));
 
+                }
             }
         }
         if (DEBUG)
@@ -547,15 +549,15 @@ public class AudioFxService extends Service {
      * for some better defaults!
      */
     private synchronized void saveAndApplyDefaults(boolean overridePrevious) {
-        SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
+        SharedPreferences prefs = Constants.getGlobalPrefs(this);
 
         final int currentPrefVer = prefs.getInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT, 0);
         boolean needsPrefsUpdate = currentPrefVer
-                < CURRENT_PREFS_INT_VERSION;
+                < Constants.CURRENT_PREFS_INT_VERSION;
 
         if (needsPrefsUpdate) {
             Log.d(TAG, "rebuilding presets due to preference upgrade from " + currentPrefVer
-                    + " to " + CURRENT_PREFS_INT_VERSION);
+                    + " to " + Constants.CURRENT_PREFS_INT_VERSION);
         }
 
         if (prefs.getBoolean(SAVED_DEFAULTS, false) && !needsPrefsUpdate) {
@@ -618,7 +620,8 @@ public class AudioFxService extends Service {
 
         prefs
                 .edit()
-                .putInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT, CURRENT_PREFS_INT_VERSION)
+                .putInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT,
+                            Constants.CURRENT_PREFS_INT_VERSION)
                 .putBoolean(Constants.SAVED_DEFAULTS, true)
                 .commit();
     }

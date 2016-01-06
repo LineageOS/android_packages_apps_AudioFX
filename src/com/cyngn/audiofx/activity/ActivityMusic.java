@@ -92,25 +92,24 @@ public class ActivityMusic extends Activity {
         Log.i(TAG, "calling package: " + mCallingPackage);
 
         final SharedPreferences globalPrefs = Constants.getGlobalPrefs(this);
-        final boolean ready = globalPrefs
-                .getBoolean(Constants.SAVED_DEFAULTS, false);
 
-        mWaitingForService = !ready;
+        mWaitingForService = !defaultsSetup();
         if (mWaitingForService) {
             mServiceReadyObserver = new SharedPreferences.OnSharedPreferenceChangeListener() {
                 @Override
-                public void onSharedPreferenceChanged(
-                        SharedPreferences sharedPreferences, String key) {
+                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+                                                      String key) {
                     if (key.equals(Constants.SAVED_DEFAULTS)
-                            && sharedPreferences.getBoolean(Constants.SAVED_DEFAULTS,
-                            false)) {
-                        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-                        init(savedInstanceState);
-                        setupDtsActionBar();
+                            || key.equals(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT)) {
+                        if (defaultsSetup()) {
+                            sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+                            init(savedInstanceState);
+                            setupDtsActionBar();
 
-                        mWaitingForService = false;
-                        invalidateOptionsMenu();
-                        mServiceReadyObserver = null;
+                            mWaitingForService = false;
+                            invalidateOptionsMenu();
+                            mServiceReadyObserver = null;
+                        }
                     }
                 }
             };
@@ -120,6 +119,14 @@ public class ActivityMusic extends Activity {
         } else {
             init(savedInstanceState);
         }
+    }
+
+    private boolean defaultsSetup() {
+        final int targetVersion = Constants.CURRENT_PREFS_INT_VERSION;
+        final SharedPreferences prefs = Constants.getGlobalPrefs(this);
+        final int currentVersion = prefs.getInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT, 0);
+        final boolean defaultsSaved = prefs.getBoolean(Constants.SAVED_DEFAULTS, false);
+        return defaultsSaved && currentVersion >= targetVersion;
     }
 
     @Override

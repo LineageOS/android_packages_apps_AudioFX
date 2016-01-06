@@ -12,6 +12,8 @@ public class BootReceiver extends BroadcastReceiver {
         SharedPreferences prefs = context.getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
         prefs.edit().putBoolean(Constants.SAVED_DEFAULTS, false).commit();
 
-        context.startService(new Intent(context, AudioFxService.class));
+        final Intent service = new Intent(context, AudioFxService.class);
+        service.setAction(AudioFxService.ACTION_REAPPLY_DEFAULTS);
+        context.startService(service);
     }
 }

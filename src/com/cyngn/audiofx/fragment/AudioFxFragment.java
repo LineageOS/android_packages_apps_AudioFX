@@ -31,6 +31,17 @@ import com.cyngn.audiofx.widget.InterceptableLinearLayout;
 import java.util.List;
 import java.util.Map;
 
+import static android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP;
+import static android.media.AudioDeviceInfo.TYPE_BLUETOOTH_SCO;
+import static android.media.AudioDeviceInfo.TYPE_DOCK;
+import static android.media.AudioDeviceInfo.TYPE_IP;
+import static android.media.AudioDeviceInfo.TYPE_LINE_ANALOG;
+import static android.media.AudioDeviceInfo.TYPE_LINE_DIGITAL;
+import static android.media.AudioDeviceInfo.TYPE_USB_ACCESSORY;
+import static android.media.AudioDeviceInfo.TYPE_USB_DEVICE;
+import static android.media.AudioDeviceInfo.TYPE_WIRED_HEADPHONES;
+import static android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET;
+
 public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityStateListener,
         StateCallbacks.DeviceChangedCallback {
 
@@ -85,8 +96,6 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
 
         mHandler = new Handler();
         mDisabledColor = getResources().getColor(R.color.disabled_eq);
-
-       // mConfig.bindService(); // bind early
 
         setHasOptionsMenu(true);
         ((ActivityMusic) getActivity()).addToggleListener(this);
@@ -145,9 +154,8 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
     @Override
     public void onResume() {
 
-        mConfig.bindService();
-
         mConfig.getCallbacks().addDeviceChangedCallback(this);
+        mConfig.bindService();
 
         updateEnabledState();
 
@@ -207,7 +215,6 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-
         mMenuDevices.getSubMenu().clear();
         mMenuItems.clear();
 
@@ -261,14 +268,12 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
             MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
                     Menu.NONE, ai.getProductName());
             item.setIcon(R.drawable.ic_action_device_usb);
-            mMenuItems.put(item,  ai);
+            mMenuItems.put(item, ai);
             if (currentDevice.getId() == ai.getId()) {
                 selectedItem = item;
             }
         }
-
         mMenuDevices.getSubMenu().setGroupCheckable(R.id.devices, true, true);
-
         selectedItem.setChecked(true);
         mMenuDevices.setIcon(selectedItem.getIcon());
     }

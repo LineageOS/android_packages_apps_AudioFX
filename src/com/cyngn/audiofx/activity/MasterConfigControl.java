@@ -202,7 +202,8 @@ public class MasterConfigControl {
 
         if (current != null && device != null &&
                 device.getId() == current.getId()) {
-            // nothing to do
+            // it's the same device, but let any callbacks know anyways
+            mCallbacks.notifyDeviceChanged(device, userSwitch);
             return;
         }
 
