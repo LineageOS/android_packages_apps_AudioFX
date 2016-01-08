@@ -42,8 +42,6 @@ import static com.cyngn.audiofx.Constants.EQUALIZER_PRESET_NAMES;
 import static com.cyngn.audiofx.Constants.SAVED_DEFAULTS;
 
 import android.app.Service;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -109,9 +107,7 @@ public class AudioFxService extends Service {
     Handler mHandler;
     Handler mBackgroundHandler;
     AudioOutputChangeListener mDeviceListener;
-    BluetoothDevice mLastBluetoothDevice;
 
-    BluetoothAdapter mBluetoothAdapter;
     DtsControl mDts;
 
     private AudioDeviceInfo mCurrentDevice;
