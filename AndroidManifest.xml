@@ -19,7 +19,7 @@
         android:versionName="2.1.0"
         android:versionCode="20100">
 
-    <uses-sdk android:targetSdkVersion="23" />
+    <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
