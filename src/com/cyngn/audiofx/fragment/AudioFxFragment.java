@@ -5,8 +5,12 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.Nullable;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioDeviceInfo;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,7 +23,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-
+import com.cyngn.audiofx.Compatibility;
+import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.ActivityMusic;
 import com.cyngn.audiofx.activity.EqualizerManager;
@@ -30,17 +35,6 @@ import com.cyngn.audiofx.widget.InterceptableLinearLayout;
 
 import java.util.List;
 import java.util.Map;
-
-import static android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP;
-import static android.media.AudioDeviceInfo.TYPE_BLUETOOTH_SCO;
-import static android.media.AudioDeviceInfo.TYPE_DOCK;
-import static android.media.AudioDeviceInfo.TYPE_IP;
-import static android.media.AudioDeviceInfo.TYPE_LINE_ANALOG;
-import static android.media.AudioDeviceInfo.TYPE_LINE_DIGITAL;
-import static android.media.AudioDeviceInfo.TYPE_USB_ACCESSORY;
-import static android.media.AudioDeviceInfo.TYPE_USB_DEVICE;
-import static android.media.AudioDeviceInfo.TYPE_WIRED_HEADPHONES;
-import static android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET;
 
 public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityStateListener,
         StateCallbacks.DeviceChangedCallback {
@@ -164,8 +158,46 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
         mCurrentBackgroundColor = !mConfig.isCurrentDeviceEnabled()
                 ? mDisabledColor
                 : mEqManager.getAssociatedPresetColorHex(
-                        mEqManager.getCurrentPresetIndex());
+                mEqManager.getCurrentPresetIndex());
         updateBackgroundColors(mCurrentBackgroundColor, false);
+
+        promptIfNotDefault();
+    }
+
+    private void promptIfNotDefault() {
+        final String audioFxPackageName = getActivity().getPackageName();
+
+        final SharedPreferences musicFxPrefs = Constants.getMusicFxPrefs(getActivity());
+        final String defaultPackage = musicFxPrefs.getString(Constants.MUSICFX_DEFAULT_PACKAGE_KEY,
+                audioFxPackageName);
+        final boolean notDefault = !defaultPackage.equals(audioFxPackageName);
+
+        if (notDefault) {
+            new AlertDialog.Builder(getActivity())
+                    .setMessage(R.string.snack_bar_not_default)
+                    .setNegativeButton(R.string.snack_bar_not_default_not_now,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    getActivity().finish();
+                                }
+                            })
+                    .setPositiveButton(R.string.snack_bar_not_default_set,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent updateIntent = new Intent(getActivity(),
+                                            Compatibility.Service.class);
+                                    updateIntent.putExtra("defPackage", audioFxPackageName);
+                                    updateIntent.putExtra("defName", ActivityMusic.class.getName());
+                                    getActivity().startService(updateIntent);
+                                    dialog.dismiss();
+                                }
+                            })
+                    .setCancelable(false)
+                    .create()
+                    .show();
+        }
     }
 
     @Override
@@ -303,7 +335,7 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         if (container == null) {
             Log.w(TAG, "container is null.");
             // no longer displaying this fragment
@@ -365,7 +397,7 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
     }
 
     public void animateBackgroundColorTo(int colorTo, Animator.AnimatorListener listener,
-                                         ColorUpdateListener updateListener) {
+            ColorUpdateListener updateListener) {
         if (mColorChangeAnimator != null) {
             mColorChangeAnimator.cancel();
             mColorChangeAnimator = null;

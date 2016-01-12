@@ -67,6 +67,15 @@ public class Constants {
     public static final String EQUALIZER_PRESET = "equalizer.preset.";
     public static final String EQUALIZER_PRESET_NAMES = "equalizer.preset_names";
 
+    // musicfx constants
+    public static final String MUSICFX_PREF_NAME = "musicfx";
+    public static final String MUSICFX_DEFAULT_PACKAGE_KEY = "defaultpanelpackage";
+    public static final String MUSICFX_DEFAULT_PANEL_KEY = "defaultpanelname";
+
+    public static SharedPreferences getMusicFxPrefs(Context context) {
+        return context.getSharedPreferences(MUSICFX_PREF_NAME, Context.MODE_PRIVATE);
+    }
+
     public static SharedPreferences getGlobalPrefs(Context context) {
         return context.getSharedPreferences(AUDIOFX_GLOBAL_FILE, 0);
     }

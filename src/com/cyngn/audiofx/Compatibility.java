@@ -66,8 +66,8 @@ public class Compatibility {
             Intent i = new Intent(getIntent());
             i.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
             SharedPreferences pref = getSharedPreferences("musicfx", MODE_PRIVATE);
-            String defPackage = pref.getString("defaultpanelpackage", null);
-            String defName = pref.getString("defaultpanelname", null);
+            String defPackage = pref.getString(Constants.MUSICFX_DEFAULT_PACKAGE_KEY, null);
+            String defName = pref.getString(Constants.MUSICFX_DEFAULT_PANEL_KEY, null);
             log("read " + defPackage + "/" + defName + " as default");
             if (defPackage == null || defName == null) {
                 Log.e(TAG, "no default set!");
@@ -153,9 +153,9 @@ public class Compatibility {
             Intent i = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
             List<ResolveInfo> ris = mPackageManager.queryIntentActivities(i, PackageManager.GET_DISABLED_COMPONENTS);
             log("found: " + ris.size());
-            SharedPreferences pref = getSharedPreferences("musicfx", MODE_PRIVATE);
-            String savedDefPackage = pref.getString("defaultpanelpackage", null);
-            String savedDefName = pref.getString("defaultpanelname", null);
+            SharedPreferences pref = Constants.getMusicFxPrefs(this);
+            String savedDefPackage = pref.getString(Constants.MUSICFX_DEFAULT_PACKAGE_KEY, null);
+            String savedDefName = pref.getString(Constants.MUSICFX_DEFAULT_PANEL_KEY, null);
             log("saved default: " + savedDefName);
             for (ResolveInfo foo: ris) {
                 if (foo.activityInfo.name.equals(Compatibility.Redirector.class.getName())) {
@@ -210,10 +210,10 @@ public class Compatibility {
 
             // Write the selected default to the prefs so that the Redirector activity
             // knows which one to use.
-            SharedPreferences pref = getSharedPreferences("musicfx", MODE_PRIVATE);
+            SharedPreferences pref = Constants.getMusicFxPrefs(this);
             Editor ed = pref.edit();
-            ed.putString("defaultpanelpackage", defPackage);
-            ed.putString("defaultpanelname", defName);
+            ed.putString(Constants.MUSICFX_DEFAULT_PACKAGE_KEY, defPackage);
+            ed.putString(Constants.MUSICFX_DEFAULT_PANEL_KEY, defName);
             ed.commit();
             log("wrote " + defPackage + "/" + defName + " as default");
         }
