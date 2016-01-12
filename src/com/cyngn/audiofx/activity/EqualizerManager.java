@@ -11,6 +11,7 @@ import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.Preset;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.eq.EqUtils;
+import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.stats.UserSession;
 
 import java.util.ArrayList;
@@ -311,7 +312,7 @@ public class EqualizerManager {
                 final String levels = EqUtils.floatLevelsToString(preset.getLevels());
                 setPref(Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS, levels);
 
-                mConfig.updateService();
+                mConfig.updateService(AudioFxService.EQ_CHANGED);
             }
             savePresetsDelayed();
         }
@@ -341,7 +342,7 @@ public class EqualizerManager {
 
         setPref(Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS, EqUtils.floatLevelsToString(newlevels));
 
-        mConfig.updateService();
+        mConfig.updateService(AudioFxService.EQ_CHANGED);
     }
 
     private void updateEqControls() {

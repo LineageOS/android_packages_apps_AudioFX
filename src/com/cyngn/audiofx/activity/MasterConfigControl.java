@@ -150,9 +150,9 @@ public class MasterConfigControl {
         }
     };
 
-    public void updateService() {
+    public void updateService(int flags) {
         if (checkService()) {
-            mService.update();
+            mService.update(flags);
         }
     }
 
@@ -166,7 +166,7 @@ public class MasterConfigControl {
 
     public void setCurrentDeviceEnabled(boolean isChecked) {
         getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE, isChecked).apply();
-        updateService();
+        updateService(AudioFxService.ALL_CHANGED);
     }
 
     public boolean isCurrentDeviceEnabled() {
@@ -281,7 +281,7 @@ public class MasterConfigControl {
 
     public void setMaxxVolumeEnabled(boolean enable) {
         getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, enable).apply();
-        updateService();
+        updateService(AudioFxService.VOLUME_BOOST_CHANGED);
     }
 
     void overrideEqLevels(short band, short level) {

@@ -3,6 +3,7 @@ package com.cyngn.audiofx.knobs;
 import android.content.Context;
 import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.activity.MasterConfigControl;
+import com.cyngn.audiofx.service.AudioFxService;
 
 public class KnobCommander {
 
@@ -98,35 +99,35 @@ public class KnobCommander {
 
     public void setTrebleEnabled(boolean on) {
         mConfig.getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_TREBLE_ENABLE, on).apply();
-        mConfig.updateService();
+        mConfig.updateService(AudioFxService.TREBLE_BOOST_CHANGED);
     }
 
     public void setTrebleStrength(int value) {
         // set parameter and state
         mConfig.getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH, String.valueOf(value)).apply();
-        mConfig.updateService();
+        mConfig.updateService(AudioFxService.TREBLE_BOOST_CHANGED);
     }
 
     public void setBassEnabled(boolean on) {
         mConfig.getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_BASS_ENABLE, on).apply();
-        mConfig.updateService();
+        mConfig.updateService(AudioFxService.BASS_BOOST_CHANGED);
     }
 
     public void setBassStrength(int value) {
         // set parameter and state
         mConfig.getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_BASS_STRENGTH, String.valueOf(value * 10)).apply();
-        mConfig.updateService();
+        mConfig.updateService(AudioFxService.BASS_BOOST_CHANGED);
     }
 
     public void setVirtualizerEnabled(boolean on) {
         mConfig.getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, on).apply();
-        mConfig.updateService();
+        mConfig.updateService(AudioFxService.VIRTUALIZER_CHANGED);
     }
 
     public void setVirtualiserStrength(int value) {
         // set parameter and state
         mConfig.getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, String.valueOf(value * 10)).apply();
-        mConfig.updateService();
+        mConfig.updateService(AudioFxService.VIRTUALIZER_CHANGED);
     }
 
     private RadialKnob.OnKnobChangeListener mTrebleKnobCallback = new RadialKnob.OnKnobChangeListener() {
