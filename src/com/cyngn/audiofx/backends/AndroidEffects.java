@@ -12,17 +12,20 @@ class AndroidEffects extends EffectSet {
     /**
      * Session-specific bassboost
      */
-    public final BassBoost mBassBoost;
-    
+    private final BassBoost mBassBoost;
+    private boolean mBassBoostEnabled = false;
+
     /**
      * Session-specific virtualizer
      */
-    public final Virtualizer mVirtualizer;
+    private final Virtualizer mVirtualizer;
+    private boolean mVirtualizerEnabled = false;
 
     /**
      * Session-specific reverb
      */
-    public final PresetReverb mPresetReverb;
+    private final PresetReverb mPresetReverb;
+    private boolean mPresetReverbEnabled = false;
 
     public AndroidEffects(int sessionId) {
         super(sessionId);
@@ -45,31 +48,40 @@ class AndroidEffects extends EffectSet {
     @Override
     public void enableBassBoost(boolean enable) {
         mBassBoost.setEnabled(enable);
+        mBassBoostEnabled = enable;
     }
 
     @Override
     public void setBassBoostStrength(short strength) {
-        mBassBoost.setStrength(strength);
+        if (mBassBoostEnabled) {
+            mBassBoost.setStrength(strength);
+        }
     }
 
     @Override
     public void enableVirtualizer(boolean enable) {
         mVirtualizer.setEnabled(enable);
+        mVirtualizerEnabled = enable;
     }
 
     @Override
     public void setVirtualizerStrength(short strength) {
-        mVirtualizer.setStrength(strength);
+        if (mVirtualizerEnabled) {
+            mVirtualizer.setStrength(strength);
+        }
     }
 
     @Override
     public void enableReverb(boolean enable) {
         mPresetReverb.setEnabled(enable);
+        mPresetReverbEnabled = enable;
     }
 
     @Override
     public void setReverbPreset(short preset) {
-        mPresetReverb.setPreset(preset);
+        if (mPresetReverbEnabled) {
+            mPresetReverb.setPreset(preset);
+        }
     }
 
     @Override
