@@ -3,6 +3,7 @@ package com.cyngn.audiofx.fragment;
 import android.annotation.Nullable;
 import android.app.Activity;
 import android.app.Fragment;
+import android.media.AudioDeviceInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,10 +15,11 @@ import android.widget.ImageView;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.ActivityMusic;
 import com.cyngn.audiofx.activity.MasterConfigControl;
+import com.cyngn.audiofx.activity.StateCallbacks;
 import com.cyngn.audiofx.service.AudioFxService;
 import com.cyngn.audiofx.service.DtsControl;
 
-public class DTSFragment extends Fragment implements ActivityMusic.ActivityStateListener {
+public class DTSFragment extends Fragment implements ActivityMusic.ActivityStateListener, StateCallbacks.DeviceChangedCallback {
 
     private static final String TAG = DTSFragment.class.getSimpleName();
     private static final boolean DEBUG = false;
@@ -34,6 +36,7 @@ public class DTSFragment extends Fragment implements ActivityMusic.ActivityState
         super.onCreate(savedInstanceState);
         mDts = new DtsControl(getActivity());
         ((ActivityMusic)getActivity()).addToggleListener(this);
+        MasterConfigControl.getInstance(getActivity()).getCallbacks().addDeviceChangedCallback(this);
 
         mMode = ((ActivityMusic) getActivity()).getCurrentMode();
     }
@@ -47,6 +50,7 @@ public class DTSFragment extends Fragment implements ActivityMusic.ActivityState
     @Override
     public void onDestroy() {
         super.onDestroy();
+        MasterConfigControl.getInstance(getActivity()).getCallbacks().removeDeviceChangedCallback(this);
         ((ActivityMusic)getActivity()).removeToggleListener(this);
     }
 
@@ -95,7 +99,17 @@ public class DTSFragment extends Fragment implements ActivityMusic.ActivityState
     }
 
     @Override
-    public void onGlobalToggleChanged(CompoundButton compoundButton, boolean checked) {
+    public void onModeChanged(int mode) {
+        mMode = mode;
+    }
+
+    @Override
+    public void onDeviceChanged(AudioDeviceInfo device, boolean userChange) {
+
+    }
+
+    @Override
+    public void onGlobalDeviceToggle(boolean checked) {
         if (DEBUG) Log.i(TAG, "onGlobalToggleChanged() called with "
                 + "checked = [" + checked + "]");
         if (mMode != ActivityMusic.CURRENT_MODE_DTS) {
@@ -108,12 +122,5 @@ public class DTSFragment extends Fragment implements ActivityMusic.ActivityState
         updateLogo();
 
         mDts.setUserEnabled(checked);
-        MasterConfigControl.getInstance(getActivity()).updateService(AudioFxService.ALL_CHANGED);
     }
-
-    @Override
-    public void onModeChanged(int mode) {
-        mMode = mode;
-    }
-
 }

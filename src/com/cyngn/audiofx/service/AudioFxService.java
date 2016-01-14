@@ -41,6 +41,7 @@ import static com.cyngn.audiofx.Constants.EQUALIZER_PRESET;
 import static com.cyngn.audiofx.Constants.EQUALIZER_PRESET_NAMES;
 import static com.cyngn.audiofx.Constants.SAVED_DEFAULTS;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -55,16 +56,21 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
+import android.os.UserHandle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.ArrayMap;
 import android.util.Log;
 
 import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
+import com.cyngn.audiofx.activity.ActivityMusic;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.backends.EffectSet;
 import com.cyngn.audiofx.backends.EffectsFactory;
 import com.cyngn.audiofx.eq.EqUtils;
+import com.cyngn.audiofx.receiver.QuickSettingsTileReceiver;
+import cyanogenmod.app.CMStatusBarManager;
+import cyanogenmod.app.CustomTile;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -95,6 +101,8 @@ public class AudioFxService extends Service {
     public static final String ACTION_REAPPLY_DEFAULTS
             = "com.cyngn.audiofx.action.REAPPLY_DEFAULTS";
 
+    public static final String ACTION_UPDATE_TILE = "com.cyngn.audiofx.action.UPDATE_TILE";
+
     public static final String EXTRA_DEVICE = "device";
 
     // flags for updateService to minimize DSP traffic
@@ -105,6 +113,8 @@ public class AudioFxService extends Service {
     public static final int VOLUME_BOOST_CHANGED    = 0x10;
     public static final int REVERB_CHANGED          = 0x20;
     public static final int ALL_CHANGED             = 0xFF;
+
+    private static final int TILE_ID = 555;
 
     private final Map<Integer, EffectSet> mAudioSessions
             = Collections.synchronizedMap(new ArrayMap<Integer, EffectSet>());
@@ -359,6 +369,8 @@ public class AudioFxService extends Service {
         };
 
         mDeviceListener.register();
+
+        updateQsTile();
     }
 
     @Override
@@ -366,6 +378,8 @@ public class AudioFxService extends Service {
         if (intent != null && intent.getAction() != null) {
             if (ACTION_REAPPLY_DEFAULTS.equals(intent.getAction())) {
                 saveAndApplyDefaults(false);
+            } else if (ACTION_UPDATE_TILE.equals(intent.getAction())) {
+                updateQsTile();
             } else {
                 String action = intent.getAction();
                 int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
@@ -394,9 +408,47 @@ public class AudioFxService extends Service {
         return START_STICKY;
     }
 
+    private CustomTile mTile;
+    private CustomTile.Builder mTileBuilder;
+
+    private void updateQsTile() {
+        if (mTileBuilder == null) {
+            mTileBuilder = new CustomTile.Builder(this);
+        }
+
+        final PendingIntent pi = PendingIntent.getBroadcast(this, 0,
+                new Intent(QuickSettingsTileReceiver.ACTION_TOGGLE_CURRENT_DEVICE)
+                        .setClass(this, QuickSettingsTileReceiver.class), 0);
+
+        final PendingIntent longPress = PendingIntent.getActivity(this, 0,
+                new Intent(this, ActivityMusic.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0);
+
+        final SharedPreferences prefs = getSharedPreferences(getCurrentDeviceIdentifier(), 0);
+        final boolean enabled = prefs.getBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE,
+                DEVICE_DEFAULT_GLOBAL_ENABLE);
+        String label = getString(R.string.qs_tile_label,
+                MasterConfigControl.getDeviceDisplayString(this, mDeviceListener.getCurrentDevice()));
+
+        mTileBuilder
+                .hasSensitiveData(false)
+                .setIcon(enabled ? R.drawable.ic_qs_visualizer_on : R.drawable.ic_qs_visualizer_off)
+                .setLabel(label)
+                .setContentDescription(R.string.qs_tile_content_description)
+                .shouldCollapsePanel(false)
+                .setOnClickIntent(pi)
+                .setOnLongClickIntent(longPress);
+
+        mTile = mTileBuilder.build();
+
+        CMStatusBarManager.getInstance(this).publishTile(TILE_ID, mTile);
+    }
+
     @Override
     public void onDestroy() {
         if (DEBUG) Log.i(TAG, "Stopping service.");
+
+        CMStatusBarManager.getInstance(this).removeTile(TILE_ID);
 
         mDeviceListener.unregister();
         mDeviceListener = null;
@@ -446,6 +498,10 @@ public class AudioFxService extends Service {
     public void update(int flags) {
         if (!mHandler.hasMessages(MSG_UPDATE_DSP)) {
             mHandler.sendMessage(Message.obtain(mHandler, MSG_UPDATE_DSP, flags, 0));
+
+        }
+        if ((flags & ALL_CHANGED) == ALL_CHANGED) {
+            updateQsTile();
         }
     }
 

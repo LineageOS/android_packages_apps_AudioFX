@@ -150,6 +150,7 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
 
         mConfig.getCallbacks().addDeviceChangedCallback(this);
         mConfig.bindService();
+        mConfig.setAutoBindToService(true);
 
         updateEnabledState();
 
@@ -202,10 +203,10 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
 
     @Override
     public void onPause() {
+        mConfig.setAutoBindToService(false);
         mConfig.getCallbacks().removeDeviceChangedCallback(this);
-        mConfig.unbindService();
-
         super.onPause();
+        mConfig.unbindService();
     }
 
     public void updateBackgroundColors(Integer color, boolean cancelAnimated) {
@@ -260,7 +261,7 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
             AudioDeviceInfo ai = speakerDevices.get(0);
             int viewId = View.generateViewId();
             MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
-                    Menu.NONE, R.string.device_speaker);
+                    Menu.NONE, MasterConfigControl.getDeviceDisplayString(getActivity(), ai));
             item.setIcon(R.drawable.ic_action_dsp_icons_speaker);
             mMenuItems.put(item, ai);
             selectedItem = item;
@@ -272,7 +273,7 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
             AudioDeviceInfo ai = headsetDevices.get(0);
             int viewId = View.generateViewId();
             MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
-                    Menu.NONE, R.string.device_headset);
+                    Menu.NONE, MasterConfigControl.getDeviceDisplayString(getActivity(), ai));
             item.setIcon(R.drawable.ic_action_dsp_icons_headphones);
             mMenuItems.put(item, ai);
             if (currentDevice.getId() == ai.getId()) {
@@ -285,7 +286,7 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
         for (AudioDeviceInfo ai : bluetoothDevices) {
             int viewId = View.generateViewId();
             MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
-                    Menu.NONE, ai.getProductName());
+                    Menu.NONE, MasterConfigControl.getDeviceDisplayString(getActivity(), ai));
             item.setIcon(R.drawable.ic_action_dsp_icons_bluetoof);
             mMenuItems.put(item, ai);
             if (currentDevice.getId() == ai.getId()) {
@@ -298,7 +299,7 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
         for (AudioDeviceInfo ai : usbDevices) {
             int viewId = View.generateViewId();
             MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
-                    Menu.NONE, ai.getProductName());
+                    Menu.NONE, MasterConfigControl.getDeviceDisplayString(getActivity(), ai));
             item.setIcon(R.drawable.ic_action_device_usb);
             mMenuItems.put(item, ai);
             if (currentDevice.getId() == ai.getId()) {
@@ -419,24 +420,20 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
         getActivity().invalidateOptionsMenu();
     }
 
-    private ValueAnimator.AnimatorUpdateListener mColorUpdateListener
-            = new ValueAnimator.AnimatorUpdateListener() {
-        @Override
-        public void onAnimationUpdate(ValueAnimator animation) {
-            updateBackgroundColors((Integer) animation.getAnimatedValue(), false);
-        }
-    };
+    public CompoundButton getGlobalSwitch() {
+        return ((ActivityMusic) getActivity()).getGlobalSwitch();
+    }
 
     @Override
-    public void onGlobalToggleChanged(final CompoundButton buttonView, final boolean checked) {
+    public void onGlobalDeviceToggle(final boolean checked) {
         if (mCurrentMode != ActivityMusic.CURRENT_MODE_AUDIOFX) {
             return;
         }
+        final CompoundButton buttonView = getGlobalSwitch();
         final Animator.AnimatorListener animatorListener = new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
                 buttonView.setEnabled(false);
-                mConfig.setCurrentDeviceEnabled(checked);
             }
 
             @Override
@@ -458,9 +455,16 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
         final Integer colorTo = checked
                 ? mEqManager.getAssociatedPresetColorHex(mEqManager.getCurrentPresetIndex())
                 : mDisabledColor;
-        animateBackgroundColorTo(colorTo,
-                animatorListener, null);
+        animateBackgroundColorTo(colorTo, animatorListener, null);
     }
+
+    private ValueAnimator.AnimatorUpdateListener mColorUpdateListener
+            = new ValueAnimator.AnimatorUpdateListener() {
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            updateBackgroundColors((Integer) animation.getAnimatedValue(), false);
+        }
+    };
 
     @Override
     public void onModeChanged(int mode) {

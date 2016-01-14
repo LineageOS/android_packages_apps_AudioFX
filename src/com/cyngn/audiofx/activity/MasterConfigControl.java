@@ -63,6 +63,7 @@ public class MasterConfigControl {
     private final AudioManager mAudioManager;
 
     private static MasterConfigControl sInstance;
+    private boolean mShouldBindToService = false;
 
     public static MasterConfigControl getInstance(Context context) {
         if (sInstance == null) {
@@ -129,7 +130,7 @@ public class MasterConfigControl {
     }
 
     public boolean checkService() {
-        if (mService == null && mServiceRefCount == 0) {
+        if (mService == null && mServiceRefCount == 0 && mShouldBindToService) {
             Log.e(TAG,  "Service went away, rebinding");
             bindService();
         }
@@ -166,6 +167,7 @@ public class MasterConfigControl {
 
     public void setCurrentDeviceEnabled(boolean isChecked) {
         getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE, isChecked).apply();
+        getCallbacks().notifyGlobalToggle(isChecked);
         updateService(AudioFxService.ALL_CHANGED);
     }
 
@@ -290,6 +292,26 @@ public class MasterConfigControl {
         }
     }
 
+    public static String getDeviceDisplayString(Context context,  AudioDeviceInfo info) {
+        int type = info == null ? -1 : info.getType();
+        switch (type) {
+            case TYPE_WIRED_HEADSET:
+            case TYPE_WIRED_HEADPHONES:
+            case TYPE_LINE_ANALOG:
+            case TYPE_LINE_DIGITAL:
+                return context.getString(com.cyngn.audiofx.R.string.device_headset);
+            case TYPE_BLUETOOTH_SCO:
+            case TYPE_BLUETOOTH_A2DP:
+            case TYPE_USB_DEVICE:
+            case TYPE_USB_ACCESSORY:
+            case TYPE_DOCK:
+            case TYPE_IP:
+                return info.getProductName().toString();
+            default:
+                return context.getString(com.cyngn.audiofx.R.string.device_speaker);
+        }
+    }
+
     public static String getDeviceIdentifierString(AudioDeviceInfo info) {
         int type = info == null ? -1 : info.getType();
         switch (type) {
@@ -312,5 +334,13 @@ public class MasterConfigControl {
             default:
                 return "speaker";
         }
+    }
+
+    /**
+     * Set whether to automatically attempt to bind to the service.
+     * @param bindToService
+     */
+    public void setAutoBindToService(boolean bindToService) {
+        mShouldBindToService = bindToService;
     }
 }

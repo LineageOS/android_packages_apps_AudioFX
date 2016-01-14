@@ -3,6 +3,7 @@ package com.cyngn.audiofx.fragment;
 import android.animation.Animator;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.widget.CompoundButton;
 import com.cyngn.audiofx.activity.ActivityMusic;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 

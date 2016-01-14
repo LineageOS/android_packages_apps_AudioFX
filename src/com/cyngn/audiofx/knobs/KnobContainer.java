@@ -323,6 +323,11 @@ public class KnobContainer extends LinearLayout
         }
     }
 
+    @Override
+    public void onGlobalDeviceToggle(boolean on) {
+
+    }
+
     private void updateKnobs(AudioDeviceInfo device) {
         if (device == null) {
             return;

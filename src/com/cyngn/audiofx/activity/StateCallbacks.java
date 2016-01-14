@@ -118,6 +118,8 @@ public class StateCallbacks {
      */
     public interface DeviceChangedCallback {
         public void onDeviceChanged(AudioDeviceInfo device, boolean userChange);
+        public void onGlobalDeviceToggle(boolean on);
+
     }
 
     public void addDeviceChangedCallback(DeviceChangedCallback callback) {
@@ -130,6 +132,15 @@ public class StateCallbacks {
     public synchronized void removeDeviceChangedCallback(DeviceChangedCallback callback) {
         synchronized (mDeviceChangedCallbacks) {
             mDeviceChangedCallbacks.remove(callback);
+        }
+    }
+
+    void notifyGlobalToggle(boolean on) {
+        synchronized (mDeviceChangedCallbacks) {
+            for (DeviceChangedCallback callback : mDeviceChangedCallbacks) {
+                callback.onGlobalDeviceToggle(on);
+            }
+
         }
     }
 

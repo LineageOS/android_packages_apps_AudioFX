@@ -380,6 +380,11 @@ public class EqualizerFragment extends AudioFxBaseFragment
         animateBackgroundColorTo(colorTo, animatorListener, animatorUpdateListener);
     }
 
+    @Override
+    public void onGlobalDeviceToggle(boolean on) {
+
+    }
+
 
     private ViewPager.OnPageChangeListener mViewPageChangeListener = new ViewPager.OnPageChangeListener() {
 

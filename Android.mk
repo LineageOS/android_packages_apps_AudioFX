@@ -8,7 +8,7 @@ LOCAL_OVERRIDES_PACKAGES := DSPManager
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
-LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4
+LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4 org.cyanogenmod.platform.sdk
 
 LOCAL_PROGUARD_ENABLED := disabled
 

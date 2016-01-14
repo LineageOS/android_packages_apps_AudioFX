@@ -15,10 +15,12 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
-
     <string name="snack_bar_not_default">AudioFX is not your default effects control panel.</string>
     <string name="snack_bar_not_default_set">Set default</string>
     <string name="snack_bar_not_default_not_now">Not now</string>
+
+    <string name="qs_tile_content_description">Toggle AudioFX on/off for the current device</string>
+    <string name="qs_tile_label">AudioFX (%1$s)</string>
 
     <string name="normal">Normal</string>
     <string name="classical">Classical</string>

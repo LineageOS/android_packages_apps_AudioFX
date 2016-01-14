@@ -61,8 +61,6 @@ public class ActivityMusic extends Activity {
     private SharedPreferences.OnSharedPreferenceChangeListener mServiceReadyObserver;
 
     public interface ActivityStateListener {
-        public void onGlobalToggleChanged(final CompoundButton buttonView, boolean isChecked);
-
         public void onModeChanged(int mode);
     }
 
@@ -74,9 +72,7 @@ public class ActivityMusic extends Activity {
             if (UserSession.getInstance() != null) {
                 UserSession.getInstance().deviceEnabledDisabled();
             }
-            for (ActivityStateListener listener : mGlobalToggleListeners) {
-                listener.onGlobalToggleChanged(buttonView, isChecked);
-            }
+            mConfig.setCurrentDeviceEnabled(isChecked);
         }
     };
 
@@ -337,6 +333,10 @@ public class ActivityMusic extends Activity {
                 listener.onModeChanged(mCurrentMode);
             }
         }
+    }
+
+    public CompoundButton getGlobalSwitch() {
+        return mCurrentDeviceToggle;
     }
 
     public int getCurrentMode() {
