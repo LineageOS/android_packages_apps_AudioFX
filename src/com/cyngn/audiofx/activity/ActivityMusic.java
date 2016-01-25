@@ -87,25 +87,26 @@ public class ActivityMusic extends Activity {
         mCallingPackage = getIntent().getStringExtra(EXTRA_CALLING_PACKAGE);
         Log.i(TAG, "calling package: " + mCallingPackage);
 
+        mConfig = MasterConfigControl.getInstance(this);
+
         final SharedPreferences globalPrefs = Constants.getGlobalPrefs(this);
 
         mWaitingForService = !defaultsSetup();
         if (mWaitingForService) {
+            Log.w(TAG, "waiting for service.");
             mServiceReadyObserver = new SharedPreferences.OnSharedPreferenceChangeListener() {
                 @Override
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
                                                       String key) {
-                    if (key.equals(Constants.SAVED_DEFAULTS)
-                            || key.equals(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT)) {
-                        if (defaultsSetup()) {
-                            sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-                            init(savedInstanceState);
-                            setupDtsActionBar();
+                    if (key.equals(Constants.SAVED_DEFAULTS) && defaultsSetup()) {
+                        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+                        mConfig.onResetDefaults();
+                        init(savedInstanceState);
+                        setupDtsActionBar();
 
-                            mWaitingForService = false;
-                            invalidateOptionsMenu();
-                            mServiceReadyObserver = null;
-                        }
+                        mWaitingForService = false;
+                        invalidateOptionsMenu();
+                        mServiceReadyObserver = null;
                     }
                 }
             };

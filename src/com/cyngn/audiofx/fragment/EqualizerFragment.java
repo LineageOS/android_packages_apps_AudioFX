@@ -31,10 +31,12 @@ import com.cyngn.audiofx.preset.PresetPagerAdapter;
 import com.cyngn.audiofx.stats.UserSession;
 import com.cyngn.audiofx.viewpagerindicator.CirclePageIndicator;
 
+import java.util.Arrays;
+
 public class EqualizerFragment extends AudioFxBaseFragment
         implements StateCallbacks.DeviceChangedCallback, StateCallbacks.EqUpdatedCallback {
 
-    private static final String TAG = ControlsFragment.class.getSimpleName();
+    private static final String TAG = EqualizerFragment.class.getSimpleName();
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_VIEWPAGER = false;
 
@@ -76,7 +78,6 @@ public class EqualizerFragment extends AudioFxBaseFragment
         mEqManager = mConfig.getEqualizerManager();
 
         mHandler = new Handler();
-        mSelectedPositionBands = mEqManager.getPersistedPresetLevels(mEqManager.getCurrentPresetIndex());
     }
 
     @Override
@@ -180,6 +181,9 @@ public class EqualizerFragment extends AudioFxBaseFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mSelectedPositionBands = mEqManager.getPersistedPresetLevels(mEqManager.getCurrentPresetIndex());
+        mSelectedPosition = mEqManager.getCurrentPresetIndex();
+
         mEqContainer = (EqContainerView) view.findViewById(R.id.eq_container);
         mPresetPager = (InfiniteViewPager) view.findViewById(R.id.pager);
         mPresetPageIndicator  = (CirclePageIndicator) view.findViewById(R.id.indicator);
@@ -217,8 +221,6 @@ public class EqualizerFragment extends AudioFxBaseFragment
                     }
                 }
         );
-
-        mSelectedPosition = mEqManager.getCurrentPresetIndex();
 
         mDataAdapter = new PresetPagerAdapter(getActivity());
         mInfiniteAdapter = new InfinitePagerAdapter(mDataAdapter);

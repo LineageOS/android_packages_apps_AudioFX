@@ -1,7 +1,6 @@
 package com.cyngn.audiofx.activity;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -74,6 +73,11 @@ public class EqualizerManager {
         mContext = context;
         mConfig = config;
 
+        applyDefaults();
+    }
+
+    public void applyDefaults() {
+        mEqPresets.clear();
         // setup eq
         int bands = Integer.parseInt(getGlobalPref("equalizer.number_of_bands", "5"));
         final int[] centerFreqs = Constants.getCenterFreqs(mContext, bands);

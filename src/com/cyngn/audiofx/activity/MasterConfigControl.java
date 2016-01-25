@@ -84,6 +84,12 @@ public class MasterConfigControl {
                 .getBoolean(Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false);
     }
 
+    public void onResetDefaults() {
+        mHasMaxxAudio = getGlobalPrefs()
+                .getBoolean(Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false);
+        mEqManager.applyDefaults();
+    }
+
     public synchronized boolean bindService() {
         boolean conn = true;
         if (SERVICE_DEBUG) Log.i(TAG, "bindService() refCount=" + mServiceRefCount);
