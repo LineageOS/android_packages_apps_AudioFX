@@ -473,7 +473,7 @@ public class EqContainerView extends FrameLayout
     }
 
     public void updateEqState() {
-        setControlsVisible(mControlsVisible && !mSelectedBands.isEmpty(), false);
+        setControlsVisible(mControlsVisible && mSelectedBands.isEmpty(), false);
 
         animateControl(mLockBox, mUnlockVisible);
         animateControl(mRemoveControl, mRemoveVisible);
