@@ -418,6 +418,7 @@ public class AudioFxService extends Service {
 
         final PendingIntent pi = PendingIntent.getBroadcast(this, 0,
                 new Intent(QuickSettingsTileReceiver.ACTION_TOGGLE_CURRENT_DEVICE)
+                        .addFlags(Intent.FLAG_FROM_BACKGROUND)
                         .setClass(this, QuickSettingsTileReceiver.class), 0);
 
         final PendingIntent longPress = PendingIntent.getActivity(this, 0,
