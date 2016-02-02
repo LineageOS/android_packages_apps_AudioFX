@@ -27,6 +27,7 @@ public class DTSFragment extends Fragment implements ActivityMusic.ActivityState
     private ImageView mLogo;
     private boolean mGlobalToggleEnabled;
     private DtsControl mDts;
+    private MasterConfigControl mConfig;
     private int mMode;
 
     @Override
@@ -39,6 +40,7 @@ public class DTSFragment extends Fragment implements ActivityMusic.ActivityState
         MasterConfigControl.getInstance(getActivity()).getCallbacks().addDeviceChangedCallback(this);
 
         mMode = ((ActivityMusic) getActivity()).getCurrentMode();
+        mConfig = MasterConfigControl.getInstance(getActivity());
     }
 
     @Override
@@ -58,6 +60,9 @@ public class DTSFragment extends Fragment implements ActivityMusic.ActivityState
     public void onResume() {
         super.onResume();
 
+        mConfig.bindService();
+        mConfig.setAutoBindToService(true);
+
         final boolean dtsEnabledByUser = mDts.isUserEnabled();
         ((ActivityMusic)getActivity())
                 .setGlobalToggleChecked(mGlobalToggleEnabled = dtsEnabledByUser);
@@ -72,6 +77,9 @@ public class DTSFragment extends Fragment implements ActivityMusic.ActivityState
     public void onPause() {
         if (DEBUG) Log.i(TAG, "onPause() called with " + "");
         super.onPause();
+
+        mConfig.setAutoBindToService(false);
+        mConfig.unbindService();
     }
 
     @Override
@@ -122,5 +130,6 @@ public class DTSFragment extends Fragment implements ActivityMusic.ActivityState
         updateLogo();
 
         mDts.setUserEnabled(checked);
+        mConfig.updateService(AudioFxService.ALL_CHANGED);
     }
 }
