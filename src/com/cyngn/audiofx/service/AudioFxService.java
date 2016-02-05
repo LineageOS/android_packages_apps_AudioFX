@@ -129,7 +129,7 @@ public class AudioFxService extends Service {
     Handler mHandler;
     Handler mBackgroundHandler;
     AudioOutputChangeListener mDeviceListener;
-
+    private Locale mLastLocale;
     DtsControl mDts;
 
     private AudioDeviceInfo mCurrentDevice;
@@ -424,6 +424,7 @@ public class AudioFxService extends Service {
             mTileBuilder = new CustomTile.Builder(this);
         }
 
+        mLastLocale = getResources().getConfiguration().locale;
         final PendingIntent pi = PendingIntent.getBroadcast(this, 0,
                 new Intent(QuickSettingsTileReceiver.ACTION_TOGGLE_CURRENT_DEVICE)
                         .addFlags(Intent.FLAG_FROM_BACKGROUND)
@@ -776,5 +777,13 @@ public class AudioFxService extends Service {
         Configuration config = new Configuration(getResources().getConfiguration());
         config.setLocale(Locale.ROOT);
         return createConfigurationContext(config).getString(res);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (!mLastLocale.equals(newConfig.locale)) {
+            updateQsTile();
+        }
     }
 }
