@@ -16,7 +16,7 @@
      limitations under the License.
 -->
 <resources>
-  <string name="normal">Нормално</string>
+  <string name="normal">Нормална</string>
   <string name="classical">Класическа</string>
   <string name="dance">Танцувална</string>
   <string name="flat">Плосък</string>
@@ -44,5 +44,5 @@
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Безжичен</string>
   <string name="reverb">Ехо</string>
-  <string name="eq_preset">Еквалайзер предварително зададена настройка</string>
+  <string name="eq_preset">Настройки на еквалайзера</string>
 </resources>
