@@ -7,7 +7,7 @@ import android.media.audiofx.Equalizer;
  * audio session.
  */
 public abstract class EffectSet {
-    
+
     /**
      * Session-specific equalizer
      */
@@ -28,7 +28,7 @@ public abstract class EffectSet {
     public abstract boolean hasVirtualizer();
 
     public abstract boolean hasBassBoost();
-    
+
     // optional effects
     public boolean hasTrebleBoost() {
         return false;
@@ -41,7 +41,7 @@ public abstract class EffectSet {
     public boolean hasReverb() {
         return false;
     }
-    
+
     /*
      * Take lots of care to not poke values that don't need
      * to be poked- this can cause audible pops.
@@ -75,19 +75,19 @@ public abstract class EffectSet {
             mEqualizer.setBandLevel(band, level);
         }
     }
-    
+
     public int getEqualizerBandLevel(short band) {
         return mEqualizer.getBandLevel(band);
     }
-    
+
     public String getEqualizerPresetName(short preset) {
         return mEqualizer.getPresetName(preset);
     }
-    
+
     public void useEqualizerPreset(short preset) {
         mEqualizer.usePreset(preset);
     }
-    
+
     public short getNumEqualizerPresets() {
         if (mEqNumPresets < 0) {
             mEqNumPresets = mEqualizer.getNumberOfPresets();
@@ -98,11 +98,11 @@ public abstract class EffectSet {
     public short[] getEqualizerBandLevelRange() {
         return mEqualizer.getBandLevelRange();
     }
-    
+
     public int getCenterFrequency(short band) {
         return mEqualizer.getCenterFreq(band);
     }
-    
+
     public abstract void enableBassBoost(boolean enable);
 
     public abstract void setBassBoostStrength(short strength);
@@ -122,19 +122,19 @@ public abstract class EffectSet {
     public void enableTrebleBoost(boolean enable) {
         return;
     }
-    
+
     public void setTrebleBoostStrength(short strength) {
         return;
     }
-    
+
     public void enableVolumeBoost(boolean enable) {
         return;
     }
-    
+
     public void release() {
         mEqualizer.release();
     }
-    
+
     public void disableAll() {
         enableBassBoost(false);
         enableVirtualizer(false);
@@ -143,6 +143,6 @@ public abstract class EffectSet {
         enableTrebleBoost(false);
         enableVolumeBoost(false);
     }
-    
+
     public abstract int getBrand();
 }

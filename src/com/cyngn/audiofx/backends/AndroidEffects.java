@@ -8,7 +8,7 @@ import android.media.audiofx.Virtualizer;
  * EffectSet which comprises standard Android effects
  */
 class AndroidEffects extends EffectSet {
-    
+
     /**
      * Session-specific bassboost
      */
@@ -91,7 +91,7 @@ class AndroidEffects extends EffectSet {
         mBassBoost.release();
         mVirtualizer.release();
     }
-    
+
     @Override
     public int getBrand() {
         return EffectsFactory.ANDROID;
