@@ -17,10 +17,16 @@ public class EffectsFactory {
     public static EffectSet createEffectSet(int sessionId) {
 
         // try MaxxAudio first, this will throw an exception if unavailable
-        try (MaxxAudioEffects fx = new MaxxAudioEffects(sessionId)) {
-            return fx;
+        MaxxAudioEffects fx = null;
+        try {
+            fx = new MaxxAudioEffects(sessionId);
         } catch (Exception e) {
-            // skip it and move on
+            fx = null;
+        }
+
+        // good to go!
+        if (fx != null) {
+            return fx;
         }
 
         return new AndroidEffects(sessionId);
