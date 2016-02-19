@@ -39,7 +39,7 @@
   <string name="power_on_prompt">Appuyez sur le bouton d\'activation en haut à droite.</string>
   <string name="effect_unavalable_for_speaker">Effet non disponible pour le mode haut-parleur.</string>
   <string name="device_headset">Casque</string>
-  <string name="device_speaker">Haut-parleur du téléphone</string>
+  <string name="device_speaker">Haut-parleur</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Sans fil</string>
