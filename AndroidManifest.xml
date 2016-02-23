@@ -93,16 +93,14 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.AudioFxService"/>
-
-        <receiver android:name=".receiver.ServiceDispatcher">
+        <service android:name=".service.AudioFxService">
             <intent-filter>
                 <action android:name="android.media.action.OPEN_AUDIO_EFFECT_CONTROL_SESSION"/>
                 <action android:name="android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION"/>
                 <action android:name="android.media.AUDIO_BECOMING_NOISY"/>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </receiver>
+        </service>
 
         <receiver android:name=".service.BootReceiver">
             <intent-filter>
