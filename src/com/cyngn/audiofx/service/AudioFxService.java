@@ -354,15 +354,6 @@ public class AudioFxService extends Service {
 
         mDts = new DtsControl(this);
 
-        try {
-            saveAndApplyDefaults(false);
-        } catch (Exception e) {
-            SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
-            prefs.edit().clear().commit();
-            Log.e(TAG, "Error initializing effects!", e);
-            stopSelf();
-        }
-
         mDeviceListener = new AudioOutputChangeListener(this, mHandler) {
             @Override
             public void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice) {
@@ -377,6 +368,16 @@ public class AudioFxService extends Service {
         };
 
         mDeviceListener.register();
+
+        try {
+            saveAndApplyDefaults(false);
+        } catch (Exception e) {
+            SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
+            prefs.edit().clear().commit();
+            Log.e(TAG, "Error initializing effects!", e);
+            mDeviceListener.unregister();
+            stopSelf();
+        }
 
         updateQsTile();
     }
