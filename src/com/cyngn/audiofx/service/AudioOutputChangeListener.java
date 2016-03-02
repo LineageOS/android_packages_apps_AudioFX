@@ -13,7 +13,7 @@ import java.util.List;
 
 import static android.media.AudioDeviceInfo.*;
 
-abstract class AudioOutputChangeListener extends AudioDeviceCallback {
+public abstract class AudioOutputChangeListener extends AudioDeviceCallback {
 
     private static final String TAG = "AudioFx-" + AudioOutputChangeListener.class.getSimpleName();
 

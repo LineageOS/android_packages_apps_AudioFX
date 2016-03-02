@@ -7,7 +7,7 @@ import android.media.audiofx.Virtualizer;
 /**
  * EffectSet which comprises standard Android effects
  */
-class AndroidEffects extends EffectSet {
+class AndroidEffects extends EffectSetWithAndroidEq {
 
     /**
      * Session-specific bassboost

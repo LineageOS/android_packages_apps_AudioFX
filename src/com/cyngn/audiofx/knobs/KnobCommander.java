@@ -66,7 +66,7 @@ public class KnobCommander {
     }
 
     public boolean hasTreble() {
-        return mConfig.hasMaxxAudio();
+        return mConfig.hasMaxxAudio() || mConfig.hasDts();
     }
 
     public boolean hasVirtualizer() {

@@ -1,5 +1,10 @@
 package com.cyngn.audiofx.backends;
 
+import android.content.Context;
+import com.cyngn.audiofx.Constants;
+
+import java.io.File;
+
 /**
  * Creates an EffectSet appropriate for the current device
  *
@@ -8,15 +13,19 @@ package com.cyngn.audiofx.backends;
  */
 public class EffectsFactory {
 
+    private static Boolean sHasDts;
+
     public static final int ANDROID = 0;
-
     public static final int MAXXAUDIO = 1;
-
     public static final int DTS = 2;
 
-    public static EffectSet createEffectSet(int sessionId) {
+    public static EffectSet createEffectSet(Context context, int sessionId) {
 
-        // try MaxxAudio first, this will throw an exception if unavailable
+        if (hasDts()) {
+            return new DtsEffects(context, sessionId);
+        }
+
+        // try MaxxAudio next, this will throw an exception if unavailable
         MaxxAudioEffects fx = null;
         try {
             fx = new MaxxAudioEffects(sessionId);
@@ -31,4 +40,12 @@ public class EffectsFactory {
 
         return new AndroidEffects(sessionId);
     }
+
+    public static boolean hasDts() {
+        if (sHasDts == null) {
+            sHasDts = new File("***REMOVED***").exists();
+        }
+        return sHasDts;
+    }
+
 }

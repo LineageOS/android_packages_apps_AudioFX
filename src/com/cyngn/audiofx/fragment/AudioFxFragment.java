@@ -36,8 +36,7 @@ import com.cyngn.audiofx.widget.InterceptableLinearLayout;
 import java.util.List;
 import java.util.Map;
 
-public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityStateListener,
-        StateCallbacks.DeviceChangedCallback {
+public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceChangedCallback {
 
     private static final String TAG = AudioFxFragment.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
@@ -67,8 +66,6 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
     private MasterConfigControl mConfig;
     private EqualizerManager mEqManager;
 
-    private int mCurrentMode;
-
     private AudioDeviceInfo mSystemDevice;
     private AudioDeviceInfo mUserSelection;
 
@@ -92,9 +89,6 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
         mDisabledColor = getResources().getColor(R.color.disabled_eq);
 
         setHasOptionsMenu(true);
-        ((ActivityMusic) getActivity()).addToggleListener(this);
-
-        mCurrentMode = ((ActivityMusic) getActivity()).getCurrentMode();
     }
 
     @Override
@@ -107,13 +101,11 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ((ActivityMusic) getActivity()).removeToggleListener(this);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mCurrentMode = ((ActivityMusic) getActivity()).getCurrentMode();
     }
 
     private boolean showFragments() {
@@ -426,9 +418,6 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
 
     @Override
     public void onGlobalDeviceToggle(final boolean checked) {
-        if (mCurrentMode != ActivityMusic.CURRENT_MODE_AUDIOFX) {
-            return;
-        }
         final CompoundButton buttonView = getGlobalSwitch();
         final Animator.AnimatorListener animatorListener = new Animator.AnimatorListener() {
             @Override
@@ -465,11 +454,6 @@ public class AudioFxFragment extends Fragment implements ActivityMusic.ActivityS
             updateBackgroundColors((Integer) animation.getAnimatedValue(), false);
         }
     };
-
-    @Override
-    public void onModeChanged(int mode) {
-        mCurrentMode = mode;
-    }
 
     public static class ColorUpdateListener implements ValueAnimator.AnimatorUpdateListener {
 

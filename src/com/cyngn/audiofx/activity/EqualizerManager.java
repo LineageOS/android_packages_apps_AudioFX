@@ -107,13 +107,16 @@ public class EqualizerManager {
         // setup equalizer presets
         final int numPresets = Integer.parseInt(getGlobalPref("equalizer.number_of_presets", "0"));
 
-        // add library-provided presets
-        String[] presetNames = getGlobalPref("equalizer.preset_names", "").split("\\|");
-        mPredefinedPresets = presetNames.length + 1; // we consider first EQ to be part of predefined
-        for (int i = 0; i < numPresets; i++) {
-            mEqPresets.add(new Preset.StaticPreset(presetNames[i], getPersistedPresetLevels(i)));
+        if (numPresets > 0) {
+            // add library-provided presets
+            String[] presetNames = getGlobalPref("equalizer.preset_names", "").split("\\|");
+            mPredefinedPresets = presetNames.length + 1; // we consider first EQ to be part of predefined
+            for (int i = 0; i < numPresets; i++) {
+                mEqPresets.add(new Preset.StaticPreset(presetNames[i], getPersistedPresetLevels(i)));
+            }
+        } else {
+            mPredefinedPresets = 1; // custom is predefined
         }
-
         // add custom preset
         mEqPresets.add(new Preset.PermCustomPreset(mContext.getString(R.string.user),
                 getPersistedCustomLevels()));

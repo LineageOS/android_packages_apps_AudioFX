@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -15,21 +16,9 @@ import com.cyngn.audiofx.preset.InfiniteViewPager;
 public class EqSwipeController extends LinearLayout {
 
     /*
-     * minimum amount of time we wait before allowing user to "attach" to a bar, to allow
-     * for swiping
-     */
-    private static final int SWIPE_THRESH = 100;
-
-    /*
-     * maximum amount of time in ms, from downtime, which will allow bars to be grabbed.
-     * basically, when the user goes > this threshold swiping, we ignore bar "attach" events
-     */
-    private static final int BAR_MAX_THRESH = 1000;
-
-    /*
      * x velocity max for deciding whether to try to grab a bar
      */
-    private static final int X_VELOCITY_THRESH = 20;
+    private static int X_VELOCITY_THRESH = 20;
 
     EqContainerView mEq;
     InfiniteViewPager mPager;
@@ -40,6 +29,8 @@ public class EqSwipeController extends LinearLayout {
     private ViewGroup mControls;
 
     private final EqualizerManager mEqManager;
+    private float mDownPositionX;
+    private float mDownPositionY;
 
     public EqSwipeController(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -76,6 +67,8 @@ public class EqSwipeController extends LinearLayout {
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                mDownPositionX = event.getRawX();
+                mDownPositionY = event.getRawY();
                 mDownTime = System.currentTimeMillis();
                 if (mVelocityTracker == null) {
                     mVelocityTracker = VelocityTracker.obtain();
@@ -91,14 +84,20 @@ public class EqSwipeController extends LinearLayout {
                     float xVelocity = mVelocityTracker.getXVelocity(pointerId);
                     float yVelocity = mVelocityTracker.getYVelocity(pointerId);
 
-                    if (!mBarActive
-                            && !mEqManager.isChangingPresets()
-                            && System.currentTimeMillis() - mDownTime > SWIPE_THRESH
-                            && System.currentTimeMillis() - mDownTime < BAR_MAX_THRESH
-                            && Math.abs(xVelocity) < X_VELOCITY_THRESH
-                            && !mEqManager.isEqualizerLocked()) {
-                        mBarActive = true;
-                        mBar = mEq.startTouchingBarUnder(event);
+                    final float deltaX = mDownPositionX - event.getRawX();
+                    final float deltaY = mDownPositionY - event.getRawY();
+                    final float distanceSquared = deltaX * deltaX + deltaY * deltaY;
+
+                    final ViewConfiguration viewConfiguration = ViewConfiguration.get(getContext());
+                    final int touchSlop = viewConfiguration.getScaledTouchSlop();
+
+                    if (!mBarActive && !mEqManager.isChangingPresets()
+                            && !mEqManager.isEqualizerLocked()
+                            && Math.abs(xVelocity) < X_VELOCITY_THRESH) {
+                        if (distanceSquared < touchSlop * touchSlop) {
+                            mBarActive = true;
+                            mBar = mEq.startTouchingBarUnder(event);
+                        }
                     }
                 }
 

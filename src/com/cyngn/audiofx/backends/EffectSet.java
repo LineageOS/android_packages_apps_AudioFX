@@ -1,6 +1,9 @@
 package com.cyngn.audiofx.backends;
 
+import android.content.Context;
 import android.media.audiofx.Equalizer;
+
+import java.util.List;
 
 /**
  * Helper class representing the full complement of effects attached to one
@@ -8,20 +11,10 @@ import android.media.audiofx.Equalizer;
  */
 public abstract class EffectSet {
 
-    /**
-     * Session-specific equalizer
-     */
-    private final Equalizer mEqualizer;
-
-    private short mEqNumPresets = -1;
-    private short mEqNumBands = -1;
-
     private final int mSessionId;
 
     public EffectSet(int sessionId) {
         mSessionId = sessionId;
-
-        mEqualizer = new Equalizer(1000, sessionId);
     }
 
     // required effects
@@ -42,73 +35,52 @@ public abstract class EffectSet {
         return false;
     }
 
-    /*
-     * Take lots of care to not poke values that don't need
-     * to be poked- this can cause audible pops.
+    public abstract void enableEqualizer(boolean enable);
+
+    /**
+     * @param levels in decibels
      */
-    private boolean mEqualizerEnabled = false;
+    public void setEqualizerLevelsDecibels(float[] levels) { }
 
-    public void enableEqualizer(boolean enable) {
-        if (enable != mEqualizerEnabled) {
-            mEqualizerEnabled = enable;
-            mEqualizer.setEnabled(enable);
-        }
-    }
+    public abstract short getNumEqualizerBands();
 
-    public void setEqualizerLevels(short[] levels) {
-        if (mEqualizerEnabled) {
-            for (short i = 0; i < levels.length; i++) {
-                mEqualizer.setBandLevel(i, levels[i]);
-            }
-        }
-    }
+    /**
+     * @param band
+     * @param level in millibels
+     */
+    public abstract void setEqualizerBandLevel(short band, float level);
 
-    public short getNumEqualizerBands() {
-        if (mEqNumBands < 0) {
-            mEqNumBands = mEqualizer.getNumberOfBands();
-        }
-        return mEqNumBands;
-    }
+    /**
+     * @return level in millibels
+     */
+    public abstract int getEqualizerBandLevel(short band);
 
-    public void setEqualizerBandLevel(short band, short level) {
-        if (mEqualizerEnabled) {
-            mEqualizer.setBandLevel(band, level);
-        }
-    }
+    public abstract String getEqualizerPresetName(short preset);
 
-    public int getEqualizerBandLevel(short band) {
-        return mEqualizer.getBandLevel(band);
-    }
+    public abstract void useEqualizerPreset(short preset);
 
-    public String getEqualizerPresetName(short preset) {
-        return mEqualizer.getPresetName(preset);
-    }
+    public abstract short getNumEqualizerPresets();
 
-    public void useEqualizerPreset(short preset) {
-        mEqualizer.usePreset(preset);
-    }
+    public abstract short[] getEqualizerBandLevelRange();
 
-    public short getNumEqualizerPresets() {
-        if (mEqNumPresets < 0) {
-            mEqNumPresets = mEqualizer.getNumberOfPresets();
-        }
-        return mEqNumPresets;
-    }
-
-    public short[] getEqualizerBandLevelRange() {
-        return mEqualizer.getBandLevelRange();
-    }
-
-    public int getCenterFrequency(short band) {
-        return mEqualizer.getCenterFreq(band);
-    }
+    /**
+     * @param band
+     * @return center frequency of the band in millihertz
+     */
+    public abstract int getCenterFrequency(short band);
 
     public abstract void enableBassBoost(boolean enable);
 
+    /**
+     * @param strength with range [0-1000]
+     */
     public abstract void setBassBoostStrength(short strength);
 
     public abstract void enableVirtualizer(boolean enable);
 
+    /**
+     * @param strength with range [0-1000]
+     */
     public abstract void setVirtualizerStrength(short strength);
 
     public void enableReverb(boolean enable) {
@@ -123,6 +95,9 @@ public abstract class EffectSet {
         return;
     }
 
+    /**
+     * @param strength with range [0-100]
+     */
     public void setTrebleBoostStrength(short strength) {
         return;
     }
@@ -131,9 +106,7 @@ public abstract class EffectSet {
         return;
     }
 
-    public void release() {
-        mEqualizer.release();
-    }
+    public abstract void release();
 
     public void disableAll() {
         enableBassBoost(false);
@@ -145,4 +118,6 @@ public abstract class EffectSet {
     }
 
     public abstract int getBrand();
+
+    public void setGlobalEnabled(boolean globalEnabled) { }
 }

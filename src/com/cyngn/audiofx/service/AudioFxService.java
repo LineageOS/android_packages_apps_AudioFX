@@ -56,7 +56,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
-import android.os.UserHandle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.ArrayMap;
 import android.util.Log;
@@ -130,7 +129,6 @@ public class AudioFxService extends Service {
     Handler mBackgroundHandler;
     AudioOutputChangeListener mDeviceListener;
     private Locale mLastLocale;
-    DtsControl mDts;
 
     private AudioDeviceInfo mCurrentDevice;
     private AudioDeviceInfo mPreviousDevice;
@@ -171,7 +169,7 @@ public class AudioFxService extends Service {
             }
         }
 
-        public void setOverrideLevels(short band, short level) {
+        public void setOverrideLevels(short band, float level) {
             if (checkService()) {
                 mService.get().setOverrideLevels(band, level);
             }
@@ -206,8 +204,8 @@ public class AudioFxService extends Service {
         }
     }
 
-    private void setOverrideLevels(short band, short level) {
-        mBackgroundHandler.obtainMessage(MSG_BG_UPDATE_EQ_OVERRIDE, band, level).sendToTarget();
+    private void setOverrideLevels(short band, float level) {
+        mBackgroundHandler.obtainMessage(MSG_BG_UPDATE_EQ_OVERRIDE, band, 0, level).sendToTarget();
     }
 
     private String getCurrentDeviceIdentifier() {
@@ -222,7 +220,8 @@ public class AudioFxService extends Service {
                 case MSG_ADD_SESSION:
                     if (!mAudioSessions.containsKey(msg.arg1)) {
                         if (DEBUG) Log.d(TAG, "added new EffectSet for sessionId=" + msg.arg1);
-                        mAudioSessions.put(msg.arg1, EffectsFactory.createEffectSet(msg.arg1));
+                        mAudioSessions.put(msg.arg1, EffectsFactory.createEffectSet(
+                                getApplicationContext(), msg.arg1));
                     }
                     mMostRecentSessionId = msg.arg1;
                     if (DEBUG) Log.d(TAG, "new most recent sesssionId=" + msg.arg1);
@@ -253,19 +252,6 @@ public class AudioFxService extends Service {
                     break;
 
                 case MSG_UPDATE_DSP:
-                    if (mDts.hasDts()) {
-                        if (mDts.shouldUseDts()) {
-                            if (DEBUG) Log.d(TAG, "forcing DTS effects");
-                            disableAllEffects();
-
-                            mDts.setEnabled(mDts.isUserEnabled());
-                            break;
-                        } else {
-                            if (DEBUG) Log.d(TAG, "not using DTS");
-                            mDts.setEnabled(false);
-                        }
-                    }
-
                     final String mode = getCurrentDeviceIdentifier();
                     if (DEBUG) Log.i(TAG, "Updating to configuration: " + mode);
                     // immediately update most recent session
@@ -324,7 +310,7 @@ public class AudioFxService extends Service {
             switch (msg.what) {
                 case MSG_BG_UPDATE_EQ_OVERRIDE:
                     if (mMostRecentSessionId != -1) {
-                        updateEqBand((short) msg.arg1, (short) msg.arg2,
+                        updateEqBand((short) msg.arg1, (Float) msg.obj,
                                 mAudioSessions.get(mMostRecentSessionId));
                     }
                     break;
@@ -351,8 +337,6 @@ public class AudioFxService extends Service {
 
         mHandler = new Handler(audioLooper, new AudioServiceHandler());
         mBackgroundHandler = new Handler(backgroundLooper, new AudioBackgroundHandler());
-
-        mDts = new DtsControl(this);
 
         mDeviceListener = new AudioOutputChangeListener(this, mHandler) {
             @Override
@@ -497,7 +481,7 @@ public class AudioFxService extends Service {
      * Temporarily override a band level. {@link #updateDsp(SharedPreferences, EffectSet)} will take
      * care of overriding the preset value when a preset is selected
      */
-    private synchronized void updateEqBand(short band, short level, EffectSet effectSet) {
+    private synchronized void updateEqBand(short band, float level, EffectSet effectSet) {
         if (effectSet != null) {
             effectSet.setEqualizerBandLevel(band, level);
         }
@@ -527,6 +511,7 @@ public class AudioFxService extends Service {
 
         final boolean globalEnabled = prefs.getBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE,
                 DEVICE_DEFAULT_GLOBAL_ENABLE);
+        session.setGlobalEnabled(globalEnabled);
 
         // bass
         try {
@@ -559,12 +544,7 @@ public class AudioFxService extends Service {
 
                 String savedPreset = prefs.getString(DEVICE_AUDIOFX_EQ_PRESET_LEVELS, null);
                 if (savedPreset != null) {
-                    short[] equalizerLevels = EqUtils.convertDecibelsToMillibelsInShorts(
-                            EqUtils.stringBandsToFloats(savedPreset));
-
-                    if (equalizerLevels != null && globalEnabled) {
-                        session.setEqualizerLevels(equalizerLevels);
-                    }
+                    session.setEqualizerLevelsDecibels(EqUtils.stringBandsToFloats(savedPreset));
                 }
             }
         } catch (Exception e) {
@@ -640,7 +620,7 @@ public class AudioFxService extends Service {
         if (prefs.getBoolean(SAVED_DEFAULTS, false) && !needsPrefsUpdate) {
             return;
         }
-        EffectSet temp = EffectsFactory.createEffectSet(0);
+        EffectSet temp = EffectsFactory.createEffectSet(getApplicationContext(), 0);
 
         final int numBands = temp.getNumEqualizerBands();
         final int numPresets = temp.getNumEqualizerPresets();
@@ -683,13 +663,16 @@ public class AudioFxService extends Service {
             presetBands.deleteCharAt(presetBands.length() - 1);
             editor.putString(EQUALIZER_PRESET + i, presetBands.toString());
         }
-        presetNames.deleteCharAt(presetNames.length() - 1);
+        if (presetNames.length() > 0) {
+            presetNames.deleteCharAt(presetNames.length() - 1);
+        }
         editor.putString(EQUALIZER_PRESET_NAMES, presetNames.toString());
 
 
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.getBrand() == EffectsFactory.MAXXAUDIO);
+        editor.putBoolean(AUDIOFX_GLOBAL_HAS_DTS, temp.getBrand() == EffectsFactory.DTS);
         temp.release();
         editor.commit();
 
