@@ -16,6 +16,8 @@ LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, res)
 LOCAL_AAPT_FLAGS := --auto-add-overlay
 LOCAL_AAPT_FLAGS += --extra-packages com.cyanogen.ambient
 
+#LOCAL_JACK_ENABLED := disabled
+
 LOCAL_STATIC_JAVA_AAR_LIBRARIES := ambientsdk
 
 LOCAL_PRIVILEGED_MODULE := true
@@ -28,3 +30,8 @@ $(warning *** SIGNING AUDIOFX WITH TEST KEY ***)
 endif
 
 include $(BUILD_PACKAGE)
+
+# Use the following include to make our test apk.
+ifeq (,$(ONE_SHOT_MAKEFILE))
+include $(call all-makefiles-under,$(LOCAL_PATH))
+endif

@@ -12,7 +12,7 @@ public class ServiceDispatcher extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Intent service = new Intent(context, AudioFxService.class);
+        Intent service = new Intent(context.getApplicationContext(), AudioFxService.class);
         String action = intent.getAction();
 
         // We can also get AUDIO_BECOMING_NOISY, which means a device change is
