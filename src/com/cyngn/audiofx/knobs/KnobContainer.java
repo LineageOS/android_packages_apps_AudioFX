@@ -335,7 +335,7 @@ public class KnobContainer extends LinearLayout
         final boolean speaker = device.getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER;
         final boolean maxxAudio = MasterConfigControl.getInstance(mContext).hasMaxxAudio();
         final boolean dts = MasterConfigControl.getInstance(mContext).hasDts();
-        final boolean effectsEnabled = (maxxAudio && !speaker) || dts;
+        final boolean effectsEnabled = !speaker || maxxAudio || dts;
 
         mKnobCommander.updateTrebleKnob(mTrebleKnob, effectsEnabled);
         mKnobCommander.updateBassKnob(mBassKnob, effectsEnabled);
