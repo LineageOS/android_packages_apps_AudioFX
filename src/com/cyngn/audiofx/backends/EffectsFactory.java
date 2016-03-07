@@ -1,6 +1,7 @@
 package com.cyngn.audiofx.backends;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import com.cyngn.audiofx.Constants;
 
 import java.io.File;
@@ -13,39 +14,43 @@ import java.io.File;
  */
 public class EffectsFactory {
 
-    private static Boolean sHasDts;
-
     public static final int ANDROID = 0;
     public static final int MAXXAUDIO = 1;
     public static final int DTS = 2;
 
     public static EffectSet createEffectSet(Context context, int sessionId) {
+        final SharedPreferences prefs = Constants.getGlobalPrefs(context);
 
-        if (hasDts()) {
+        // dts?
+        final boolean hasDts = prefs.getBoolean(Constants.AUDIOFX_GLOBAL_HAS_DTS, hasDts());
+        if (hasDts) {
             return new DtsEffects(context, sessionId);
         }
 
-        // try MaxxAudio next, this will throw an exception if unavailable
-        MaxxAudioEffects fx = null;
-        try {
-            fx = new MaxxAudioEffects(sessionId);
-        } catch (Exception e) {
-            fx = null;
-        }
+        // maxx audio? if it's the very first time we try to init this, the pref won't exist
+        // and so we assume we have it, because it will get destroyed and cleaned up and regular
+        // effects will be returned
+        boolean hasMaxxAudio = prefs.getBoolean(Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO, true);
 
-        // good to go!
-        if (fx != null) {
-            return fx;
+        if (hasMaxxAudio) {
+            // try MaxxAudio next, this will throw an exception if unavailable
+            MaxxAudioEffects fx = null;
+            try {
+                fx = new MaxxAudioEffects(sessionId);
+            } catch (Exception e) {
+                fx = null;
+            }
+            // good to go!
+            if (fx != null) {
+                return fx;
+            }
         }
 
         return new AndroidEffects(sessionId);
     }
 
     public static boolean hasDts() {
-        if (sHasDts == null) {
-            sHasDts = new File("***REMOVED***").exists();
-        }
-        return sHasDts;
+        return new File("***REMOVED***").exists();
     }
 
 }
