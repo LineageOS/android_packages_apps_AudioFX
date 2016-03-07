@@ -12,6 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Copyright (C) 2016 Cyanogen Inc.
+ *
+ * Proprietary and confidential.
  */
 package com.cyngn.audiofx.service;
 
@@ -47,6 +51,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.AudioDeviceInfo;
+import android.media.AudioManager;
+import android.media.AudioSystem;
 import android.media.audiofx.AudioEffect;
 import android.media.audiofx.PresetReverb;
 import android.os.Binder;
@@ -57,7 +63,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.ArrayMap;
 import android.util.Log;
 
 import android.util.SparseArray;
@@ -74,10 +79,8 @@ import cyanogenmod.app.CustomTile;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * This service is responsible for applying all requested effects from the AudioFX UI.
@@ -122,14 +125,15 @@ public class AudioFxService extends Service {
      */
     private final SparseArray<EffectSet> mAudioSessionsL = new SparseArray<EffectSet>();
 
-    int mMostRecentSessionId;
-    Handler mHandler;
-    Handler mBackgroundHandler;
-    AudioOutputChangeListener mDeviceListener;
+    private Handler mHandler;
+    private Handler mBackgroundHandler;
+    private AudioOutputChangeListener mDeviceListener;
     private Locale mLastLocale;
 
     private AudioDeviceInfo mCurrentDevice;
     private AudioDeviceInfo mPreviousDevice;
+
+    private FxSessionCallback mSessionCallback;
 
     // audio priority handler messages
     private static final int MSG_UPDATE_DSP = 100;
@@ -222,6 +226,24 @@ public class AudioFxService extends Service {
         return MasterConfigControl.getDeviceIdentifierString(mCurrentDevice);
     }
 
+    private class FxSessionCallback implements AudioSystem.EffectSessionCallback {
+
+        @Override
+        public void onSessionAdded(int stream, int sessionId) {
+            if (DEBUG) Log.i(TAG, String.format("New audio session: %d", sessionId));
+
+            mHandler.sendMessageAtFrontOfQueue(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId));
+        }
+
+        @Override
+        public void onSessionRemoved(int stream, int sessionId) {
+            if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d", sessionId));
+
+            mHandler.sendMessageDelayed(Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId),
+                    REMOVE_SESSIONS_DELAY);
+        }
+
+    }
     private class AudioServiceHandler implements Handler.Callback {
 
         @Override
@@ -234,13 +256,16 @@ public class AudioFxService extends Service {
                      */
                     synchronized (mAudioSessionsL) {
                         final int sessionId = (Integer) msg.obj;
+                        mHandler.removeMessages(MSG_REMOVE_SESSION, sessionId);
+                        mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
                         if (mAudioSessionsL.indexOfKey(sessionId) < 0) {
                             mAudioSessionsL.put(sessionId, EffectsFactory.createEffectSet(
                                     getApplicationContext(), sessionId));
                             if (DEBUG) Log.w(TAG, "added new EffectSet for sessionId=" + sessionId);
+
+                            Message.obtain(mHandler, MSG_UPDATE_FOR_SESSION, ALL_CHANGED, 0, sessionId)
+                                    .sendToTarget();
                         }
-                        Message.obtain(mHandler, MSG_UPDATE_FOR_SESSION, ALL_CHANGED, 0, sessionId)
-                                .sendToTarget();
                     }
                     break;
 
@@ -250,6 +275,8 @@ public class AudioFxService extends Service {
                      */
                     synchronized (mAudioSessionsL) {
                         final Integer sessionId = (Integer) msg.obj;
+                        mHandler.removeMessages(MSG_ADD_SESSION, sessionId);
+                        mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
                         if (mAudioSessionsL.indexOfKey(sessionId) > -1) {
                             final EffectSet effectSet = mAudioSessionsL.removeReturnOld(sessionId);
                             if (effectSet != null) {
@@ -273,8 +300,10 @@ public class AudioFxService extends Service {
                         final int N = mAudioSessionsL.size();
                         for (int i = 0; i < N; i++) {
                             final int sessionIdKey = mAudioSessionsL.keyAt(i);
-                            Message.obtain(mHandler, MSG_UPDATE_FOR_SESSION, msg.arg1, 0, sessionIdKey)
-                                    .sendToTarget();
+                            if (!mHandler.hasMessages(MSG_REMOVE_SESSION, sessionIdKey)) {
+                                Message.obtain(mHandler, MSG_UPDATE_FOR_SESSION, msg.arg1, 0, sessionIdKey)
+                                        .sendToTarget();
+                            }
                         }
                     }
                     break;
@@ -292,10 +321,10 @@ public class AudioFxService extends Service {
                     }
                     synchronized (mAudioSessionsL) {
                         session = mAudioSessionsL.get(sessionId);
-                    }
-                    ;
-                    if (!mHandler.hasMessages(MSG_REMOVE_SESSION, sessionId)) {
-                        updateDsp(msg.arg1, getSharedPreferences(device, 0), session);
+
+                        if (!mHandler.hasMessages(MSG_REMOVE_SESSION, sessionId)) {
+                            updateDsp(msg.arg1, getSharedPreferences(device, 0), session);
+                        }
                     }
                     break;
 
@@ -383,6 +412,9 @@ public class AudioFxService extends Service {
 
         mDeviceListener.register();
 
+        mSessionCallback = new FxSessionCallback();
+        AudioSystem.setEffectSessionCallback(mSessionCallback);
+
         try {
             saveAndApplyDefaults(false);
         } catch (Exception e) {
@@ -410,18 +442,14 @@ public class AudioFxService extends Service {
 
                 if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
 
-                    if (DEBUG) Log.i(TAG, String.format("New audio session: %d", sessionId));
-
-                    mHandler.removeMessages(MSG_REMOVE_SESSION, sessionId);
-                    mHandler.sendMessage(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId));
+                    if (DEBUG) Log.i(TAG, String.format("New audio session: %d package: %s contentType=%s",
+                            sessionId, pkg, contentType));
+                    mSessionCallback.onSessionAdded(AudioManager.STREAM_MUSIC, sessionId);
 
                 } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
 
                     if (DEBUG) Log.i(TAG, String.format("Audio session will be removed: %d", sessionId));
-
-                    final Message msg = Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId);
-                    mHandler.sendMessageDelayed(msg, REMOVE_SESSIONS_DELAY);
-
+                    mSessionCallback.onSessionRemoved(AudioManager.STREAM_MUSIC, sessionId);
                 }
             }
         }
@@ -490,6 +518,9 @@ public class AudioFxService extends Service {
             mBackgroundHandler.getLooper().quit();
             mBackgroundHandler = null;
         }
+
+        AudioSystem.setEffectSessionCallback(null);
+
         super.onDestroy();
     }
 
@@ -623,17 +654,6 @@ public class AudioFxService extends Service {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error enabling volume boost!", e);
-        }
-    }
-
-    private void disableAllEffects() {
-        synchronized (mAudioSessionsL) {
-            final int N = mAudioSessionsL.size();
-            for (int i = 0; i < N; i++) {
-                int sessionId = mAudioSessionsL.keyAt(i);
-                final EffectSet effectSet = mAudioSessionsL.get(sessionId);
-                effectSet.disableAll();
-            }
         }
     }
 
