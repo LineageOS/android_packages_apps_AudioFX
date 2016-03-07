@@ -132,6 +132,9 @@ public class AudioFxService extends Service {
 
     private FxSessionCallback mSessionCallback;
 
+    private CustomTile mTile;
+    private CustomTile.Builder mTileBuilder;
+
     // audio priority handler messages
     private static final int MSG_UPDATE_DSP = 100;
     private static final int MSG_ADD_SESSION = 101;
@@ -222,16 +225,21 @@ public class AudioFxService extends Service {
         @Override
         public void onSessionAdded(int stream, int sessionId) {
             if (stream == AudioManager.STREAM_MUSIC) {
-                if (DEBUG) Log.i(TAG, String.format("New audio session: %d", sessionId));
+                if (DEBUG) {
+                    Log.i(TAG, String.format("New audio session: %d", sessionId));
+                }
 
-                mHandler.sendMessageAtFrontOfQueue(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId));
+                mHandler.sendMessageAtFrontOfQueue(Message.obtain(mHandler, MSG_ADD_SESSION,
+                        sessionId));
             }
         }
 
         @Override
         public void onSessionRemoved(int stream, int sessionId) {
             if (stream == AudioManager.STREAM_MUSIC) {
-                if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d", sessionId));
+                if (DEBUG)  {
+                    Log.i(TAG, String.format("Audio session queued for removal: %d", sessionId));
+                }
 
                 mHandler.sendMessageDelayed(Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId),
                         REMOVE_SESSIONS_DELAY);
@@ -424,6 +432,10 @@ public class AudioFxService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (DEBUG) {
+            Log.i(TAG, "onStartCommand() called with " + "intent = [" + intent + "], flags = ["
+                    + flags + "], startId = [" + startId + "]");
+        }
         if (intent != null && intent.getAction() != null) {
             if (ACTION_UPDATE_TILE.equals(intent.getAction())) {
                 updateQsTile();
@@ -434,26 +446,21 @@ public class AudioFxService extends Service {
                 String contentType = intent.getStringExtra(AudioEffect.EXTRA_CONTENT_TYPE);
 
                 if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
-
-                    if (DEBUG) Log.i(TAG, String.format("New audio session: %d package: %s contentType=%s",
-                            sessionId, pkg, contentType));
+                    if (DEBUG)  {
+                        Log.i(TAG, String.format("New audio session: %d package: %s contentType=%s",
+                                sessionId, pkg, contentType));
+                    }
                     mSessionCallback.onSessionAdded(AudioManager.STREAM_MUSIC, sessionId);
 
                 } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
 
-                    if (DEBUG) Log.i(TAG, String.format("Audio session will be removed: %d", sessionId));
                     mSessionCallback.onSessionRemoved(AudioManager.STREAM_MUSIC, sessionId);
+
                 }
             }
         }
-        if (DEBUG)
-            Log.i(TAG, "onStartCommand() called with " + "intent = [" + intent + "], flags = ["
-                    + flags + "], startId = [" + startId + "]");
         return START_STICKY;
     }
-
-    private CustomTile mTile;
-    private CustomTile.Builder mTileBuilder;
 
     private void updateQsTile() {
         if (mTileBuilder == null) {
@@ -539,7 +546,7 @@ public class AudioFxService extends Service {
     // ======== DSP UPDATE METHODS BELOW ============= //
 
     /**
-     * Temporarily override a band level. {@link #updateDsp(SharedPreferences, EffectSet)} will take
+     * Temporarily override a band level. {@link #updateDsp(int flags, SharedPreferences, EffectSet)} will take
      * care of overriding the preset value when a preset is selected
      */
     private void updateEqBand(short band, float level, EffectSet effectSet) {

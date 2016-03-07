@@ -1,33 +1,41 @@
 package com.cyngn.audiofx;
 
 import android.os.Parcel;
+import android.support.test.runner.AndroidJUnit4;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
+import com.cyngn.audiofx.Preset;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.junit.Assert.*;
 
 /**
  * Created by roman on 9/29/15.
  */
-public class PresetTests extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class PresetParcelTests {
 
     private Preset.PermCustomPreset permPreset;
     private Preset.PermCustomPreset permPresetCopy;
     private Preset.CustomPreset customPreset;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         permPreset = new Preset.PermCustomPreset("test perm preset", new float[]{10, 50, 20, 30, 10000});
         permPresetCopy = new Preset.PermCustomPreset("test perm preset", new float[]{10, 50, 20, 30, 10000});
         customPreset = new Preset.CustomPreset("test custom preset", new float[]{10, 50, 20, 30, 10000}, false);
     }
 
-    @SmallTest
+    @Test
     public void testPresetsEqual() {
-        assertNotSame(permPreset, customPreset);
+        assertNotEquals(permPreset, customPreset);
         assertEquals(permPreset, permPresetCopy);
     }
 
-    @SmallTest
+    @Test
     public void testPresetsFromString() {
         final String permPresetTest = permPreset.toString();
         final Preset.PermCustomPreset fromString = Preset.PermCustomPreset.fromString(permPresetTest);
@@ -35,7 +43,7 @@ public class PresetTests extends AndroidTestCase {
         assertEquals(permPreset, fromString);
     }
 
-    @SmallTest
+    @Test
     public void testPermPresetParcelable() {
         Parcel parcel = Parcel.obtain();
 
@@ -56,7 +64,7 @@ public class PresetTests extends AndroidTestCase {
         assertEquals(permPreset, fromParcel);
     }
 
-    @SmallTest
+    @Test
     public void testCustomPresetParcelable() {
         Parcel parcel = Parcel.obtain();
 
@@ -80,7 +88,7 @@ public class PresetTests extends AndroidTestCase {
 
     private void assertPresetLevels(Preset p1, Preset p2) {
         for(int i = 0; i < p1.getLevels().length; i++) {
-            assertEquals(p1.getLevels()[i], p2.getLevels()[i]);
+            assertEquals(p1.getLevels()[i], p2.getLevels()[i], 0);
         }
     }
 }

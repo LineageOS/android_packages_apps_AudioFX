@@ -1,4 +1,5 @@
 LOCAL_PATH:= $(call my-dir)
+
 include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := tests
@@ -7,7 +8,13 @@ LOCAL_SRC_FILES := $(call all-subdir-java-files)
 
 LOCAL_PACKAGE_NAME := AudioFXTests
 LOCAL_INSTRUMENTATION_FOR := AudioFX
-LOCAL_JAVA_LIBRARIES := android.test.runner
+
+LOCAL_STATIC_JAVA_LIBRARIES := \
+        audiofx-android-support-test
+
+LOCAL_JAVA_LIBRARIES := \
+        android-support-v4 \
+
 LOCAL_PROGUARD_ENABLED := disabled
 
 LOCAL_JACK_ENABLED := disabled
@@ -19,5 +26,11 @@ else
 $(warning *** SIGNING AUDIOFX WITH TEST KEY ***)
 endif
 
-
 include $(BUILD_PACKAGE)
+
+include $(CLEAR_VARS)
+
+LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := \
+    audiofx-android-support-test:lib/rules-0.3-release.jar
+
+include $(BUILD_MULTI_PREBUILT)
