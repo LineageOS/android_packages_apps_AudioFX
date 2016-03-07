@@ -121,8 +121,6 @@ public class AudioFxService extends Service {
      * All fields ending with L should be locked on {@link #mAudioSessionsL}
      */
     private final SparseArray<EffectSet> mAudioSessionsL = new SparseArray<EffectSet>();
-    private final ArrayList<Integer> mSessionsToRemoveL = new ArrayList<Integer>();
-    private int mMostRecentSessionIdL;
 
     int mMostRecentSessionId;
     Handler mHandler;
@@ -136,7 +134,7 @@ public class AudioFxService extends Service {
     // audio priority handler messages
     private static final int MSG_UPDATE_DSP = 100;
     private static final int MSG_ADD_SESSION = 101;
-    private static final int MSG_REMOVE_SESSIONS = 102;
+    private static final int MSG_REMOVE_SESSION = 102;
     private static final int MSG_UPDATE_FOR_SESSION = 103;
     private static final int MSG_SELF_DESTRUCT = 104;
     private static final int MSG_UPDATE_DEVICE = 105;
@@ -231,87 +229,74 @@ public class AudioFxService extends Service {
             final EffectSet session;
             switch (msg.what) {
                 case MSG_ADD_SESSION:
+                    /**
+                     * msg.obj = sessionId
+                     */
                     synchronized (mAudioSessionsL) {
-                        if (mAudioSessionsL.indexOfKey(msg.arg1) < 0) {
-                            mAudioSessionsL.put(msg.arg1, EffectsFactory.createEffectSet(
-                                    getApplicationContext(), msg.arg1));
-                            if (DEBUG) Log.d(TAG, "added new EffectSet for sessionId=" + msg.arg1);
-                            mMostRecentSessionIdL = msg.arg1;
+                        final int sessionId = (Integer) msg.obj;
+                        if (mAudioSessionsL.indexOfKey(sessionId) < 0) {
+                            mAudioSessionsL.put(sessionId, EffectsFactory.createEffectSet(
+                                    getApplicationContext(), sessionId));
+                            if (DEBUG) Log.w(TAG, "added new EffectSet for sessionId=" + sessionId);
                         }
-                        if (DEBUG) Log.d(TAG, "new most recent sesssionId=" + msg.arg1);
+                        Message.obtain(mHandler, MSG_UPDATE_FOR_SESSION, ALL_CHANGED, 0, sessionId)
+                                .sendToTarget();
                     }
-
-                    update(ALL_CHANGED);
                     break;
 
-                case MSG_REMOVE_SESSIONS:
-
-                    // TODO we may still have lingering sessions that weren't properly closed
-                    // by the effect requester, those would be in mAudioSessions.
-                    // add an effect creation time and maybe an effect decay length where
-                    // we can consider the session dead after a certain period of time
+                case MSG_REMOVE_SESSION:
+                    /**
+                     * msg.obj = sessionId
+                     */
                     synchronized (mAudioSessionsL) {
-                        for (Integer id : mSessionsToRemoveL) {
-                            EffectSet gone = mAudioSessionsL.removeReturnOld(id);
-                            if (gone != null) {
-                                if (DEBUG) Log.d(TAG, "removed EffectSet for sessionId=" + id);
-                                gone.release();
-                            }
-                            if (mMostRecentSessionIdL == id) {
-                                if (DEBUG) Log.d(TAG, "resetting most recent session ID");
-                                mMostRecentSessionIdL = -1;
+                        final Integer sessionId = (Integer) msg.obj;
+                        if (mAudioSessionsL.indexOfKey(sessionId) > -1) {
+                            final EffectSet effectSet = mAudioSessionsL.removeReturnOld(sessionId);
+                            if (effectSet != null) {
+                                effectSet.release();
+                                if (DEBUG) Log.w(TAG, "removed and released sessionId=" + sessionId);
                             }
                         }
-                        mSessionsToRemoveL.clear();
                     }
                     break;
 
                 case MSG_UPDATE_DSP:
+                    /**
+                     * msg.arg1 = update what flags
+                     */
                     final String mode = getCurrentDeviceIdentifier();
                     if (DEBUG) Log.i(TAG, "Updating to configuration: " + mode);
 
-                    final int currentMostRecentSessionId;
+                    // cancel updates for other effects, let them go through on the last call
+                    mHandler.removeMessages(MSG_UPDATE_FOR_SESSION);
                     synchronized (mAudioSessionsL) {
-                        currentMostRecentSessionId = mMostRecentSessionIdL;
-                        // immediately update most recent session
-                    }
-                    if (currentMostRecentSessionId > 0) {
-                        if (DEBUG) Log.d(TAG, "updating DSP for most recent session id ("
-                                + currentMostRecentSessionId + ")!");
-
-                        synchronized (mAudioSessionsL) {
-                            session = mAudioSessionsL.get(currentMostRecentSessionId);
-                        }
-                        updateDsp(msg.arg1, getSharedPreferences(mode, 0),
-                                session
-                        );
-
-                        // cancel updates for other effects, let them go through on the last call
-                        mHandler.removeMessages(MSG_UPDATE_FOR_SESSION);
-                        int delay = 500;
-                        synchronized (mAudioSessionsL) {
-                            final int N = mAudioSessionsL.size();
-                            for (int i = 0; i < N; i++) {
-                                final int sessionIdKey = mAudioSessionsL.keyAt(i);
-                                if (sessionIdKey == currentMostRecentSessionId) {
-                                    continue;
-                                }
-                                mHandler.sendMessageDelayed(Message.obtain(mHandler,
-                                        MSG_UPDATE_FOR_SESSION, sessionIdKey, msg.arg1), delay);
-                                delay += 500;
-                            }
+                        final int N = mAudioSessionsL.size();
+                        for (int i = 0; i < N; i++) {
+                            final int sessionIdKey = mAudioSessionsL.keyAt(i);
+                            Message.obtain(mHandler, MSG_UPDATE_FOR_SESSION, msg.arg1, 0, sessionIdKey)
+                                    .sendToTarget();
                         }
                     }
                     break;
 
                 case MSG_UPDATE_FOR_SESSION:
+                    /**
+                     * msg.arg1 = update what flags
+                     * msg.arg2 = unused
+                     * msg.obj = session id integer (for consistency)
+                     */
                     String device = getCurrentDeviceIdentifier();
-                    if (DEBUG)
-                        Log.i(TAG, "updating DSP for sessionId=" + msg.arg1 + ", device=" + device);
-                    synchronized (mAudioSessionsL) {
-                        session = mAudioSessionsL.get(msg.arg1);
+                    final Integer sessionId = (Integer) msg.obj;
+                    if (DEBUG) {
+                        Log.i(TAG, "updating DSP for sessionId=" + sessionId + ", device=" + device);
                     }
-                    updateDsp(msg.arg2, getSharedPreferences(device, 0), session);
+                    synchronized (mAudioSessionsL) {
+                        session = mAudioSessionsL.get(sessionId);
+                    }
+                    ;
+                    if (!mHandler.hasMessages(MSG_REMOVE_SESSION, sessionId)) {
+                        updateDsp(msg.arg1, getSharedPreferences(device, 0), session);
+                    }
                     break;
 
                 case MSG_SELF_DESTRUCT:
@@ -323,15 +308,16 @@ public class AudioFxService extends Service {
                         } else {
                             if (DEBUG) {
                                 Log.w(TAG, "failed to self destruct, mAudioSession size: "
-                                        + mAudioSessionsL.size() + ", mSessionsToRemove size: "
-                                        + mSessionsToRemoveL.size() + ", mMostRecentSession: "
-                                        + mMostRecentSessionIdL);
+                                        + mAudioSessionsL.size());
                             }
                         }
                     }
                     break;
 
                 case MSG_UPDATE_DEVICE:
+                    /**
+                     * msg.obj = the device we expect
+                     */
                     AudioDeviceInfo outputDevice = (AudioDeviceInfo) msg.obj;
                     mPreviousDevice = mCurrentDevice;
                     mCurrentDevice = outputDevice;
@@ -346,23 +332,22 @@ public class AudioFxService extends Service {
         }
     }
 
-
     private class AudioBackgroundHandler implements Handler.Callback {
 
         @Override
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_BG_UPDATE_EQ_OVERRIDE:
-                    final EffectSet effectSet;
                     synchronized (mAudioSessionsL) {
-                        if (mMostRecentSessionIdL != -1) {
-                            effectSet = mAudioSessionsL.get(mMostRecentSessionIdL);
-                        } else {
-                            effectSet = null;
+                        final int N = mAudioSessionsL.size();
+                        for (int i = 0; i < N; i++) {
+                            final int sessionIdKey = mAudioSessionsL.keyAt(i);
+                            final EffectSet effectSet = mAudioSessionsL.get(sessionIdKey);
+                            if (effectSet != null && !mHandler.hasMessages(MSG_REMOVE_SESSION,
+                                    sessionIdKey)) {
+                                updateEqBand((short) msg.arg1, (float) msg.obj, effectSet);
+                            }
                         }
-                    }
-                    if (effectSet != null) {
-                        updateEqBand((short) msg.arg1, (float) msg.obj, effectSet);
                     }
                     break;
             }
@@ -421,24 +406,22 @@ public class AudioFxService extends Service {
                 String action = intent.getAction();
                 int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
                 String pkg = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
+                String contentType = intent.getStringExtra(AudioEffect.EXTRA_CONTENT_TYPE);
 
                 if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
-                    if (DEBUG) Log.i(TAG, String.format("New audio session: %d, package: %s",
-                            sessionId, pkg));
 
-                    synchronized (mAudioSessionsL) {
-                        mSessionsToRemoveL.remove((Integer) sessionId);
-                    }
-                    mHandler.sendMessage(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId, 0));
+                    if (DEBUG) Log.i(TAG, String.format("New audio session: %d", sessionId));
+
+                    mHandler.removeMessages(MSG_REMOVE_SESSION, sessionId);
+                    mHandler.sendMessage(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId));
 
                 } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
-                    if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d, package: %s",
-                            sessionId, pkg));
 
-                    synchronized (mAudioSessionsL) {
-                        mSessionsToRemoveL.add(sessionId);
-                    }
-                    mHandler.sendEmptyMessageDelayed(MSG_REMOVE_SESSIONS, REMOVE_SESSIONS_DELAY);
+                    if (DEBUG) Log.i(TAG, String.format("Audio session will be removed: %d", sessionId));
+
+                    final Message msg = Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId);
+                    mHandler.sendMessageDelayed(msg, REMOVE_SESSIONS_DELAY);
+
                 }
             }
         }
@@ -535,7 +518,7 @@ public class AudioFxService extends Service {
      * Temporarily override a band level. {@link #updateDsp(SharedPreferences, EffectSet)} will take
      * care of overriding the preset value when a preset is selected
      */
-    private synchronized void updateEqBand(short band, float level, EffectSet effectSet) {
+    private void updateEqBand(short band, float level, EffectSet effectSet) {
         if (effectSet != null) {
             effectSet.setEqualizerBandLevel(band, level);
         }
