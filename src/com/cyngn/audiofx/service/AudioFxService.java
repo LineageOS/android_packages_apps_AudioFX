@@ -394,7 +394,7 @@ public class AudioFxService extends Service {
         if (DEBUG) Log.i(TAG, "Starting service.");
 
         HandlerThread handlerThread = new HandlerThread(TAG + "-AUDIO",
-                Process.THREAD_PRIORITY_LESS_FAVORABLE);
+                Process.THREAD_PRIORITY_MORE_FAVORABLE);
         handlerThread.start();
 
         HandlerThread backgroundThread = new HandlerThread(TAG + "-BG_WORK",
