@@ -230,20 +230,24 @@ public class AudioFxService extends Service {
 
         @Override
         public void onSessionAdded(int stream, int sessionId) {
-            if (DEBUG) Log.i(TAG, String.format("New audio session: %d", sessionId));
+            if (stream == AudioManager.STREAM_MUSIC) {
+                if (DEBUG) Log.i(TAG, String.format("New audio session: %d", sessionId));
 
-            mHandler.sendMessageAtFrontOfQueue(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId));
+                mHandler.sendMessageAtFrontOfQueue(Message.obtain(mHandler, MSG_ADD_SESSION, sessionId));
+            }
         }
 
         @Override
         public void onSessionRemoved(int stream, int sessionId) {
-            if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d", sessionId));
+            if (stream == AudioManager.STREAM_MUSIC) {
+                if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d", sessionId));
 
-            mHandler.sendMessageDelayed(Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId),
-                    REMOVE_SESSIONS_DELAY);
+                mHandler.sendMessageDelayed(Message.obtain(mHandler, MSG_REMOVE_SESSION, sessionId),
+                        REMOVE_SESSIONS_DELAY);
+            }
         }
-
     }
+
     private class AudioServiceHandler implements Handler.Callback {
 
         @Override
