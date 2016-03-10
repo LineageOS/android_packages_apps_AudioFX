@@ -100,9 +100,6 @@ public class AudioFxService extends Service {
     public static final String ACTION_DEVICE_OUTPUT_CHANGED
             = "org.cyanogenmod.audiofx.ACTION_DEVICE_OUTPUT_CHANGED";
 
-    public static final String ACTION_REAPPLY_DEFAULTS
-            = "com.cyngn.audiofx.action.REAPPLY_DEFAULTS";
-
     public static final String ACTION_UPDATE_TILE = "com.cyngn.audiofx.action.UPDATE_TILE";
 
     public static final String EXTRA_DEVICE = "device";
@@ -164,12 +161,6 @@ public class AudioFxService extends Service {
         public void update(int flags) {
             if (checkService()) {
                 mService.get().update(flags);
-            }
-        }
-
-        public void applyDefaults() {
-            if (checkService()) {
-                mService.get().forceDefaults();
             }
         }
 
@@ -416,9 +407,6 @@ public class AudioFxService extends Service {
 
         mDeviceListener.register();
 
-        mSessionCallback = new FxSessionCallback();
-        AudioSystem.setEffectSessionCallback(mSessionCallback);
-
         try {
             saveAndApplyDefaults(false);
         } catch (Exception e) {
@@ -428,15 +416,16 @@ public class AudioFxService extends Service {
             stopSelf();
         }
 
+        mSessionCallback = new FxSessionCallback();
+        AudioSystem.setEffectSessionCallback(mSessionCallback);
+
         updateQsTile();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.getAction() != null) {
-            if (ACTION_REAPPLY_DEFAULTS.equals(intent.getAction())) {
-                saveAndApplyDefaults(false);
-            } else if (ACTION_UPDATE_TILE.equals(intent.getAction())) {
+            if (ACTION_UPDATE_TILE.equals(intent.getAction())) {
                 updateQsTile();
             } else {
                 String action = intent.getAction();
@@ -661,24 +650,22 @@ public class AudioFxService extends Service {
         }
     }
 
-    private void forceDefaults() {
-        SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
-        prefs.edit().putBoolean(SAVED_DEFAULTS, false).apply();
-        saveAndApplyDefaults(true);
-    }
-
     /**
      * This method sets some sane defaults for presets, device defaults, etc
      * <p/>
      * First we read presets from the system, then adjusts some setting values
      * for some better defaults!
      */
-    private synchronized void saveAndApplyDefaults(boolean overridePrevious) {
+    private void saveAndApplyDefaults(boolean overridePrevious) {
+        if (DEBUG) {
+            Log.d(TAG, "saveAndApplyDefaults() called with overridePrevious = " +
+                    "[" + overridePrevious + "]");
+        }
         SharedPreferences prefs = Constants.getGlobalPrefs(this);
 
         final int currentPrefVer = prefs.getInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT, 0);
-        boolean needsPrefsUpdate = currentPrefVer
-                < Constants.CURRENT_PREFS_INT_VERSION;
+        boolean needsPrefsUpdate = currentPrefVer < Constants.CURRENT_PREFS_INT_VERSION
+                || overridePrevious;
 
         if (needsPrefsUpdate) {
             Log.d(TAG, "rebuilding presets due to preference upgrade from " + currentPrefVer
@@ -686,6 +673,9 @@ public class AudioFxService extends Service {
         }
 
         if (prefs.getBoolean(SAVED_DEFAULTS, false) && !needsPrefsUpdate) {
+            if (DEBUG) {
+                Log.e(TAG, "we've already saved defaults and don't need a pref update. aborting.");
+            }
             return;
         }
         EffectSet temp = EffectsFactory.createEffectSet(getApplicationContext(), 0);
@@ -741,10 +731,10 @@ public class AudioFxService extends Service {
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.getBrand() == EffectsFactory.MAXXAUDIO);
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_DTS, temp.getBrand() == EffectsFactory.DTS);
-        temp.release();
         editor.commit();
+        temp.release();
 
-        applyDefaults(overridePrevious || needsPrefsUpdate);
+        applyDefaults(needsPrefsUpdate);
 
         prefs
                 .edit()
@@ -760,6 +750,9 @@ public class AudioFxService extends Service {
      * Prereq: saveDefaults() must have been run before this can apply its defaults properly.
      */
     private void applyDefaults(boolean overridePrevious) {
+        if (DEBUG) {
+            Log.d(TAG, "applyDefaults() called with overridePrevious = [" + overridePrevious + "]");
+        }
         final SharedPreferences globalPrefs = getSharedPreferences(AUDIOFX_GLOBAL_FILE, 0);
         if (globalPrefs.getBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false)) {
             // Maxx Audio defaults:
