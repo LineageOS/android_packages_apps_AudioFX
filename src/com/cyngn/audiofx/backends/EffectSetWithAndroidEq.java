@@ -23,7 +23,12 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
 
     public EffectSetWithAndroidEq(int sessionId) {
         super(sessionId);
-        mEqualizer = new Equalizer(1000, sessionId);
+        try {
+            mEqualizer = new Equalizer(1000, sessionId);
+        } catch (Exception e) {
+            release();
+            throw e;
+        }
     }
 
 
@@ -86,6 +91,8 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
 
     @Override
     public void release() {
-        mEqualizer.release();
+        if (mEqualizer != null) {
+            mEqualizer.release();
+        }
     }
 }

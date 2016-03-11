@@ -251,23 +251,28 @@ public class AudioFxService extends Service {
 
         @Override
         public boolean handleMessage(Message msg) {
-            final EffectSet session;
+            EffectSet session;
+            Integer sessionId;
             switch (msg.what) {
                 case MSG_ADD_SESSION:
                     /**
                      * msg.obj = sessionId
                      */
+                    sessionId = (Integer) msg.obj;
+                    mHandler.removeMessages(MSG_REMOVE_SESSION, sessionId);
+                    mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
+                    try {
+                        session = EffectsFactory.createEffectSet(getApplicationContext(), sessionId);
+                    } catch (Exception e) {
+                        Log.e(TAG, "couldn't create effects for session id: " + sessionId, e);
+                        break;
+                    }
                     synchronized (mAudioSessionsL) {
-                        final int sessionId = (Integer) msg.obj;
-                        mHandler.removeMessages(MSG_REMOVE_SESSION, sessionId);
-                        mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
                         if (mAudioSessionsL.indexOfKey(sessionId) < 0) {
-                            mAudioSessionsL.put(sessionId, EffectsFactory.createEffectSet(
-                                    getApplicationContext(), sessionId));
+                            mAudioSessionsL.put(sessionId, session);
                             if (DEBUG) Log.w(TAG, "added new EffectSet for sessionId=" + sessionId);
-
-                            Message.obtain(mHandler, MSG_UPDATE_FOR_SESSION, ALL_CHANGED, 0, sessionId)
-                                    .sendToTarget();
+                            Message.obtain(mHandler, MSG_UPDATE_FOR_SESSION, ALL_CHANGED, 0,
+                                    sessionId).sendToTarget();
                         }
                     }
                     break;
@@ -276,10 +281,10 @@ public class AudioFxService extends Service {
                     /**
                      * msg.obj = sessionId
                      */
+                    sessionId = (Integer) msg.obj;
+                    mHandler.removeMessages(MSG_ADD_SESSION, sessionId);
+                    mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
                     synchronized (mAudioSessionsL) {
-                        final Integer sessionId = (Integer) msg.obj;
-                        mHandler.removeMessages(MSG_ADD_SESSION, sessionId);
-                        mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
                         if (mAudioSessionsL.indexOfKey(sessionId) > -1) {
                             final EffectSet effectSet = mAudioSessionsL.removeReturnOld(sessionId);
                             if (effectSet != null) {
@@ -318,7 +323,7 @@ public class AudioFxService extends Service {
                      * msg.obj = session id integer (for consistency)
                      */
                     String device = getCurrentDeviceIdentifier();
-                    final Integer sessionId = (Integer) msg.obj;
+                    sessionId = (Integer) msg.obj;
                     if (DEBUG) {
                         Log.i(TAG, "updating DSP for sessionId=" + sessionId + ", device=" + device);
                     }

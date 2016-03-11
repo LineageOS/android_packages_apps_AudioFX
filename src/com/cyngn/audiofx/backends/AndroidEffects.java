@@ -30,9 +30,14 @@ class AndroidEffects extends EffectSetWithAndroidEq {
     public AndroidEffects(int sessionId) {
         super(sessionId);
 
-        mBassBoost = new BassBoost(1000, sessionId);
-        mVirtualizer = new Virtualizer(1000, sessionId);
-        mPresetReverb = new PresetReverb(1000, sessionId);
+        try {
+            mBassBoost = new BassBoost(1000, sessionId);
+            mVirtualizer = new Virtualizer(1000, sessionId);
+            mPresetReverb = new PresetReverb(1000, sessionId);
+        } catch (Exception e) {
+            release();
+            throw e;
+        }
     }
 
     @Override
@@ -87,9 +92,15 @@ class AndroidEffects extends EffectSetWithAndroidEq {
     @Override
     public void release() {
         super.release();
-        mPresetReverb.release();
-        mBassBoost.release();
-        mVirtualizer.release();
+        if (mPresetReverb != null) {
+            mPresetReverb.release();
+        }
+        if (mBassBoost != null) {
+            mBassBoost.release();
+        }
+        if (mVirtualizer != null) {
+            mVirtualizer.release();
+        }
     }
 
     @Override
