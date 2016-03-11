@@ -21,7 +21,7 @@ public class EqSwipeController extends LinearLayout {
      */
     private static final int X_VELOCITY_THRESH = 20;
 
-    private static final int MINIMUM_TIME_HOLD_TIME = 150;
+    private static final int MINIMUM_TIME_HOLD_TIME = 100;
 
     EqContainerView mEq;
     InfiniteViewPager mPager;
