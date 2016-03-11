@@ -1,6 +1,7 @@
 package com.cyngn.audiofx.eq;
 
 import android.content.Context;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -18,7 +19,9 @@ public class EqSwipeController extends LinearLayout {
     /*
      * x velocity max for deciding whether to try to grab a bar
      */
-    private static int X_VELOCITY_THRESH = 20;
+    private static final int X_VELOCITY_THRESH = 20;
+
+    private static final int MINIMUM_TIME_HOLD_TIME = 150;
 
     EqContainerView mEq;
     InfiniteViewPager mPager;
@@ -93,7 +96,8 @@ public class EqSwipeController extends LinearLayout {
 
                     if (!mBarActive && !mEqManager.isChangingPresets()
                             && !mEqManager.isEqualizerLocked()
-                            && Math.abs(xVelocity) < X_VELOCITY_THRESH) {
+                            && Math.abs(xVelocity) < X_VELOCITY_THRESH
+                            && System.currentTimeMillis() - mDownTime > MINIMUM_TIME_HOLD_TIME) {
                         if (distanceSquared < touchSlop * touchSlop) {
                             mBarActive = true;
                             mBar = mEq.startTouchingBarUnder(event);
