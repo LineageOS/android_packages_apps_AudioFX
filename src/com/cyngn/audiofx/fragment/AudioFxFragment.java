@@ -274,7 +274,7 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
         }
 
         List<AudioDeviceInfo> bluetoothDevices = mConfig.getConnectedDevices(
-                AudioDeviceInfo.TYPE_BLUETOOTH_A2DP, AudioDeviceInfo.TYPE_BLUETOOTH_SCO);
+                AudioDeviceInfo.TYPE_BLUETOOTH_A2DP);
         for (AudioDeviceInfo ai : bluetoothDevices) {
             int viewId = View.generateViewId();
             MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
