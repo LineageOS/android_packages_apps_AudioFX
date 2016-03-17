@@ -16,6 +16,33 @@
      limitations under the License.
 -->
 <resources>
+  <string name="normal">Normal</string>
+  <string name="classical">Clásica</string>
+  <string name="dance">Dance</string>
+  <string name="flat">Plana</string>
+  <string name="folk">Folk</string>
+  <string name="heavy_metal">Heavy Metal</string>
+  <string name="hip_hop">Hip-Hop</string>
+  <string name="jazz">Jazz</string>
+  <string name="pop">Pop</string>
+  <string name="rock">Rock</string>
+  <string name="electronic">Electrónica</string>
+  <string name="small_speakers">Altavoces pequeños</string>
+  <string name="custom">Personalizado</string>
+  <string name="none">Ninguno</string>
+  <string name="smallroom">Habitación pequeña</string>
+  <string name="mediumroom">Habitación mediana</string>
   <string name="largeroom">Habitación grande</string>
+  <string name="mediumhall">Sala mediana</string>
   <string name="largehall">Sala grande</string>
+  <string name="plate">Vinilo</string>
+  <string name="power_on_prompt">Pulsar el botón de encendido en la parte superior derecha.</string>
+  <string name="effect_unavalable_for_speaker">Efecto no disponible para el modo altavoz.</string>
+  <string name="device_headset">Auriculares</string>
+  <string name="device_speaker">Altavoz</string>
+  <string name="device_usb">USB</string>
+  <string name="device_bluetooth">Bluetooth</string>
+  <string name="device_wireless">Inalámbrico</string>
+  <string name="reverb">Reverberación</string>
+  <string name="eq_preset">Ecualizador preestablecido</string>
 </resources>
