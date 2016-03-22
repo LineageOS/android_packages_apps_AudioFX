@@ -1,6 +1,9 @@
 package com.cyngn.audiofx.backends;
 
 import android.media.audiofx.Equalizer;
+import android.util.Log;
+import android.util.SparseArray;
+
 import com.cyngn.audiofx.eq.EqUtils;
 
 /**
@@ -15,16 +18,14 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
     private short mEqNumPresets = -1;
     private short mEqNumBands = -1;
 
-    /*
-     * Take lots of care to not poke values that don't need
-     * to be poked- this can cause audible pops.
-     */
-    private boolean mEqualizerEnabled = false;
+    private final SparseArray<Short> mLevelCache = new SparseArray<Short>();
 
     public EffectSetWithAndroidEq(int sessionId) {
         super(sessionId);
         try {
             mEqualizer = new Equalizer(1000, sessionId);
+
+            addEffects(mEqualizer);
         } catch (Exception e) {
             release();
             throw e;
@@ -33,19 +34,21 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
 
 
     public void enableEqualizer(boolean enable) {
-        if (enable != mEqualizerEnabled) {
-            mEqualizerEnabled = enable;
+        if (enable == mEqualizer.getEnabled()) {
+            return;
+        }
+        try {
             mEqualizer.setEnabled(enable);
+        } catch (Exception e) {
+            Log.e(TAG, "enableEqualizer failed! enable=" + enable + " sessionId=" + mSessionId, e);
         }
     }
 
     @Override
     public void setEqualizerLevelsDecibels(float[] levels) {
-        if (mEqualizerEnabled) {
-            final short[] equalizerLevels = EqUtils.convertDecibelsToMillibelsInShorts(levels);
-            for (short i = 0; i < equalizerLevels.length; i++) {
-                mEqualizer.setBandLevel(i, equalizerLevels[i]);
-            }
+        final short[] equalizerLevels = EqUtils.convertDecibelsToMillibelsInShorts(levels);
+        for (short i = 0; i < equalizerLevels.length; i++) {
+            setBandLevelSafe(i, equalizerLevels[i]);
         }
     }
 
@@ -58,9 +61,7 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
 
     @Override
     public void setEqualizerBandLevel(short band, float level) {
-        if (mEqualizerEnabled) {
-            mEqualizer.setBandLevel(band, (short) level);
-        }
+        setBandLevelSafe(band, (short)level);
     }
 
     public int getEqualizerBandLevel(short band) {
@@ -89,10 +90,18 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
         return mEqualizer.getCenterFreq(band);
     }
 
-    @Override
-    public void release() {
-        if (mEqualizer != null) {
-            mEqualizer.release();
+    private synchronized void setBandLevelSafe(short band, short level) {
+        if (!mEqualizer.hasControl()) {
+            return;
+        }
+        if (mLevelCache.indexOfKey((int)band) >= 0 && level == mLevelCache.get((int)band)) {
+            return;
+        }
+        try {
+            mEqualizer.setBandLevel(band, level);
+            mLevelCache.put((int)band, level);
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to set eq band=" + band + " level=" + level, e);
         }
     }
 }

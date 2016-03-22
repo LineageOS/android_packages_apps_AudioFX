@@ -49,8 +49,6 @@ public class MasterConfigControl {
 
     private final Context mContext;
 
-    private boolean mHasMaxxAudio;
-
     private AudioFxService.LocalBinder mService;
     private ServiceConnection mServiceConnection;
     private int mServiceRefCount = 0;
@@ -79,14 +77,9 @@ public class MasterConfigControl {
 
         mCallbacks = new StateCallbacks(this);
         mEqManager = new EqualizerManager(context, this);
-
-        mHasMaxxAudio = getGlobalPrefs()
-                .getBoolean(Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false);
     }
 
     public void onResetDefaults() {
-        mHasMaxxAudio = getGlobalPrefs()
-                .getBoolean(Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false);
         mEqManager.applyDefaults();
     }
 
@@ -284,11 +277,19 @@ public class MasterConfigControl {
     }
 
     public boolean hasMaxxAudio() {
-        return mHasMaxxAudio;
+        return getGlobalPrefs().getBoolean(Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false);
     }
 
     public boolean getMaxxVolumeEnabled() {
         return getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, false);
+    }
+
+    public boolean hasBassBoost() {
+        return getGlobalPrefs().getBoolean(Constants.AUDIOFX_GLOBAL_HAS_BASSBOOST, false);
+    }
+
+    public boolean hasVirtualizer() {
+        return getGlobalPrefs().getBoolean(Constants.AUDIOFX_GLOBAL_HAS_VIRTUALIZER, false);
     }
 
     public void setMaxxVolumeEnabled(boolean enable) {

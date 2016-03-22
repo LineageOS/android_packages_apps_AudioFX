@@ -259,21 +259,25 @@ public class AudioFxService extends Service {
                      * msg.obj = sessionId
                      */
                     sessionId = (Integer) msg.obj;
-                    mHandler.removeMessages(MSG_REMOVE_SESSION, sessionId);
-                    mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
-                    try {
-                        session = EffectsFactory.createEffectSet(getApplicationContext(), sessionId);
-                    } catch (Exception e) {
-                        Log.e(TAG, "couldn't create effects for session id: " + sessionId, e);
+                    if (sessionId == 0) {
                         break;
                     }
                     synchronized (mAudioSessionsL) {
+                        mHandler.removeMessages(MSG_REMOVE_SESSION, sessionId);
+                        mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
                         if (mAudioSessionsL.indexOfKey(sessionId) < 0) {
+                            try {
+                                session = EffectsFactory.createEffectSet(getApplicationContext(), sessionId);
+                            } catch (Exception e) {
+                                Log.e(TAG, "couldn't create effects for session id: " + sessionId,
+                                        e);
+                                break;
+                            }
                             mAudioSessionsL.put(sessionId, session);
                             if (DEBUG) Log.w(TAG, "added new EffectSet for sessionId=" + sessionId);
-                            Message.obtain(mHandler, MSG_UPDATE_FOR_SESSION, ALL_CHANGED, 0,
-                                    sessionId).sendToTarget();
                         }
+                        mHandler.sendMessageAtFrontOfQueue(Message.obtain(mHandler, MSG_UPDATE_FOR_SESSION,
+                                ALL_CHANGED, 0, sessionId));
                     }
                     break;
 
@@ -282,12 +286,14 @@ public class AudioFxService extends Service {
                      * msg.obj = sessionId
                      */
                     sessionId = (Integer) msg.obj;
-                    mHandler.removeMessages(MSG_ADD_SESSION, sessionId);
-                    mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
+                    if (sessionId == 0) {
+                        break;
+                    }
                     synchronized (mAudioSessionsL) {
+                        mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
                         if (mAudioSessionsL.indexOfKey(sessionId) > -1) {
                             final EffectSet effectSet = mAudioSessionsL.removeReturnOld(sessionId);
-                            if (effectSet != null) {
+                            if (effectSet != null && effectSet.isActive()) {
                                 effectSet.release();
                                 if (DEBUG) Log.w(TAG, "removed and released sessionId=" + sessionId);
                             }
@@ -303,8 +309,8 @@ public class AudioFxService extends Service {
                     if (DEBUG) Log.i(TAG, "Updating to configuration: " + mode);
 
                     // cancel updates for other effects, let them go through on the last call
-                    mHandler.removeMessages(MSG_UPDATE_FOR_SESSION);
                     synchronized (mAudioSessionsL) {
+                        mHandler.removeMessages(MSG_UPDATE_FOR_SESSION);
                         final int N = mAudioSessionsL.size();
                         for (int i = 0; i < N; i++) {
                             final int sessionIdKey = mAudioSessionsL.keyAt(i);
@@ -737,7 +743,6 @@ public class AudioFxService extends Service {
             presetNames.deleteCharAt(presetNames.length() - 1);
         }
         editor.putString(EQUALIZER_PRESET_NAMES, presetNames.toString());
-
 
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost());

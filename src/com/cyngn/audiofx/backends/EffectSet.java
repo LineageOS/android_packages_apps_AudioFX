@@ -1,9 +1,10 @@
 package com.cyngn.audiofx.backends;
 
-import android.content.Context;
-import android.media.audiofx.Equalizer;
+import android.media.audiofx.AudioEffect;
+import android.util.Log;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Helper class representing the full complement of effects attached to one
@@ -11,7 +12,11 @@ import java.util.List;
  */
 public abstract class EffectSet {
 
-    private final int mSessionId;
+    protected static final String TAG = "AudioFx-EffectSet";
+
+    protected final int mSessionId;
+
+    protected final ArrayList<AudioEffect> mEffects = new ArrayList<AudioEffect>();
 
     public EffectSet(int sessionId) {
         mSessionId = sessionId;
@@ -40,7 +45,7 @@ public abstract class EffectSet {
     /**
      * @param levels in decibels
      */
-    public void setEqualizerLevelsDecibels(float[] levels) { }
+    public abstract void setEqualizerLevelsDecibels(float[] levels);
 
     public abstract short getNumEqualizerBands();
 
@@ -106,18 +111,38 @@ public abstract class EffectSet {
         return;
     }
 
-    public abstract void release();
+    public synchronized void release() {
+        for (AudioEffect e : mEffects) {
+            Log.d(TAG, "releasing effect: " + e.getDescriptor().name);
+            try {
+                e.release();
+            } catch (Exception ex) {
+                Log.e(TAG, ex.getMessage(), ex);
+            }
+        }
+        mEffects.clear();
+    }
 
-    public void disableAll() {
-        enableBassBoost(false);
-        enableVirtualizer(false);
-        enableEqualizer(false);
-        enableReverb(false);
-        enableTrebleBoost(false);
-        enableVolumeBoost(false);
+    public boolean isActive() {
+        return mEffects.size() > 0;
     }
 
     public abstract int getBrand();
 
-    public void setGlobalEnabled(boolean globalEnabled) { }
+    public void setGlobalEnabled(boolean globalEnabled) {
+        if (globalEnabled) {
+            return;
+        }
+        for (AudioEffect e : mEffects) {
+            try {
+                e.setEnabled(false);
+            } catch (Exception ex) {
+                Log.e(TAG, ex.getMessage(), ex);
+            }
+        }
+    }
+
+    protected void addEffects(AudioEffect... effects) {
+        mEffects.addAll(Arrays.asList(effects));
+    }
 }
