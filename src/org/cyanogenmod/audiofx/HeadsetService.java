@@ -21,6 +21,7 @@ import android.content.*;
 import android.media.AudioManager;
 import android.media.AudioPatch;
 import android.media.AudioPort;
+import android.media.AudioSystem;
 import android.media.audiofx.*;
 import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -190,6 +191,35 @@ public class HeadsetService extends Service {
     protected static final String TAG = HeadsetService.class.getSimpleName();
     public static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
+    private FxSessionCallback mSessionCallback;
+
+    private class FxSessionCallback implements AudioSystem.EffectSessionCallback {
+
+        @Override
+        public void onSessionAdded(int stream, int sessionId) {
+            if (stream == AudioManager.STREAM_MUSIC) {
+                if (DEBUG) Log.i(TAG, String.format("New audio session: %d", sessionId));
+
+                if (!mAudioSessions.containsKey(sessionId)) {
+                    mAudioSessions.put(sessionId, new EffectSet(sessionId));
+                    update();
+                }
+            }
+        }
+
+        @Override
+        public void onSessionRemoved(int stream, int sessionId) {
+            if (stream == AudioManager.STREAM_MUSIC) {
+                if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d", sessionId));
+
+                EffectSet gone = mAudioSessions.remove(sessionId);
+                if (gone != null) {
+                    gone.release();
+                }
+            }
+        }
+    }
+
     public class LocalBinder extends Binder {
         public HeadsetService getService() {
             return HeadsetService.this;
@@ -219,19 +249,11 @@ public class HeadsetService extends Service {
             String action = intent.getAction();
             int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
             if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
-                Log.i(TAG, String.format("New audio session: %d", sessionId));
-                if (!mAudioSessions.containsKey(sessionId)) {
-                    mAudioSessions.put(sessionId, new EffectSet(sessionId));
-                }
+                mSessionCallback.onSessionAdded(AudioManager.STREAM_MUSIC, sessionId);
             }
             if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
-                Log.i(TAG, String.format("Audio session removed: %d", sessionId));
-                EffectSet gone = mAudioSessions.remove(sessionId);
-                if (gone != null) {
-                    gone.release();
-                }
+                mSessionCallback.onSessionRemoved(AudioManager.STREAM_MUSIC, sessionId);
             }
-            update();
         }
     };
 
@@ -348,6 +370,9 @@ public class HeadsetService extends Service {
         AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         am.registerAudioPortUpdateListener(mAudioPortListener = new AudioPortListener(this));
 
+        mSessionCallback = new FxSessionCallback();
+        AudioSystem.setEffectSessionCallback(mSessionCallback);
+
         saveDefaults();
     }
 
@@ -363,6 +388,7 @@ public class HeadsetService extends Service {
 
         unregisterReceiver(mAudioSessionReceiver);
         unregisterReceiver(mPreferenceUpdateReceiver);
+        AudioSystem.setEffectSessionCallback(null);
     }
 
     @Override
