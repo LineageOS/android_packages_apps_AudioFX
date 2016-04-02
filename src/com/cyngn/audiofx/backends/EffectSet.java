@@ -1,10 +1,6 @@
 package com.cyngn.audiofx.backends;
 
-import android.media.audiofx.AudioEffect;
-import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import android.media.AudioDeviceInfo;
 
 /**
  * Helper class representing the full complement of effects attached to one
@@ -16,11 +12,97 @@ public abstract class EffectSet {
 
     protected final int mSessionId;
 
-    protected final ArrayList<AudioEffect> mEffects = new ArrayList<AudioEffect>();
+    protected boolean mGlobalEnabled;
 
-    public EffectSet(int sessionId) {
+    private AudioDeviceInfo mDeviceInfo;
+
+    public EffectSet(int sessionId, AudioDeviceInfo deviceInfo) {
         mSessionId = sessionId;
+        mDeviceInfo = deviceInfo;
+        onCreate();
     }
+
+    /**
+     * Called to do subclass-first initialization in case
+     * an implementation has ordering restrictions.
+     */
+    protected void onCreate() { }
+
+    /**
+     * Destroy all effects in this set.
+     *
+     * Attempting to use this object after calling release is
+     * undefined behavior.
+     */
+    public void release() { }
+
+    /**
+     * Returns the enumerated brand of this implementation
+     * @return brandId
+     */
+    public abstract int getBrand();
+
+    /**
+     * Called when the user toggles the engine on or off. If the
+     * implementation has a built-in bypass mode, this is where
+     * to use it.
+     *
+     * @param globalEnabled
+     */
+    public void setGlobalEnabled(boolean globalEnabled) {
+        mGlobalEnabled = globalEnabled;
+    }
+
+    public boolean isGlobalEnabled() {
+        return mGlobalEnabled;
+    }
+
+    /**
+     * Called when the output device has changed. All cached
+     * data should be cleared at this point.
+     *
+     * @param deviceInfo
+     */
+    public void setDevice(AudioDeviceInfo deviceInfo) {
+        mDeviceInfo = deviceInfo;
+    }
+
+    /**
+     * Return the current active output device
+     * @return deviceInfo
+     */
+    public AudioDeviceInfo getDevice() {
+        return mDeviceInfo;
+    }
+
+    /**
+     * Begin bulk-update of parameters. This can be used if the
+     * implementation supports operation in a transactional/atomic
+     * manner. Parameter changes will immediately follow this call
+     * and should be committed to the backend when the subsequent
+     * commitUpdate() is called.
+     *
+     * Optional.
+     *
+     * @return status - false on failure
+     */
+    public boolean beginUpdate() { return true; }
+
+    /**
+     * Commit accumulated updates to the backend. See above.
+     *
+     * begin/commit are used when a large number of parameters need
+     * to be sent to the backend, such as in the case of a device
+     * switch or preset change. This can increase performance and
+     * reduce click/pop issues.
+     *
+     * Optional.
+     *
+     * @return status - false on failure
+     */
+    public boolean commitUpdate() { return true; }
+
+    /* ---- Top level effects begin here ---- */
 
     // required effects
     public abstract boolean hasVirtualizer();
@@ -109,40 +191,5 @@ public abstract class EffectSet {
 
     public void enableVolumeBoost(boolean enable) {
         return;
-    }
-
-    public synchronized void release() {
-        for (AudioEffect e : mEffects) {
-            Log.d(TAG, "releasing effect: " + e.getDescriptor().name);
-            try {
-                e.release();
-            } catch (Exception ex) {
-                Log.e(TAG, ex.getMessage(), ex);
-            }
-        }
-        mEffects.clear();
-    }
-
-    public boolean isActive() {
-        return mEffects.size() > 0;
-    }
-
-    public abstract int getBrand();
-
-    public void setGlobalEnabled(boolean globalEnabled) {
-        if (globalEnabled) {
-            return;
-        }
-        for (AudioEffect e : mEffects) {
-            try {
-                e.setEnabled(false);
-            } catch (Exception ex) {
-                Log.e(TAG, ex.getMessage(), ex);
-            }
-        }
-    }
-
-    protected void addEffects(AudioEffect... effects) {
-        mEffects.addAll(Arrays.asList(effects));
     }
 }

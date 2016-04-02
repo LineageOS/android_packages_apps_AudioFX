@@ -1,8 +1,8 @@
 package com.cyngn.audiofx.backends;
 
+import android.media.AudioDeviceInfo;
 import android.media.audiofx.Equalizer;
 import android.util.Log;
-import android.util.SparseArray;
 
 import com.cyngn.audiofx.eq.EqUtils;
 
@@ -13,30 +13,45 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
     /**
      * Session-specific equalizer
      */
-    private final Equalizer mEqualizer;
+    private Equalizer mEqualizer;
 
     private short mEqNumPresets = -1;
     private short mEqNumBands = -1;
 
-    private final SparseArray<Short> mLevelCache = new SparseArray<Short>();
+    public EffectSetWithAndroidEq(int sessionId, AudioDeviceInfo deviceInfo) {
+        super(sessionId, deviceInfo);
+    }
 
-    public EffectSetWithAndroidEq(int sessionId) {
-        super(sessionId);
-        try {
-            mEqualizer = new Equalizer(1000, sessionId);
+    @Override
+    protected void onCreate() {
+        mEqualizer = new Equalizer(1000, mSessionId);
+        super.onCreate();
 
-            addEffects(mEqualizer);
-        } catch (Exception e) {
-            release();
-            throw e;
+    }
+
+    @Override
+    public synchronized void release() {
+        super.release();
+        if (mEqualizer != null) {
+            mEqualizer.release();
+            mEqualizer = null;
         }
     }
 
-
-    public void enableEqualizer(boolean enable) {
-        if (enable == mEqualizer.getEnabled()) {
-            return;
+    @Override
+    public void setGlobalEnabled(boolean globalEnabled) {
+        if (isGlobalEnabled() != globalEnabled) {
+            // disable it if needed. it will be explicitly enabled
+            // in a subsequent call if necessary.
+            if (!globalEnabled) {
+                mEqualizer.setEnabled(false);
+            }
         }
+        super.setGlobalEnabled(globalEnabled);
+    }
+
+    @Override
+    public void enableEqualizer(boolean enable) {
         try {
             mEqualizer.setEnabled(enable);
         } catch (Exception e) {
@@ -52,6 +67,7 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
         }
     }
 
+    @Override
     public short getNumEqualizerBands() {
         if (mEqNumBands < 0) {
             mEqNumBands = mEqualizer.getNumberOfBands();
@@ -64,42 +80,42 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
         setBandLevelSafe(band, (short)level);
     }
 
+    @Override
     public int getEqualizerBandLevel(short band) {
         return mEqualizer.getBandLevel(band);
     }
 
+    @Override
     public String getEqualizerPresetName(short preset) {
         return mEqualizer.getPresetName(preset);
     }
 
+    @Override
     public void useEqualizerPreset(short preset) {
         mEqualizer.usePreset(preset);
     }
 
+    @Override
     public short getNumEqualizerPresets() {
         if (mEqNumPresets < 0) {
             mEqNumPresets = mEqualizer.getNumberOfPresets();
         }
         return mEqNumPresets;
     }
+
+    @Override
     public short[] getEqualizerBandLevelRange() {
         return mEqualizer.getBandLevelRange();
     }
 
+    @Override
     public int getCenterFrequency(short band) {
         return mEqualizer.getCenterFreq(band);
     }
 
     private synchronized void setBandLevelSafe(short band, short level) {
-        if (!mEqualizer.hasControl()) {
-            return;
-        }
-        if (mLevelCache.indexOfKey((int)band) >= 0 && level == mLevelCache.get((int)band)) {
-            return;
-        }
         try {
             mEqualizer.setBandLevel(band, level);
-            mLevelCache.put((int)band, level);
         } catch (Exception e) {
             Log.e(TAG, "Unable to set eq band=" + band + " level=" + level, e);
         }

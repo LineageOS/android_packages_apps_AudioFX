@@ -28,7 +28,12 @@ public class Constants {
 
     // global settings
     public static final String AUDIOFX_GLOBAL_FILE = "global";
+
     public static final String DEVICE_SPEAKER = "speaker";
+    public static final String DEVICE_HEADSET = "headset";
+    public static final String DEVICE_USB = "usb";
+    public static final String DEVICE_CAST = "wireless";
+    public static final String DEVICE_BLUETOOTH = "bluetooth";
 
     public static final String SAVED_DEFAULTS = "saved_defaults";
 

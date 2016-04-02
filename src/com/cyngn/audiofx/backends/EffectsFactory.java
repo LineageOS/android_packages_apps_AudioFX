@@ -1,6 +1,7 @@
 package com.cyngn.audiofx.backends;
 
 import android.content.Context;
+import android.media.AudioDeviceInfo;
 import android.util.Log;
 
 import java.io.File;
@@ -20,7 +21,8 @@ public class EffectsFactory {
     public static final int DTS = 3;
 
 
-    public static EffectSet createEffectSet(Context context, int sessionId) {
+    public static EffectSet createEffectSet(Context context, int sessionId,
+            AudioDeviceInfo deviceInfo) {
 
         EffectSet effects = null;
         int brand = getBrand();
@@ -28,7 +30,7 @@ public class EffectsFactory {
         // dts?
         if (brand == DTS) {
             try {
-                effects = new DtsEffects(context, sessionId);
+                effects = new DtsEffects(context, sessionId, deviceInfo);
             } catch (Exception e) {
                 Log.e(TAG,  "Unable to create DTS effects!", e);
                 effects = null;
@@ -36,7 +38,7 @@ public class EffectsFactory {
         } else if (brand == MAXXAUDIO) {
             // try MaxxAudio next, this will throw an exception if unavailable
             try {
-                effects = new MaxxAudioEffects(sessionId);
+                effects = new MaxxAudioEffects(sessionId, deviceInfo);
             } catch (Exception e) {
                 Log.e(TAG, "Unable to create MaxxAudio effects!", e);
                 effects = null;
@@ -47,7 +49,7 @@ public class EffectsFactory {
             // if this throws, we're screwed, don't bother to recover. these
             // are the standard effects that every android device must have,
             // and if they don't exist we have bigger problems.
-            effects = new AndroidEffects(sessionId);
+            effects = new AndroidEffects(sessionId, deviceInfo);
         }
 
         return effects;

@@ -328,22 +328,23 @@ public class MasterConfigControl {
         switch (type) {
             case TYPE_WIRED_HEADSET:
             case TYPE_WIRED_HEADPHONES:
-                return "headset";
+                return Constants.DEVICE_HEADSET;
             case TYPE_LINE_ANALOG:
             case TYPE_LINE_DIGITAL:
                 // FIXME: support line-out
-                return "headset";
+                return Constants.DEVICE_HEADSET;
             case TYPE_BLUETOOTH_SCO:
             case TYPE_BLUETOOTH_A2DP:
-                return "bluetooth";
+                // FIXME: include dev info
+                return Constants.DEVICE_BLUETOOTH;
             case TYPE_USB_DEVICE:
             case TYPE_USB_ACCESSORY:
             case TYPE_DOCK:
-                return "usb";
+                return Constants.DEVICE_USB;
             case TYPE_IP:
-                return "wireless";
+                return Constants.DEVICE_CAST;
             default:
-                return "speaker";
+                return Constants.DEVICE_SPEAKER;
         }
     }
 
