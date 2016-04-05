@@ -31,9 +31,9 @@ public class Constants {
 
     public static final String DEVICE_SPEAKER = "speaker";
     public static final String DEVICE_HEADSET = "headset";
-    public static final String DEVICE_USB = "usb";
-    public static final String DEVICE_CAST = "wireless";
-    public static final String DEVICE_BLUETOOTH = "bluetooth";
+    public static final String DEVICE_PREFIX_USB = "usb";
+    public static final String DEVICE_PREFIX_CAST = "wireless";
+    public static final String DEVICE_PREFIX_BLUETOOTH = "bluetooth";
 
     public static final String SAVED_DEFAULTS = "saved_defaults";
 

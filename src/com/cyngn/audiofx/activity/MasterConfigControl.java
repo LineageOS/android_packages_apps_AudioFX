@@ -188,7 +188,8 @@ public class MasterConfigControl {
 
         final AudioDeviceInfo current = getCurrentDevice();
 
-        Log.d(TAG, "setCurrentDevice fromUser=" + userSwitch +
+        Log.d(TAG, "setCurrentDevice name=" + (current == null ? null : current.getProductName()) +
+                " fromUser=" + userSwitch +
                 " cur=" + (current == null ? null : current.getType()) +
                 " new=" + (device == null ? null : device.getType()));
 
@@ -316,6 +317,22 @@ public class MasterConfigControl {
         }
     }
 
+    private static String appendProductName(AudioDeviceInfo info, String prefix) {
+        StringBuilder nm = new StringBuilder(prefix);
+        if (info != null && info.getProductName() != null) {
+            nm.append("-").append(info.getProductName().toString().replaceAll("\\W+", ""));
+        }
+        return nm.toString();
+    }
+
+    private static String appendDeviceAddress(AudioDeviceInfo info, String prefix) {
+        StringBuilder nm = new StringBuilder(prefix);
+        if (info != null && info.getAddress() != null) {
+            nm.append("-").append(info.getAddress().replace(":", ""));
+        }
+        return nm.toString();
+    }
+
     public static String getDeviceIdentifierString(AudioDeviceInfo info) {
         int type = info == null ? -1 : info.getType();
         switch (type) {
@@ -328,14 +345,13 @@ public class MasterConfigControl {
                 return Constants.DEVICE_HEADSET;
             case TYPE_BLUETOOTH_SCO:
             case TYPE_BLUETOOTH_A2DP:
-                // FIXME: include dev info
-                return Constants.DEVICE_BLUETOOTH;
+                return appendDeviceAddress(info, Constants.DEVICE_PREFIX_BLUETOOTH);
             case TYPE_USB_DEVICE:
             case TYPE_USB_ACCESSORY:
             case TYPE_DOCK:
-                return Constants.DEVICE_USB;
+                return appendProductName(info, Constants.DEVICE_PREFIX_USB);
             case TYPE_IP:
-                return Constants.DEVICE_CAST;
+                return appendProductName(info, Constants.DEVICE_PREFIX_CAST);
             default:
                 return Constants.DEVICE_SPEAKER;
         }
