@@ -201,13 +201,6 @@ public class MasterConfigControl {
             mUserDeviceOverride = null;
         }
 
-        if (current != null && device != null &&
-                device.getId() == current.getId()) {
-            // it's the same device, but let any callbacks know anyways
-            mCallbacks.notifyDeviceChanged(device, userSwitch);
-            return;
-        }
-
         mEqManager.onPreDeviceChanged();
 
         mCallbacks.notifyDeviceChanged(device, userSwitch);
