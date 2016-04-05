@@ -1,6 +1,7 @@
 package com.cyngn.audiofx.backends;
 
 import android.media.AudioDeviceInfo;
+import android.util.Log;
 
 /**
  * Helper class representing the full complement of effects attached to one
@@ -19,12 +20,21 @@ public abstract class EffectSet {
     public EffectSet(int sessionId, AudioDeviceInfo deviceInfo) {
         mSessionId = sessionId;
         mDeviceInfo = deviceInfo;
-        onCreate();
+        try {
+            onCreate();
+        } catch (Exception e) {
+            Log.e(TAG, "error creating" + this + ", releasing and throwing!");
+            release();
+            throw e;
+        }
     }
 
     /**
      * Called to do subclass-first initialization in case
      * an implementation has ordering restrictions.
+     *
+     * This call is wrapped in a try/catch - if an exception is thrown here,
+     * a release will immediately be called.
      */
     protected void onCreate() { }
 
@@ -191,5 +201,15 @@ public abstract class EffectSet {
 
     public void enableVolumeBoost(boolean enable) {
         return;
+    }
+
+    @Override
+    public String toString() {
+        return "EffectSet (" + this.getClass().getSimpleName() + ")"
+                + " [ "
+                + " mSessionId: " + mSessionId
+                + " mDeviceInfo: " + mDeviceInfo
+                + " mGlobalEnabled: " + mGlobalEnabled
+                + " ]";
     }
 }

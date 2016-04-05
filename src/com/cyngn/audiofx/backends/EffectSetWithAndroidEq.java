@@ -24,18 +24,18 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
 
     @Override
     protected void onCreate() {
-        mEqualizer = new Equalizer(1000, mSessionId);
+        mEqualizer = new Equalizer(100, mSessionId);
         super.onCreate();
 
     }
 
     @Override
     public synchronized void release() {
-        super.release();
         if (mEqualizer != null) {
             mEqualizer.release();
             mEqualizer = null;
         }
+        super.release();
     }
 
     @Override

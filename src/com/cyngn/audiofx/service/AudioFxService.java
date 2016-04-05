@@ -230,8 +230,7 @@ public class AudioFxService extends Service {
             if (stream == AudioManager.STREAM_MUSIC &&
                     !mHandler.hasMessages(MSG_ADD_SESSION, sessionId)) {
                 if (DEBUG) Log.i(TAG, String.format("New audio session: %d", sessionId));
-                mHandler.sendMessageAtFrontOfQueue(Message.obtain(mHandler, MSG_ADD_SESSION,
-                        sessionId));
+                mHandler.obtainMessage(MSG_ADD_SESSION, sessionId).sendToTarget();
             }
         }
 
@@ -241,8 +240,8 @@ public class AudioFxService extends Service {
                     !mHandler.hasMessages(MSG_REMOVE_SESSION, sessionId)) {
                 if (DEBUG) Log.i(TAG, String.format("Audio session queued for removal: %d", sessionId));
 
-                mHandler.sendMessageDelayed(Message.obtain(mHandler,
-                        MSG_REMOVE_SESSION, sessionId), REMOVE_SESSIONS_DELAY);
+                mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_REMOVE_SESSION, sessionId),
+                        REMOVE_SESSIONS_DELAY);
             }
         }
     }
@@ -261,7 +260,7 @@ public class AudioFxService extends Service {
                      * msg.obj = sessionId
                      */
                     sessionId = (Integer) msg.obj;
-                    if (sessionId <= 0) {
+                    if (sessionId == null || sessionId <= 0) {
                         break;
                     }
 
@@ -279,8 +278,9 @@ public class AudioFxService extends Service {
                             }
                             mAudioSessionsL.put(sessionId, session);
                             if (DEBUG) Log.w(TAG, "added new EffectSet for sessionId=" + sessionId);
+                            updateBackendLocked(ALL_CHANGED,
+                                    getSharedPreferences(getCurrentDeviceIdentifier(), 0), session);
                         }
-                        updateBackend(ALL_CHANGED, getSharedPreferences(getCurrentDeviceIdentifier(), 0), session);
                     }
                     break;
 
@@ -289,7 +289,7 @@ public class AudioFxService extends Service {
                      * msg.obj = sessionId
                      */
                     sessionId = (Integer) msg.obj;
-                    if (sessionId <= 0) {
+                    if (sessionId == null || sessionId <= 0) {
                         break;
                     }
                     synchronized (mAudioSessionsL) {
@@ -320,7 +320,7 @@ public class AudioFxService extends Service {
                         final int N = mAudioSessionsL.size();
                         for (int i = 0; i < N; i++) {
                             sessionId = mAudioSessionsL.keyAt(i);
-                            Message.obtain(mHandler, MSG_UPDATE_FOR_SESSION, flags, 0, sessionId)
+                            mHandler.obtainMessage(MSG_UPDATE_FOR_SESSION, flags, 0, sessionId)
                                     .sendToTarget();
                         }
                     }
@@ -335,7 +335,7 @@ public class AudioFxService extends Service {
                     sessionId = (Integer) msg.obj;
                     flags = msg.arg1;
 
-                    if (sessionId <= 0) {
+                    if (sessionId == null || sessionId <= 0) {
                         break;
                     }
 
@@ -346,7 +346,7 @@ public class AudioFxService extends Service {
                     synchronized (mAudioSessionsL) {
                         session = mAudioSessionsL.get(sessionId);
                         if (session != null) {
-                            updateBackend(flags, getSharedPreferences(device, 0), session);
+                            updateBackendLocked(flags, getSharedPreferences(device, 0), session);
                         }
                     }
                     break;
@@ -372,6 +372,9 @@ public class AudioFxService extends Service {
                      * msg.obj = the device we expect
                      */
                     AudioDeviceInfo outputDevice = (AudioDeviceInfo) msg.obj;
+
+                    if (DEBUG) Log.i(TAG, "updating current device to: " + outputDevice);
+
                     mPreviousDevice = mCurrentDevice;
                     mCurrentDevice = outputDevice;
 
@@ -388,7 +391,8 @@ public class AudioFxService extends Service {
                                     (session.getDevice() == null ? "none" : session.getDevice().getType())));
 
                             session.setDevice(mCurrentDevice);
-                            updateBackend(ALL_CHANGED, getSharedPreferences(getCurrentDeviceIdentifier(), 0), session);
+                            updateBackendLocked(ALL_CHANGED,
+                                    getSharedPreferences(getCurrentDeviceIdentifier(), 0), session);
                         }
                     }
 
@@ -583,7 +587,7 @@ public class AudioFxService extends Service {
     // ======== DSP UPDATE METHODS BELOW ============= //
 
     /**
-     * Temporarily override a band level. {@link #updateBackend(int flags, SharedPreferences, EffectSet)} will take
+     * Temporarily override a band level. {@link #updateBackendLocked(int flags, SharedPreferences, EffectSet)} will take
      * care of overriding the preset value when a preset is selected
      */
     private void updateEqBand(short band, float level, EffectSet effectSet) {
@@ -599,17 +603,19 @@ public class AudioFxService extends Service {
         if (mHandler == null) {
             return;
         }
-        mHandler.sendMessage(Message.obtain(mHandler, MSG_UPDATE_DSP, flags, 0));
+        mHandler.obtainMessage(MSG_UPDATE_DSP, flags, 0).sendToTarget();
 
         if ((flags & ALL_CHANGED) == ALL_CHANGED) {
             updateQsTile();
         }
     }
 
-    private synchronized void updateBackend(int flags, SharedPreferences prefs, EffectSet session) {
+    /**
+     * caller should hold a lock on {@link #mAudioSessionsL}
+     */
+    private void updateBackendLocked(int flags, SharedPreferences prefs, EffectSet session) {
         if (DEBUG) {
-            Log.i(TAG, "updateBackend() called with " + "prefs = [" + prefs
-                    + "], session = [" + session + "]");
+            Log.i(TAG, "+++ updateBackend() called with flags=[" + flags + "], session=[" + session + "]");
         }
         if (session == null) {
             return;
@@ -621,88 +627,95 @@ public class AudioFxService extends Service {
         // global bypass toggle
         session.setGlobalEnabled(globalEnabled);
 
-        // if we're bypassed, we can gtfo
-        if (!globalEnabled) {
-            return;
-        }
-
-        // tell the backend it's time to party
-        session.beginUpdate();
-
-        // Volume boost extended effect first
-        try {
-            if ((flags & VOLUME_BOOST_CHANGED) > 0 && session.hasVolumeBoost()) {
-                // maxx volume
-                session.enableVolumeBoost(prefs.getBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, false));
+        if (globalEnabled) {
+            // tell the backend it's time to party
+            if (!session.beginUpdate()) {
+                Log.e(TAG, "session " + session + " failed to beginUpdate()");
+                return;
             }
-        } catch (Exception e) {
-            Log.e(TAG, "Error enabling volume boost!", e);
-        }
 
-        // bass
-        try {
-            if ((flags & BASS_BOOST_CHANGED) > 0) {
-                boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_BASS_ENABLE, false);
-                session.enableBassBoost(enable);
-                session.setBassBoostStrength(Short.valueOf(prefs
-                            .getString(DEVICE_AUDIOFX_BASS_STRENGTH, "0")));
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error enabling bass boost!", e);
-        }
-
-        if (ENABLE_REVERB) {
+            // equalizer
             try {
-                if ((flags & REVERB_CHANGED) > 0) {
-                    short preset = Short.decode(prefs.getString(DEVICE_AUDIOFX_REVERB_PRESET,
-                            String.valueOf(PresetReverb.PRESET_NONE)));
-                    session.enableReverb(preset > 0);
-                    session.setReverbPreset(preset);
+                if ((flags & EQ_CHANGED) > 0) {
+                    // equalizer is always on unless bypassed
+                    session.enableEqualizer(true);
+                    String savedPreset = prefs.getString(DEVICE_AUDIOFX_EQ_PRESET_LEVELS, null);
+                    if (savedPreset != null) {
+                        session.setEqualizerLevelsDecibels(EqUtils.stringBandsToFloats(savedPreset));
+                    }
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Error enabling reverb preset", e);
+                Log.e(TAG, "Error enabling equalizer!", e);
             }
-        }
 
-        try {
-            if ((flags & EQ_CHANGED) > 0) {
-                // equalizer is always on unless bypassed
-                session.enableEqualizer(true);
-                String savedPreset = prefs.getString(DEVICE_AUDIOFX_EQ_PRESET_LEVELS, null);
-                if (savedPreset != null) {
-                    session.setEqualizerLevelsDecibels(EqUtils.stringBandsToFloats(savedPreset));
+            // bass
+            try {
+                if ((flags & BASS_BOOST_CHANGED) > 0 && session.hasBassBoost()) {
+                    boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_BASS_ENABLE, false);
+                    session.enableBassBoost(enable);
+                    session.setBassBoostStrength(Short.valueOf(prefs
+                            .getString(DEVICE_AUDIOFX_BASS_STRENGTH, "0")));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error enabling bass boost!", e);
+            }
+
+            // reverb
+            if (ENABLE_REVERB) {
+                try {
+                    if ((flags & REVERB_CHANGED) > 0 && session.hasReverb()) {
+                        short preset = Short.decode(prefs.getString(DEVICE_AUDIOFX_REVERB_PRESET,
+                                String.valueOf(PresetReverb.PRESET_NONE)));
+                        session.enableReverb(preset > 0);
+                        session.setReverbPreset(preset);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error enabling reverb preset", e);
                 }
             }
-        } catch (Exception e) {
-            Log.e(TAG, "Error enabling equalizer!", e);
-        }
 
-        try {
-            if ((flags & VIRTUALIZER_CHANGED) > 0) {
-                boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, false);
-                session.enableVirtualizer(enable);
-                session.setVirtualizerStrength(Short.valueOf(prefs.getString(
-                        DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "0")));
+            // virtualizer
+            try {
+                if ((flags & VIRTUALIZER_CHANGED) > 0 && session.hasVirtualizer()) {
+                    boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, false);
+                    session.enableVirtualizer(enable);
+                    session.setVirtualizerStrength(Short.valueOf(prefs.getString(
+                            DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "0")));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error enabling virtualizer!");
             }
-        } catch (Exception e) {
-            Log.e(TAG, "Error enabling virtualizer!");
-        }
 
-        // extended audio effects
-        try {
-            if ((flags & TREBLE_BOOST_CHANGED) > 0 && session.hasTrebleBoost()) {
-                // treble
-                boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_TREBLE_ENABLE, false);
-                session.enableTrebleBoost(enable);
-                session.setTrebleBoostStrength(Short.valueOf(
-                        prefs.getString(DEVICE_AUDIOFX_TREBLE_STRENGTH, "0")));
+            // extended audio effects
+            try {
+                if ((flags & TREBLE_BOOST_CHANGED) > 0 && session.hasTrebleBoost()) {
+                    // treble
+                    boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_TREBLE_ENABLE, false);
+                    session.enableTrebleBoost(enable);
+                    session.setTrebleBoostStrength(Short.valueOf(
+                            prefs.getString(DEVICE_AUDIOFX_TREBLE_STRENGTH, "0")));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error enabling treble boost!", e);
             }
-        } catch (Exception e) {
-            Log.e(TAG, "Error enabling treble boost!", e);
-        }
 
-        // mic drop
-        session.commitUpdate();
+            try {
+                if ((flags & VOLUME_BOOST_CHANGED) > 0 && session.hasVolumeBoost()) {
+                    // maxx volume
+                    session.enableVolumeBoost(prefs.getBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, false));
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error enabling volume boost!", e);
+            }
+
+            // mic drop
+            if (!session.commitUpdate()) {
+                Log.e(TAG, "session " + session + " failed to commitUpdate()");
+            }
+        }
+        if (DEBUG) {
+            Log.i(TAG, "--- updateBackend() called with flags=[" + flags + "], session=[" + session + "]");
+        }
     }
 
     /**
@@ -798,7 +811,7 @@ public class AudioFxService extends Service {
                 .commit();
     }
 
-    private int findInList(String needle, List<String> haystack) {
+    private static int findInList(String needle, List<String> haystack) {
         for (int i = 0; i < haystack.size(); i++) {
             if (haystack.get(i).equalsIgnoreCase(needle)) {
                 return i;

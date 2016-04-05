@@ -15,37 +15,54 @@ class AndroidEffects extends EffectSetWithAndroidEq {
     /**
      * Session-specific bassboost
      */
-    private final BassBoost mBassBoost;
+    private BassBoost mBassBoost;
 
     /**
      * Session-specific virtualizer
      */
-    private final Virtualizer mVirtualizer;
+    private Virtualizer mVirtualizer;
 
     /**
      * Session-specific reverb
      */
-    private final PresetReverb mPresetReverb;
+    private PresetReverb mPresetReverb;
 
     public AndroidEffects(int sessionId, AudioDeviceInfo deviceInfo) {
         super(sessionId, deviceInfo);
+    }
 
-        try {
-            mBassBoost = new BassBoost(1000, sessionId);
-            mVirtualizer = new Virtualizer(1000, sessionId);
-            mPresetReverb = new PresetReverb(1000, sessionId);
-        } catch (Exception e) {
-            release();
-            throw e;
-        }
+    @Override
+    protected void onCreate() {
+        super.onCreate();
+
+        mBassBoost = new BassBoost(100, mSessionId);
+        mVirtualizer = new Virtualizer(100, mSessionId);
+        mPresetReverb = new PresetReverb(100, mSessionId);
+
     }
 
     @Override
     public void release() {
         super.release();
-        mBassBoost.release();
-        mVirtualizer.release();
-        mPresetReverb.release();
+
+        try {
+            mBassBoost.release();
+        } catch (Exception e) {
+            // ignored;
+        }
+        try {
+            mVirtualizer.release();
+        } catch (Exception e) {
+            // ignored
+        }
+        try {
+            mPresetReverb.release();
+        } catch (Exception e) {
+            // ignored
+        }
+        mBassBoost = null;
+        mVirtualizer = null;
+        mPresetReverb = null;
     }
 
     @Override
