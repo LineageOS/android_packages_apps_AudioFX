@@ -144,10 +144,7 @@ public class AudioFxService extends Service {
     private static final int MSG_REMOVE_SESSION = 102;
     private static final int MSG_UPDATE_FOR_SESSION = 103;
     private static final int MSG_SELF_DESTRUCT = 104;
-    private static final int MSG_UPDATE_DEVICE = 105;
-
-    // background priority messages
-    private static final int MSG_BG_UPDATE_EQ_OVERRIDE = 200;
+    private static final int MSG_UPDATE_EQ_OVERRIDE = 105;
 
     public static class LocalBinder extends Binder {
 
@@ -216,7 +213,7 @@ public class AudioFxService extends Service {
     }
 
     private void setOverrideLevels(short band, float level) {
-        mBackgroundHandler.obtainMessage(MSG_BG_UPDATE_EQ_OVERRIDE, band, 0, level).sendToTarget();
+        mHandler.obtainMessage(MSG_UPDATE_EQ_OVERRIDE, band, 0, level).sendToTarget();
     }
 
     private String getCurrentDeviceIdentifier() {
@@ -367,58 +364,14 @@ public class AudioFxService extends Service {
                     }
                     break;
 
-                case MSG_UPDATE_DEVICE:
-                    /**
-                     * msg.obj = the device we expect
-                     */
-                    AudioDeviceInfo outputDevice = (AudioDeviceInfo) msg.obj;
-
-                    if (DEBUG) Log.i(TAG, "updating current device to: " + outputDevice);
-
-                    mPreviousDevice = mCurrentDevice;
-                    mCurrentDevice = outputDevice;
-
+                case MSG_UPDATE_EQ_OVERRIDE:
                     synchronized (mAudioSessionsL) {
-                        // Update all the sessions for this output which are moving
                         final int N = mAudioSessionsL.size();
                         for (int i = 0; i < N; i++) {
                             sessionId = mAudioSessionsL.keyAt(i);
-                            session = mAudioSessionsL.valueAt(i);
-                            if (DEBUG) Log.d(TAG, "UPDATE_DEVICE prev=" +
-                                    (mPreviousDevice == null ? "none" : mPreviousDevice.getType()) +
-                                    " new=" + (mCurrentDevice == null ? "none" : mCurrentDevice.getType() +
-                                    " session=" + sessionId + " session-device=" +
-                                    (session.getDevice() == null ? "none" : session.getDevice().getType())));
-
-                            session.setDevice(mCurrentDevice);
-                            updateBackendLocked(ALL_CHANGED,
-                                    getSharedPreferences(getCurrentDeviceIdentifier(), 0), session);
-                        }
-                    }
-
-                    Intent intent = new Intent(ACTION_DEVICE_OUTPUT_CHANGED);
-                    intent.putExtra("device", mCurrentDevice.getId());
-                    LocalBroadcastManager.getInstance(AudioFxService.this).sendBroadcast(intent);
-                    break;
-            }
-            return true;
-        }
-    }
-
-    private class AudioBackgroundHandler implements Handler.Callback {
-
-        @Override
-        public boolean handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_BG_UPDATE_EQ_OVERRIDE:
-                    synchronized (mAudioSessionsL) {
-                        final int N = mAudioSessionsL.size();
-                        for (int i = 0; i < N; i++) {
-                            final int sessionIdKey = mAudioSessionsL.keyAt(i);
-                            final EffectSet effectSet = mAudioSessionsL.get(sessionIdKey);
-                            if (effectSet != null && !mHandler.hasMessages(MSG_REMOVE_SESSION,
-                                    sessionIdKey)) {
-                                updateEqBand((short) msg.arg1, (float) msg.obj, effectSet);
+                            session = mAudioSessionsL.get(sessionId);
+                            if (session != null) {
+                                session.setEqualizerBandLevel((short) msg.arg1, (float) msg.obj);
                             }
                         }
                     }
@@ -433,24 +386,17 @@ public class AudioFxService extends Service {
         super.onCreate();
         if (DEBUG) Log.i(TAG, "Starting service.");
 
-        HandlerThread handlerThread = new HandlerThread(TAG + "-AUDIO",
-                Process.THREAD_PRIORITY_MORE_FAVORABLE);
+        HandlerThread handlerThread = new HandlerThread(TAG + "-Backend");
         handlerThread.start();
 
-        HandlerThread backgroundThread = new HandlerThread(TAG + "-BG_WORK",
-                Process.THREAD_PRIORITY_BACKGROUND);
-        backgroundThread.start();
-
         final Looper audioLooper = handlerThread.getLooper();
-        final Looper backgroundLooper = backgroundThread.getLooper();
 
         mHandler = new Handler(audioLooper, new AudioServiceHandler());
-        mBackgroundHandler = new Handler(backgroundLooper, new AudioBackgroundHandler());
 
         mDeviceListener = new AudioOutputChangeListener(this, mHandler) {
             @Override
             public void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice) {
-                mHandler.obtainMessage(MSG_UPDATE_DEVICE, outputDevice).sendToTarget();
+                updateDevice(outputDevice);
             }
         };
 
@@ -503,6 +449,40 @@ public class AudioFxService extends Service {
         return START_STICKY;
     }
 
+    /**
+     * Called by the AudioOutputChangeListener on the handler thread.
+     *
+     * @param outputDevice
+     */
+    private void updateDevice(AudioDeviceInfo outputDevice) {
+        mPreviousDevice = mCurrentDevice;
+        mCurrentDevice = outputDevice;
+
+        Intent intent = new Intent(ACTION_DEVICE_OUTPUT_CHANGED);
+        intent.putExtra("device", mCurrentDevice.getId());
+        LocalBroadcastManager.getInstance(AudioFxService.this).sendBroadcast(intent);
+
+        int sessionId = 0;
+        EffectSet session = null;
+
+        synchronized (mAudioSessionsL) {
+            // Update all the sessions for this output which are moving
+            final int N = mAudioSessionsL.size();
+            for (int i = 0; i < N; i++) {
+                sessionId = mAudioSessionsL.keyAt(i);
+                session = mAudioSessionsL.valueAt(i);
+                if (DEBUG) Log.d(TAG, "UPDATE_DEVICE prev=" +
+                        (mPreviousDevice == null ? "none" : mPreviousDevice.getType()) +
+                        " new=" + (mCurrentDevice == null ? "none" : mCurrentDevice.getType() +
+                        " session=" + sessionId + " session-device=" +
+                        (session.getDevice() == null ? "none" : session.getDevice().getType())));
+
+                session.setDevice(mCurrentDevice);
+                updateBackendLocked(ALL_CHANGED, getSharedPreferences(getCurrentDeviceIdentifier(), 0), session);
+            }
+        }
+    }
+
     private void updateQsTile() {
         if (mTileBuilder == null) {
             mTileBuilder = new CustomTile.Builder(this);
@@ -553,11 +533,6 @@ public class AudioFxService extends Service {
             mHandler.removeCallbacksAndMessages(null);
             mHandler.getLooper().quit();
             mHandler = null;
-        }
-        if (mBackgroundHandler != null) {
-            mBackgroundHandler.removeCallbacksAndMessages(null);
-            mBackgroundHandler.getLooper().quit();
-            mBackgroundHandler = null;
         }
 
         AudioSystem.setEffectSessionCallback(null);
