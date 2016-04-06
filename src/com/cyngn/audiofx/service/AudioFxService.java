@@ -118,8 +118,6 @@ public class AudioFxService extends Service {
 
     private static final int TILE_ID = 555;
 
-    private static final int REMOVE_SESSIONS_DELAY = 10000;
-
     /**
      * All fields ending with L should be locked on {@link #mAudioSessionsL}
      */
@@ -236,9 +234,7 @@ public class AudioFxService extends Service {
             if (stream == AudioManager.STREAM_MUSIC &&
                     !mHandler.hasMessages(MSG_REMOVE_SESSION, sessionId)) {
                 if (DEBUG) Log.i(TAG, String.format("Audio session queued for removal: %d", sessionId));
-
-                mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_REMOVE_SESSION, sessionId),
-                        REMOVE_SESSIONS_DELAY);
+                mHandler.obtainMessage(MSG_REMOVE_SESSION, sessionId).sendToTarget();
             }
         }
     }
@@ -265,7 +261,6 @@ public class AudioFxService extends Service {
                     // it's ready to go as fast as possible
                     synchronized (mAudioSessionsL) {
                         if (mAudioSessionsL.indexOfKey(sessionId) < 0) {
-                            mHandler.removeMessages(MSG_REMOVE_SESSION, sessionId);
                             try {
                                 session = EffectsFactory.createEffectSet(getApplicationContext(),
                                         sessionId, mCurrentDevice);
