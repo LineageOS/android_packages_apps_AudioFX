@@ -198,8 +198,11 @@ public class HeadsetService extends Service {
     private class FxSessionCallback implements AudioSystem.EffectSessionCallback {
 
         @Override
-        public void onSessionAdded(int stream, int sessionId) {
-            if (stream == AudioManager.STREAM_MUSIC) {
+        public void onSessionAdded(int stream, int sessionId, int flags,
+                int channelMask, int uid) {
+            if (stream == AudioManager.STREAM_MUSIC &&
+                    (flags < 0 || (flags & 0x8) > 0 || (flags & 0x10) > 0) &&
+                    (channelMask < 0 || channelMask > 1)) {
                 if (sessionId == 0) {
                     return;
                 }
