@@ -198,8 +198,11 @@ public class HeadsetService extends Service {
     private class FxSessionCallback implements AudioSystem.EffectSessionCallback {
 
         @Override
-        public void onSessionAdded(int stream, int sessionId) {
-            if (stream == AudioManager.STREAM_MUSIC) {
+        public void onSessionAdded(int stream, int sessionId, int flags,
+                int channelMask, int uid) {
+            if (stream == AudioManager.STREAM_MUSIC &&
+                    (flags < 0 || (flags & 0x8) > 0 || (flags & 0x10) > 0) &&
+                    (channelMask < 0 || channelMask > 1)) {
                 if (sessionId == 0) {
                     return;
                 }
@@ -261,7 +264,7 @@ public class HeadsetService extends Service {
             String action = intent.getAction();
             int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
             if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
-                mSessionCallback.onSessionAdded(AudioManager.STREAM_MUSIC, sessionId);
+                mSessionCallback.onSessionAdded(AudioManager.STREAM_MUSIC, sessionId, -1, -1, -1);
             }
             if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
                 mSessionCallback.onSessionRemoved(AudioManager.STREAM_MUSIC, sessionId);
