@@ -44,7 +44,7 @@ class SessionManager extends AudioOutputChangeListener implements AudioSystem.Ef
 
     private static final String TAG = "AudioFxService";
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
-    
+
     private final Context mContext;
 
     /**
@@ -105,16 +105,24 @@ class SessionManager extends AudioOutputChangeListener implements AudioSystem.Ef
 
     /**
      * Callback which listens for session updates from AudioPolicyManager. This is a
-     * feature added by CM which notifies when *default* sessions are created or
+     * feature added by CM which notifies when sessions are created or
      * destroyed on a particular stream. This is independent of the standard control
      * intents and should not conflict with them. This feature may not be available on
      * all devices.
+     *
+     * Default logic is to do our best to only attach to music streams. We never attach
+     * to low-latency streams automatically, and we don't attach to mono streams by default
+     * either since these are usually notifications/ringtones/etc.
      */
     @Override
-    public void onSessionAdded(int stream, int sessionId) {
+    public void onSessionAdded(int stream, int sessionId, int flags, int channelMask, int uid) {
         if (stream == AudioManager.STREAM_MUSIC &&
+                ((flags < 0) || (flags & AudioFxService.AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD) > 0 ||
+                (flags & AudioFxService.AUDIO_OUTPUT_FLAG_DEEP_BUFFER) > 0) &&
+                (channelMask < 0 || channelMask > 1) &&
                 !mHandler.hasMessages(MSG_ADD_SESSION, sessionId)) {
-            if (DEBUG) Log.i(TAG, String.format("New audio session: %d", sessionId));
+            if (DEBUG) Log.i(TAG, String.format("New audio session: %d [flags=%d channelMask=%d uid=%d]",
+                    sessionId, flags, channelMask, uid));
             mHandler.obtainMessage(MSG_ADD_SESSION, sessionId).sendToTarget();
         }
     }

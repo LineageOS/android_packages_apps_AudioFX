@@ -75,6 +75,11 @@ public class AudioFxService extends Service {
     public static final int REVERB_CHANGED          = 0x20;
     public static final int ALL_CHANGED             = 0xFF;
 
+    // flags from audio.h, used by session callbacks
+    static final int AUDIO_OUTPUT_FLAG_FAST = 0x4;
+    static final int AUDIO_OUTPUT_FLAG_DEEP_BUFFER = 0x8;
+    static final int AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD = 0x10;
+
     private static final int TILE_ID = 555;
 
     private Locale mLastLocale;
@@ -181,7 +186,7 @@ public class AudioFxService extends Service {
                         Log.i(TAG, String.format("New audio session: %d package: %s contentType=%s",
                                 sessionId, pkg, contentType));
                     }
-                    mSessionManager.onSessionAdded(AudioManager.STREAM_MUSIC, sessionId);
+                    mSessionManager.onSessionAdded(AudioManager.STREAM_MUSIC, sessionId, -1, -1, -1);
 
                 } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
 
