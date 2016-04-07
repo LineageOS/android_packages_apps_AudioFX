@@ -19,71 +19,30 @@
  */
 package com.cyngn.audiofx.service;
 
-import static com.cyngn.audiofx.Constants.AUDIOFX_GLOBAL_FILE;
-import static com.cyngn.audiofx.Constants.AUDIOFX_GLOBAL_HAS_BASSBOOST;
-import static com.cyngn.audiofx.Constants.AUDIOFX_GLOBAL_HAS_DTS;
-import static com.cyngn.audiofx.Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO;
-import static com.cyngn.audiofx.Constants.AUDIOFX_GLOBAL_HAS_VIRTUALIZER;
-import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_BASS_ENABLE;
-import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_BASS_STRENGTH;
-import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_EQ_PRESET;
-import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS;
-import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE;
-import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE;
-import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_REVERB_PRESET;
-import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_ENABLE;
-import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH;
-import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE;
-import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH;
-import static com.cyngn.audiofx.Constants.DEVICE_DEFAULT_GLOBAL_ENABLE;
-import static com.cyngn.audiofx.Constants.DEVICE_HEADSET;
-import static com.cyngn.audiofx.Constants.DEVICE_SPEAKER;
-import static com.cyngn.audiofx.Constants.EQUALIZER_BAND_LEVEL_RANGE;
-import static com.cyngn.audiofx.Constants.EQUALIZER_CENTER_FREQS;
-import static com.cyngn.audiofx.Constants.EQUALIZER_NUMBER_OF_BANDS;
-import static com.cyngn.audiofx.Constants.EQUALIZER_NUMBER_OF_PRESETS;
-import static com.cyngn.audiofx.Constants.EQUALIZER_PRESET;
-import static com.cyngn.audiofx.Constants.EQUALIZER_PRESET_NAMES;
-import static com.cyngn.audiofx.Constants.SAVED_DEFAULTS;
-
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
-import android.media.AudioSystem;
 import android.media.audiofx.AudioEffect;
-import android.media.audiofx.PresetReverb;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.os.Process;
-import android.support.v4.content.LocalBroadcastManager;
-import android.text.TextUtils;
 import android.util.Log;
 
-import android.util.SparseArray;
-import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.activity.ActivityMusic;
 import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.backends.EffectSet;
-import com.cyngn.audiofx.backends.EffectsFactory;
-import com.cyngn.audiofx.eq.EqUtils;
 import com.cyngn.audiofx.receiver.QuickSettingsTileReceiver;
-import cyanogenmod.app.CMStatusBarManager;
-import cyanogenmod.app.CustomTile;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
+
+import cyanogenmod.app.CMStatusBarManager;
+import cyanogenmod.app.CustomTile;
 
 /**
  * This service is responsible for applying all requested effects from the AudioFX UI.
@@ -118,31 +77,14 @@ public class AudioFxService extends Service {
 
     private static final int TILE_ID = 555;
 
-    /**
-     * All fields ending with L should be locked on {@link #mAudioSessionsL}
-     */
-    private final SparseArray<EffectSet> mAudioSessionsL = new SparseArray<EffectSet>();
-
-    private Handler mHandler;
-    private Handler mBackgroundHandler;
-    private AudioOutputChangeListener mDeviceListener;
     private Locale mLastLocale;
-
-    private AudioDeviceInfo mCurrentDevice;
-    private AudioDeviceInfo mPreviousDevice;
-
-    private FxSessionCallback mSessionCallback;
 
     private CustomTile mTile;
     private CustomTile.Builder mTileBuilder;
 
-    // audio priority handler messages
-    private static final int MSG_UPDATE_DSP = 100;
-    private static final int MSG_ADD_SESSION = 101;
-    private static final int MSG_REMOVE_SESSION = 102;
-    private static final int MSG_UPDATE_FOR_SESSION = 103;
-    private static final int MSG_SELF_DESTRUCT = 104;
-    private static final int MSG_UPDATE_EQ_OVERRIDE = 105;
+    private DevicePreferenceManager mPreferenceManager;
+    private SessionManager mSessionManager;
+    private Handler mHandler;
 
     public static class LocalBinder extends Binder {
 
@@ -167,212 +109,36 @@ public class AudioFxService extends Service {
 
         public void setOverrideLevels(short band, float level) {
             if (checkService()) {
-                mService.get().setOverrideLevels(band, level);
+                mService.get().mSessionManager.setOverrideLevels(band, level);
             }
         }
 
         public AudioDeviceInfo getCurrentDevice() {
             if (checkService()) {
-                return mService.get().mDeviceListener.getCurrentDevice();
+                return mService.get().mSessionManager.getCurrentDevice();
             }
             return null;
         }
 
         public AudioDeviceInfo getPreviousDevice() {
             if (checkService()) {
-                return mService.get().mPreviousDevice;
+                return mService.get().mSessionManager.getPreviousDevice();
             }
             return null;
         }
 
-        public List<AudioDeviceInfo> getConnectedOutputs() {
-            if (checkService()) {
-                return mService.get().mDeviceListener.getConnectedOutputs();
-            }
-            return new ArrayList<AudioDeviceInfo>();
-        }
-
         public AudioDeviceInfo getDeviceById(int id) {
             if (checkService()) {
-                return mService.get().mDeviceListener.getDeviceById(id);
+                return mService.get().mSessionManager.getDeviceById(id);
             }
             return null;
         }
 
         public EffectSet getEffect(Integer id) {
             if (checkService()) {
-                synchronized (mService.get().mAudioSessionsL) {
-                    final SparseArray<EffectSet> sessions = mService.get().mAudioSessionsL;
-                    return sessions.get(id);
-                }
+                return mService.get().mSessionManager.getEffectForSession(id);
             }
             return null;
-        }
-    }
-
-    private void setOverrideLevels(short band, float level) {
-        mHandler.obtainMessage(MSG_UPDATE_EQ_OVERRIDE, band, 0, level).sendToTarget();
-    }
-
-    private String getCurrentDeviceIdentifier() {
-        return MasterConfigControl.getDeviceIdentifierString(mCurrentDevice);
-    }
-
-    private class FxSessionCallback implements AudioSystem.EffectSessionCallback {
-
-        @Override
-        public void onSessionAdded(int stream, int sessionId) {
-            if (stream == AudioManager.STREAM_MUSIC &&
-                    !mHandler.hasMessages(MSG_ADD_SESSION, sessionId)) {
-                if (DEBUG) Log.i(TAG, String.format("New audio session: %d", sessionId));
-                mHandler.obtainMessage(MSG_ADD_SESSION, sessionId).sendToTarget();
-            }
-        }
-
-        @Override
-        public void onSessionRemoved(int stream, int sessionId) {
-            if (stream == AudioManager.STREAM_MUSIC &&
-                    !mHandler.hasMessages(MSG_REMOVE_SESSION, sessionId)) {
-                if (DEBUG) Log.i(TAG, String.format("Audio session queued for removal: %d", sessionId));
-                mHandler.obtainMessage(MSG_REMOVE_SESSION, sessionId).sendToTarget();
-            }
-        }
-    }
-
-    private class AudioServiceHandler implements Handler.Callback {
-
-        @Override
-        public boolean handleMessage(Message msg) {
-            EffectSet session = null;
-            Integer sessionId = 0;
-            int flags = 0;
-
-            switch (msg.what) {
-                case MSG_ADD_SESSION:
-                    /**
-                     * msg.obj = sessionId
-                     */
-                    sessionId = (Integer) msg.obj;
-                    if (sessionId == null || sessionId <= 0) {
-                        break;
-                    }
-
-                    // Do the whole thing inside the lock when creating a new session so
-                    // it's ready to go as fast as possible
-                    synchronized (mAudioSessionsL) {
-                        if (mAudioSessionsL.indexOfKey(sessionId) < 0) {
-                            try {
-                                session = EffectsFactory.createEffectSet(getApplicationContext(),
-                                        sessionId, mCurrentDevice);
-                            } catch (Exception e) {
-                                Log.e(TAG, "couldn't create effects for session id: " + sessionId, e);
-                                break;
-                            }
-                            mAudioSessionsL.put(sessionId, session);
-                            if (DEBUG) Log.w(TAG, "added new EffectSet for sessionId=" + sessionId);
-                            updateBackendLocked(ALL_CHANGED,
-                                    getSharedPreferences(getCurrentDeviceIdentifier(), 0), session);
-                        }
-                    }
-                    break;
-
-                case MSG_REMOVE_SESSION:
-                    /**
-                     * msg.obj = sessionId
-                     */
-                    sessionId = (Integer) msg.obj;
-                    if (sessionId == null || sessionId <= 0) {
-                        break;
-                    }
-                    synchronized (mAudioSessionsL) {
-                        mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
-
-                        if (mAudioSessionsL.indexOfKey(sessionId) > -1) {
-                            session = mAudioSessionsL.removeReturnOld(sessionId);
-                        }
-                    }
-                    if (session != null) {
-                        session.release();
-                        if (DEBUG) Log.w(TAG, "removed and released sessionId=" + sessionId);
-                    }
-
-                    break;
-
-                case MSG_UPDATE_DSP:
-                    /**
-                     * msg.arg1 = update what flags
-                     */
-                    flags = msg.arg1;
-
-                    final String mode = getCurrentDeviceIdentifier();
-                    if (DEBUG) Log.i(TAG, "Updating to configuration: " + mode);
-
-                    // cancel updates for other effects, let them go through on the last call
-                    synchronized (mAudioSessionsL) {
-                        final int N = mAudioSessionsL.size();
-                        for (int i = 0; i < N; i++) {
-                            sessionId = mAudioSessionsL.keyAt(i);
-                            mHandler.obtainMessage(MSG_UPDATE_FOR_SESSION, flags, 0, sessionId)
-                                    .sendToTarget();
-                        }
-                    }
-                    break;
-
-                case MSG_UPDATE_FOR_SESSION:
-                    /**
-                     * msg.arg1 = update what flags
-                     * msg.arg2 = unused
-                     * msg.obj = session id integer (for consistency)
-                     */
-                    sessionId = (Integer) msg.obj;
-                    flags = msg.arg1;
-
-                    if (sessionId == null || sessionId <= 0) {
-                        break;
-                    }
-
-                    String device = getCurrentDeviceIdentifier();
-                    if (DEBUG) Log.i(TAG, "updating DSP for sessionId=" + sessionId +
-                            ", device=" + device + " flags=" + flags);
-
-                    synchronized (mAudioSessionsL) {
-                        session = mAudioSessionsL.get(sessionId);
-                        if (session != null) {
-                            updateBackendLocked(flags, getSharedPreferences(device, 0), session);
-                        }
-                    }
-                    break;
-
-                case MSG_SELF_DESTRUCT:
-                    synchronized (mAudioSessionsL) {
-                        mHandler.removeMessages(MSG_SELF_DESTRUCT);
-
-                        if (mAudioSessionsL.size() == 0) {
-                            stopSelf();
-                            Log.w(TAG, "self destructing, no sessions active and nothing to do.");
-                        } else {
-                            if (DEBUG) {
-                                Log.w(TAG, "failed to self destruct, mAudioSession size: "
-                                        + mAudioSessionsL.size());
-                            }
-                        }
-                    }
-                    break;
-
-                case MSG_UPDATE_EQ_OVERRIDE:
-                    synchronized (mAudioSessionsL) {
-                        final int N = mAudioSessionsL.size();
-                        for (int i = 0; i < N; i++) {
-                            sessionId = mAudioSessionsL.keyAt(i);
-                            session = mAudioSessionsL.get(sessionId);
-                            if (session != null) {
-                                session.setEqualizerBandLevel((short) msg.arg1, (float) msg.obj);
-                            }
-                        }
-                    }
-                    break;
-            }
-            return true;
         }
     }
 
@@ -381,33 +147,16 @@ public class AudioFxService extends Service {
         super.onCreate();
         if (DEBUG) Log.i(TAG, "Starting service.");
 
-        HandlerThread handlerThread = new HandlerThread(TAG + "-Backend");
+        HandlerThread handlerThread = new HandlerThread("AudioFx-Backend");
         handlerThread.start();
+        mHandler = new Handler(handlerThread.getLooper());
 
-        final Looper audioLooper = handlerThread.getLooper();
+        mSessionManager = new SessionManager(getApplicationContext(), mHandler);
 
-        mHandler = new Handler(audioLooper, new AudioServiceHandler());
-
-        mDeviceListener = new AudioOutputChangeListener(this, mHandler) {
-            @Override
-            public void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice) {
-                updateDevice(outputDevice);
-            }
-        };
-
-        mDeviceListener.register();
-
-        try {
-            saveAndApplyDefaults(false);
-        } catch (Exception e) {
-            SharedPreferences prefs = getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
-            prefs.edit().clear().commit();
-            Log.e(TAG, "Error initializing effects!", e);
+        mPreferenceManager = new DevicePreferenceManager(getApplicationContext(), mSessionManager);
+        if (!mPreferenceManager.initDefaults()) {
             stopSelf();
         }
-
-        mSessionCallback = new FxSessionCallback();
-        AudioSystem.setEffectSessionCallback(mSessionCallback);
 
         updateQsTile();
     }
@@ -432,50 +181,16 @@ public class AudioFxService extends Service {
                         Log.i(TAG, String.format("New audio session: %d package: %s contentType=%s",
                                 sessionId, pkg, contentType));
                     }
-                    mSessionCallback.onSessionAdded(AudioManager.STREAM_MUSIC, sessionId);
+                    mSessionManager.onSessionAdded(AudioManager.STREAM_MUSIC, sessionId);
 
                 } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
 
-                    mSessionCallback.onSessionRemoved(AudioManager.STREAM_MUSIC, sessionId);
+                    mSessionManager.onSessionRemoved(AudioManager.STREAM_MUSIC, sessionId);
 
                 }
             }
         }
         return START_STICKY;
-    }
-
-    /**
-     * Called by the AudioOutputChangeListener on the handler thread.
-     *
-     * @param outputDevice
-     */
-    private void updateDevice(AudioDeviceInfo outputDevice) {
-        mPreviousDevice = mCurrentDevice;
-        mCurrentDevice = outputDevice;
-
-        Intent intent = new Intent(ACTION_DEVICE_OUTPUT_CHANGED);
-        intent.putExtra("device", mCurrentDevice.getId());
-        LocalBroadcastManager.getInstance(AudioFxService.this).sendBroadcast(intent);
-
-        int sessionId = 0;
-        EffectSet session = null;
-
-        synchronized (mAudioSessionsL) {
-            // Update all the sessions for this output which are moving
-            final int N = mAudioSessionsL.size();
-            for (int i = 0; i < N; i++) {
-                sessionId = mAudioSessionsL.keyAt(i);
-                session = mAudioSessionsL.valueAt(i);
-                if (DEBUG) Log.d(TAG, "UPDATE_DEVICE prev=" +
-                        (mPreviousDevice == null ? "none" : mPreviousDevice.getType()) +
-                        " new=" + (mCurrentDevice == null ? "none" : mCurrentDevice.getType() +
-                        " session=" + sessionId + " session-device=" +
-                        (session.getDevice() == null ? "none" : session.getDevice().getType())));
-
-                session.setDevice(mCurrentDevice);
-                updateBackendLocked(ALL_CHANGED, getSharedPreferences(getCurrentDeviceIdentifier(), 0), session);
-            }
-        }
     }
 
     private void updateQsTile() {
@@ -493,15 +208,12 @@ public class AudioFxService extends Service {
                 new Intent(this, ActivityMusic.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0);
 
-        final SharedPreferences prefs = getSharedPreferences(getCurrentDeviceIdentifier(), 0);
-        final boolean enabled = prefs.getBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE,
-                DEVICE_DEFAULT_GLOBAL_ENABLE);
         String label = getString(R.string.qs_tile_label,
-                MasterConfigControl.getDeviceDisplayString(this, mDeviceListener.getCurrentDevice()));
+                MasterConfigControl.getDeviceDisplayString(this, mSessionManager.getCurrentDevice()));
 
         mTileBuilder
                 .hasSensitiveData(false)
-                .setIcon(enabled ? R.drawable.ic_qs_visualizer_on : R.drawable.ic_qs_visualizer_off)
+                .setIcon(mPreferenceManager.isGlobalEnabled() ? R.drawable.ic_qs_visualizer_on : R.drawable.ic_qs_visualizer_off)
                 .setLabel(label)
                 .setContentDescription(R.string.qs_tile_content_description)
                 .shouldCollapsePanel(false)
@@ -517,20 +229,9 @@ public class AudioFxService extends Service {
     public void onDestroy() {
         if (DEBUG) Log.i(TAG, "Stopping service.");
 
+        mSessionManager.onDestroy();
+
         CMStatusBarManager.getInstance(this).removeTile(TILE_ID);
-
-        if (mDeviceListener != null) {
-            mDeviceListener.unregister();
-            mDeviceListener = null;
-        }
-
-        if (mHandler != null) {
-            mHandler.removeCallbacksAndMessages(null);
-            mHandler.getLooper().quit();
-            mHandler = null;
-        }
-
-        AudioSystem.setEffectSessionCallback(null);
 
         super.onDestroy();
     }
@@ -549,332 +250,28 @@ public class AudioFxService extends Service {
             case TRIM_MEMORY_RUNNING_MODERATE:
             case TRIM_MEMORY_COMPLETE:
                 if (DEBUG) Log.d(TAG, "killing service if no effects active.");
-                mHandler.sendEmptyMessageDelayed(MSG_SELF_DESTRUCT, 1000);
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!mSessionManager.hasActiveSessions()) {
+                            stopSelf();
+                            Log.w(TAG, "self destructing, no sessions active and nothing to do.");
+                        }
+                    }
+                }, 1000);
                 break;
         }
     }
 
-    // ======== DSP UPDATE METHODS BELOW ============= //
-
     /**
-     * Temporarily override a band level. {@link #updateBackendLocked(int flags, SharedPreferences, EffectSet)} will take
-     * care of overriding the preset value when a preset is selected
+     * Queue up a backend update.
      */
-    private void updateEqBand(short band, float level, EffectSet effectSet) {
-        if (effectSet != null) {
-            effectSet.setEqualizerBandLevel(band, level);
-        }
-    }
-
-    /**
-     * Push new configuration to audio stack.
-     */
-    public void update(int flags) {
-        if (mHandler == null) {
-            return;
-        }
-        mHandler.obtainMessage(MSG_UPDATE_DSP, flags, 0).sendToTarget();
+    private void update(int flags) {
+        mSessionManager.update(flags);
 
         if ((flags & ALL_CHANGED) == ALL_CHANGED) {
             updateQsTile();
         }
-    }
-
-    /**
-     * caller should hold a lock on {@link #mAudioSessionsL}
-     */
-    private void updateBackendLocked(int flags, SharedPreferences prefs, EffectSet session) {
-        if (DEBUG) {
-            Log.i(TAG, "+++ updateBackend() called with flags=[" + flags + "], session=[" + session + "]");
-        }
-        if (session == null) {
-            return;
-        }
-
-        final boolean globalEnabled = prefs.getBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE,
-                DEVICE_DEFAULT_GLOBAL_ENABLE);
-
-        // global bypass toggle
-        session.setGlobalEnabled(globalEnabled);
-
-        if (globalEnabled) {
-            // tell the backend it's time to party
-            if (!session.beginUpdate()) {
-                Log.e(TAG, "session " + session + " failed to beginUpdate()");
-                return;
-            }
-
-            // equalizer
-            try {
-                if ((flags & EQ_CHANGED) > 0) {
-                    // equalizer is always on unless bypassed
-                    session.enableEqualizer(true);
-                    String savedPreset = prefs.getString(DEVICE_AUDIOFX_EQ_PRESET_LEVELS, null);
-                    if (savedPreset != null) {
-                        session.setEqualizerLevelsDecibels(EqUtils.stringBandsToFloats(savedPreset));
-                    }
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error enabling equalizer!", e);
-            }
-
-            // bass
-            try {
-                if ((flags & BASS_BOOST_CHANGED) > 0 && session.hasBassBoost()) {
-                    boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_BASS_ENABLE, false);
-                    session.enableBassBoost(enable);
-                    session.setBassBoostStrength(Short.valueOf(prefs
-                            .getString(DEVICE_AUDIOFX_BASS_STRENGTH, "0")));
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error enabling bass boost!", e);
-            }
-
-            // reverb
-            if (ENABLE_REVERB) {
-                try {
-                    if ((flags & REVERB_CHANGED) > 0 && session.hasReverb()) {
-                        short preset = Short.decode(prefs.getString(DEVICE_AUDIOFX_REVERB_PRESET,
-                                String.valueOf(PresetReverb.PRESET_NONE)));
-                        session.enableReverb(preset > 0);
-                        session.setReverbPreset(preset);
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Error enabling reverb preset", e);
-                }
-            }
-
-            // virtualizer
-            try {
-                if ((flags & VIRTUALIZER_CHANGED) > 0 && session.hasVirtualizer()) {
-                    boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, false);
-                    session.enableVirtualizer(enable);
-                    session.setVirtualizerStrength(Short.valueOf(prefs.getString(
-                            DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "0")));
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error enabling virtualizer!");
-            }
-
-            // extended audio effects
-            try {
-                if ((flags & TREBLE_BOOST_CHANGED) > 0 && session.hasTrebleBoost()) {
-                    // treble
-                    boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_TREBLE_ENABLE, false);
-                    session.enableTrebleBoost(enable);
-                    session.setTrebleBoostStrength(Short.valueOf(
-                            prefs.getString(DEVICE_AUDIOFX_TREBLE_STRENGTH, "0")));
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error enabling treble boost!", e);
-            }
-
-            try {
-                if ((flags & VOLUME_BOOST_CHANGED) > 0 && session.hasVolumeBoost()) {
-                    // maxx volume
-                    session.enableVolumeBoost(prefs.getBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, false));
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error enabling volume boost!", e);
-            }
-
-            // mic drop
-            if (!session.commitUpdate()) {
-                Log.e(TAG, "session " + session + " failed to commitUpdate()");
-            }
-        }
-        if (DEBUG) {
-            Log.i(TAG, "--- updateBackend() called with flags=[" + flags + "], session=[" + session + "]");
-        }
-    }
-
-    /**
-     * This method sets some sane defaults for presets, device defaults, etc
-     * <p/>
-     * First we read presets from the system, then adjusts some setting values
-     * for some better defaults!
-     */
-    private void saveAndApplyDefaults(boolean overridePrevious) {
-        if (DEBUG) {
-            Log.d(TAG, "saveAndApplyDefaults() called with overridePrevious = " +
-                    "[" + overridePrevious + "]");
-        }
-        SharedPreferences prefs = Constants.getGlobalPrefs(this);
-
-        final int currentPrefVer = prefs.getInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT, 0);
-        boolean needsPrefsUpdate = currentPrefVer < Constants.CURRENT_PREFS_INT_VERSION
-                || overridePrevious;
-
-        if (needsPrefsUpdate) {
-            Log.d(TAG, "rebuilding presets due to preference upgrade from " + currentPrefVer
-                    + " to " + Constants.CURRENT_PREFS_INT_VERSION);
-        }
-
-        if (prefs.getBoolean(SAVED_DEFAULTS, false) && !needsPrefsUpdate) {
-            if (DEBUG) {
-                Log.e(TAG, "we've already saved defaults and don't need a pref update. aborting.");
-            }
-            return;
-        }
-        EffectSet temp = EffectsFactory.createEffectSet(getApplicationContext(), 0, null);
-
-        final int numBands = temp.getNumEqualizerBands();
-        final int numPresets = temp.getNumEqualizerPresets();
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(EQUALIZER_NUMBER_OF_PRESETS, String.valueOf(numPresets));
-        editor.putString(EQUALIZER_NUMBER_OF_BANDS, String.valueOf(numBands));
-
-        // range
-        short[] rangeShortArr = temp.getEqualizerBandLevelRange();
-        editor.putString(EQUALIZER_BAND_LEVEL_RANGE, rangeShortArr[0]
-                + ";" + rangeShortArr[1]);
-
-        // center freqs
-        StringBuilder centerFreqs = new StringBuilder();
-        // audiofx.global.centerfreqs
-        for (short i = 0; i < numBands; i++) {
-            centerFreqs.append(temp.getCenterFrequency(i));
-            centerFreqs.append(";");
-
-        }
-        centerFreqs.deleteCharAt(centerFreqs.length() - 1);
-        editor.putString(EQUALIZER_CENTER_FREQS, centerFreqs.toString());
-
-        // populate preset names
-        StringBuilder presetNames = new StringBuilder();
-        for (int i = 0; i < numPresets; i++) {
-            String presetName = temp.getEqualizerPresetName((short) i);
-            presetNames.append(presetName);
-            presetNames.append("|");
-
-            // populate preset band values
-            StringBuilder presetBands = new StringBuilder();
-            temp.useEqualizerPreset((short) i);
-
-            for (int j = 0; j < numBands; j++) {
-                // loop through preset bands
-                presetBands.append(temp.getEqualizerBandLevel((short) j));
-                presetBands.append(";");
-            }
-            presetBands.deleteCharAt(presetBands.length() - 1);
-            editor.putString(EQUALIZER_PRESET + i, presetBands.toString());
-        }
-        if (presetNames.length() > 0) {
-            presetNames.deleteCharAt(presetNames.length() - 1);
-        }
-        editor.putString(EQUALIZER_PRESET_NAMES, presetNames.toString());
-
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer());
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost());
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.getBrand() == EffectsFactory.MAXXAUDIO);
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_DTS, temp.getBrand() == EffectsFactory.DTS);
-        editor.commit();
-        temp.release();
-
-        applyDefaults(needsPrefsUpdate);
-
-        prefs
-                .edit()
-                .putInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT,
-                            Constants.CURRENT_PREFS_INT_VERSION)
-                .putBoolean(Constants.SAVED_DEFAULTS, true)
-                .commit();
-    }
-
-    private static int findInList(String needle, List<String> haystack) {
-        for (int i = 0; i < haystack.size(); i++) {
-            if (haystack.get(i).equalsIgnoreCase(needle)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * This method sets up some *persisted* defaults.
-     * Prereq: saveDefaults() must have been run before this can apply its defaults properly.
-     */
-    private void applyDefaults(boolean overridePrevious) {
-        if (DEBUG) {
-            Log.d(TAG, "applyDefaults() called with overridePrevious = [" + overridePrevious + "]");
-        }
-
-        if (!(overridePrevious || !getSharedPrefsFile(DEVICE_SPEAKER).exists() ||
-                !getSharedPrefsFile(AUDIOFX_GLOBAL_FILE).exists())) {
-            return;
-        }
-
-        final SharedPreferences globalPrefs = getSharedPreferences(AUDIOFX_GLOBAL_FILE, 0);
-
-        // Nothing to see here for DTS
-        if (globalPrefs.getBoolean(AUDIOFX_GLOBAL_HAS_DTS, false)) {
-            return;
-        }
-
-        // set up the builtin speaker configuration
-        final String smallSpeakers = getNonLocalizedString(R.string.small_speakers);
-        final List<String> presetNames = Arrays.asList(
-                globalPrefs.getString(EQUALIZER_PRESET_NAMES, "").split("\\|"));
-        final SharedPreferences speakerPrefs = getSharedPreferences(DEVICE_SPEAKER, 0);
-
-        if (globalPrefs.getBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false)) {
-            // MaxxAudio defaults for builtin speaker:
-            // maxxvolume: on  maxxbass: 40%  maxxtreble: 32%
-            speakerPrefs.edit()
-                    .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
-                    .putBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, true)
-                    .putBoolean(DEVICE_AUDIOFX_BASS_ENABLE, true)
-                    .putString(DEVICE_AUDIOFX_BASS_STRENGTH, "400")
-                    .putBoolean(DEVICE_AUDIOFX_TREBLE_ENABLE, true)
-                    .putString(DEVICE_AUDIOFX_TREBLE_STRENGTH, "32")
-                    .commit();
-
-            // Defaults for headphones
-            // maxxvolume: on  maxxbass: 20%  maxxtreble: 40%  maxxspace: 20%
-            getSharedPreferences(DEVICE_HEADSET, 0).edit()
-                    .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
-                    .putBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, true)
-                    .putBoolean(DEVICE_AUDIOFX_BASS_ENABLE, true)
-                    .putString(DEVICE_AUDIOFX_BASS_STRENGTH, "200")
-                    .putBoolean(DEVICE_AUDIOFX_TREBLE_ENABLE, true)
-                    .putString(DEVICE_AUDIOFX_TREBLE_STRENGTH, "40")
-                    .putBoolean(DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, true)
-                    .putString(DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "200")
-                    .commit();
-        }
-
-        // for 5 band configs, let's add a `Small Speaker` configuration if one
-        // doesn't exist ( from oss AudioFX: -170;270;50;-220;200 )
-        if (Integer.parseInt(globalPrefs.getString(EQUALIZER_NUMBER_OF_BANDS, "0")) == 5 &&
-                findInList(smallSpeakers, presetNames) < 0) {
-
-            int currentPresets = Integer.parseInt(
-                    globalPrefs.getString(EQUALIZER_NUMBER_OF_PRESETS, "0"));
-
-            presetNames.add(smallSpeakers);
-            String newPresetNames = TextUtils.join("|", presetNames);
-            globalPrefs.edit()
-                    .putString(EQUALIZER_PRESET + currentPresets, "-170;270;50;-220;200")
-                    .putString(EQUALIZER_PRESET_NAMES, newPresetNames)
-                    .putString(EQUALIZER_NUMBER_OF_PRESETS, Integer.toString(++currentPresets))
-                    .commit();
-
-        }
-
-        // set the small speakers preset as the default
-        int idx = findInList(smallSpeakers, presetNames);
-        if (idx >= 0) {
-            speakerPrefs.edit()
-                .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
-                .putString(DEVICE_AUDIOFX_EQ_PRESET, String.valueOf(idx))
-                .commit();
-        }
-    }
-
-    private String getNonLocalizedString(int res) {
-        Configuration config = new Configuration(getResources().getConfiguration());
-        config.setLocale(Locale.ROOT);
-        return createConfigurationContext(config).getString(res);
     }
 
     @Override
