@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7faddb67_69b52431",
+        "filename": "Android.mk",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2016-04-08T18:50:37Z",
+      "side": 1,
+      "message": "This will cause AudioFX not to be built. Any reason it was renamed?",
+      "range": {
+        "startLine": 12,
+        "startChar": 22,
+        "endLine": 12,
+        "endChar": 25
+      },
+      "revId": "e4e3997e2d7df91be766c7031f5729bded78cdf4",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
