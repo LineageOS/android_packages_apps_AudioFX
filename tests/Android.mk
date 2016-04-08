@@ -6,8 +6,8 @@ LOCAL_MODULE_TAGS := tests
 
 LOCAL_SRC_FILES := $(call all-subdir-java-files)
 
-LOCAL_PACKAGE_NAME := AudioFXTests
-LOCAL_INSTRUMENTATION_FOR := AudioFX
+LOCAL_PACKAGE_NAME := ModioFXTests
+LOCAL_INSTRUMENTATION_FOR := ModioFX
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
         audiofx-android-support-test
@@ -23,7 +23,7 @@ LOCAL_JACK_ENABLED := disabled
 ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/target/product/security/testkey)
 LOCAL_CERTIFICATE := cyngn-app
 else
-$(warning *** SIGNING AUDIOFX WITH TEST KEY ***)
+$(warning *** SIGNING MODIOFX WITH TEST KEY ***)
 endif
 
 include $(BUILD_PACKAGE)

@@ -1,10 +1,10 @@
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
-LOCAL_PACKAGE_NAME	:= AudioFX
+LOCAL_PACKAGE_NAME	:= ModioFX
 LOCAL_MODULE_TAGS	:= optional
 
-LOCAL_OVERRIDES_PACKAGES := DSPManager
+LOCAL_OVERRIDES_PACKAGES := DSPManager AudioFX
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
@@ -26,7 +26,7 @@ LOCAL_PRIVILEGED_MODULE := true
 ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/target/product/security/testkey)
 LOCAL_CERTIFICATE := cyngn-app
 else
-$(warning *** SIGNING AUDIOFX WITH TEST KEY ***)
+$(warning *** SIGNING MODIOFX WITH TEST KEY ***)
 endif
 
 include $(BUILD_PACKAGE)
