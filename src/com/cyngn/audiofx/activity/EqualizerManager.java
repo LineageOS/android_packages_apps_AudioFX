@@ -209,7 +209,7 @@ public class EqualizerManager {
     }
 
     void onPostDeviceChanged() {
-        setPreset(mCurrentPreset);
+        setPreset(mCurrentPreset, false);
     }
 
     public Preset getCurrentPreset() {
@@ -332,7 +332,7 @@ public class EqualizerManager {
      *
      * @param newPresetIndex the new preset index.
      */
-    public void setPreset(final int newPresetIndex) {
+    public void setPreset(final int newPresetIndex, boolean updateBackend) {
         mCurrentPreset = newPresetIndex;
         updateEqControls(); // do this before callback is propogated
 
@@ -349,7 +349,13 @@ public class EqualizerManager {
 
         setPref(Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS, EqUtils.floatLevelsToString(newlevels));
 
-        mConfig.updateService(AudioFxService.EQ_CHANGED);
+        if (updateBackend) {
+            mConfig.updateService(AudioFxService.EQ_CHANGED);
+        }
+    }
+
+    public void setPreset(final int newPresetIndex) {
+        setPreset(newPresetIndex, true);
     }
 
     private void updateEqControls() {

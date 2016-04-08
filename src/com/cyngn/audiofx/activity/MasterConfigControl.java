@@ -164,17 +164,17 @@ public class MasterConfigControl {
         return mEqManager;
     }
 
-    public void setCurrentDeviceEnabled(boolean isChecked) {
+    public synchronized void setCurrentDeviceEnabled(boolean isChecked) {
         getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE, isChecked).apply();
         getCallbacks().notifyGlobalToggle(isChecked);
         updateService(AudioFxService.ALL_CHANGED);
     }
 
-    public boolean isCurrentDeviceEnabled() {
+    public synchronized boolean isCurrentDeviceEnabled() {
         return getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE, false);
     }
 
-    public SharedPreferences getGlobalPrefs() {
+    public synchronized SharedPreferences getGlobalPrefs() {
         return mContext.getSharedPreferences(Constants.AUDIOFX_GLOBAL_FILE, 0);
     }
 
