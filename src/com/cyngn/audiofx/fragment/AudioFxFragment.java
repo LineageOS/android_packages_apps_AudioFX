@@ -273,6 +273,20 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
             }
         }
 
+        List<AudioDeviceInfo> lineOutDevices = mConfig.getConnectedDevices(
+                AudioDeviceInfo.TYPE_LINE_ANALOG, AudioDeviceInfo.TYPE_LINE_DIGITAL);
+        if (lineOutDevices.size() > 0) {
+            AudioDeviceInfo ai = lineOutDevices.get(0);
+            int viewId = View.generateViewId();
+            MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
+                    Menu.NONE, MasterConfigControl.getDeviceDisplayString(getActivity(), ai));
+            item.setIcon(R.drawable.ic_action_dsp_icons_lineout);
+            mMenuItems.put(item, ai);
+            if (currentDevice.getId() == ai.getId()) {
+                selectedItem = item;
+            }
+        }
+
         List<AudioDeviceInfo> bluetoothDevices = mConfig.getConnectedDevices(
                 AudioDeviceInfo.TYPE_BLUETOOTH_A2DP);
         for (AudioDeviceInfo ai : bluetoothDevices) {

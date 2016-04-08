@@ -302,9 +302,10 @@ public class MasterConfigControl {
         switch (type) {
             case TYPE_WIRED_HEADSET:
             case TYPE_WIRED_HEADPHONES:
+                return context.getString(com.cyngn.audiofx.R.string.device_headset);
             case TYPE_LINE_ANALOG:
             case TYPE_LINE_DIGITAL:
-                return context.getString(com.cyngn.audiofx.R.string.device_headset);
+                return context.getString(com.cyngn.audiofx.R.string.device_line_out);
             case TYPE_BLUETOOTH_SCO:
             case TYPE_BLUETOOTH_A2DP:
             case TYPE_USB_DEVICE:
@@ -341,8 +342,7 @@ public class MasterConfigControl {
                 return Constants.DEVICE_HEADSET;
             case TYPE_LINE_ANALOG:
             case TYPE_LINE_DIGITAL:
-                // FIXME: support line-out
-                return Constants.DEVICE_HEADSET;
+                return Constants.DEVICE_LINE_OUT;
             case TYPE_BLUETOOTH_SCO:
             case TYPE_BLUETOOTH_A2DP:
                 return appendDeviceAddress(info, Constants.DEVICE_PREFIX_BLUETOOTH);
