@@ -51,7 +51,7 @@ public class HeadsetService extends Service {
 
     public static final String ACTION_UPDATE_PREFERENCES = "org.cyanogenmod.audiofx.UPDATE_PREFS";
     public static final String[] DEFAULT_AUDIO_DEVICES = new String[]{
-            "headset", "speaker", "usb", "bluetooth", "wireless"
+            "headset", "speaker", "usb", "bluetooth", "wireless", "lineout"
     };
 
     static String getZeroedBandsString(int length) {
@@ -289,6 +289,7 @@ public class HeadsetService extends Service {
         private boolean mUseUSB;
         private boolean mUseWifiDisplay;
         private boolean mUseSpeaker;
+        private boolean mUseLineOut;
 
         private final Context mContext;
 
@@ -303,6 +304,7 @@ public class HeadsetService extends Service {
             final boolean prevUseUSB = mUseUSB;
             final boolean prevUseWireless = mUseWifiDisplay;
             final boolean prevUseSpeaker = mUseSpeaker;
+            final boolean prevUseLineOut = mUseLineOut;
 
             AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             int device = am.getDevicesForStream(AudioManager.STREAM_MUSIC);
@@ -316,6 +318,8 @@ public class HeadsetService extends Service {
             mUseHeadset = (device & AudioManager.DEVICE_OUT_WIRED_HEADPHONE) != 0
                     || (device & AudioManager.DEVICE_OUT_WIRED_HEADSET) != 0;
 
+            mUseLineOut = (device & AudioManager.DEVICE_OUT_LINE) != 0;
+
             mUseUSB = (device & AudioManager.DEVICE_OUT_USB_ACCESSORY) != 0
                     || (device & AudioManager.DEVICE_OUT_USB_DEVICE) != 0;
 
@@ -324,12 +328,15 @@ public class HeadsetService extends Service {
             mUseSpeaker = (device & AudioManager.DEVICE_OUT_SPEAKER) != 0;
 
             Log.i(TAG, "Headset=" + mUseHeadset + "; Bluetooth="
-                    + mUseBluetooth + " ; USB=" + mUseUSB + "; Speaker=" + mUseSpeaker);
+                    + mUseBluetooth + " ; USB=" + mUseUSB + "; Speaker=" + mUseSpeaker +
+                    "; Line out=" + mUseLineOut);
+
             if (prevUseHeadset != mUseHeadset
                     || prevUseBluetooth != mUseBluetooth
                     || prevUseUSB != mUseUSB
                     || prevUseWireless != mUseWifiDisplay
-                    || prevUseSpeaker != mUseSpeaker) {
+                    || prevUseSpeaker != mUseSpeaker
+                    || prevUseLineOut != mUseLineOut) {
 
                 update();
 
@@ -363,6 +370,9 @@ public class HeadsetService extends Service {
             }
             if (mUseWifiDisplay) {
                 return "wireless";
+            }
+            if (mUseLineOut) {
+                return "lineout";
             }
             return "speaker";
         }
@@ -627,8 +637,8 @@ public class HeadsetService extends Service {
                     equalizerLevels[i] = (short) (Float.parseFloat(levels[i]));
                 }
             } else if (mOverriddenEqualizerLevels != null) {
-                equalizerLevels = new short[levels.length];
-                for (int i = 0; i < levels.length; i++) {
+                equalizerLevels = new short[mOverriddenEqualizerLevels.length];
+                for (int i = 0; i < mOverriddenEqualizerLevels.length; i++) {
                     equalizerLevels[i] = (short) mOverriddenEqualizerLevels[i];
                 }
             }
