@@ -53,7 +53,7 @@ import cyanogenmod.app.CustomTile;
  */
 public class AudioFxService extends Service {
 
-    private static final String TAG = AudioFxService.class.getSimpleName();
+    static final String TAG = AudioFxService.class.getSimpleName();
 
     public static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
@@ -118,27 +118,6 @@ public class AudioFxService extends Service {
             }
         }
 
-        public AudioDeviceInfo getCurrentDevice() {
-            if (checkService()) {
-                return mService.get().mSessionManager.getCurrentDevice();
-            }
-            return null;
-        }
-
-        public AudioDeviceInfo getPreviousDevice() {
-            if (checkService()) {
-                return mService.get().mSessionManager.getPreviousDevice();
-            }
-            return null;
-        }
-
-        public AudioDeviceInfo getDeviceById(int id) {
-            if (checkService()) {
-                return mService.get().mSessionManager.getDeviceById(id);
-            }
-            return null;
-        }
-
         public EffectSet getEffect(Integer id) {
             if (checkService()) {
                 return mService.get().mSessionManager.getEffectForSession(id);
@@ -161,6 +140,7 @@ public class AudioFxService extends Service {
         mPreferenceManager = new DevicePreferenceManager(getApplicationContext(), mSessionManager);
         if (!mPreferenceManager.initDefaults()) {
             stopSelf();
+            return;
         }
 
         updateQsTile();
@@ -179,23 +159,42 @@ public class AudioFxService extends Service {
                 String action = intent.getAction();
                 int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
                 String pkg = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
-                String contentType = intent.getStringExtra(AudioEffect.EXTRA_CONTENT_TYPE);
+                int stream = mapContentTypeToStream(
+                        intent.getIntExtra(AudioEffect.EXTRA_CONTENT_TYPE,
+                                AudioEffect.CONTENT_TYPE_MUSIC));
 
                 if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
                     if (DEBUG)  {
-                        Log.i(TAG, String.format("New audio session: %d package: %s contentType=%s",
-                                sessionId, pkg, contentType));
+                        Log.i(TAG, String.format("New audio session: %d package: %s contentType=%d",
+                                sessionId, pkg, stream));
                     }
-                    mSessionManager.onSessionAdded(AudioManager.STREAM_MUSIC, sessionId, -1, -1, -1);
+                    mSessionManager.onSessionAdded(stream, sessionId, -1, -1, -1);
 
                 } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
 
-                    mSessionManager.onSessionRemoved(AudioManager.STREAM_MUSIC, sessionId);
+                    mSessionManager.onSessionRemoved(stream, sessionId);
 
                 }
             }
         }
         return START_STICKY;
+    }
+
+    /**
+     * maps {@link AudioEffect#EXTRA_CONTENT_TYPE} to an AudioManager.STREAM_* item
+     */
+    private static int mapContentTypeToStream(int contentType) {
+        switch (contentType) {
+            case AudioEffect.CONTENT_TYPE_VOICE:
+                return AudioManager.STREAM_VOICE_CALL;
+            case AudioEffect.CONTENT_TYPE_GAME:
+                // explicitly don't support game effects right now
+                return -1;
+            case AudioEffect.CONTENT_TYPE_MOVIE:
+            case AudioEffect.CONTENT_TYPE_MUSIC:
+            default:
+                return AudioManager.STREAM_MUSIC;
+        }
     }
 
     private void updateQsTile() {
@@ -218,7 +217,8 @@ public class AudioFxService extends Service {
 
         mTileBuilder
                 .hasSensitiveData(false)
-                .setIcon(mPreferenceManager.isGlobalEnabled() ? R.drawable.ic_qs_visualizer_on : R.drawable.ic_qs_visualizer_off)
+                .setIcon(mPreferenceManager.isGlobalEnabled() ? R.drawable.ic_qs_visualizer_on
+                        : R.drawable.ic_qs_visualizer_off)
                 .setLabel(label)
                 .setContentDescription(R.string.qs_tile_content_description)
                 .shouldCollapsePanel(false)

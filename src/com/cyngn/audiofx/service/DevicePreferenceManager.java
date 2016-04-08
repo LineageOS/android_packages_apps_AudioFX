@@ -42,7 +42,7 @@ import java.util.Locale;
 
 class DevicePreferenceManager {
 
-    private static final String TAG = "AudioFxService";
+    private static final String TAG = AudioFxService.TAG;
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     private final Context mContext;

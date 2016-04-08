@@ -42,7 +42,7 @@ import com.cyngn.audiofx.eq.EqUtils;
 
 class SessionManager extends AudioOutputChangeListener implements AudioSystem.EffectSessionCallback {
 
-    private static final String TAG = "AudioFxService";
+    private static final String TAG = AudioFxService.TAG;
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     private final Context mContext;
@@ -116,11 +116,13 @@ class SessionManager extends AudioOutputChangeListener implements AudioSystem.Ef
      */
     @Override
     public void onSessionAdded(int stream, int sessionId, int flags, int channelMask, int uid) {
-        if (stream == AudioManager.STREAM_MUSIC &&
-                ((flags < 0) || (flags & AudioFxService.AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD) > 0 ||
-                (flags & AudioFxService.AUDIO_OUTPUT_FLAG_DEEP_BUFFER) > 0) &&
-                (channelMask < 0 || channelMask > 1) &&
-                !mHandler.hasMessages(MSG_ADD_SESSION, sessionId)) {
+        final boolean music = stream == AudioManager.STREAM_MUSIC;
+        final boolean offloaded = (flags < 0)
+                || (flags & AudioFxService.AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD) > 0
+                || (flags & AudioFxService.AUDIO_OUTPUT_FLAG_DEEP_BUFFER) > 0;
+        final boolean stereo = channelMask < 0 || channelMask > 1;
+
+        if (music && offloaded && stereo && !mHandler.hasMessages(MSG_ADD_SESSION, sessionId)) {
             if (DEBUG) Log.i(TAG, String.format("New audio session: %d [flags=%d channelMask=%d uid=%d]",
                     sessionId, flags, channelMask, uid));
             mHandler.obtainMessage(MSG_ADD_SESSION, sessionId).sendToTarget();
