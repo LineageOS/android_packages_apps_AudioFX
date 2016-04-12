@@ -35,6 +35,7 @@ import com.cyngn.audiofx.R;
 import com.cyngn.audiofx.backends.EffectSet;
 import com.cyngn.audiofx.backends.EffectsFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -205,8 +206,8 @@ class DevicePreferenceManager {
 
         // set up the builtin speaker configuration
         final String smallSpeakers = getNonLocalizedString(R.string.small_speakers);
-        final List<String> presetNames = Arrays.asList(
-                globalPrefs.getString(EQUALIZER_PRESET_NAMES, "").split("\\|"));
+        final List<String> presetNames = new ArrayList<String>(Arrays.asList(
+                globalPrefs.getString(EQUALIZER_PRESET_NAMES, "").split("\\|")));
         final SharedPreferences speakerPrefs = prefsFor(DEVICE_SPEAKER);
 
         if (globalPrefs.getBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false)) {
