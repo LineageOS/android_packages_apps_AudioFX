@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Efekt není pro režim reproduktoru dostupný.</string>
   <string name="device_headset">Sluchátka</string>
   <string name="device_speaker">Reproduktor</string>
+  <string name="device_lineout">Linkový výstup</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Bezdrátové</string>

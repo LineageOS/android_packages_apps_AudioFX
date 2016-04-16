@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Effekt ikke tilgængelig i Højttalertilstand.</string>
   <string name="device_headset">Håndfri</string>
   <string name="device_speaker">Højttaler</string>
+  <string name="device_lineout">Linjeudgang</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Trådløs</string>

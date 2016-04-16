@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Učinek ni na voljo v načinu Zvočnika.</string>
   <string name="device_headset">Slušalke</string>
   <string name="device_speaker">Zvočnik</string>
+  <string name="device_lineout">Izhod za slušalke</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Brezžično</string>

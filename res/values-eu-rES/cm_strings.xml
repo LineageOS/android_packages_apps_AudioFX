@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Efektua ez dago bozgorailu modurako eskuragarri.</string>
   <string name="device_headset">Aurikularrak</string>
   <string name="device_speaker">Bozgorailua</string>
+  <string name="device_lineout">Linea irteera</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Haririk gabe</string>

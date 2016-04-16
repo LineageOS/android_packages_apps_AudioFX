@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Ефекта не е достъпен за високоговорителя.</string>
   <string name="device_headset">Слушалки</string>
   <string name="device_speaker">Говорител</string>
+  <string name="device_lineout">Линеен изход</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Безжичен</string>

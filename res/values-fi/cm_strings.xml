@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Efekti ei käytettävissä kaiutintilassa.</string>
   <string name="device_headset">Kuulokkeet</string>
   <string name="device_speaker">Kaiutin</string>
+  <string name="device_lineout">Ulostulo</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Langaton</string>

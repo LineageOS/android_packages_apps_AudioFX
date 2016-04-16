@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">L\'efecte no està disponible en el mode Altaveu.</string>
   <string name="device_headset">Auriculars</string>
   <string name="device_speaker">Altaveu</string>
+  <string name="device_lineout">Sortida de línia</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Sense fils</string>
