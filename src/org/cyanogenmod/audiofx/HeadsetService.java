@@ -195,6 +195,34 @@ public class HeadsetService extends Service {
 
     private FxSessionCallback mSessionCallback;
 
+    private void addSession(int sessionId) {
+        if (sessionId == 0) {
+            return;
+        }
+        if (DEBUG) Log.i(TAG, String.format("New audio session: %d", sessionId));
+
+        synchronized (mAudioSessionsL) {
+            if (mAudioSessionsL.indexOfKey(sessionId) < 0) {
+                mAudioSessionsL.put(sessionId, new EffectSet(sessionId));
+            }
+            updateLocked();
+        }
+    }
+
+    private void removeSession(int sessionId) {
+        if (sessionId == 0) {
+            return;
+        }
+        if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d", sessionId));
+
+        synchronized (mAudioSessionsL) {
+            EffectSet gone = mAudioSessionsL.removeReturnOld(sessionId);
+            if (gone != null) {
+                gone.release();
+            }
+        }
+    }
+
     private class FxSessionCallback implements AudioSystem.EffectSessionCallback {
 
         @Override
@@ -203,34 +231,22 @@ public class HeadsetService extends Service {
             if (stream == AudioManager.STREAM_MUSIC &&
                     (flags < 0 || (flags & 0x8) > 0 || (flags & 0x10) > 0) &&
                     (channelMask < 0 || channelMask > 1)) {
-                if (sessionId == 0) {
+
+                // Never auto-attach is someone is recording! We don't want to interfere with any sort of
+                // loopback mechanisms.
+                final boolean recording = AudioSystem.isSourceActive(0) || AudioSystem.isSourceActive(6);
+                if (recording) {
+                    Log.w(TAG, "Recording in progress, not performing auto-attach!");
                     return;
                 }
-                if (DEBUG) Log.i(TAG, String.format("New audio session: %d", sessionId));
-
-                synchronized (mAudioSessionsL) {
-                    if (mAudioSessionsL.indexOfKey(sessionId) < 0) {
-                        mAudioSessionsL.put(sessionId, new EffectSet(sessionId));
-                    }
-                    updateLocked();
-                }
+                addSession(sessionId);
             }
         }
 
         @Override
         public void onSessionRemoved(int stream, int sessionId) {
             if (stream == AudioManager.STREAM_MUSIC) {
-                if (sessionId == 0) {
-                    return;
-                }
-                if (DEBUG) Log.i(TAG, String.format("Audio session removed: %d", sessionId));
-
-                synchronized (mAudioSessionsL) {
-                    EffectSet gone = mAudioSessionsL.removeReturnOld(sessionId);
-                    if (gone != null) {
-                        gone.release();
-                    }
-                }
+                removeSession(sessionId);
             }
         }
     }
@@ -264,10 +280,10 @@ public class HeadsetService extends Service {
             String action = intent.getAction();
             int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
             if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
-                mSessionCallback.onSessionAdded(AudioManager.STREAM_MUSIC, sessionId, -1, -1, -1);
+                addSession(sessionId);
             }
             if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
-                mSessionCallback.onSessionRemoved(AudioManager.STREAM_MUSIC, sessionId);
+                removeSession(sessionId);
             }
         }
     };
