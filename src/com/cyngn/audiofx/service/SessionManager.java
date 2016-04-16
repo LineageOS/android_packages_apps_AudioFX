@@ -122,6 +122,13 @@ class SessionManager extends AudioOutputChangeListener implements AudioSystem.Ef
                 || (flags & AudioFxService.AUDIO_OUTPUT_FLAG_DEEP_BUFFER) > 0;
         final boolean stereo = channelMask < 0 || channelMask > 1;
 
+        // Never auto-attach is someone is recording! We don't want to interfere with any sort of
+        // loopback mechanisms.
+        final boolean recording = AudioSystem.isSourceActive(0) || AudioSystem.isSourceActive(6);
+        if (recording) {
+            Log.w(TAG, "Recording in progress, not performing auto-attach!");
+            return;
+        }
         if (music && offloaded && stereo && !mHandler.hasMessages(MSG_ADD_SESSION, sessionId)) {
             if (DEBUG) Log.i(TAG, String.format("New audio session: %d [flags=%d channelMask=%d uid=%d]",
                     sessionId, flags, channelMask, uid));
