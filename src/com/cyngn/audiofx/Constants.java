@@ -24,7 +24,7 @@ import java.util.List;
 
 public class Constants {
 
-    public static final int CURRENT_PREFS_INT_VERSION = 1;
+    public static final int CURRENT_PREFS_INT_VERSION = 2;
 
     // global settings
     public static final String AUDIOFX_GLOBAL_FILE = "global";
