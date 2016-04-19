@@ -7,6 +7,9 @@ import android.media.audiofx.PresetReverb;
 import android.media.audiofx.Virtualizer;
 import android.util.Log;
 
+import com.cyngn.audiofx.Constants;
+import com.cyngn.audiofx.activity.MasterConfigControl;
+
 /**
  * EffectSet which comprises standard Android effects
  */
@@ -35,8 +38,11 @@ class AndroidEffects extends EffectSetWithAndroidEq {
     protected void onCreate() {
         super.onCreate();
 
-        mBassBoost = new BassBoost(100, mSessionId);
-        mVirtualizer = new Virtualizer(100, mSessionId);
+        final String dev = MasterConfigControl.getDeviceIdentifierString(getDevice());
+        if (!Constants.DEVICE_SPEAKER.equals(dev)) {
+            mBassBoost = new BassBoost(100, mSessionId);
+            mVirtualizer = new Virtualizer(100, mSessionId);
+        }
         mPresetReverb = new PresetReverb(100, mSessionId);
 
     }
@@ -46,17 +52,23 @@ class AndroidEffects extends EffectSetWithAndroidEq {
         super.release();
 
         try {
-            mBassBoost.release();
+            if (mBassBoost != null) {
+                mBassBoost.release();
+            }
         } catch (Exception e) {
             // ignored;
         }
         try {
-            mVirtualizer.release();
+            if (mVirtualizer != null) {
+                mVirtualizer.release();
+            }
         } catch (Exception e) {
             // ignored
         }
         try {
-            mPresetReverb.release();
+            if (mPresetReverb != null) {
+                mPresetReverb.release();
+            }
         } catch (Exception e) {
             // ignored
         }
@@ -66,45 +78,93 @@ class AndroidEffects extends EffectSetWithAndroidEq {
     }
 
     @Override
-    public void setGlobalEnabled(boolean globalEnabled) {
-        if (globalEnabled != isGlobalEnabled()) {
-            if (!globalEnabled) {
-                // disable everything. it will get explictly enabled
-                // individually when necessary.
-                try {
-                    mVirtualizer.setEnabled(false);
-                } catch (Exception e) {
-                    Log.e(TAG, "Unable to disable virtualizer!", e);
+    public synchronized void setDevice(AudioDeviceInfo deviceInfo) {
+        super.setDevice(deviceInfo);
+
+        // set up and tear down effects which aren't supported on the speaker
+        final String dev = MasterConfigControl.getDeviceIdentifierString(deviceInfo);
+        if (Constants.DEVICE_SPEAKER.equals(dev)) {
+            try {
+                if (mBassBoost != null) {
+                    mBassBoost.release();
                 }
-                try {
-                    mBassBoost.setEnabled(false);
-                } catch (Exception e) {
-                    Log.e(TAG, "Unable to disable bass boost!", e);
+            } catch (Exception e) {
+                // skip it
+            }
+            try {
+                if (mVirtualizer != null) {
+                    mVirtualizer.release();
                 }
-                try {
-                    mPresetReverb.setEnabled(false);
-                } catch (Exception e) {
-                    Log.e(TAG, "Unable to disable reverb!", e);
+            } catch (Exception e) {
+                // skip it
+            }
+            mBassBoost = null;
+            mVirtualizer = null;
+        } else {
+            try {
+                if (mBassBoost == null) {
+                    mBassBoost = new BassBoost(100, mSessionId);
                 }
+            } catch (Exception e) {
+                Log.e(TAG, "Error creating BassBoost!", e);
+            }
+            try {
+                if (mVirtualizer == null) {
+                    mVirtualizer = new Virtualizer(100, mSessionId);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error creating Virtualizer!", e);
             }
         }
+    }
+
+    @Override
+    public void setGlobalEnabled(boolean globalEnabled) {
         super.setGlobalEnabled(globalEnabled);
+
+        if (!globalEnabled) {
+            // disable everything. it will get explictly enabled
+            // individually when necessary.
+            try {
+                if (mVirtualizer != null) {
+                    mVirtualizer.setEnabled(false);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Unable to disable virtualizer!", e);
+            }
+            try {
+                if (mBassBoost != null) {
+                    mBassBoost.setEnabled(false);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Unable to disable bass boost!", e);
+            }
+            try {
+                if (mPresetReverb != null) {
+                    mPresetReverb.setEnabled(false);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Unable to disable reverb!", e);
+            }
+        }
     }
 
     @Override
     public boolean hasVirtualizer() {
-        return mVirtualizer.getStrengthSupported();
+        return mVirtualizer != null && mVirtualizer.getStrengthSupported();
     }
 
     @Override
     public boolean hasBassBoost() {
-        return mBassBoost.getStrengthSupported();
+        return mBassBoost != null && mBassBoost.getStrengthSupported();
     }
 
     @Override
     public void enableBassBoost(boolean enable) {
         try {
-            mBassBoost.setEnabled(enable);
+            if (mBassBoost != null) {
+                mBassBoost.setEnabled(enable);
+            }
         } catch (Exception e) {
             Log.e(TAG, "Unable to " + (enable ? "enable" : "disable") + " bass boost!", e);
         }
@@ -118,7 +178,9 @@ class AndroidEffects extends EffectSetWithAndroidEq {
     @Override
     public void enableVirtualizer(boolean enable) {
         try {
-            mVirtualizer.setEnabled(enable);
+            if (mVirtualizer != null) {
+                mVirtualizer.setEnabled(enable);
+            }
         } catch (Exception e) {
             Log.e(TAG, "Unable to " + (enable ? "enable" : "disable") + " virtualizer!", e);
         }
@@ -132,7 +194,9 @@ class AndroidEffects extends EffectSetWithAndroidEq {
     @Override
     public void enableReverb(boolean enable) {
         try {
-            mPresetReverb.setEnabled(enable);
+            if (mPresetReverb != null) {
+                mPresetReverb.setEnabled(enable);
+            }
         } catch (Exception e) {
             Log.e(TAG, "Unable to " + (enable ? "enable" : "disable") + " preset reverb!", e);
         }
@@ -150,7 +214,7 @@ class AndroidEffects extends EffectSetWithAndroidEq {
     }
 
     private void setParameterSafe(AudioEffect e, int p, short v) {
-        if (!e.hasControl()) {
+        if (e == null) {
             return;
         }
         try {

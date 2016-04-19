@@ -40,14 +40,9 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
 
     @Override
     public void setGlobalEnabled(boolean globalEnabled) {
-        if (isGlobalEnabled() != globalEnabled) {
-            // disable it if needed. it will be explicitly enabled
-            // in a subsequent call if necessary.
-            if (!globalEnabled) {
-                mEqualizer.setEnabled(false);
-            }
-        }
         super.setGlobalEnabled(globalEnabled);
+
+        enableEqualizer(globalEnabled);
     }
 
     @Override
@@ -111,6 +106,11 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
     @Override
     public int getCenterFrequency(short band) {
         return mEqualizer.getCenterFreq(band);
+    }
+
+    @Override
+    public synchronized void setDevice(AudioDeviceInfo deviceInfo) {
+        super.setDevice(deviceInfo);
     }
 
     private synchronized void setBandLevelSafe(short band, short level) {

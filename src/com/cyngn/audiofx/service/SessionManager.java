@@ -184,8 +184,10 @@ class SessionManager extends AudioOutputChangeListener implements AudioSystem.Ef
         final boolean globalEnabled = prefs.getBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE,
                 DEVICE_DEFAULT_GLOBAL_ENABLE);
 
-        // global bypass toggle
-        session.setGlobalEnabled(globalEnabled);
+        if ((flags & ALL_CHANGED) > 0) {
+            // global bypass toggle
+            session.setGlobalEnabled(globalEnabled);
+        }
 
         if (globalEnabled) {
             // tell the backend it's time to party
