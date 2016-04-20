@@ -35,7 +35,7 @@
   <string name="largeroom">Grande salle</string>
   <string name="mediumhall">Salle moyenne</string>
   <string name="largehall">Grande salle</string>
-  <string name="plate">Plat</string>
+  <string name="plate">Plaque</string>
   <string name="power_on_prompt">Appuyez sur le bouton d\'activation en haut à droite.</string>
   <string name="effect_unavalable_for_speaker">Effet non disponible pour le mode haut-parleur.</string>
   <string name="device_headset">Casque</string>
