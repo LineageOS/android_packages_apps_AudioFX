@@ -39,6 +39,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_ROUTING" />
+    <uses-permission android:name="cyanogenmod.permission.OBSERVE_AUDIO_SESSIONS" />
 
     <application
             android:icon="@mipmap/ic_launcher_audiofx"
@@ -104,6 +105,16 @@
         <receiver android:name=".BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".ServiceDispatcher">
+            <intent-filter>
+                <action android:name="android.media.action.OPEN_AUDIO_EFFECT_CONTROL_SESSION"/>
+                <action android:name="android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION"/>
+                <action android:name="android.media.AUDIO_BECOMING_NOISY"/>
+                <action android:name="cyanogenmod.intent.action.ACTION_AUDIO_SESSIONS_CHANGED" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
 
