@@ -37,6 +37,9 @@ import android.util.SparseArray;
 
 import java.util.Arrays;
 
+import cyanogenmod.media.AudioSessionInfo;
+import cyanogenmod.media.CMAudioManager;
+
 /**
  * <p>This calls listen to events that affect DSP function and responds to them.</p>
  * <ol>
@@ -193,7 +196,6 @@ public class HeadsetService extends Service {
     protected static final String TAG = HeadsetService.class.getSimpleName();
     public static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
-    private FxSessionCallback mSessionCallback;
 
     private void addSession(int sessionId) {
         if (sessionId == 0) {
@@ -223,31 +225,27 @@ public class HeadsetService extends Service {
         }
     }
 
-    private class FxSessionCallback implements AudioSystem.EffectSessionCallback {
+    public void addSession(AudioSessionInfo info) {
+        if (info.getStream() == AudioManager.STREAM_MUSIC &&
+                (info.getFlags() < 0 || (info.getFlags() & 0x8) > 0 || (info.getFlags() & 0x10) > 0) &&
+                (info.getChannelMask() < 0 || info.getChannelMask() > 1)) {
 
-        @Override
-        public void onSessionAdded(int stream, int sessionId, int flags,
-                int channelMask, int uid) {
-            if (stream == AudioManager.STREAM_MUSIC &&
-                    (flags < 0 || (flags & 0x8) > 0 || (flags & 0x10) > 0) &&
-                    (channelMask < 0 || channelMask > 1)) {
-
-                // Never auto-attach is someone is recording! We don't want to interfere with any sort of
-                // loopback mechanisms.
-                final boolean recording = AudioSystem.isSourceActive(0) || AudioSystem.isSourceActive(6);
-                if (recording) {
-                    Log.w(TAG, "Recording in progress, not performing auto-attach!");
-                    return;
-                }
-                addSession(sessionId);
+            // Never auto-attach is someone is recording! We don't want to
+            // interfere with any sort of
+            // loopback mechanisms.
+            final boolean recording = AudioSystem.isSourceActive(0)
+                    || AudioSystem.isSourceActive(6);
+            if (recording) {
+                Log.w(TAG, "Recording in progress, not performing auto-attach!");
+                return;
             }
+            addSession(info.getSessionId());
         }
+    }
 
-        @Override
-        public void onSessionRemoved(int stream, int sessionId) {
-            if (stream == AudioManager.STREAM_MUSIC) {
-                removeSession(sessionId);
-            }
+    public void removeSession(AudioSessionInfo info) {
+        if (info.getStream() == AudioManager.STREAM_MUSIC) {
+            removeSession(info.getSessionId());
         }
     }
 
@@ -270,23 +268,6 @@ public class HeadsetService extends Service {
      * Has DSPManager assumed control of equalizer levels?
      */
     private float[] mOverriddenEqualizerLevels;
-
-    /**
-     * Receive new broadcast intents for adding DSP to session
-     */
-    private final BroadcastReceiver mAudioSessionReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
-            if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
-                addSession(sessionId);
-            }
-            if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
-                removeSession(sessionId);
-            }
-        }
-    };
 
     /**
      * Update audio parameters when preferences have been updated.
@@ -399,26 +380,75 @@ public class HeadsetService extends Service {
         super.onCreate();
         Log.i(TAG, "Starting service.");
 
-        IntentFilter audioFilter = new IntentFilter();
-        audioFilter.addAction(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-        audioFilter.addAction(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
-        audioFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
-        registerReceiver(mAudioSessionReceiver, audioFilter);
-
         registerReceiver(mPreferenceUpdateReceiver,
                 new IntentFilter(ACTION_UPDATE_PREFERENCES));
 
         AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         am.registerAudioPortUpdateListener(mAudioPortListener = new AudioPortListener(this));
 
-        mSessionCallback = new FxSessionCallback();
-        AudioSystem.setEffectSessionCallback(mSessionCallback);
-
         saveDefaults();
+    }
+
+
+    /**
+     * maps {@link AudioEffect#EXTRA_CONTENT_TYPE} to an AudioManager.STREAM_* item
+     */
+    private static int mapContentTypeToStream(int contentType) {
+        switch (contentType) {
+            case AudioEffect.CONTENT_TYPE_VOICE:
+                return AudioManager.STREAM_VOICE_CALL;
+            case AudioEffect.CONTENT_TYPE_GAME:
+                // explicitly don't support game effects right now
+                return -1;
+            case AudioEffect.CONTENT_TYPE_MOVIE:
+            case AudioEffect.CONTENT_TYPE_MUSIC:
+            default:
+                return AudioManager.STREAM_MUSIC;
+        }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && intent.getAction() != null) {
+            if (DEBUG) {
+                Log.i(TAG, "onStartCommand() called with " + "intent = [" + intent + "], flags = ["
+                        + flags + "], startId = [" + startId + "], extras = [" +
+                        (intent.getExtras() == null ? "null" : intent.getExtras().toString())
+                        + "]");
+            }
+            String action = intent.getAction();
+            int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
+            String pkg = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
+            int stream = mapContentTypeToStream(
+                    intent.getIntExtra(AudioEffect.EXTRA_CONTENT_TYPE,
+                            AudioEffect.CONTENT_TYPE_MUSIC));
+
+            if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
+                if (DEBUG) {
+                    Log.i(TAG, String.format("New audio session: %d package: %s contentType=%d",
+                            sessionId, pkg, stream));
+                }
+                addSession(sessionId);
+
+            } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
+
+                removeSession(sessionId);
+
+            } else if (action.equals(CMAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
+
+                final AudioSessionInfo info = (AudioSessionInfo) intent.getParcelableExtra(
+                        CMAudioManager.EXTRA_SESSION_INFO);
+                if (info != null && info.getSessionId() > 0) {
+                    boolean added = intent.getBooleanExtra(CMAudioManager.EXTRA_SESSION_ADDED,
+                            false);
+                    if (added) {
+                        addSession(info);
+                    } else {
+                        removeSession(info);
+                    }
+                }
+            }
+        }
         return START_STICKY;
     }
 
@@ -427,9 +457,7 @@ public class HeadsetService extends Service {
         super.onDestroy();
         Log.i(TAG, "Stopping service.");
 
-        unregisterReceiver(mAudioSessionReceiver);
         unregisterReceiver(mPreferenceUpdateReceiver);
-        AudioSystem.setEffectSessionCallback(null);
     }
 
     @Override
