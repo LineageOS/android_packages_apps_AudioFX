@@ -37,6 +37,8 @@ import android.util.SparseArray;
 
 import java.util.Arrays;
 
+import cyanogenmod.media.AudioSessionObserver;
+
 /**
  * <p>This calls listen to events that affect DSP function and responds to them.</p>
  * <ol>
@@ -223,14 +225,13 @@ public class HeadsetService extends Service {
         }
     }
 
-    private class FxSessionCallback implements AudioSystem.EffectSessionCallback {
+    private class FxSessionCallback implements AudioSessionObserver.AudioSessionCallback {
 
         @Override
-        public void onSessionAdded(int stream, int sessionId, int flags,
-                int channelMask, int uid) {
-            if (stream == AudioManager.STREAM_MUSIC &&
-                    (flags < 0 || (flags & 0x8) > 0 || (flags & 0x10) > 0) &&
-                    (channelMask < 0 || channelMask > 1)) {
+        public void onSessionAdded(AudioSessionObserver.AudioSessionInfo info) {
+            if (info.mStream == AudioManager.STREAM_MUSIC &&
+                    (info.mFlags < 0 || (info.mFlags & 0x8) > 0 || (info.mFlags & 0x10) > 0) &&
+                    (info.mChannelMask < 0 || info.mChannelMask > 1)) {
 
                 // Never auto-attach is someone is recording! We don't want to interfere with any sort of
                 // loopback mechanisms.
@@ -239,14 +240,14 @@ public class HeadsetService extends Service {
                     Log.w(TAG, "Recording in progress, not performing auto-attach!");
                     return;
                 }
-                addSession(sessionId);
+                addSession(info.mSessionId);
             }
         }
 
         @Override
-        public void onSessionRemoved(int stream, int sessionId) {
-            if (stream == AudioManager.STREAM_MUSIC) {
-                removeSession(sessionId);
+        public void onSessionRemoved(AudioSessionObserver.AudioSessionInfo info) {
+            if (info.mStream == AudioManager.STREAM_MUSIC) {
+                removeSession(info.mSessionId);
             }
         }
     }
@@ -412,7 +413,7 @@ public class HeadsetService extends Service {
         am.registerAudioPortUpdateListener(mAudioPortListener = new AudioPortListener(this));
 
         mSessionCallback = new FxSessionCallback();
-        AudioSystem.setEffectSessionCallback(mSessionCallback);
+        AudioSessionObserver.addCallback(mSessionCallback);
 
         saveDefaults();
     }
@@ -429,7 +430,7 @@ public class HeadsetService extends Service {
 
         unregisterReceiver(mAudioSessionReceiver);
         unregisterReceiver(mPreferenceUpdateReceiver);
-        AudioSystem.setEffectSessionCallback(null);
+        AudioSessionObserver.removeCallback(mSessionCallback);
     }
 
     @Override
