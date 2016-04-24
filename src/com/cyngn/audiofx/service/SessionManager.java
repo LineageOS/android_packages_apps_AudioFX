@@ -40,7 +40,10 @@ import com.cyngn.audiofx.backends.EffectSet;
 import com.cyngn.audiofx.backends.EffectsFactory;
 import com.cyngn.audiofx.eq.EqUtils;
 
-class SessionManager extends AudioOutputChangeListener implements AudioSystem.EffectSessionCallback {
+import cyanogenmod.media.AudioSessionInfo;
+import cyanogenmod.media.CMAudioManager;
+
+class SessionManager extends AudioOutputChangeListener {
 
     private static final String TAG = AudioFxService.TAG;
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
@@ -53,6 +56,7 @@ class SessionManager extends AudioOutputChangeListener implements AudioSystem.Ef
     private final SparseArray<EffectSet> mAudioSessionsL = new SparseArray<EffectSet>();
 
     private Handler mHandler;
+    private final CMAudioManager mCMAudio;
 
     private AudioDeviceInfo mCurrentDevice;
     private AudioDeviceInfo mPreviousDevice;
@@ -68,10 +72,10 @@ class SessionManager extends AudioOutputChangeListener implements AudioSystem.Ef
         super (context, handler);
         mContext = context;
 
+        mCMAudio = CMAudioManager.getInstance(context);
+
         mHandler = new Handler(handler.getLooper(), new AudioServiceHandler());
         register();
-
-        AudioSystem.setEffectSessionCallback(this);
     }
 
     public void onDestroy() {
@@ -83,8 +87,6 @@ class SessionManager extends AudioOutputChangeListener implements AudioSystem.Ef
                 mHandler.getLooper().quit();
                 mHandler = null;
             }
-
-            AudioSystem.setEffectSessionCallback(null);
         }
     }
 
@@ -114,14 +116,17 @@ class SessionManager extends AudioOutputChangeListener implements AudioSystem.Ef
      * to low-latency streams automatically, and we don't attach to mono streams by default
      * either since these are usually notifications/ringtones/etc.
      */
-    @Override
-    public void onSessionAdded(int stream, int sessionId, int flags, int channelMask, int uid) {
-        final boolean music = stream == AudioManager.STREAM_MUSIC;
-        final boolean offloaded = (flags < 0)
-                || (flags & AudioFxService.AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD) > 0
-                || (flags & AudioFxService.AUDIO_OUTPUT_FLAG_DEEP_BUFFER) > 0;
-        final boolean stereo = channelMask < 0 || channelMask > 1;
+    public boolean shouldHandleSession(AudioSessionInfo info) {
+        final boolean music = info.getStream() == AudioManager.STREAM_MUSIC;
+        final boolean offloaded = (info.getFlags() < 0)
+                || (info.getFlags() & AudioFxService.AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD) > 0
+                || (info.getFlags() & AudioFxService.AUDIO_OUTPUT_FLAG_DEEP_BUFFER) > 0;
+        final boolean stereo = info.getChannelMask() < 0 || info.getChannelMask() > 1;
 
+        return music && offloaded && stereo && info.getSessionId() > 0;
+    }
+
+    public void addSession(AudioSessionInfo info) {
         // Never auto-attach is someone is recording! We don't want to interfere with any sort of
         // loopback mechanisms.
         final boolean recording = AudioSystem.isSourceActive(0) || AudioSystem.isSourceActive(6);
@@ -129,19 +134,16 @@ class SessionManager extends AudioOutputChangeListener implements AudioSystem.Ef
             Log.w(TAG, "Recording in progress, not performing auto-attach!");
             return;
         }
-        if (music && offloaded && stereo && !mHandler.hasMessages(MSG_ADD_SESSION, sessionId)) {
-            if (DEBUG) Log.i(TAG, String.format("New audio session: %d [flags=%d channelMask=%d uid=%d]",
-                    sessionId, flags, channelMask, uid));
-            mHandler.obtainMessage(MSG_ADD_SESSION, sessionId).sendToTarget();
+        if (shouldHandleSession(info) && !mHandler.hasMessages(MSG_ADD_SESSION, info.getSessionId())) {
+            if (DEBUG) Log.i(TAG, "New audio session: " + info.toString());
+            mHandler.obtainMessage(MSG_ADD_SESSION, info.getSessionId()).sendToTarget();
         }
     }
 
-    @Override
-    public void onSessionRemoved(int stream, int sessionId) {
-        if (stream == AudioManager.STREAM_MUSIC &&
-                !mHandler.hasMessages(MSG_REMOVE_SESSION, sessionId)) {
-            if (DEBUG) Log.i(TAG, String.format("Audio session queued for removal: %d", sessionId));
-            mHandler.obtainMessage(MSG_REMOVE_SESSION, sessionId).sendToTarget();
+    public void removeSession(AudioSessionInfo info) {
+        if (shouldHandleSession(info) && !mHandler.hasMessages(MSG_REMOVE_SESSION, info.getSessionId())) {
+            if (DEBUG) Log.i(TAG, "Audio session queued for removal: " + info.toString());
+            mHandler.obtainMessage(MSG_REMOVE_SESSION, info.getSessionId()).sendToTarget();
         }
     }
 

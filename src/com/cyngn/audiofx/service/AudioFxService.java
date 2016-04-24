@@ -23,7 +23,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.media.audiofx.AudioEffect;
 import android.os.Binder;
@@ -43,6 +42,8 @@ import java.util.Locale;
 
 import cyanogenmod.app.CMStatusBarManager;
 import cyanogenmod.app.CustomTile;
+import cyanogenmod.media.AudioSessionInfo;
+import cyanogenmod.media.CMAudioManager;
 
 /**
  * This service is responsible for applying all requested effects from the AudioFX UI.
@@ -143,6 +144,15 @@ public class AudioFxService extends Service {
             return;
         }
 
+        mSessionManager = new SessionManager(getApplicationContext(), mHandler, mDevicePrefs);
+
+        mOutputListener.addCallback(mDevicePrefs, mSessionManager, this);
+
+        final CMAudioManager cma = CMAudioManager.getInstance(getApplicationContext());
+        for (AudioSessionInfo asi : cma.listAudioSessions(AudioManager.STREAM_MUSIC)) {
+            mSessionManager.addSession(asi);
+        }
+
         updateQsTile();
     }
 
@@ -164,15 +174,31 @@ public class AudioFxService extends Service {
                                 AudioEffect.CONTENT_TYPE_MUSIC));
 
                 if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
-                    if (DEBUG)  {
+                    if (DEBUG) {
                         Log.i(TAG, String.format("New audio session: %d package: %s contentType=%d",
                                 sessionId, pkg, stream));
                     }
-                    mSessionManager.onSessionAdded(stream, sessionId, -1, -1, -1);
+                    AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1, -1, -1);
+                    mSessionManager.addSession(info);
 
                 } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
 
-                    mSessionManager.onSessionRemoved(stream, sessionId);
+                    AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1, -1, -1);
+                    mSessionManager.removeSession(info);
+
+                } else if (action.equals(CMAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
+
+                    final AudioSessionInfo info = (AudioSessionInfo) intent.getParcelableExtra(
+                            CMAudioManager.EXTRA_SESSION_INFO);
+                    if (info != null && info.getSessionId() > 0) {
+                        boolean added = intent.getBooleanExtra(CMAudioManager.EXTRA_SESSION_ADDED,
+                                false);
+                        if (added) {
+                            mSessionManager.addSession(info);
+                        } else {
+                            mSessionManager.removeSession(info);
+                        }
+                    }
 
                 }
             }

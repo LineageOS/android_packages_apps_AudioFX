@@ -29,6 +29,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <uses-permission android:name="cyanogenmod.permission.PUBLISH_CUSTOM_TILE" />
+    <uses-permission android:name="cyanogenmod.permission.OBSERVE_AUDIO_SESSIONS" />
 
     <permission android:name="com.cyngn.audiofx.ANALYTICS_PERMISSION"
                 android:protectionLevel="signature" />
@@ -102,6 +103,7 @@
                 <action android:name="android.media.action.OPEN_AUDIO_EFFECT_CONTROL_SESSION"/>
                 <action android:name="android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION"/>
                 <action android:name="android.media.AUDIO_BECOMING_NOISY"/>
+                <action android:name="cyanogenmod.intent.action.ACTION_AUDIO_SESSIONS_CHANGED" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>

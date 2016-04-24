@@ -1,3 +1,4 @@
+
 package com.cyngn.audiofx.receiver;
 
 import android.content.BroadcastReceiver;
@@ -7,6 +8,9 @@ import android.media.audiofx.AudioEffect;
 import android.util.Log;
 
 import com.cyngn.audiofx.service.AudioFxService;
+
+import cyanogenmod.media.AudioSessionInfo;
+import cyanogenmod.media.CMAudioManager;
 
 public class ServiceDispatcher extends BroadcastReceiver {
     @Override
@@ -23,6 +27,15 @@ public class ServiceDispatcher extends BroadcastReceiver {
             String pkg = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
             service.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, sessionId);
             service.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, pkg);
+
+        } else if (action.equals(CMAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
+
+            // callback from CMAudioService
+            final AudioSessionInfo info = (AudioSessionInfo) intent.getParcelableExtra(
+                    CMAudioManager.EXTRA_SESSION_INFO);
+            boolean added = intent.getBooleanExtra(CMAudioManager.EXTRA_SESSION_ADDED, false);
+            service.putExtra(CMAudioManager.EXTRA_SESSION_INFO, info);
+            service.putExtra(CMAudioManager.EXTRA_SESSION_ADDED, added);
         }
 
         service.setAction(action);
