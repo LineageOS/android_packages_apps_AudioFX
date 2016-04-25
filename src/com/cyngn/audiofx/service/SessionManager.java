@@ -12,7 +12,6 @@ import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE;
 import static com.cyngn.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH;
 import static com.cyngn.audiofx.Constants.DEVICE_DEFAULT_GLOBAL_ENABLE;
 import static com.cyngn.audiofx.activity.MasterConfigControl.getDeviceIdentifierString;
-import static com.cyngn.audiofx.service.AudioFxService.ACTION_DEVICE_OUTPUT_CHANGED;
 import static com.cyngn.audiofx.service.AudioFxService.ALL_CHANGED;
 import static com.cyngn.audiofx.service.AudioFxService.BASS_BOOST_CHANGED;
 import static com.cyngn.audiofx.service.AudioFxService.ENABLE_REVERB;
@@ -23,7 +22,6 @@ import static com.cyngn.audiofx.service.AudioFxService.VIRTUALIZER_CHANGED;
 import static com.cyngn.audiofx.service.AudioFxService.VOLUME_BOOST_CHANGED;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
@@ -32,7 +30,6 @@ import android.media.audiofx.PresetReverb;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -43,23 +40,23 @@ import com.cyngn.audiofx.eq.EqUtils;
 import cyanogenmod.media.AudioSessionInfo;
 import cyanogenmod.media.CMAudioManager;
 
-class SessionManager extends AudioOutputChangeListener {
+class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCallback {
 
     private static final String TAG = AudioFxService.TAG;
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     private final Context mContext;
+    private final Handler mHandler;
+    private final DevicePreferenceManager mDevicePrefs;
+    private final CMAudioManager mCMAudio;
 
     /**
      * All fields ending with L should be locked on {@link #mAudioSessionsL}
      */
     private final SparseArray<EffectSet> mAudioSessionsL = new SparseArray<EffectSet>();
 
-    private Handler mHandler;
-    private final CMAudioManager mCMAudio;
 
-    private AudioDeviceInfo mCurrentDevice;
-    private AudioDeviceInfo mPreviousDevice;
+    private AudioDeviceInfo mCurrentDevice = null;
 
     // audio priority handler messages
     private static final int MSG_UPDATE_DSP = 100;
@@ -68,25 +65,17 @@ class SessionManager extends AudioOutputChangeListener {
     private static final int MSG_UPDATE_FOR_SESSION = 103;
     private static final int MSG_UPDATE_EQ_OVERRIDE = 104;
 
-    public SessionManager(Context context, Handler handler) {
-        super (context, handler);
+    public SessionManager(Context context, Handler handler, DevicePreferenceManager devicePrefs) {
         mContext = context;
-
         mCMAudio = CMAudioManager.getInstance(context);
-
+        mDevicePrefs = devicePrefs;
         mHandler = new Handler(handler.getLooper(), new AudioServiceHandler());
-        register();
     }
 
     public void onDestroy() {
         synchronized (mAudioSessionsL) {
-            unregister();
-
-            if (mHandler != null) {
-                mHandler.removeCallbacksAndMessages(null);
-                mHandler.getLooper().quit();
-                mHandler = null;
-            }
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler.getLooper().quit();
         }
     }
 
@@ -99,10 +88,6 @@ class SessionManager extends AudioOutputChangeListener {
 
     public void setOverrideLevels(short band, float level) {
         mHandler.obtainMessage(MSG_UPDATE_EQ_OVERRIDE, band, 0, level).sendToTarget();
-    }
-
-    public AudioDeviceInfo getPreviousDevice() {
-        return mPreviousDevice;
     }
 
     /**
@@ -148,7 +133,7 @@ class SessionManager extends AudioOutputChangeListener {
     }
 
     public String getCurrentDeviceIdentifier() {
-        return getDeviceIdentifierString(getCurrentDevice());
+        return getDeviceIdentifierString(mCurrentDevice);
     }
 
     public boolean hasActiveSessions() {
@@ -173,7 +158,7 @@ class SessionManager extends AudioOutputChangeListener {
             throw new IllegalStateException("updateBackend must not be called on the UI thread!");
         }
 
-        final SharedPreferences prefs = mContext.getSharedPreferences(getCurrentDeviceIdentifier(), 0);
+        final SharedPreferences prefs = mDevicePrefs.getCurrentDevicePrefs();
 
         if (DEBUG) {
             Log.i(TAG, "+++ updateBackend() called with flags=[" + flags + "], session=[" + session + "]");
@@ -286,10 +271,11 @@ class SessionManager extends AudioOutputChangeListener {
 
         @Override
         public boolean handleMessage(Message msg) {
-            EffectSet session = null;
-            Integer sessionId = 0;
-            int flags = 0;
             synchronized (mAudioSessionsL) {
+                EffectSet session = null;
+                Integer sessionId = 0;
+                int flags = 0;
+
                 switch (msg.what) {
                     case MSG_ADD_SESSION:
                         /**
@@ -393,33 +379,21 @@ class SessionManager extends AudioOutputChangeListener {
     @Override
     public void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice) {
         synchronized (mAudioSessionsL) {
-            mPreviousDevice = mCurrentDevice;
-            mCurrentDevice = outputDevice;
+            if (mCurrentDevice == null ||
+                    (outputDevice != null && mCurrentDevice.getId() != outputDevice.getId())) {
+                mCurrentDevice = outputDevice;
+            }
 
-            int sessionId = 0;
             EffectSet session = null;
 
             // Update all the sessions for this output which are moving
             final int N = mAudioSessionsL.size();
             for (int i = 0; i < N; i++) {
-                sessionId = mAudioSessionsL.keyAt(i);
                 session = mAudioSessionsL.valueAt(i);
-                if (DEBUG) Log.d(TAG, "UPDATE_DEVICE prev=" +
-                        (mPreviousDevice == null ? "none" : mPreviousDevice.getType()) +
-                        " new=" + (mCurrentDevice == null ? "none" : mCurrentDevice.getType() +
-                                " session=" + sessionId + " session-device=" +
-                                (session.getDevice() == null ? "none" : session.getDevice().getType())));
 
                 session.setDevice(mCurrentDevice);
                 updateBackendLocked(ALL_CHANGED, session);
             }
         }
-
-        if (DEBUG) Log.d(TAG, "Broadcasting device changed event");
-
-        Intent intent = new Intent(ACTION_DEVICE_OUTPUT_CHANGED);
-        intent.putExtra("device", mCurrentDevice.getId());
-        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
-
 }

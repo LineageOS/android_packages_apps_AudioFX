@@ -27,11 +27,13 @@ import static com.cyngn.audiofx.Constants.SAVED_DEFAULTS;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.media.AudioDeviceInfo;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.cyngn.audiofx.Constants;
 import com.cyngn.audiofx.R;
+import com.cyngn.audiofx.activity.MasterConfigControl;
 import com.cyngn.audiofx.backends.EffectSet;
 import com.cyngn.audiofx.backends.EffectsFactory;
 
@@ -40,17 +42,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-class DevicePreferenceManager {
+class DevicePreferenceManager implements AudioOutputChangeListener.AudioOutputChangedCallback {
 
     private static final String TAG = AudioFxService.TAG;
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     private final Context mContext;
-    private final SessionManager mSessionManager;
 
-    public DevicePreferenceManager(Context context, SessionManager sm) {
+    private AudioDeviceInfo mCurrentDevice;
+
+    public DevicePreferenceManager(Context context) {
         mContext = context;
-        mSessionManager = sm;
     }
 
     public boolean initDefaults() {
@@ -65,8 +67,14 @@ class DevicePreferenceManager {
         return true;
     }
 
-    public String getCurrentDeviceIdentifier() {
-        return mSessionManager.getCurrentDeviceIdentifier();
+    @Override
+    public void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice) {
+        mCurrentDevice = outputDevice;
+    }
+
+    public SharedPreferences getCurrentDevicePrefs() {
+        return mContext.getSharedPreferences(
+                MasterConfigControl.getDeviceIdentifierString(mCurrentDevice), 0);
     }
 
     public SharedPreferences prefsFor(final String name) {
@@ -78,7 +86,7 @@ class DevicePreferenceManager {
     }
 
     public boolean isGlobalEnabled() {
-        return prefsFor(getCurrentDeviceIdentifier()).getBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, false);
+        return getCurrentDevicePrefs().getBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, false);
     }
 
     /**

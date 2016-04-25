@@ -1,6 +1,8 @@
 
 package com.cyngn.audiofx.service;
 
+import static android.media.AudioDeviceInfo.convertDeviceTypeToInternalDevice;
+
 import android.content.Context;
 import android.media.AudioDeviceCallback;
 import android.media.AudioDeviceInfo;
@@ -9,11 +11,10 @@ import android.os.Handler;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static android.media.AudioDeviceInfo.*;
-
-public abstract class AudioOutputChangeListener extends AudioDeviceCallback {
+public class AudioOutputChangeListener extends AudioDeviceCallback {
 
     private static final String TAG = "AudioFx-" + AudioOutputChangeListener.class.getSimpleName();
 
@@ -24,44 +25,73 @@ public abstract class AudioOutputChangeListener extends AudioDeviceCallback {
     private final Handler mHandler;
     private int mLastDevice = -1;
 
+    private final ArrayList<AudioOutputChangedCallback> mCallbacks = new ArrayList<AudioOutputChangedCallback>();
+
+    public interface AudioOutputChangedCallback {
+        public void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice);
+    }
+
     public AudioOutputChangeListener(Context context, Handler handler) {
         mContext = context;
         mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         mHandler = handler;
     }
 
-    public void register() {
-        mAudioManager.registerAudioDeviceCallback(this, mHandler);
-        callback();
+    public void addCallback(AudioOutputChangedCallback... callbacks) {
+        synchronized (mCallbacks) {
+            boolean initial = mCallbacks.size() == 0;
+            mCallbacks.addAll(Arrays.asList(callbacks));
+            if (initial) {
+                mAudioManager.registerAudioDeviceCallback(this, mHandler);
+            }
+        }
     }
 
-    public void unregister() {
-        mAudioManager.unregisterAudioDeviceCallback(this);
+    public void removeCallback(AudioOutputChangedCallback... callbacks) {
+        synchronized (mCallbacks) {
+            mCallbacks.removeAll(Arrays.asList(callbacks));
+            if (mCallbacks.size() == 0) {
+                mAudioManager.unregisterAudioDeviceCallback(this);
+            }
+        }
     }
-
-    public abstract void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputType);
 
     private void callback() {
-        AudioDeviceInfo device = getCurrentDevice();
+        synchronized (mCallbacks) {
+        final AudioDeviceInfo device = getCurrentDevice();
 
-        if (device == null) {
-            Log.w(TAG,  "Unable to determine audio device!");
-            return;
-        }
+            if (device == null) {
+                Log.w(TAG, "Unable to determine audio device!");
+                return;
+            }
 
-        if (mInitial || device.getId() != mLastDevice) {
-            Log.d(TAG, "onAudioOutputChanged id: " + device.getId() +
-                    " type: " + device.getType() +
-                    " name: " + device.getProductName() +
-                    " address: " + device.getAddress() +
-                    " [" + device.toString() + "]");
-            mLastDevice = device.getId();
-            onAudioOutputChanged(mInitial, device);
-        }
+            if (mInitial || device.getId() != mLastDevice) {
+                Log.d(TAG, "onAudioOutputChanged id: " + device.getId() +
+                        " type: " + device.getType() +
+                        " name: " + device.getProductName() +
+                        " address: " + device.getAddress() +
+                        " [" + device.toString() + "]");
+                mLastDevice = device.getId();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (mCallbacks) {
+                            for (AudioOutputChangedCallback callback : mCallbacks) {
+                                callback.onAudioOutputChanged(mInitial, device);
+                            }
+                        }
+                    }
+                });
 
-        if (mInitial) {
-            mInitial = false;
+                if (mInitial) {
+                    mInitial = false;
+                }
+            }
         }
+    }
+
+    public void refresh() {
+        callback();
     }
 
     @Override

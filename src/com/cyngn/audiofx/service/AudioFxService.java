@@ -23,12 +23,14 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.media.audiofx.AudioEffect;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.cyngn.audiofx.R;
@@ -52,7 +54,8 @@ import cyanogenmod.media.CMAudioManager;
  * the service is also responsible for applying the effects properly based on user configuration,
  * and the current device output state.
  */
-public class AudioFxService extends Service {
+public class AudioFxService extends Service
+        implements AudioOutputChangeListener.AudioOutputChangedCallback {
 
     static final String TAG = AudioFxService.class.getSimpleName();
 
@@ -88,9 +91,12 @@ public class AudioFxService extends Service {
     private CustomTile mTile;
     private CustomTile.Builder mTileBuilder;
 
-    private DevicePreferenceManager mPreferenceManager;
+    private AudioOutputChangeListener mOutputListener;
+    private DevicePreferenceManager mDevicePrefs;
     private SessionManager mSessionManager;
     private Handler mHandler;
+
+    private AudioDeviceInfo mCurrentDevice;
 
     public static class LocalBinder extends Binder {
 
@@ -136,10 +142,10 @@ public class AudioFxService extends Service {
         handlerThread.start();
         mHandler = new Handler(handlerThread.getLooper());
 
-        mSessionManager = new SessionManager(getApplicationContext(), mHandler);
+        mOutputListener = new AudioOutputChangeListener(getApplicationContext(), mHandler);
 
-        mPreferenceManager = new DevicePreferenceManager(getApplicationContext(), mSessionManager);
-        if (!mPreferenceManager.initDefaults()) {
+        mDevicePrefs = new DevicePreferenceManager(getApplicationContext());
+        if (!mDevicePrefs.initDefaults()) {
             stopSelf();
             return;
         }
@@ -223,6 +229,26 @@ public class AudioFxService extends Service {
         }
     }
 
+    @Override
+    public synchronized void onAudioOutputChanged(boolean firstChange,
+            AudioDeviceInfo outputDevice) {
+        if (outputDevice == null) {
+            return;
+        }
+
+        mCurrentDevice = outputDevice;
+
+        if (DEBUG)
+            Log.d(TAG, "Broadcasting device changed event");
+
+        // Update the UI with the change
+        Intent intent = new Intent(ACTION_DEVICE_OUTPUT_CHANGED);
+        intent.putExtra("device", outputDevice.getId());
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+
+        updateQsTile();
+    }
+
     private void updateQsTile() {
         if (mTileBuilder == null) {
             mTileBuilder = new CustomTile.Builder(this);
@@ -239,11 +265,11 @@ public class AudioFxService extends Service {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0);
 
         String label = getString(R.string.qs_tile_label,
-                MasterConfigControl.getDeviceDisplayString(this, mSessionManager.getCurrentDevice()));
+                MasterConfigControl.getDeviceDisplayString(this, mCurrentDevice));
 
         mTileBuilder
                 .hasSensitiveData(false)
-                .setIcon(mPreferenceManager.isGlobalEnabled() ? R.drawable.ic_qs_visualizer_on
+                .setIcon(mDevicePrefs.isGlobalEnabled() ? R.drawable.ic_qs_visualizer_on
                         : R.drawable.ic_qs_visualizer_off)
                 .setLabel(label)
                 .setContentDescription(R.string.qs_tile_content_description)
@@ -260,6 +286,7 @@ public class AudioFxService extends Service {
     public void onDestroy() {
         if (DEBUG) Log.i(TAG, "Stopping service.");
 
+        mOutputListener.removeCallback(this, mSessionManager, mDevicePrefs);
         mSessionManager.onDestroy();
 
         CMStatusBarManager.getInstance(this).removeTile(TILE_ID);
