@@ -242,6 +242,18 @@ class DevicePreferenceManager implements AudioOutputChangeListener.AudioOutputCh
                     .putBoolean(DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, true)
                     .putString(DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "200")
                     .commit();
+        } else {
+            // Defaults for headphones
+            // bass boost: 15%  virtualizer: 20%  preset: FLAT
+            int flat = findInList(getNonLocalizedString(R.string.flat), presetNames);
+            prefsFor(DEVICE_HEADSET).edit()
+                    .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
+                    .putBoolean(DEVICE_AUDIOFX_BASS_ENABLE, true)
+                    .putString(DEVICE_AUDIOFX_BASS_STRENGTH, "150")
+                    .putBoolean(DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, true)
+                    .putString(DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "200")
+                    .putString(DEVICE_AUDIOFX_EQ_PRESET, (flat >= 0 ? String.valueOf(flat) : "0"))
+                    .commit();
         }
 
         // for 5 band configs, let's add a `Small Speaker` configuration if one
