@@ -38,13 +38,9 @@ class AndroidEffects extends EffectSetWithAndroidEq {
     protected void onCreate() {
         super.onCreate();
 
-        final String dev = MasterConfigControl.getDeviceIdentifierString(getDevice());
-        if (!Constants.DEVICE_SPEAKER.equals(dev)) {
-            mBassBoost = new BassBoost(100, mSessionId);
-            mVirtualizer = new Virtualizer(100, mSessionId);
-        }
+        mBassBoost = new BassBoost(100, mSessionId);
+        mVirtualizer = new Virtualizer(100, mSessionId);
         mPresetReverb = new PresetReverb(100, mSessionId);
-
     }
 
     @Override
@@ -80,42 +76,6 @@ class AndroidEffects extends EffectSetWithAndroidEq {
     @Override
     public synchronized void setDevice(AudioDeviceInfo deviceInfo) {
         super.setDevice(deviceInfo);
-
-        // set up and tear down effects which aren't supported on the speaker
-        final String dev = MasterConfigControl.getDeviceIdentifierString(deviceInfo);
-        if (Constants.DEVICE_SPEAKER.equals(dev)) {
-            try {
-                if (mBassBoost != null) {
-                    mBassBoost.release();
-                }
-            } catch (Exception e) {
-                // skip it
-            }
-            try {
-                if (mVirtualizer != null) {
-                    mVirtualizer.release();
-                }
-            } catch (Exception e) {
-                // skip it
-            }
-            mBassBoost = null;
-            mVirtualizer = null;
-        } else {
-            try {
-                if (mBassBoost == null) {
-                    mBassBoost = new BassBoost(100, mSessionId);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error creating BassBoost!", e);
-            }
-            try {
-                if (mVirtualizer == null) {
-                    mVirtualizer = new Virtualizer(100, mSessionId);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error creating Virtualizer!", e);
-            }
-        }
     }
 
     @Override
