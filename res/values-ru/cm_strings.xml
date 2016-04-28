@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Эффект недоступен для динамиков.</string>
   <string name="device_headset">Наушники</string>
   <string name="device_speaker">Динамик</string>
+  <string name="device_lineout">Линейный выход</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Беспров. устр.</string>

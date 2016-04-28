@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Efekt nie jest dostępny dla Głośnika urządzenia.</string>
   <string name="device_headset">Słuchawki</string>
   <string name="device_speaker">Głośnik</string>
+  <string name="device_lineout">Wyjście analogowe</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Bezprzewodowe</string>

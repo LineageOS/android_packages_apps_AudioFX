@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Ефекат није доступан за режим Звучника.</string>
   <string name="device_headset">Слушалице</string>
   <string name="device_speaker">Звучник</string>
+  <string name="device_lineout">Излаз</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Wireless</string>

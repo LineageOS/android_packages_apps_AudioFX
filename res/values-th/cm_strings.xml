@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">เอฟเฟกต์นี้ไม่สามารถใช้ได้กับรูปแบบลำโพง</string>
   <string name="device_headset">หูฟัง</string>
   <string name="device_speaker">ลำโพง</string>
+  <string name="device_lineout">สายออก</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">บลูทูธ</string>
   <string name="device_wireless">แบบไร้สาย</string>
