@@ -143,6 +143,7 @@ public class AudioFxService extends Service
         mHandler = new Handler(handlerThread.getLooper());
 
         mOutputListener = new AudioOutputChangeListener(getApplicationContext(), mHandler);
+        mOutputListener.addCallback(this);
 
         mDevicePrefs = new DevicePreferenceManager(getApplicationContext());
         if (!mDevicePrefs.initDefaults()) {
@@ -151,8 +152,7 @@ public class AudioFxService extends Service
         }
 
         mSessionManager = new SessionManager(getApplicationContext(), mHandler, mDevicePrefs);
-
-        mOutputListener.addCallback(mDevicePrefs, mSessionManager, this);
+        mOutputListener.addCallback(mDevicePrefs, mSessionManager);
 
         final CMAudioManager cma = CMAudioManager.getInstance(getApplicationContext());
         for (AudioSessionInfo asi : cma.listAudioSessions(AudioManager.STREAM_MUSIC)) {
