@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Efekt Hoparlör modunda kullanılamıyor.</string>
   <string name="device_headset">Kulaklık</string>
   <string name="device_speaker">Hoparlör</string>
+  <string name="device_lineout">Hat çıkışı</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Kablosuz</string>

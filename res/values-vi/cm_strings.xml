@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Hiệu ứng không khả dụng với chế độ Loa ngoài.</string>
   <string name="device_headset">Tai nghe</string>
   <string name="device_speaker">Loa ngoài</string>
+  <string name="device_lineout">Đường tín hiệu cho đầu ra</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Không dây</string>

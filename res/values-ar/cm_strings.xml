@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">التأثير غير متاح لوضع السماعة.</string>
   <string name="device_headset">سماعة الرأس</string>
   <string name="device_speaker">سماعة</string>
+  <string name="device_lineout">توصيل</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">بلوتوث</string>
   <string name="device_wireless">لاسلكي</string>

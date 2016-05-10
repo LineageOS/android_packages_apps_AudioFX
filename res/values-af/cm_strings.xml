@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Effek nie beskikbaar vir Luidspreker modus.</string>
   <string name="device_headset">Oorfone</string>
   <string name="device_speaker">Luidspreker</string>
+  <string name="device_lineout">Line out</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Koordloos</string>

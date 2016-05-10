@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">스피커로는 이 음향효과를 사용할 수 없습니다.</string>
   <string name="device_headset">헤드셋</string>
   <string name="device_speaker">스피커</string>
+  <string name="device_lineout">출력</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">블루투스</string>
   <string name="device_wireless">무선</string>

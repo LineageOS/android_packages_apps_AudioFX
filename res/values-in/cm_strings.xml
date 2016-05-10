@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Efek tidak tersedia untuk modus Speaker.</string>
   <string name="device_headset">Set kepala</string>
   <string name="device_speaker">Speaker</string>
+  <string name="device_lineout">Sambungan keluar</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Nirkabel</string>
