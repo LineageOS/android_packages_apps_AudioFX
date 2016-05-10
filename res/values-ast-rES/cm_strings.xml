@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">L\'efeutu nun ta disponible nel mou altavoz.</string>
   <string name="device_headset">Auriculares</string>
   <string name="device_speaker">Altavoz</string>
+  <string name="device_lineout">Salida de llinia</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Wireless</string>
