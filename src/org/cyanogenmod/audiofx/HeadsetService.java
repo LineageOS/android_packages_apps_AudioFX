@@ -227,7 +227,6 @@ public class HeadsetService extends Service {
 
     public void addSession(AudioSessionInfo info) {
         if (info.getStream() == AudioManager.STREAM_MUSIC &&
-                (info.getFlags() < 0 || (info.getFlags() & 0x8) > 0 || (info.getFlags() & 0x10) > 0) &&
                 (info.getChannelMask() < 0 || info.getChannelMask() > 1)) {
 
             // Never auto-attach is someone is recording! We don't want to
