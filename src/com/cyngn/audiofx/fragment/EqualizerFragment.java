@@ -5,12 +5,15 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.Nullable;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioDeviceInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -167,7 +170,28 @@ public class EqualizerFragment extends AudioFxBaseFragment
             }
         });
 
-        renameDialog.show();
+        // disable ok button if text is empty
+        final AlertDialog dialog = renameDialog.create();
+        newName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 0) {
+                    dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(false);
+                } else {
+                    dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(true);
+                }
+            }
+        });
+
+        dialog.show();
     }
 
     @Override
