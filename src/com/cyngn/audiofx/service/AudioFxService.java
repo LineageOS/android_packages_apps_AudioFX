@@ -142,14 +142,14 @@ public class AudioFxService extends Service
         handlerThread.start();
         mHandler = new Handler(handlerThread.getLooper());
 
-        mOutputListener = new AudioOutputChangeListener(getApplicationContext(), mHandler);
-        mOutputListener.addCallback(this);
-
         mDevicePrefs = new DevicePreferenceManager(getApplicationContext());
         if (!mDevicePrefs.initDefaults()) {
             stopSelf();
             return;
         }
+
+        mOutputListener = new AudioOutputChangeListener(getApplicationContext(), mHandler);
+        mOutputListener.addCallback(this);
 
         mSessionManager = new SessionManager(getApplicationContext(), mHandler, mDevicePrefs);
         mOutputListener.addCallback(mDevicePrefs, mSessionManager);
