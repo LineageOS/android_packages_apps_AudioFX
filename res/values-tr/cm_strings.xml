@@ -23,7 +23,7 @@
   <string name="folk">Halk</string>
   <string name="heavy_metal">Heavy Metal</string>
   <string name="hip_hop">Hip Hop</string>
-  <string name="jazz">Jazz</string>
+  <string name="jazz">Caz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
   <string name="ci_extreme">Elektronik</string>
@@ -42,7 +42,7 @@
   <string name="device_speaker">Hoparlör</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
-  <string name="device_wireless">Kablosuz cihaz</string>
+  <string name="device_wireless">Kablosuz</string>
   <string name="reverb">Yankı</string>
-  <string name="eq_preset">Equalizer önayarları</string>
+  <string name="eq_preset">Equalizer önayarı</string>
 </resources>
