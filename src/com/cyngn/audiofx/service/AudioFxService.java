@@ -170,7 +170,7 @@ public class AudioFxService extends Service
         }
         if (intent != null && intent.getAction() != null) {
             if (ACTION_UPDATE_TILE.equals(intent.getAction())) {
-                updateQsTile();
+                update(ALL_CHANGED);
             } else {
                 String action = intent.getAction();
                 int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
@@ -257,7 +257,7 @@ public class AudioFxService extends Service
         mLastLocale = getResources().getConfiguration().locale;
         final PendingIntent pi = PendingIntent.getBroadcast(this, 0,
                 new Intent(QuickSettingsTileReceiver.ACTION_TOGGLE_CURRENT_DEVICE)
-                        .addFlags(Intent.FLAG_FROM_BACKGROUND)
+                        .addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
                         .setClass(this, QuickSettingsTileReceiver.class), 0);
 
         final PendingIntent longPress = PendingIntent.getActivity(this, 0,
