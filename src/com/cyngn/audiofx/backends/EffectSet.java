@@ -17,6 +17,8 @@ public abstract class EffectSet {
 
     private AudioDeviceInfo mDeviceInfo;
 
+    private boolean mMarkedForDeath = false;
+
     public EffectSet(int sessionId, AudioDeviceInfo deviceInfo) {
         mSessionId = sessionId;
         mDeviceInfo = deviceInfo;
@@ -201,6 +203,24 @@ public abstract class EffectSet {
 
     public void enableVolumeBoost(boolean enable) {
         return;
+    }
+
+    /**
+     * How long should we delay for when releasing the effects?
+     * This helps certain effect implementations when the
+     * app is reusing a session ID. By default this
+     * behavior is disabled.
+     */
+    public int getReleaseDelay() {
+        return 0;
+    }
+
+    public boolean isMarkedForDeath() {
+        return mMarkedForDeath;
+    }
+
+    public void setMarkedForDeath(boolean die) {
+        mMarkedForDeath = die;
     }
 
     @Override

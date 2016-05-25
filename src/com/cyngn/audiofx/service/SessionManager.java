@@ -83,11 +83,15 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
         if (mHandler == null) {
             return;
         }
-        mHandler.obtainMessage(MSG_UPDATE_DSP, flags, 0).sendToTarget();
+        synchronized (mAudioSessionsL) {
+            mHandler.obtainMessage(MSG_UPDATE_DSP, flags, 0).sendToTarget();
+        }
     }
 
     public void setOverrideLevels(short band, float level) {
-        mHandler.obtainMessage(MSG_UPDATE_EQ_OVERRIDE, band, 0, level).sendToTarget();
+        synchronized (mAudioSessionsL) {
+            mHandler.obtainMessage(MSG_UPDATE_EQ_OVERRIDE, band, 0, level).sendToTarget();
+        }
     }
 
     /**
@@ -112,23 +116,37 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
     }
 
     public void addSession(AudioSessionInfo info) {
-        // Never auto-attach is someone is recording! We don't want to interfere with any sort of
-        // loopback mechanisms.
-        final boolean recording = AudioSystem.isSourceActive(0) || AudioSystem.isSourceActive(6);
-        if (recording) {
-            Log.w(TAG, "Recording in progress, not performing auto-attach!");
-            return;
-        }
-        if (shouldHandleSession(info) && !mHandler.hasMessages(MSG_ADD_SESSION, info.getSessionId())) {
-            if (DEBUG) Log.i(TAG, "New audio session: " + info.toString());
-            mHandler.obtainMessage(MSG_ADD_SESSION, info.getSessionId()).sendToTarget();
+        synchronized (mAudioSessionsL) {
+            // Never auto-attach is someone is recording! We don't want to interfere
+            // with any sort of loopback mechanisms.
+            final boolean recording = AudioSystem.isSourceActive(0) || AudioSystem.isSourceActive(6);
+            if (recording) {
+                Log.w(TAG, "Recording in progress, not performing auto-attach!");
+                return;
+            }
+            if (shouldHandleSession(info) &&
+                    !mHandler.hasMessages(MSG_ADD_SESSION, info.getSessionId())) {
+                mHandler.removeMessages(MSG_REMOVE_SESSION, info.getSessionId());
+                mHandler.obtainMessage(MSG_ADD_SESSION, info.getSessionId()).sendToTarget();
+                if (DEBUG) Log.i(TAG, "New audio session: " + info.toString());
+            }
         }
     }
 
     public void removeSession(AudioSessionInfo info) {
-        if (shouldHandleSession(info) && !mHandler.hasMessages(MSG_REMOVE_SESSION, info.getSessionId())) {
-            if (DEBUG) Log.i(TAG, "Audio session queued for removal: " + info.toString());
-            mHandler.obtainMessage(MSG_REMOVE_SESSION, info.getSessionId()).sendToTarget();
+        synchronized (mAudioSessionsL) {
+            if (shouldHandleSession(info) &&
+                    !mHandler.hasMessages(MSG_REMOVE_SESSION, info.getSessionId())) {
+                int sid = info.getSessionId();
+                final EffectSet effects = mAudioSessionsL.get(sid);
+                if (effects != null) {
+                    effects.setMarkedForDeath(true);
+                    mHandler.sendMessageDelayed(
+                            mHandler.obtainMessage(MSG_REMOVE_SESSION, sid),
+                            effects.getReleaseDelay());
+                    if (DEBUG) Log.i(TAG, "Audio session queued for removal: " + info.toString());
+                }
+            }
         }
     }
 
@@ -286,7 +304,8 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                             break;
                         }
 
-                        if (mAudioSessionsL.indexOfKey(sessionId) < 0) {
+                        session = mAudioSessionsL.get(sessionId);
+                        if (session == null) {
                             try {
                                 session = EffectsFactory.createEffectSet(mContext, sessionId, mCurrentDevice);
                             } catch (Exception e) {
@@ -296,6 +315,8 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                             mAudioSessionsL.put(sessionId, session);
                             if (DEBUG) Log.w(TAG, "added new EffectSet for sessionId=" + sessionId);
                             updateBackendLocked(ALL_CHANGED, session);
+                        } else {
+                            session.setMarkedForDeath(false);
                         }
                         break;
 
@@ -307,13 +328,12 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                         if (sessionId == null || sessionId <= 0) {
                             break;
                         }
-                        mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
 
-                        if (mAudioSessionsL.indexOfKey(sessionId) > -1) {
-                            session = mAudioSessionsL.removeReturnOld(sessionId);
-                        }
-                        if (session != null) {
+                        session = mAudioSessionsL.get(sessionId);
+                        if (session != null && session.isMarkedForDeath()) {
+                            mHandler.removeMessages(MSG_UPDATE_FOR_SESSION, sessionId);
                             session.release();
+                            mAudioSessionsL.remove(sessionId);
                             if (DEBUG) Log.w(TAG, "removed and released sessionId=" + sessionId);
                         }
 
