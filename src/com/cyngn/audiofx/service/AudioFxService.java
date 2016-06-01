@@ -250,6 +250,10 @@ public class AudioFxService extends Service
     }
 
     private void updateQsTile() {
+        if (mCurrentDevice == null || mDevicePrefs == null) {
+            // too early
+            return;
+        }
         if (mTileBuilder == null) {
             mTileBuilder = new CustomTile.Builder(this);
         }
