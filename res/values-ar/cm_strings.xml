@@ -16,11 +16,11 @@
      limitations under the License.
 -->
 <resources>
-  <string name="normal">طبيعي</string>
+  <string name="normal">عادي</string>
   <string name="classical">كلاسيكي</string>
   <string name="dance">رقص</string>
   <string name="flat">معتدل</string>
-  <string name="folk">قَوم</string>
+  <string name="folk">شعبي</string>
   <string name="heavy_metal">المعادن الثقيلة</string>
   <string name="hip_hop">الهيب هوب</string>
   <string name="jazz">الجاز</string>
@@ -29,20 +29,20 @@
   <string name="ci_extreme">إلكتروني</string>
   <string name="small_speakers">سماعات صغيرة</string>
   <string name="user">مخصص</string>
-  <string name="none">لا شيء</string>
+  <string name="none">بلا</string>
   <string name="smallroom">غرفة صغيرة</string>
   <string name="mediumroom">غرفة متوسطة</string>
   <string name="largeroom">غرفة كبيرة</string>
   <string name="mediumhall">قاعة متوسطة</string>
   <string name="largehall">قاعة كبيرة</string>
-  <string name="plate">طبق</string>
-  <string name="power_on_prompt">اضغط على زر الطاقة في الأعلى اليمين.</string>
-  <string name="effect_unavalable_for_speaker">التأثيرات غير متوفر لي وضع مكبر الصوت.</string>
-  <string name="device_headset">سماعات الأذن</string>
-  <string name="device_speaker">مكبّر الصوت</string>
+  <string name="plate">لوح</string>
+  <string name="power_on_prompt">اضغط على زر الطاقة في الجزء الأيمن العلوي.</string>
+  <string name="effect_unavalable_for_speaker">التأثير غير متاح لوضع السماعة.</string>
+  <string name="device_headset">سماعة الرأس</string>
+  <string name="device_speaker">سماعة</string>
   <string name="device_usb">USB</string>
-  <string name="device_bluetooth">Bluetooth</string>
+  <string name="device_bluetooth">بلوتوث</string>
   <string name="device_wireless">لاسلكي</string>
-  <string name="reverb">تردد</string>
-  <string name="eq_preset">التعادل مسبقا</string>
+  <string name="reverb">الصدى</string>
+  <string name="eq_preset">التعيين المسبق للمعادل</string>
 </resources>

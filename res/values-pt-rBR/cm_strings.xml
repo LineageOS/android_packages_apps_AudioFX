@@ -18,16 +18,16 @@
 <resources>
   <string name="normal">Normal</string>
   <string name="classical">Clássica</string>
-  <string name="dance">Dança</string>
+  <string name="dance">Dance</string>
   <string name="flat">Plano</string>
   <string name="folk">Folk</string>
-  <string name="heavy_metal">Heavy Metal</string>
-  <string name="hip_hop">Hip-Hop</string>
+  <string name="heavy_metal">Heavy metal</string>
+  <string name="hip_hop">Hip-hop</string>
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Electrônica</string>
-  <string name="small_speakers">Alto-falantes pequenos</string>
+  <string name="ci_extreme">Eletrônica</string>
+  <string name="small_speakers">Falantes pequenos</string>
   <string name="user">Personalizado</string>
   <string name="none">Nenhum</string>
   <string name="smallroom">Sala pequena</string>
@@ -35,8 +35,8 @@
   <string name="largeroom">Sala grande</string>
   <string name="mediumhall">Salão médio</string>
   <string name="largehall">Salão grande</string>
-  <string name="plate">Prato</string>
-  <string name="power_on_prompt">Pressione o botão ligar / desligar na parte superior direita.</string>
+  <string name="plate">Placa</string>
+  <string name="power_on_prompt">Pressione o botão de energia na parte superior direita.</string>
   <string name="effect_unavalable_for_speaker">Efeito não disponível no modo de alto-falante.</string>
   <string name="device_headset">Fone de ouvido</string>
   <string name="device_speaker">Alto-falante</string>

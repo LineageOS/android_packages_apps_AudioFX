@@ -27,6 +27,7 @@
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
   <string name="ci_extreme">Elektronska</string>
+  <string name="small_speakers">Mali zvučnici</string>
   <string name="user">Prilagođeno</string>
   <string name="none">Ništa</string>
   <string name="smallroom">Mala soba</string>
@@ -41,6 +42,7 @@
   <string name="device_speaker">Zvučnik</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
+  <string name="device_wireless">Bežično</string>
   <string name="reverb">Odjek</string>
   <string name="eq_preset">Predlošci ekvilajzera</string>
 </resources>
