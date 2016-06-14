@@ -65,10 +65,12 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
     private static final int MSG_UPDATE_FOR_SESSION = 103;
     private static final int MSG_UPDATE_EQ_OVERRIDE = 104;
 
-    public SessionManager(Context context, Handler handler, DevicePreferenceManager devicePrefs) {
+    public SessionManager(Context context, Handler handler, DevicePreferenceManager devicePrefs,
+            AudioDeviceInfo outputDevice) {
         mContext = context;
         mCMAudio = CMAudioManager.getInstance(context);
         mDevicePrefs = devicePrefs;
+        mCurrentDevice = outputDevice;
         mHandler = new Handler(handler.getLooper(), new AudioServiceHandler());
     }
 

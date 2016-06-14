@@ -145,13 +145,14 @@ public class AudioFxService extends Service
         mOutputListener = new AudioOutputChangeListener(getApplicationContext(), mHandler);
         mOutputListener.addCallback(this);
 
-        mDevicePrefs = new DevicePreferenceManager(getApplicationContext());
+        mDevicePrefs = new DevicePreferenceManager(getApplicationContext(), mCurrentDevice);
         if (!mDevicePrefs.initDefaults()) {
             stopSelf();
             return;
         }
 
-        mSessionManager = new SessionManager(getApplicationContext(), mHandler, mDevicePrefs);
+        mSessionManager = new SessionManager(getApplicationContext(), mHandler, mDevicePrefs,
+                mCurrentDevice);
         mOutputListener.addCallback(mDevicePrefs, mSessionManager);
 
         final CMAudioManager cma = CMAudioManager.getInstance(getApplicationContext());

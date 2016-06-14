@@ -51,8 +51,9 @@ class DevicePreferenceManager implements AudioOutputChangeListener.AudioOutputCh
 
     private AudioDeviceInfo mCurrentDevice;
 
-    public DevicePreferenceManager(Context context) {
+    public DevicePreferenceManager(Context context, AudioDeviceInfo device) {
         mContext = context;
+        mCurrentDevice = device;
     }
 
     public boolean initDefaults() {
