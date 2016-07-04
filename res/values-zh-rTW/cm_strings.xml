@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">效果不適用於擴音器模式。</string>
   <string name="device_headset">耳機</string>
   <string name="device_speaker">揚聲器</string>
+  <string name="device_lineout">線路輸出</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">藍牙</string>
   <string name="device_wireless">無線裝置</string>
