@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Effekt am Lautsprecher-Modus net disponibel.</string>
   <string name="device_headset">Kopfhörer</string>
   <string name="device_speaker">Lautsprecher</string>
+  <string name="device_lineout">Line-Ausgank</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Ouni Kabel</string>
