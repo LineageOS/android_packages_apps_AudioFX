@@ -309,7 +309,8 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                         session = mAudioSessionsL.get(sessionId);
                         if (session == null) {
                             try {
-                                session = EffectsFactory.createEffectSet(mContext, sessionId, mCurrentDevice);
+                                session = new EffectsFactory()
+                                        .createEffectSet(mContext, sessionId, mCurrentDevice);
                             } catch (Exception e) {
                                 Log.e(TAG, "couldn't create effects for session id: " + sessionId, e);
                                 break;

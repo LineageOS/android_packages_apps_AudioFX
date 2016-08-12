@@ -118,7 +118,7 @@ class DevicePreferenceManager implements AudioOutputChangeListener.AudioOutputCh
             }
             return;
         }
-        EffectSet temp = EffectsFactory.createEffectSet(mContext, 0, null);
+        EffectSet temp = new EffectsFactory().createEffectSet(mContext, 0, null);
 
         final int numBands = temp.getNumEqualizerBands();
         final int numPresets = temp.getNumEqualizerPresets();
@@ -168,8 +168,8 @@ class DevicePreferenceManager implements AudioOutputChangeListener.AudioOutputCh
 
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost());
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.getBrand() == EffectsFactory.MAXXAUDIO);
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_DTS, temp.getBrand() == EffectsFactory.DTS);
+        editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.getBrand() == Constants.EFFECT_TYPE_MAXXAUDIO);
+        editor.putBoolean(AUDIOFX_GLOBAL_HAS_DTS, temp.getBrand() == Constants.EFFECT_TYPE_DTS);
         editor.commit();
         temp.release();
 
@@ -208,7 +208,7 @@ class DevicePreferenceManager implements AudioOutputChangeListener.AudioOutputCh
 
         final SharedPreferences globalPrefs = Constants.getGlobalPrefs(mContext);
 
-        // Nothing to see here for DTS
+        // Nothing to see here for EFFECT_TYPE_DTS
         if (globalPrefs.getBoolean(AUDIOFX_GLOBAL_HAS_DTS, false)) {
             return;
         }

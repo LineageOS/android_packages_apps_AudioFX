@@ -24,7 +24,13 @@ import java.util.List;
 
 public class Constants {
 
+    // current pref version, bump to rebuild prefs
     public static final int CURRENT_PREFS_INT_VERSION = 2;
+
+    // effect type identifiers
+    public static final int EFFECT_TYPE_ANDROID = 1;
+    public static final int EFFECT_TYPE_MAXXAUDIO = 2;
+    public static final int EFFECT_TYPE_DTS = 3;
 
     // global settings
     public static final String AUDIOFX_GLOBAL_FILE = "global";

@@ -8,7 +8,6 @@ import android.media.audiofx.Virtualizer;
 import android.util.Log;
 
 import com.cyngn.audiofx.Constants;
-import com.cyngn.audiofx.activity.MasterConfigControl;
 
 /**
  * EffectSet which comprises standard Android effects
@@ -170,7 +169,7 @@ class AndroidEffects extends EffectSetWithAndroidEq {
 
     @Override
     public int getBrand() {
-        return EffectsFactory.ANDROID;
+        return Constants.EFFECT_TYPE_ANDROID;
     }
 
     private void setParameterSafe(AudioEffect e, int p, short v) {
