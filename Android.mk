@@ -12,6 +12,7 @@ ifeq ($(wildcard $(LOCAL_PATH)/src_effects_priv),)
 LOCAL_SRC_FILES += $(call all-java-files-under, src_effects)
 else
 $(warning *** including private implementations of effects ***)
+LOCAL_AAPT_FLAGS += --rename-manifest-package com.cyngn.audiofx
 LOCAL_SRC_FILES += $(call all-java-files-under, src_effects_priv)
 endif
 
@@ -22,8 +23,6 @@ LOCAL_PROGUARD_ENABLED := disabled
 LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, res)
 LOCAL_AAPT_FLAGS := --auto-add-overlay
 LOCAL_AAPT_FLAGS += --extra-packages com.cyanogen.ambient
-
-#LOCAL_JACK_ENABLED := disabled
 
 LOCAL_STATIC_JAVA_AAR_LIBRARIES := ambientsdk
 
