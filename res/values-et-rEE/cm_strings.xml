@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">Efekt puudub Kõlari-režiimis.</string>
   <string name="device_headset">Peakomplekt</string>
   <string name="device_speaker">Kõlar</string>
+  <string name="device_lineout">Heliväljund</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Juhtmeta</string>
