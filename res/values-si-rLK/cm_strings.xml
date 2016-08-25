@@ -36,7 +36,6 @@
   <string name="mediumhall">මධ්‍යම ශාලාව</string>
   <string name="largehall">විශාල ශාලාව</string>
   <string name="plate">තහඩුව</string>
-  <string name="eq_custom">රිසිකරණය සඳහා, \'රිසිවූ\' තෝරන්න</string>
   <string name="power_on_prompt">ඉහළින් දකුණේ ඇති බල බොත්තම ඔබන්න.</string>
   <string name="effect_unavalable_for_speaker">ස්පීකර ප්‍රකාරය සඳහා බලපෑම ලබාගත නොහැක.</string>
   <string name="device_headset">කන්යොමුව</string>

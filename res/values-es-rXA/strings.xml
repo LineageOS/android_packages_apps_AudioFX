@@ -15,10 +15,8 @@
      limitations under the License.
 -->
 <resources>
-  <string name="app_name">AudioFX</string>
   <string name="no_effects">Efeutos non disponibles.</string>
   <string name="main_toggle_effects_title">Efeutos d\'audiu</string>
-  <string name="eq_dialog_title">AudioFX</string>
   <string name="headset_plug">Coneuta los auriculares pa estos efectos.</string>
   <string name="bass_boost_strength">Bass boost</string>
   <string name="virtualizer_strength">Soníu envolvente</string>

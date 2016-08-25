@@ -68,8 +68,6 @@
     <string name="rename">Rename</string>
     <string name="remove_custom_preset_warning_message">Are you sure you want to remove %1$s?</string>
 
-    <string name="app_name" translatable="false">AudioFX</string>
-    <string name="app_title" translatable="false">@string/app_name</string>
 
     <string name="powered_by_maxx_audio" translatable="false">Powered by MaxxAudio</string>
     <string name="mode_dts" translatable="false">with DTS Sound&#8482;</string>

@@ -36,7 +36,6 @@
   <string name="mediumhall">মধ্যম হল</string>
   <string name="largehall">বড় হল</string>
   <string name="plate">প্লেট</string>
-  <string name="eq_custom">পছন্দসই-বিন্যাস করতে, \'পছন্দসই\' নির্বাচন করুন</string>
   <string name="power_on_prompt">উপরের-ডানে পাওয়ার বোতাম চাপুন।</string>
   <string name="effect_unavalable_for_speaker">স্পীকারের জন্য প্রভাব উপলব্ধ নয়।</string>
   <string name="device_headset">হেডসেট</string>

@@ -120,7 +120,7 @@ public class ActivityMusic extends Activity {
         mConfig = MasterConfigControl.getInstance(this);
 
         ActionBar ab = getActionBar();
-        ab.setTitle(R.string.app_title);
+        ab.setTitle(R.string.app_name);
         ab.setDisplayShowTitleEnabled(true);
 
         final View extraView = LayoutInflater.from(this)

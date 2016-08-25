@@ -36,7 +36,6 @@
   <string name="mediumhall">Keskmine hall</string>
   <string name="largehall">Suur hall</string>
   <string name="plate">Plate</string>
-  <string name="eq_custom">Kohandamiseks vali \'Kohandatud\'</string>
   <string name="power_on_prompt">Vajutage power nuppu üleval paremal.</string>
   <string name="effect_unavalable_for_speaker">Efekt puudub Kõlari-režiimis.</string>
   <string name="device_headset">Peakomplekt</string>

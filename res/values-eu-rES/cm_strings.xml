@@ -26,9 +26,7 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="electronic">Elektronikoa</string>
   <string name="small_speakers">Bozgorailu txikiak</string>
-  <string name="custom">Pertsonalizatua</string>
   <string name="none">Bat ere ez</string>
   <string name="smallroom">Gela txikia</string>
   <string name="mediumroom">Gela ertaina</string>
@@ -40,7 +38,6 @@
   <string name="effect_unavalable_for_speaker">Efektua ez dago bozgorailu modurako eskuragarri.</string>
   <string name="device_headset">Aurikularrak</string>
   <string name="device_speaker">Bozgorailua</string>
-  <string name="device_lineout">Linea irteera</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Haririk gabe</string>
