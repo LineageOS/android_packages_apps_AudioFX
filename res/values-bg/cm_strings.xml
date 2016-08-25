@@ -15,8 +15,8 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
-  <string name="normal">Нормална</string>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="normal">Нормално</string>
   <string name="classical">Класическа</string>
   <string name="dance">Танцувална</string>
   <string name="flat">Плосък</string>
@@ -26,12 +26,14 @@
   <string name="jazz">Джаз</string>
   <string name="pop">Поп</string>
   <string name="rock">Рок</string>
-  <string name="electronic">Електронна</string>
+  <string name="ci_extreme">Електронна</string>
   <string name="small_speakers">Малки говорители</string>
-  <string name="custom">По избор</string>
+  <string name="multimedia">Мултимедия</string>
+  <string name="user">По избор</string>
+  <string name="user_n">По избор <xliff:g id="preset_num">%1$d </xliff:g></string>
   <string name="none">Без</string>
   <string name="smallroom">Малка стая</string>
-  <string name="mediumroom">Среднa стая</string>
+  <string name="mediumroom">Средна стая</string>
   <string name="largeroom">Голяма стая</string>
   <string name="mediumhall">Средна зала</string>
   <string name="largehall">Голяма зала</string>
@@ -40,10 +42,15 @@
   <string name="effect_unavalable_for_speaker">Ефекта не е достъпен за високоговорителя.</string>
   <string name="device_headset">Слушалки</string>
   <string name="device_speaker">Говорител</string>
-  <string name="device_lineout">Линеен изход</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Безжичен</string>
   <string name="reverb">Ехо</string>
   <string name="eq_preset">Настройки на еквалайзера</string>
+  <string name="devices">Устройства</string>
+  <string name="virtualizer">Виртуализатор</string>
+  <string name="treble">Троен</string>
+  <string name="bass">Бас</string>
+  <string name="rename">Преименуване</string>
+  <string name="remove_custom_preset_warning_message">Сигурни ли сте, че искате да премахнете %1$s?</string>
 </resources>

@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">സാധാരണ</string>
   <string name="classical">ക്ലാസിക്കൽ</string>
   <string name="dance">ഡാൻസ്</string>
@@ -26,9 +26,11 @@
   <string name="jazz">ജാസ്സ്</string>
   <string name="pop">പോപ്പ്</string>
   <string name="rock">റോക്ക്</string>
-  <string name="electronic">ഇലക്ട്രോണിക്</string>
+  <string name="ci_extreme">ഇലക്ട്രോണിക്</string>
   <string name="small_speakers">ചെറിയ സ്പീക്കറുകൾ</string>
-  <string name="custom">ഇഷ്‌ടാനുസൃതം</string>
+  <string name="multimedia">മൾട്ടിമീഡിയ</string>
+  <string name="user">ഇഷ്‌ടാനുസൃതം</string>
+  <string name="user_n">ഇഷ്ടാനുസൃത <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">ആരിൽ നിന്നും വേണ്ട</string>
   <string name="smallroom">ചെറിയ റൂം</string>
   <string name="mediumroom">ഇടത്തരം റൂം</string>
@@ -45,4 +47,10 @@
   <string name="device_wireless">വയർലെസ്</string>
   <string name="reverb">പ്രതിധ്വനി</string>
   <string name="eq_preset">ഈക്വലൈസര്‍ പ്രീസെറ്റ്</string>
+  <string name="devices">ഉപകരണങ്ങൾ</string>
+  <string name="virtualizer">വര്‍ച്വലൈസര്‍</string>
+  <string name="treble">ട്രെബിൾ</string>
+  <string name="bass">ബാസ്സ്</string>
+  <string name="rename">പേരുമാറ്റുക</string>
+  <string name="remove_custom_preset_warning_message">%1$s നീക്കം ചെയ്യണമെന്ന് നിങ്ങള്‍ക്ക് ഉറപ്പാണോ?</string>
 </resources>

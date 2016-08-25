@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center"
-    android:background="#cc191919"
-        >
+<com.cyngn.audiofx.eq.EqSwipeController
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_interceptor"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <include
+            layout="@layout/eq_container"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"/>
 
-    <org.cyanogenmod.audiofx.widget.EqualizerSurface
-        android:id="@+id/frequencyResponse"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent" />
+    <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/preset_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-</LinearLayout>
+        <com.cyngn.audiofx.preset.InfiniteViewPager
+                android:id="@+id/pager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+        />
+
+        <com.cyngn.audiofx.viewpagerindicator.CirclePageIndicator
+                android:id="@+id/indicator"
+                android:padding="10dip"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+        />
+
+        <android.support.v4.view.ViewPager
+                android:layout_height="0dp"
+                android:layout_width="0dp"
+                android:visibility="gone"
+                android:id="@+id/fake_pager"
+        />
+
+    </LinearLayout>
+</com.cyngn.audiofx.eq.EqSwipeController>

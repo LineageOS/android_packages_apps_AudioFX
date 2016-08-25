@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (c) 2013, The Linux Foundation. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * Neither the name of The Linux Foundation nor the names of its
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT
+ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<resources>
+    <color name="action_bar_background">#ff2e2e2e</color>
+    <color name="audiofx_background_color">#cc191919</color>
+    <color name="eq_preset_label_text_color">#ff808080</color>
+    <color name="reverb_label_text_color">#ff808080</color>
+
+    <color name="highlight">#cc8f8f8f</color>
+    <color name="lowlight">#558f8f8f</color>
+    <color name="grey">#80e7e7e7</color>
+    <color name="disabled">#80525252</color>
+    <color name="disabled_gallery">#888888</color>
+    <color name="disabled_knob">#575757</color>
+
+    <color name="white">#ffffffff</color>
+    <color name="color_grey">#90dedede</color>
+    <color name="black">#ff000000</color>
+    <color name="grid_lines">#22ffffff</color>
+    <color name="cb">#88ffffff</color>
+    <color name="freq_hl">#2000ddff</color>
+    <color name="freq_hl2">#4033b5e5</color>
+    <color name="eq_red">#80ff0000</color>
+    <color name="eq_green">#80aaeaaa</color>
+    <color name="eq_yellow">#80f0ff00</color>
+    <color name="eq_holo_bright">#8000ddff</color>
+    <color name="eq_holo_blue">#8033b5e5</color>
+    <color name="eq_holo_dark">#800099cc</color>
+    <color name="cb_shader">#ffffffff</color>
+    <color name="cb_shader_alpha">#22ffffff</color>
+
+    <color name="window_background">#ff000000</color>
+
+    <color name="band_freq_label">#ffffffff</color>
+    <color name="band_bar_color_1">#FFCCCCCC</color>
+    <color name="band_bar_color_2">#FFDDDDDD</color>
+
+    <color name="preset_custom">#CE5B4C</color>
+    <color name="preset_normal">#CB6139</color>
+    <color name="preset_classical">#BE963F</color>
+    <color name="preset_dance">#BEBD3F</color>
+    <color name="preset_flat">#84B74E</color>
+    <color name="preset_folk">#80B74F</color>
+    <color name="preset_metal">#65B759</color>
+    <color name="preset_hiphop">#5CB797</color>
+    <color name="preset_jazz">#5B82B7</color>
+    <color name="preset_pop">#585DCA</color>
+    <color name="preset_rock">#9A62CB</color>
+    <color name="preset_electronic">#C862C5</color>
+    <color name="preset_small_speakers">#CB629A</color>
+    <color name="band_bar_color_selected">#ffffffff</color>
+    <color name="knob_container_background">#323437</color>
+    <color name="disabled_eq">#ff6c6c6c</color>
+    <color name="radial_knob_arc_bg">#4e5052</color>
+    <color name="radial_knob_arc_bg_disabled">#6c6c6c</color>
+</resources>

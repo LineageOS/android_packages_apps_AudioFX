@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.cyngn.audiofx.widget.InterceptableLinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:custom="http://schemas.android.com/apk/res/com.cyngn.audiofx"
+        android:id="@+id/interceptable_layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <!-- equalizer layout -->
+    <FrameLayout class="com.cyngn.audiofx.fragment.EqualizerFragment"
+              android:id="@+id/equalizer"
+              android:layout_weight="1"
+              android:layout_width="match_parent"
+              android:layout_height="0dp"/>
+
+    <!-- knobs -->
+    <FrameLayout class="com.cyngn.audiofx.fragment.ControlsFragment"
+              android:id="@+id/controls"
+              android:layout_weight="0"
+              android:layout_width="match_parent"
+              android:layout_height="160dp"/>
+
+</com.cyngn.audiofx.widget.InterceptableLinearLayout>

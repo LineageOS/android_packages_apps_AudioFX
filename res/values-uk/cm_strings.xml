@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Нормальний</string>
   <string name="classical">Класика</string>
   <string name="dance">Танцювальна</string>
@@ -26,9 +26,11 @@
   <string name="jazz">Джаз</string>
   <string name="pop">Поп</string>
   <string name="rock">Рок</string>
-  <string name="electronic">Електронна</string>
+  <string name="ci_extreme">Електронна</string>
   <string name="small_speakers">Маленькі динаміки</string>
-  <string name="custom">Користувач</string>
+  <string name="multimedia">Мультимедіа</string>
+  <string name="user">Користувач</string>
+  <string name="user_n">Користувацькі <xliff:g id="preset_num">%1$d </xliff:g></string>
   <string name="none">Немає</string>
   <string name="smallroom">Мала кімната</string>
   <string name="mediumroom">Середня кімната</string>
@@ -45,4 +47,10 @@
   <string name="device_wireless">Бездротові</string>
   <string name="reverb">Реверберація</string>
   <string name="eq_preset">Налаштування еквалайзера</string>
+  <string name="devices">Пристрої</string>
+  <string name="virtualizer">Віртуалізатор</string>
+  <string name="treble">Високі</string>
+  <string name="bass">Бас</string>
+  <string name="rename">Перейменувати</string>
+  <string name="remove_custom_preset_warning_message">Ви дійсно бажаєте видалити %1$s?</string>
 </resources>

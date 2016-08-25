@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normalno</string>
   <string name="classical">Klasika</string>
   <string name="dance">Ples</string>
@@ -26,9 +26,11 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="electronic">Elektronska</string>
+  <string name="ci_extreme">Elektronska</string>
   <string name="small_speakers">Mali zvučnici</string>
-  <string name="custom">Prilagođeno</string>
+  <string name="multimedia">Multimedija</string>
+  <string name="user">Prilagođeno</string>
+  <string name="user_n">Prilagođeni <xliff:g id="preset_num">%1$d </xliff:g></string>
   <string name="none">Ništa</string>
   <string name="smallroom">Mala soba</string>
   <string name="mediumroom">Srednja soba</string>
@@ -40,10 +42,15 @@
   <string name="effect_unavalable_for_speaker">Efekt nije dostupan za način Zvučnika.</string>
   <string name="device_headset">Slušalice</string>
   <string name="device_speaker">Zvučnik</string>
-  <string name="device_lineout">Izlaz za slušalice</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Bežično</string>
   <string name="reverb">Odjek</string>
   <string name="eq_preset">Predlošci ekvilajzera</string>
+  <string name="devices">Uređaji</string>
+  <string name="virtualizer">Virtualizer</string>
+  <string name="treble">Visoki tonovi</string>
+  <string name="bass">Bas gitara</string>
+  <string name="rename">Preimenuj</string>
+  <string name="remove_custom_preset_warning_message">Jeste li sigurni da želite ukloniti %1$s?</string>
 </resources>

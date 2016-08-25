@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normal</string>
   <string name="classical">Klasik</string>
   <string name="dance">Dans</string>
@@ -26,9 +26,11 @@
   <string name="jazz">Caz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="electronic">Elektronik</string>
+  <string name="ci_extreme">Elektronik</string>
   <string name="small_speakers">Küçük hoparlörler</string>
-  <string name="custom">Özel</string>
+  <string name="multimedia">Multimedya</string>
+  <string name="user">Özel</string>
+  <string name="user_n">Özel <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Yok</string>
   <string name="smallroom">Küçük oda</string>
   <string name="mediumroom">Orta boy oda</string>
@@ -40,10 +42,15 @@
   <string name="effect_unavalable_for_speaker">Efekt Hoparlör modunda kullanılamıyor.</string>
   <string name="device_headset">Kulaklık</string>
   <string name="device_speaker">Hoparlör</string>
-  <string name="device_lineout">Hat çıkışı</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
-  <string name="device_wireless">Kablosuz</string>
+  <string name="device_wireless">Kablosuz cihaz</string>
   <string name="reverb">Yankı</string>
   <string name="eq_preset">Equalizer önayarı</string>
+  <string name="devices">Cihazlar</string>
+  <string name="virtualizer">Görselleştirici</string>
+  <string name="treble">Tiz</string>
+  <string name="bass">Bass</string>
+  <string name="rename">Yeniden adlandır</string>
+  <string name="remove_custom_preset_warning_message">%1$s önayarını kaldırmak istediğinizden emin misiniz?</string>
 </resources>

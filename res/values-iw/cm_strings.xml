@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">רגיל</string>
   <string name="classical">קלאסי</string>
   <string name="dance">דאנס</string>
@@ -26,9 +26,11 @@
   <string name="jazz">ג\'אז</string>
   <string name="pop">פופ</string>
   <string name="rock">רוק</string>
-  <string name="electronic">אלקטרוני</string>
+  <string name="ci_extreme">אלקטרוני</string>
   <string name="small_speakers">רמקולים קטנים</string>
-  <string name="custom">מותאם אישית</string>
+  <string name="multimedia">מולטימדיה</string>
+  <string name="user">מותאם אישית</string>
+  <string name="user_n"><xliff:g id="preset_num">%1$d</xliff:g> מותאם אישית</string>
   <string name="none">ללא</string>
   <string name="smallroom">חדר קטן</string>
   <string name="mediumroom">חדר בינוני</string>
@@ -38,12 +40,17 @@
   <string name="plate">צלחת</string>
   <string name="power_on_prompt">לחץ על לחצן ההפעלה למעלה מימין.</string>
   <string name="effect_unavalable_for_speaker">האפקט אינו זמין במצב רמקול.</string>
-  <string name="device_headset">אזניות</string>
+  <string name="device_headset">אוזניה</string>
   <string name="device_speaker">רמקול</string>
-  <string name="device_lineout">יציאת שמע</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">אלחוטי</string>
   <string name="reverb">תהודה</string>
   <string name="eq_preset">אקולייזר קבוע מראש</string>
+  <string name="devices">מכשירים</string>
+  <string name="virtualizer">מדמה וירטואלי</string>
+  <string name="treble">טרבל</string>
+  <string name="bass">בס</string>
+  <string name="rename">שנה שם</string>
+  <string name="remove_custom_preset_warning_message">בטוח שברצונך להסיר את %1$s?</string>
 </resources>

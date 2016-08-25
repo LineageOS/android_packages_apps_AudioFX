@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normal</string>
   <string name="classical">Clasică</string>
   <string name="dance">Dance</string>
@@ -26,9 +26,10 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="electronic">Electronică</string>
+  <string name="ci_extreme">Electronică</string>
   <string name="small_speakers">Difuzoare Mici</string>
-  <string name="custom">Personalizat</string>
+  <string name="multimedia">Multimedia</string>
+  <string name="user">Personalizat</string>
   <string name="none">Niciunul</string>
   <string name="smallroom">Cameră mică</string>
   <string name="mediumroom">Cameră medie</string>
@@ -45,4 +46,8 @@
   <string name="device_wireless">Wireless</string>
   <string name="reverb">Reverberație</string>
   <string name="eq_preset">Preset egalizator</string>
+  <string name="devices">Dispozitive</string>
+  <string name="treble">Înalte</string>
+  <string name="bass">Joase</string>
+  <string name="rename">Redenumire</string>
 </resources>

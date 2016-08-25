@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normal</string>
   <string name="classical">Klassisk</string>
   <string name="dance">Dance</string>
@@ -26,9 +26,11 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="electronic">Elektronisk</string>
+  <string name="ci_extreme">Elektronisk</string>
   <string name="small_speakers">Små højttalere</string>
-  <string name="custom">Brugerdefineret</string>
+  <string name="multimedia">Multimedier</string>
+  <string name="user">Brugerdefineret</string>
+  <string name="user_n">Tilpasset <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Ingen</string>
   <string name="smallroom">Lille værelse</string>
   <string name="mediumroom">Mellemstort værelse</string>
@@ -40,10 +42,15 @@
   <string name="effect_unavalable_for_speaker">Effekt ikke tilgængelig i Højttalertilstand.</string>
   <string name="device_headset">Håndfri</string>
   <string name="device_speaker">Højttaler</string>
-  <string name="device_lineout">Linjeudgang</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Trådløs</string>
   <string name="reverb">Rumklang</string>
   <string name="eq_preset">Equalizer-forudindstilling</string>
+  <string name="devices">Enheder</string>
+  <string name="virtualizer">Virtualisator</string>
+  <string name="treble">Diskant</string>
+  <string name="bass">Bas</string>
+  <string name="rename">Omdøb</string>
+  <string name="remove_custom_preset_warning_message">Er du sikker på du vil fjerne %1$s?</string>
 </resources>

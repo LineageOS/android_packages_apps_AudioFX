@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normal</string>
   <string name="classical">Klassesch</string>
   <string name="dance">Danzmusek</string>
@@ -26,9 +26,11 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="electronic">Elektronesch</string>
+  <string name="ci_extreme">Elektronesch</string>
   <string name="small_speakers">Kleng Boxen</string>
-  <string name="custom">Personaliséiert</string>
+  <string name="multimedia">Multimedia</string>
+  <string name="user">Personaliséiert</string>
+  <string name="user_n">Personaliséiert <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Keen</string>
   <string name="smallroom">Klenge Raum</string>
   <string name="mediumroom">Mëttlere Raum</string>
@@ -40,10 +42,15 @@
   <string name="effect_unavalable_for_speaker">Effekt am Lautsprecher-Modus net disponibel.</string>
   <string name="device_headset">Kopfhörer</string>
   <string name="device_speaker">Lautsprecher</string>
-  <string name="device_lineout">Line-Ausgank</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Ouni Kabel</string>
   <string name="reverb">Halleffekt</string>
   <string name="eq_preset">Equalizer-Virastellung</string>
+  <string name="devices">Apparater</string>
+  <string name="virtualizer">Virtualiséierung</string>
+  <string name="treble">Héichten</string>
+  <string name="bass">Bass</string>
+  <string name="rename">Ëmbenennen</string>
+  <string name="remove_custom_preset_warning_message">Bass du sécher, datt s du %1$s ewechhuele wëlls?</string>
 </resources>

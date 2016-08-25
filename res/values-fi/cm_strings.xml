@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normaali</string>
   <string name="classical">Klassinen</string>
   <string name="dance">Tanssi</string>
@@ -26,9 +26,11 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="electronic">Elektroninen</string>
+  <string name="ci_extreme">Elektroninen</string>
   <string name="small_speakers">Pienet kaiuttimet</string>
-  <string name="custom">Muokattu</string>
+  <string name="multimedia">Multimedia</string>
+  <string name="user">Muokattu</string>
+  <string name="user_n">Mukautettu <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Ei mitään</string>
   <string name="smallroom">Pieni huone</string>
   <string name="mediumroom">Keskikokoinen huone</string>
@@ -40,10 +42,15 @@
   <string name="effect_unavalable_for_speaker">Efekti ei käytettävissä kaiutintilassa.</string>
   <string name="device_headset">Kuulokkeet</string>
   <string name="device_speaker">Kaiutin</string>
-  <string name="device_lineout">Ulostulo</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Langaton</string>
   <string name="reverb">Kaikuefekti</string>
   <string name="eq_preset">Taajuuskorjaimen esiasetus</string>
+  <string name="devices">Laitteet</string>
+  <string name="virtualizer">Virtualizer</string>
+  <string name="treble">Diskantti</string>
+  <string name="bass">Basso</string>
+  <string name="rename">Nimeä uudelleen</string>
+  <string name="remove_custom_preset_warning_message">Haluatko varmasti poistaa asetusen %1$s?</string>
 </resources>

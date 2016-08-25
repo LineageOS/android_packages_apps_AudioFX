@@ -17,12 +17,41 @@
 <resources>
     <dimen name="eq_slider_margin">5dip</dimen>
     <dimen name="eq_slider_height">180dip</dimen>
-    <dimen name="eq_text_height">20dip</dimen>
+
+    <!-- size of frequency labels below bars -->
+    <dimen name="eq_label_text_size">9sp</dimen>
+
+    <!-- size of selected frequency/db text sizes [both right now ] -->
+    <dimen name="eq_selected_box_height">15sp</dimen>
+
+    <!-- extra room at the bottom of the eq bar to never shrink below -->
+    <dimen name="eq_bar_bottom_grab_space">20dp</dimen>
+
+    <!-- extra space above floating selected bar db -->
+    <dimen name="eq_bar_top_padding">10dp</dimen>
+
+    <dimen name="preset_text_size">30sp</dimen>
+    <dimen name="preset_text_padding">4dp</dimen>
 
     <dimen name="action_bar_switch_padding">16dip</dimen>
     <dimen name="action_bar_button_width">96dip</dimen>
     <dimen name="action_bar_button_height">34dip</dimen>
 
-    <dimen name="eq_bar_width">20dp</dimen>
-    <dimen name="eq_label_text_size">9dp</dimen>
+
+    <dimen name="eq_bar_width">24dp</dimen>
+    <dimen name="separator_width">4dp</dimen>
+
+    <dimen name="knob_height">150dp</dimen>
+    <dimen name="knob_width">100dp</dimen>
+    <dimen name="knob_container_height_small">180dp</dimen>
+    <dimen name="knob_container_height_expanded">200dp</dimen>
+    <dimen name="drag_area_max">200dp</dimen>
+    <dimen name="knob_container_padding_bottom">8dp</dimen>
+
+    <dimen name="radial_rect_padding">11dp</dimen>
+    <dimen name="radial_text_size">18sp</dimen>
+    <dimen name="radial_knob_stroke">22dp</dimen>
+
+    <dimen name="action_bar_dts_switch_padding">48dp</dimen>
+
 </resources>

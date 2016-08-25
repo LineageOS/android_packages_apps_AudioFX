@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="match_parent"
+              android:paddingRight="@dimen/action_bar_dts_switch_padding">
+
+    <TextView
+            android:text="@string/powered_by"
+            android:layout_gravity="center_horizontal"
+            android:textSize="10sp"
+            android:typeface="sans"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+    />
+
+    <ImageView
+            android:id="@+id/dts_logo"
+            android:src="@drawable/logo_dts_fc"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+    />
+
+
+</LinearLayout>

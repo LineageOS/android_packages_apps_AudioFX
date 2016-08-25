@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">ปกติ</string>
   <string name="classical">คลาสสิก</string>
   <string name="dance">แดนซ์</string>
@@ -26,9 +26,11 @@
   <string name="jazz">แจ๊ส</string>
   <string name="pop">ป๊อป</string>
   <string name="rock">ร็อค</string>
-  <string name="electronic">อิเล็กทรอนิก</string>
+  <string name="ci_extreme">อิเล็กทรอนิก</string>
   <string name="small_speakers">ลำโพงเล็ก</string>
-  <string name="custom">กำหนดเอง</string>
+  <string name="multimedia">มัลติมีเดีย</string>
+  <string name="user">กำหนดเอง</string>
+  <string name="user_n">กำหนดเอง <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">ไม่มี</string>
   <string name="smallroom">ห้องขนาดเล็ก</string>
   <string name="mediumroom">ห้องขนาดกลาง</string>
@@ -36,14 +38,19 @@
   <string name="mediumhall">โถงขนาดกลาง</string>
   <string name="largehall">โถงขนาดใหญ่</string>
   <string name="plate">เวที</string>
-  <string name="power_on_prompt">กดปุ่มเพาเวอร์ด้านบนขวา</string>
-  <string name="effect_unavalable_for_speaker">เอฟเฟกต์นี้ไม่สามารถใช้ได้กับรูปแบบลำโพง</string>
+  <string name="power_on_prompt">กดปุ่มพาวเวอร์ด้านบนขวา</string>
+  <string name="effect_unavalable_for_speaker">ใช้เอฟเฟกต์ไม่ได้กับรูปแบบลำโพง</string>
   <string name="device_headset">หูฟัง</string>
   <string name="device_speaker">ลำโพง</string>
-  <string name="device_lineout">สายออก</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">บลูทูธ</string>
   <string name="device_wireless">แบบไร้สาย</string>
   <string name="reverb">เสียงก้อง</string>
   <string name="eq_preset">ชุดรูปแบบปรับแต่งเสียง</string>
+  <string name="devices">อุปกรณ์</string>
+  <string name="virtualizer">บริการเอฟเฟกต์เสมือนจริง</string>
+  <string name="treble">Treble</string>
+  <string name="bass">Bass</string>
+  <string name="rename">เปลี่ยนชื่อ</string>
+  <string name="remove_custom_preset_warning_message">แน่ใจหรือไม่ว่าต้องการลบ %1$s</string>
 </resources>

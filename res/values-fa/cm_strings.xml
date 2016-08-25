@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">عادی</string>
   <string name="classical">کلاسیک</string>
   <string name="dance">رقص</string>
@@ -26,9 +26,11 @@
   <string name="jazz">جاز</string>
   <string name="pop">پاپ</string>
   <string name="rock">راک</string>
-  <string name="electronic">الکترونیک</string>
+  <string name="ci_extreme">الکترونیک</string>
   <string name="small_speakers">بلندگوهای کوچک</string>
-  <string name="custom">سفارشی</string>
+  <string name="multimedia">چند رسانه‌ای</string>
+  <string name="user">سفارشی</string>
+  <string name="user_n">سفارشی <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">هیچ‌کدام</string>
   <string name="smallroom">اتاق کوچک</string>
   <string name="mediumroom">اتاق متوسط</string>
@@ -45,4 +47,10 @@
   <string name="device_wireless">بی‌سیم</string>
   <string name="reverb">طنین</string>
   <string name="eq_preset">اکولایزر تنظیم شده</string>
+  <string name="devices">دستگاه‌ها</string>
+  <string name="virtualizer">Virtualizer</string>
+  <string name="treble">صدای زیر</string>
+  <string name="bass">صدای بم</string>
+  <string name="rename">تغییرنام</string>
+  <string name="remove_custom_preset_warning_message">از حذف %1$s اطمینان دارید؟</string>
 </resources>

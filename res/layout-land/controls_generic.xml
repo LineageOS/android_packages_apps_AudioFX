@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.cyngn.audiofx.knobs.KnobContainer
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:background="@color/knob_container_background"
+        android:id="@+id/knob_container"
+        android:layout_width="160dp"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:animateLayoutChanges="true"
+        android:elevation="8dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"/>

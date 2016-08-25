@@ -15,58 +15,50 @@
 -->
 <manifest
         xmlns:android="http://schemas.android.com/apk/res/android"
-        package="org.cyanogenmod.audiofx"
-        android:installLocation="auto"
-        android:versionName="1.4.0"
-        android:versionCode="10400">
+        package="com.cyngn.audiofx"
+        android:versionName="2.1.0"
+        android:versionCode="20100">
 
-    <uses-sdk android:minSdkVersion="21"/>
+    <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="23" />
 
-    <uses-feature android:name="android.software.leanback"
-    android:required="false" />
-
-    <uses-feature android:name="android.hardware.touchscreen"
-    android:required="false" />
-
-    <uses-feature android:name="android.hardware.screen.portrait"
-    android:required="false" />
-
-    <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE"/>
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE" />
+    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_ROUTING" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <uses-permission android:name="cyanogenmod.permission.PUBLISH_CUSTOM_TILE" />
     <uses-permission android:name="cyanogenmod.permission.OBSERVE_AUDIO_SESSIONS" />
 
+    <permission android:name="com.cyngn.audiofx.ANALYTICS_PERMISSION"
+                android:protectionLevel="signature" />
+
     <application
-            android:icon="@mipmap/ic_launcher_audiofx"
-            android:label="@string/app_name_cm"
+            android:icon="@mipmap/ic_launcher"
+            android:allowBackup="false"
+            android:label="@string/app_name"
             android:supportsRtl="true"
             android:hardwareAccelerated="true"
-            android:persistent="true"
+            android:name=".AudioFxApplication"
             android:theme="@android:style/Theme.NoTitleBar">
         <activity
-                android:name=".ActivityMusic"
-                android:theme="@style/AppTheme"
-                android:label="@string/app_name_cm"
-                android:launchMode="singleTop"
-                android:noHistory="false">
+                android:name=".activity.ActivityMusic"
+                android:theme="@style/AppThemeV2"
+                android:label="@string/eq_dialog_title"
+                android:launchMode="singleInstance"
+                android:configChanges="locale|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-                <category android:name="android.intent.category.LEANBACK_SETTINGS" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.CATEGORY_CONTENT_MUSIC"/>
             </intent-filter>
         </activity>
         <activity
-                android:name=".ControlPanelPicker"
+                android:name=".activity.ControlPanelPicker"
                 android:theme="@*android:style/Theme.Material.Dialog.Alert"
                 android:excludeFromRecents="true"/>
 
@@ -86,10 +78,15 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".receiver.QuickSettingsTileReceiver">
+            <intent-filter>
+                <action android:name="com.cyngn.audiofx.action.TOGGLE_DEVICE" />
+            </intent-filter>
+        </receiver>
+
         <service
                 android:name="Compatibility$Service"
                 android:exported="false"/>
-        <service android:name=".HeadsetService"/>
 
         <activity
                 android:name="Compatibility$Redirector">
@@ -100,15 +97,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".HeadsetService" />
+        <service android:name=".service.AudioFxService"/>
 
-        <receiver android:name=".BootReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name=".ServiceDispatcher">
+        <receiver android:name=".receiver.ServiceDispatcher">
             <intent-filter>
                 <action android:name="android.media.action.OPEN_AUDIO_EFFECT_CONTROL_SESSION"/>
                 <action android:name="android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION"/>
@@ -118,5 +109,20 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".service.BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="com.cyanogen.ambient.analytics.provider.AnalyticsProvider"
+            android:authorities="com.cyngn.audiofx"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:readPermission="com.cyngn.audiofx.ANALYTICS_PERMISSION"/>
+
+        <meta-data android:name="com.cyanogen.ambient.analytics.key"
+                   android:value="38dsfaasfdk2347dfsuiadslk43"/>
     </application>
 </manifest>
