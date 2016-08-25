@@ -31,9 +31,6 @@
     <uses-permission android:name="cyanogenmod.permission.PUBLISH_CUSTOM_TILE" />
     <uses-permission android:name="cyanogenmod.permission.OBSERVE_AUDIO_SESSIONS" />
 
-    <permission android:name="com.cyngn.audiofx.ANALYTICS_PERMISSION"
-                android:protectionLevel="signature" />
-
     <application
             android:icon="@mipmap/ic_launcher"
             android:allowBackup="false"
@@ -115,14 +112,5 @@
             </intent-filter>
         </receiver>
 
-        <provider
-            android:name="com.cyanogen.ambient.analytics.provider.AnalyticsProvider"
-            android:authorities="com.cyngn.audiofx"
-            android:exported="true"
-            android:grantUriPermissions="true"
-            android:readPermission="com.cyngn.audiofx.ANALYTICS_PERMISSION"/>
-
-        <meta-data android:name="com.cyanogen.ambient.analytics.key"
-                   android:value="38dsfaasfdk2347dfsuiadslk43"/>
     </application>
 </manifest>
