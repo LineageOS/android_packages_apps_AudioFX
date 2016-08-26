@@ -6,8 +6,8 @@ LOCAL_MODULE_TAGS := tests
 
 LOCAL_SRC_FILES := $(call all-subdir-java-files)
 
-LOCAL_PACKAGE_NAME := ModioFXTests
-LOCAL_INSTRUMENTATION_FOR := ModioFX
+LOCAL_PACKAGE_NAME := AudioFXTests
+LOCAL_INSTRUMENTATION_FOR := AudioFX
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
         audiofx-android-support-test
