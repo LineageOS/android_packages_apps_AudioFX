@@ -15,7 +15,12 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX non è il tuo equalizzatore predefinito.</string>
+  <string name="snack_bar_not_default_set">Imposta come predefinito</string>
+  <string name="snack_bar_not_default_not_now">Non ora</string>
+  <string name="qs_tile_content_description">Attiva/disattiva AudioFX per il dispositivo in uso</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normale</string>
   <string name="classical">Classica</string>
   <string name="dance">Dance</string>
@@ -44,7 +49,8 @@
   <string name="device_speaker">Altoparlante</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
-  <string name="device_wireless">Senza fili</string>
+  <string name="device_wireless">Wireless</string>
+  <string name="device_line_out">Line out</string>
   <string name="reverb">Riverbero</string>
   <string name="eq_preset">Equalizzatore predefinito</string>
   <string name="devices">Dispositivi</string>
@@ -53,4 +59,5 @@
   <string name="bass">Bassi</string>
   <string name="rename">Rinomina</string>
   <string name="remove_custom_preset_warning_message">Sei sicuro di voler rimuovere %1$s?</string>
+  <string name="powered_by">powered by</string>
 </resources>

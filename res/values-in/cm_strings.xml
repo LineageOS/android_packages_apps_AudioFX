@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normal</string>
   <string name="classical">Klasik</string>
   <string name="dance">Dansa</string>
@@ -28,29 +28,22 @@
   <string name="rock">Rock</string>
   <string name="ci_extreme">Elektronik</string>
   <string name="small_speakers">Speaker kecil</string>
-  <string name="multimedia">Multimedia</string>
   <string name="user">Khusus</string>
-  <string name="user_n"><xliff:g id="preset_num">%1$d</xliff:g> khusus</string>
   <string name="none">Tidak Ada</string>
   <string name="smallroom">Ruang kecil</string>
   <string name="mediumroom">Ruang sedang</string>
   <string name="largeroom">Ruang besar</string>
   <string name="mediumhall">Aula sedang</string>
   <string name="largehall">Aula besar</string>
-  <string name="plate">Plate</string>
+  <string name="plate">Pelat</string>
   <string name="power_on_prompt">Tekan tombol power pada bagian kanan atas.</string>
-  <string name="effect_unavalable_for_speaker">Efek tidak tersedia untuk modus Speaker.</string>
-  <string name="device_headset">Set kepala</string>
+  <string name="effect_unavalable_for_speaker">Efek tidak tersedia untuk mode Speaker.</string>
+  <string name="device_headset">Headset</string>
   <string name="device_speaker">Speaker</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Nirkabel</string>
-  <string name="reverb">Reverb</string>
+  <string name="device_line_out">Sambungan keluar</string>
+  <string name="reverb">Gema</string>
   <string name="eq_preset">Preset equalizer</string>
-  <string name="devices">Perangkat</string>
-  <string name="virtualizer">Virtualizer</string>
-  <string name="treble">Treble</string>
-  <string name="bass">Bass</string>
-  <string name="rename">Ubah Nama</string>
-  <string name="remove_custom_preset_warning_message">Apakah Anda yakin Anda ingin menghapus %1$s?</string>
 </resources>

@@ -16,10 +16,12 @@
 -->
 <resources>
   <!-- ControlPanelMusic strings -->
+  <string name="app_name">AudioFX</string>
   <string name="no_effects">ئۈنۈملەرنى ئىشلەتكىلى بولمايدۇ.</string>
+  <string name="main_toggle_effects_title">ئاۋاز ئۈنۈملىرى</string>
   <string name="headset_plug">بۇ ئۈنۈمدىن ھۇزۇرلىنىش ئۈچۈن تىڭشىغۇچنى قىستۇرۇڭ.</string>
   <string name="bass_boost_strength">تۆۋەن ئاۋازنى يۇقىرىلىتىش</string>
   <string name="virtualizer_strength">مۇھىت ئاۋازى</string>
-  <string name="ci_extreme">FX ياردەمچى</string>
+  <string name="pr_title">ئارىلاش ئاۋاز:</string>
   <!-- title of control panel picker dialog [CHAR LIMIT=30] -->
 </resources>

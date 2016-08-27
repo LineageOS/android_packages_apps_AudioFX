@@ -15,7 +15,12 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX nem az alapértelmezett hanghatás kezelő.</string>
+  <string name="snack_bar_not_default_set">Alapértelmezettnek beállít</string>
+  <string name="snack_bar_not_default_not_now">Ne most</string>
+  <string name="qs_tile_content_description">AudioFX ki/bekapcsolása a jelenlegi eszközön</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normál</string>
   <string name="classical">Klasszikus</string>
   <string name="dance">Dance</string>
@@ -45,6 +50,7 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Vezeték nélküli</string>
+  <string name="device_line_out">Vonal kimenet</string>
   <string name="reverb">Zengetés</string>
   <string name="eq_preset">Hangszín minták</string>
   <string name="devices">Eszközök</string>
@@ -53,4 +59,5 @@
   <string name="bass">Mélyhang</string>
   <string name="rename">Átnevezés</string>
   <string name="remove_custom_preset_warning_message">Biztosan el szeretné távolítani: %1$s?</string>
+  <string name="powered_by">üzemeltető</string>
 </resources>

@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Κανονικό</string>
   <string name="classical">Κλασική</string>
   <string name="dance">Χορευτική</string>
@@ -28,9 +28,7 @@
   <string name="rock">Ροκ</string>
   <string name="ci_extreme">Ηλεκτρονική</string>
   <string name="small_speakers">Μικρά ηχεία</string>
-  <string name="multimedia">Πολυμέσα</string>
   <string name="user">Προσαρμοσμένο</string>
-  <string name="user_n">Προσαρμοσμένο <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Κανένα</string>
   <string name="smallroom">Μικρό δωμάτιο</string>
   <string name="mediumroom">Μεσαίο δωμάτιο</string>
@@ -45,12 +43,7 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Ασύρματα</string>
+  <string name="device_line_out">Έξοδος</string>
   <string name="reverb">Αντήχηση</string>
   <string name="eq_preset">Προκαθορισμένη ρύθμιση ισοσταθμιστή</string>
-  <string name="devices">Συσκευές</string>
-  <string name="virtualizer">Virtualizer</string>
-  <string name="treble">Πρίμα</string>
-  <string name="bass">Μπάσα</string>
-  <string name="rename">Μετονομασία</string>
-  <string name="remove_custom_preset_warning_message">Είστε βέβαιοι ότι θέλετε να διαγράψετε το %1$s;</string>
 </resources>

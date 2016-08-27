@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normal</string>
   <string name="classical">Clásica</string>
   <string name="dance">Dance</string>
@@ -43,6 +43,7 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Wireless</string>
-  <string name="eq_preset">Ecualizador preestablecíu</string>
+  <string name="device_line_out">Salida de llinia</string>
   <string name="reverb">Reverberación</string>
+  <string name="eq_preset">Ecualizador preestablecíu</string>
 </resources>

@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normal</string>
   <string name="classical">Clàssica</string>
   <string name="dance">Dance</string>
@@ -28,9 +28,7 @@
   <string name="rock">Rock</string>
   <string name="ci_extreme">Electrònica</string>
   <string name="small_speakers">Altaveus petits</string>
-  <string name="multimedia">Multimèdia</string>
   <string name="user">Personalitzat</string>
-  <string name="user_n">Personalitzat <xliff:g id="preset_num">%1$d </xliff:g></string>
   <string name="none">Cap</string>
   <string name="smallroom">Habitació petita</string>
   <string name="mediumroom">Habitació mitjana</string>
@@ -45,12 +43,7 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Sense fils</string>
+  <string name="device_line_out">Sortida de línia</string>
   <string name="reverb">Reverberació</string>
   <string name="eq_preset">Presintonia de l\'equalitzador</string>
-  <string name="devices">Dispositius</string>
-  <string name="virtualizer">Virtualitzador</string>
-  <string name="treble">Aguts</string>
-  <string name="bass">Greus</string>
-  <string name="rename">Reanomena</string>
-  <string name="remove_custom_preset_warning_message">Estàs segur que vols esborrar %1$s?</string>
 </resources>
