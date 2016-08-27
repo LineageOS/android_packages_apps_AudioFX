@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">सामान्य</string>
   <string name="classical">शास्त्रीय</string>
   <string name="dance">नृत्य</string>
@@ -28,9 +28,7 @@
   <string name="rock">रॉक</string>
   <string name="ci_extreme">इलेक्ट्रॉनिक</string>
   <string name="small_speakers">लहान स्पीकर्स</string>
-  <string name="multimedia">मल्टिमिडिया</string>
   <string name="user">सानुकूल</string>
-  <string name="user_n">सानुकूल करा <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">काहीही नाही</string>
   <string name="smallroom">लहान खोली</string>
   <string name="mediumroom">मध्यम खोली</string>
@@ -38,7 +36,7 @@
   <string name="mediumhall">मध्यम हॉल</string>
   <string name="largehall">मोठा हॉल</string>
   <string name="plate">प्लेट</string>
-  <string name="power_on_prompt">शीर्षाच्या-उजवीकडे पॉवर बटण दाबा.</string>
+  <string name="power_on_prompt">शीर्षाशी-उजवीकडे पॉवर बटण दाबा.</string>
   <string name="effect_unavalable_for_speaker">स्पीकर मोडसाठी प्रभाव उपलब्ध नाही.</string>
   <string name="device_headset">हेडसेट</string>
   <string name="device_speaker">स्पीकर</string>
@@ -47,10 +45,4 @@
   <string name="device_wireless">बिनतारी</string>
   <string name="reverb">रिव्हर्ब</string>
   <string name="eq_preset">इक्वेलायझर प्रीसेट</string>
-  <string name="devices">डिव्हाइसेस</string>
-  <string name="virtualizer">व्हर्च्युअलाझर</string>
-  <string name="treble">ट्रेबल</string>
-  <string name="bass">बास</string>
-  <string name="rename">पुनर्नामित करा</string>
-  <string name="remove_custom_preset_warning_message">तुम्हाला नक्की %1$s काढायचे आहे का?</string>
 </resources>

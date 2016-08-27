@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normaal</string>
   <string name="classical">Klassiek</string>
   <string name="dance">Dance</string>
@@ -28,9 +28,7 @@
   <string name="rock">Rock</string>
   <string name="ci_extreme">Elektronisch</string>
   <string name="small_speakers">Kleine luidsprekers</string>
-  <string name="multimedia">Multimedia</string>
   <string name="user">Aangepast</string>
-  <string name="user_n">Aangepaste <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Geen</string>
   <string name="smallroom">Kleine ruimte</string>
   <string name="mediumroom">Middelgrote ruimte</string>
@@ -45,12 +43,7 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Draadloos</string>
+  <string name="device_line_out">Lijnuitgang</string>
   <string name="reverb">Galm</string>
   <string name="eq_preset">Equalizer-preset</string>
-  <string name="devices">Apparaten</string>
-  <string name="virtualizer">Virtualiseerder</string>
-  <string name="treble">Hoge tonen</string>
-  <string name="bass">Bas</string>
-  <string name="rename">Hernoemen</string>
-  <string name="remove_custom_preset_warning_message">Weet u zeker dat u %1$s wilt verwijderen?</string>
 </resources>
