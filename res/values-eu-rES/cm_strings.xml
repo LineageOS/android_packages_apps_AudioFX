@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Arrunta</string>
   <string name="classical">Klasikoa</string>
   <string name="dance">Dance</string>
@@ -26,7 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
+  <string name="ci_extreme">Elektronikoa</string>
   <string name="small_speakers">Bozgorailu txikiak</string>
+  <string name="user">Pertsonalizatua</string>
   <string name="none">Bat ere ez</string>
   <string name="smallroom">Gela txikia</string>
   <string name="mediumroom">Gela ertaina</string>
@@ -41,6 +43,7 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Haririk gabe</string>
+  <string name="device_line_out">Linea irteera</string>
   <string name="reverb">Erreberberazioa</string>
   <string name="eq_preset">Ekualizadore aurre-ezarpena</string>
 </resources>

@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">සාමාන්‍ය</string>
   <string name="classical">ශාස්ත්‍රීය</string>
   <string name="dance">නටන්න</string>
@@ -43,6 +43,6 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">බ්ලූටූත්</string>
   <string name="device_wireless">රැහැන් රහිත</string>
-  <string name="eq_preset">සමකරකයේ පෙරසැකසීම</string>
   <string name="reverb">ආඛ්‍යාතය</string>
+  <string name="eq_preset">සමකරකයේ පෙරසැකසීම</string>
 </resources>
