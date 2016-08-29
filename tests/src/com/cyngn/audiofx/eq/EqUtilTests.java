@@ -1,8 +1,6 @@
-package com.cyngn.audiofx.eq;
+package org.cyanogenmod.audiofx.eq;
 
-import android.test.suitebuilder.annotation.SmallTest;
-import com.cyngn.audiofx.Preset;
-import com.cyngn.audiofx.eq.EqUtils;
+import org.cyanogenmod.audiofx.Preset;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

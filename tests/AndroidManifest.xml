@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.cyngn.audiofx.tests">
+          package="org.cyanogenmod.audiofx.tests">
 
     <application android:label="@string/app_name">
         <uses-library android:name="android.test.runner" />
@@ -16,5 +16,5 @@
 
     <instrumentation
             android:name="android.support.test.runner.AndroidJUnitRunner"
-            android:targetPackage="com.cyngn.audiofx" />
+            android:targetPackage="org.cyanogenmod.audiofx" />
 </manifest>
