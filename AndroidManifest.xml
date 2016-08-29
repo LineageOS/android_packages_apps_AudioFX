@@ -15,9 +15,9 @@
 -->
 <manifest
         xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.cyngn.audiofx"
-        android:versionName="2.1.0"
-        android:versionCode="20100">
+        package="org.cyanogenmod.audiofx"
+        android:versionName="2.2.0"
+        android:versionCode="20200">
 
     <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="23" />
 
@@ -36,6 +36,7 @@
             android:allowBackup="false"
             android:label="@string/app_name"
             android:supportsRtl="true"
+            android:persistent="true"
             android:hardwareAccelerated="true"
             android:name=".AudioFxApplication"
             android:theme="@android:style/Theme.NoTitleBar">
@@ -77,7 +78,7 @@
 
         <receiver android:name=".receiver.QuickSettingsTileReceiver">
             <intent-filter>
-                <action android:name="com.cyngn.audiofx.action.TOGGLE_DEVICE" />
+                <action android:name="org.cyanogenmod.audiofx.action.TOGGLE_DEVICE" />
             </intent-filter>
         </receiver>
 

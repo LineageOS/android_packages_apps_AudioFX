@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cyngn.audiofx.tests;
+package org.cyanogenmod.audiofx.tests;
 
 import android.app.ListActivity;
 import android.os.Bundle;

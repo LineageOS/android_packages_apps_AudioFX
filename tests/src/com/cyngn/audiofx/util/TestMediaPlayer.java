@@ -1,4 +1,4 @@
-package com.cyngn.audiofx.util;
+package org.cyanogenmod.audiofx.util;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -6,7 +6,7 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
-import com.cyngn.audiofx.tests.R;
+import org.cyanogenmod.audiofx.tests.R;
 
 import static junit.framework.Assert.assertNotNull;
 

@@ -1,11 +1,8 @@
-package com.cyngn.audiofx;
+package org.cyanogenmod.audiofx;
 
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.SmallTest;
-import com.cyngn.audiofx.Preset;
-import org.junit.Assert;
+import org.cyanogenmod.audiofx.Preset;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
