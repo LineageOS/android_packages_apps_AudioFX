@@ -22,8 +22,6 @@ LOCAL_JACK_ENABLED := disabled
 # Sign the package when not using test-keys
 ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/target/product/security/testkey)
 LOCAL_CERTIFICATE := cyngn-app
-else
-$(warning *** SIGNING MODIOFX WITH TEST KEY ***)
 endif
 
 include $(BUILD_PACKAGE)
