@@ -23,7 +23,6 @@ LOCAL_JACK_ENABLED := disabled
 ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/target/product/security/testkey)
 LOCAL_CERTIFICATE := cyngn-app
 else
-$(warning *** SIGNING MODIOFX WITH TEST KEY ***)
 endif
 
 include $(BUILD_PACKAGE)
