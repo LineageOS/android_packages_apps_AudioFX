@@ -41,7 +41,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
 
     private static final String TAG = EqualizerFragment.class.getSimpleName();
     private static final boolean DEBUG = false;
-    private static final boolean DEBUG_VIEWPAGER = false;
+    private static final boolean DEBUG_VIEWPAGER = true;
 
     private final ArgbEvaluator mArgbEval = new ArgbEvaluator();
 
