@@ -133,7 +133,7 @@ public class EqualizerManager {
             mPredefinedPresets = 1; // custom is predefined
         }
         // add custom preset
-        mEqPresets.add(new Preset.PermCustomPreset(mContext.getString(R.string.user),
+        mEqPresets.add(new Preset.PermCustomPreset(mContext.getString(R.string.custom),
                 getPersistedCustomLevels()));
         mEQCustomPresetPosition = mEqPresets.size() - 1;
 
@@ -280,7 +280,7 @@ public class EqualizerManager {
 
         final int customPresets = Constants.getCustomPresets(mContext, mNumBands).size();
         // format the name so it's like "Custom <N>", start with "Custom 2"
-        final String name = String.format(mContext.getString(R.string.user_n), customPresets + 2);
+        final String name = String.format(mContext.getString(R.string.custom_n), customPresets + 2);
 
         Preset.CustomPreset customPreset = new Preset.CustomPreset(name, levels, false);
         mEqPresets.add(customPreset);
@@ -569,8 +569,8 @@ public class EqualizerManager {
         final int[] ids = {
                 R.string.normal, R.string.classical, R.string.dance, R.string.flat, R.string.folk,
                 R.string.heavy_metal, R.string.hip_hop, R.string.jazz, R.string.pop, R.string.rock,
-                R.string.ci_extreme, R.string.small_speakers, R.string.multimedia,
-                R.string.user
+                R.string.electronic, R.string.small_speakers, R.string.multimedia,
+                R.string.custom
         };
 
         for (int i = names.length - 1; i >= 0; --i) {
