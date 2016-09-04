@@ -34,7 +34,7 @@
     <application
             android:icon="@mipmap/ic_launcher"
             android:allowBackup="false"
-            android:label="@string/app_name"
+            android:label="@string/app_name_cm"
             android:supportsRtl="true"
             android:persistent="true"
             android:hardwareAccelerated="true"
@@ -43,7 +43,7 @@
         <activity
                 android:name=".activity.ActivityMusic"
                 android:theme="@style/AppThemeV2"
-                android:label="@string/app_name"
+                android:label="@string/app_name_cm"
                 android:launchMode="singleInstance"
                 android:configChanges="locale|orientation">
             <intent-filter>
