@@ -40,6 +40,7 @@
   <string name="effect_unavalable_for_speaker">ياڭراتقۇ ھالىتىدە ئۈنۈمنى ئىشلەتكىلى بولمايدۇ.</string>
   <string name="device_headset">تىڭشىغۇچ</string>
   <string name="device_speaker">ياڭراتقۇ</string>
+  <string name="device_lineout">سىمنى چىقىرىش</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">كۆكچىش</string>
   <string name="device_wireless">سىمسىز</string>
