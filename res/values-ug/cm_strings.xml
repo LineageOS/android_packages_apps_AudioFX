@@ -26,9 +26,9 @@
   <string name="jazz">جاز</string>
   <string name="pop">مودا نەغمە</string>
   <string name="rock">تولغىما ئۇسسۇل</string>
-  <string name="ci_extreme">ئېلېكتىرونلۇق</string>
+  <string name="electronic">ئېلېكتىرونلۇق</string>
   <string name="small_speakers">كىچىك ياڭراتقۇلار</string>
-  <string name="user">ئىختىيارىي</string>
+  <string name="custom">ئىختىيارىي</string>
   <string name="none">يوق</string>
   <string name="smallroom">كىچىك ئۆي</string>
   <string name="mediumroom">ئوتتۇرىھال ئۆي</string>
@@ -43,6 +43,7 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">كۆكچىش</string>
   <string name="device_wireless">سىمسىز</string>
+  <string name="device_line_out">سىمنى چىقىرىش</string>
   <string name="reverb">ئارىلاش ئاۋاز</string>
   <string name="eq_preset">تەڭشىگۈچنى ئالدىن تەڭشەش</string>
 </resources>

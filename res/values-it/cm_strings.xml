@@ -31,11 +31,10 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elettronica</string>
+  <string name="electronic">Elettronica</string>
   <string name="small_speakers">Altoparlanti piccoli</string>
   <string name="multimedia">Multimedia</string>
-  <string name="user">Personalizzato</string>
-  <string name="user_n">Personalizzato <xliff:g id="preset_num">%1$d</xliff:g></string>
+  <string name="custom">Personalizzato</string>
   <string name="none">Nessuno</string>
   <string name="smallroom">Stanza piccola</string>
   <string name="mediumroom">Stanza media</string>

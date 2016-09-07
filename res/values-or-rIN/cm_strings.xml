@@ -26,9 +26,9 @@
   <string name="jazz">ଜାଜ୍</string>
   <string name="pop">ପପ୍‌</string>
   <string name="rock">ରକ୍</string>
-  <string name="ci_extreme">ବୈଦ୍ୟୁତିକ</string>
+  <string name="electronic">ବୈଦ୍ୟୁତିକ</string>
   <string name="small_speakers">ଛୋଟ ସ୍ପିକର୍‍ଗୁଡିକ</string>
-  <string name="user">କଷ୍ଟମ୍</string>
+  <string name="custom">କଷ୍ଟମ୍</string>
   <string name="none">କିଛି ନୁହେଁ</string>
   <string name="smallroom">ଛୋଟ ରୁମ୍‍</string>
   <string name="mediumroom">ମଧ୍ୟମ ରୁମ୍</string>

@@ -26,9 +26,9 @@
   <string name="jazz">الجاز</string>
   <string name="pop">البوب</string>
   <string name="rock">روك</string>
-  <string name="ci_extreme">إلكتروني</string>
+  <string name="electronic">إلكتروني</string>
   <string name="small_speakers">سماعات صغيرة</string>
-  <string name="user">مخصص</string>
+  <string name="custom">مخصص</string>
   <string name="none">بلا</string>
   <string name="smallroom">غرفة صغيرة</string>
   <string name="mediumroom">غرفة متوسطة</string>

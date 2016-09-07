@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronik</string>
+  <string name="electronic">Elektronik</string>
   <string name="small_speakers">Speaker kecil</string>
-  <string name="user">Khusus</string>
+  <string name="custom">Khusus</string>
   <string name="none">Tidak Ada</string>
   <string name="smallroom">Ruang kecil</string>
   <string name="mediumroom">Ruang sedang</string>

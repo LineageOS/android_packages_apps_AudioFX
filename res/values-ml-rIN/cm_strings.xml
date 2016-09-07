@@ -26,9 +26,9 @@
   <string name="jazz">ജാസ്സ്</string>
   <string name="pop">പോപ്പ്</string>
   <string name="rock">റോക്ക്</string>
-  <string name="ci_extreme">ഇലക്ട്രോണിക്</string>
+  <string name="electronic">ഇലക്ട്രോണിക്</string>
   <string name="small_speakers">ചെറിയ സ്പീക്കറുകൾ</string>
-  <string name="user">ഇഷ്‌ടാനുസൃതം</string>
+  <string name="custom">ഇഷ്‌ടാനുസൃതം</string>
   <string name="none">ആരിൽ നിന്നും വേണ്ട</string>
   <string name="smallroom">ചെറിയ റൂം</string>
   <string name="mediumroom">ഇടത്തരം റൂം</string>

@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Electronic</string>
+  <string name="electronic">Electronic</string>
   <string name="small_speakers">Loa nhỏ</string>
-  <string name="user">Tùy chỉnh</string>
+  <string name="custom">Tùy chỉnh</string>
   <string name="none">Không</string>
   <string name="smallroom">Phòng nhỏ</string>
   <string name="mediumroom">Phòng trung bình</string>

@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronesch</string>
+  <string name="electronic">Elektronesch</string>
   <string name="small_speakers">Kleng Boxen</string>
-  <string name="user">Personaliséiert</string>
+  <string name="custom">Personaliséiert</string>
   <string name="none">Keen</string>
   <string name="smallroom">Klenge Raum</string>
   <string name="mediumroom">Mëttlere Raum</string>

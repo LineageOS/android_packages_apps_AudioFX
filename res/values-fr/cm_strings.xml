@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Électronique</string>
+  <string name="electronic">Électronique</string>
   <string name="small_speakers">Petits haut-parleurs</string>
-  <string name="user">Personnalisé</string>
+  <string name="custom">Personnalisé</string>
   <string name="none">Aucun</string>
   <string name="smallroom">Petite salle</string>
   <string name="mediumroom">Salle moyenne</string>

@@ -26,9 +26,9 @@
   <string name="jazz">แจ๊ส</string>
   <string name="pop">ป๊อป</string>
   <string name="rock">ร็อค</string>
-  <string name="ci_extreme">อิเล็กทรอนิก</string>
+  <string name="electronic">อิเล็กทรอนิก</string>
   <string name="small_speakers">ลำโพงเล็ก</string>
-  <string name="user">กำหนดเอง</string>
+  <string name="custom">กำหนดเอง</string>
   <string name="none">ไม่มี</string>
   <string name="smallroom">ห้องขนาดเล็ก</string>
   <string name="mediumroom">ห้องขนาดกลาง</string>
