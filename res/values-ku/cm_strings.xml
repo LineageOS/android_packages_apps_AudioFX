@@ -26,9 +26,9 @@
   <string name="jazz">جاز</string>
   <string name="pop">پۆپ</string>
   <string name="rock">ڕۆک</string>
-  <string name="ci_extreme">ئەلیکترۆنیك</string>
+  <string name="electronic">ئەلیکترۆنیك</string>
   <string name="small_speakers">دەنگدەری بچووک</string>
-  <string name="user">داواکراو</string>
+  <string name="custom">داواکراو</string>
   <string name="none">هیچ</string>
   <string name="smallroom">ژوری بچوک</string>
   <string name="mediumroom">ژوری ئاسایی</string>

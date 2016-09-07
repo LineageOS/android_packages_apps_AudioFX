@@ -31,11 +31,10 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronikus</string>
+  <string name="electronic">Elektronikus</string>
   <string name="small_speakers">Kis hangszórók</string>
   <string name="multimedia">Multimédia</string>
-  <string name="user">Egyéni</string>
-  <string name="user_n">Egyéni <xliff:g id="preset_num">%1$d</xliff:g></string>
+  <string name="custom">Egyéni</string>
   <string name="none">Nincs</string>
   <string name="smallroom">Kis szoba</string>
   <string name="mediumroom">Közepes szoba</string>

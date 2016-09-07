@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronies</string>
+  <string name="electronic">Elektronies</string>
   <string name="small_speakers">Klein luidsprekers</string>
-  <string name="user">Persoonlik</string>
+  <string name="custom">Persoonlik</string>
   <string name="none">Geen</string>
   <string name="smallroom">Klein kamer</string>
   <string name="mediumroom">Medium kamer</string>

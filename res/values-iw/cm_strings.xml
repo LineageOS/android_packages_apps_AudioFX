@@ -26,9 +26,9 @@
   <string name="jazz">ג\'אז</string>
   <string name="pop">פופ</string>
   <string name="rock">רוק</string>
-  <string name="ci_extreme">אלקטרוני</string>
+  <string name="electronic">אלקטרוני</string>
   <string name="small_speakers">רמקולים קטנים</string>
-  <string name="user">מותאם אישית</string>
+  <string name="custom">מותאם אישית</string>
   <string name="none">ללא</string>
   <string name="smallroom">חדר קטן</string>
   <string name="mediumroom">חדר בינוני</string>

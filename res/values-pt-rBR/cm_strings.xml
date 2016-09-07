@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX não é seu painel de controle de efeitos padrão.</string>
+  <string name="snack_bar_not_default_set">Definir como padrão</string>
+  <string name="snack_bar_not_default_not_now">Agora não</string>
+  <string name="qs_tile_content_description">Ligar/desligar o AudioFX neste dispositivo</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normal</string>
   <string name="classical">Clássica</string>
   <string name="dance">Dance</string>
@@ -26,9 +31,10 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Eletrônica</string>
+  <string name="electronic">Eletrônica</string>
   <string name="small_speakers">Falantes pequenos</string>
-  <string name="user">Personalizado</string>
+  <string name="multimedia">Multimídia</string>
+  <string name="custom">Personalizado</string>
   <string name="none">Nenhum</string>
   <string name="smallroom">Sala pequena</string>
   <string name="mediumroom">Sala média</string>
@@ -46,4 +52,11 @@
   <string name="device_line_out">Saída de linha</string>
   <string name="reverb">Reverb</string>
   <string name="eq_preset">Predefinição do equalizador</string>
+  <string name="devices">Dispositivos</string>
+  <string name="virtualizer">Virtualizador</string>
+  <string name="treble">Agudo</string>
+  <string name="bass">Grave</string>
+  <string name="rename">Renomear</string>
+  <string name="remove_custom_preset_warning_message">Tem certeza que deseja remover %1$s?</string>
+  <string name="powered_by">desenvolvido por</string>
 </resources>

@@ -26,9 +26,9 @@
   <string name="jazz">ஜாஸ்</string>
   <string name="pop">பாப்</string>
   <string name="rock">ராக்</string>
-  <string name="ci_extreme">மின்னணு</string>
+  <string name="electronic">மின்னணு</string>
   <string name="small_speakers">சிறிய ஒலிபெருக்கிகள்</string>
-  <string name="user">தனிப்பயன்</string>
+  <string name="custom">தனிப்பயன்</string>
   <string name="none">ஏதுமில்லை</string>
   <string name="smallroom">சிறிய அறை</string>
   <string name="mediumroom">நடுத்தர அறை</string>

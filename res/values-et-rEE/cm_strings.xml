@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rokk</string>
-  <string name="ci_extreme">Elektrooniline</string>
+  <string name="electronic">Elektrooniline</string>
   <string name="small_speakers">Väiksed kõlarid</string>
-  <string name="user">Kohandatud</string>
+  <string name="custom">Kohandatud</string>
   <string name="none">Puudub</string>
   <string name="smallroom">Väike tuba</string>
   <string name="mediumroom">Keskmine tuba</string>

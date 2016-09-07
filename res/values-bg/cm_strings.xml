@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX не е по подразбиране за ефекти на контролния панел.</string>
+  <string name="snack_bar_not_default_set">Задай по подразбиране</string>
+  <string name="snack_bar_not_default_not_now">Не сега</string>
+  <string name="qs_tile_content_description">Превключване на AudioFX за включване/изключване за текущото устройство</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Нормална</string>
   <string name="classical">Класическа</string>
   <string name="dance">Танцувална</string>
@@ -26,9 +31,10 @@
   <string name="jazz">Джаз</string>
   <string name="pop">Поп</string>
   <string name="rock">Рок</string>
-  <string name="ci_extreme">Електронна</string>
+  <string name="electronic">Електронна</string>
   <string name="small_speakers">Малки говорители</string>
-  <string name="user">По избор</string>
+  <string name="multimedia">Мултимедия</string>
+  <string name="custom">По избор</string>
   <string name="none">Без</string>
   <string name="smallroom">Малка стая</string>
   <string name="mediumroom">Среднa стая</string>
@@ -46,4 +52,11 @@
   <string name="device_line_out">Линеен изход</string>
   <string name="reverb">Ехо</string>
   <string name="eq_preset">Настройки на еквалайзера</string>
+  <string name="devices">Устройства</string>
+  <string name="virtualizer">Виртуализатор</string>
+  <string name="treble">Високи</string>
+  <string name="bass">Бас</string>
+  <string name="rename">Преименуване</string>
+  <string name="remove_custom_preset_warning_message">Сигурни ли сте, че искате да премахнете %1$s?</string>
+  <string name="powered_by">С подкрепата на</string>
 </resources>

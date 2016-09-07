@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX er ikke din standard lydeffekt-kontrollpanel.</string>
+  <string name="snack_bar_not_default_set">Gjør til standard</string>
+  <string name="snack_bar_not_default_not_now">Ikke nå</string>
+  <string name="qs_tile_content_description">Slå AudioFX på/av for denne enheten</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normal</string>
   <string name="classical">Klassisk</string>
   <string name="dance">Dans</string>
@@ -26,9 +31,10 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronisk</string>
+  <string name="electronic">Elektronisk</string>
   <string name="small_speakers">Små høyttalere</string>
-  <string name="user">Egendefinert</string>
+  <string name="multimedia">Multimedia</string>
+  <string name="custom">Egendefinert</string>
   <string name="none">Ingen</string>
   <string name="smallroom">Lite rom</string>
   <string name="mediumroom">Medium rom</string>
@@ -46,4 +52,11 @@
   <string name="device_line_out">Linje ut</string>
   <string name="reverb">Romklang</string>
   <string name="eq_preset">Equalizer forhåndsinnstilling</string>
+  <string name="devices">Enheter</string>
+  <string name="virtualizer">Virtualizer</string>
+  <string name="treble">Diskant</string>
+  <string name="bass">Bass</string>
+  <string name="rename">Gi nytt navn</string>
+  <string name="remove_custom_preset_warning_message">Er du sikker på at du vil fjerne %1$s?</string>
+  <string name="powered_by">drevet av</string>
 </resources>

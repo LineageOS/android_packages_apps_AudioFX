@@ -26,9 +26,9 @@
   <string name="jazz">জ্যাজ</string>
   <string name="pop">পপ</string>
   <string name="rock">রক</string>
-  <string name="ci_extreme">ইলেকট্রনিক</string>
+  <string name="electronic">ইলেকট্রনিক</string>
   <string name="small_speakers">ছোট স্পিকার</string>
-  <string name="user">পছন্দসই</string>
+  <string name="custom">পছন্দসই</string>
   <string name="none">কোনটি না</string>
   <string name="smallroom">ছোট ঘর</string>
   <string name="mediumroom">মধ্যম ঘর</string>

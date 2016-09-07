@@ -26,9 +26,9 @@
   <string name="jazz">જેઝ</string>
   <string name="pop">પોપ</string>
   <string name="rock">ઝુમવુ</string>
-  <string name="ci_extreme">ઇલેક્ટ્રોનિક</string>
+  <string name="electronic">ઇલેક્ટ્રોનિક</string>
   <string name="small_speakers">નાના સ્પીકરો</string>
-  <string name="user">કસ્ટમ</string>
+  <string name="custom">કસ્ટમ</string>
   <string name="none">કોઈ નહીં</string>
   <string name="smallroom">નાનો ઓરડો</string>
   <string name="mediumroom">મધ્યમ ઓરડો</string>

@@ -26,9 +26,9 @@
   <string name="jazz">ಜಾಝ್</string>
   <string name="pop">ಪಾಪ್</string>
   <string name="rock">ರಾಕ್</string>
-  <string name="ci_extreme">ಎಲೆಕ್ಟ್ರಾನಿಕ್</string>
+  <string name="electronic">ಎಲೆಕ್ಟ್ರಾನಿಕ್</string>
   <string name="small_speakers">ಚಿಕ್ಕ ಸ್ಪೀಕರ್‍ಗಳು</string>
-  <string name="user">ಕಸ್ಟಮ್</string>
+  <string name="custom">ಕಸ್ಟಮ್</string>
   <string name="none">ಶೂನ್ಯ</string>
   <string name="smallroom">ಸಣ್ಣ ಕೋಣೆ</string>
   <string name="mediumroom">ಮಧ್ಯಮ ಕೊಣೆ</string>

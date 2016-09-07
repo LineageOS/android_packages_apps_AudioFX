@@ -26,9 +26,9 @@
   <string name="jazz">ජෑස්</string>
   <string name="pop">පොප්</string>
   <string name="rock">රොක්</string>
-  <string name="ci_extreme">ඉලෙක්ට්‍රොනික</string>
+  <string name="electronic">ඉලෙක්ට්‍රොනික</string>
   <string name="small_speakers">කුඩා ස්පීකර</string>
-  <string name="user">රිසිවූ</string>
+  <string name="custom">රිසිවූ</string>
   <string name="none">කිසිවක් නැත</string>
   <string name="smallroom">කුඩා කාමරය</string>
   <string name="mediumroom">මධ්‍යම කාමරය</string>

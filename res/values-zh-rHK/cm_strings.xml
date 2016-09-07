@@ -26,9 +26,9 @@
   <string name="jazz">爵士樂</string>
   <string name="pop">流行音樂</string>
   <string name="rock">搖滾</string>
-  <string name="ci_extreme">電子音樂</string>
+  <string name="electronic">電子音樂</string>
   <string name="small_speakers">小型喇叭</string>
-  <string name="user">自訂</string>
+  <string name="custom">自訂</string>
   <string name="none">無</string>
   <string name="smallroom">小型房間</string>
   <string name="mediumroom">中型房間</string>

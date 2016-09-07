@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX er ikke dit standard kontrolpanel for effekter.</string>
+  <string name="snack_bar_not_default_set">Angiv standard</string>
+  <string name="snack_bar_not_default_not_now">Ikke nu</string>
+  <string name="qs_tile_content_description">Slå AudioFX til/fra for den aktuelle enhed</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normal</string>
   <string name="classical">Klassisk</string>
   <string name="dance">Dance</string>
@@ -26,9 +31,10 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronisk</string>
+  <string name="electronic">Elektronisk</string>
   <string name="small_speakers">Små højttalere</string>
-  <string name="user">Brugerdefineret</string>
+  <string name="multimedia">Multimedier</string>
+  <string name="custom">Brugerdefineret</string>
   <string name="none">Ingen</string>
   <string name="smallroom">Lille værelse</string>
   <string name="mediumroom">Mellemstort værelse</string>
@@ -46,4 +52,11 @@
   <string name="device_line_out">Linjeudgang</string>
   <string name="reverb">Rumklang</string>
   <string name="eq_preset">Equalizer-forudindstilling</string>
+  <string name="devices">Enheder</string>
+  <string name="virtualizer">Virtualisator</string>
+  <string name="treble">Diskant</string>
+  <string name="bass">Bas</string>
+  <string name="rename">Omdøb</string>
+  <string name="remove_custom_preset_warning_message">Er du sikker på du vil fjerne %1$s?</string>
+  <string name="powered_by">drevet af</string>
 </resources>

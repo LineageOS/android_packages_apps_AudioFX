@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX ni vaša privzeta nadzorna plošča za učinke.</string>
+  <string name="snack_bar_not_default_set">Nastavi kot privzeto</string>
+  <string name="snack_bar_not_default_not_now">Ne zdaj</string>
+  <string name="qs_tile_content_description">Vklopi/Izklopi AudioFX za trenutno napravo</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Običajna</string>
   <string name="classical">Klasična</string>
   <string name="dance">Plesna</string>
@@ -26,9 +31,10 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronska</string>
+  <string name="electronic">Elektronska</string>
   <string name="small_speakers">Majhni zvočniki</string>
-  <string name="user">Po meri</string>
+  <string name="multimedia">Večpredstavnost</string>
+  <string name="custom">Po meri</string>
   <string name="none">Brez</string>
   <string name="smallroom">Majhna soba</string>
   <string name="mediumroom">Srednja soba</string>
@@ -46,4 +52,11 @@
   <string name="device_line_out">Izhod za slušalke</string>
   <string name="reverb">Odmev</string>
   <string name="eq_preset">Prednastavitev izenačevalnika</string>
+  <string name="devices">Naprave</string>
+  <string name="virtualizer">Navidezovalnik</string>
+  <string name="treble">Visoki toni</string>
+  <string name="bass">Nizki toni</string>
+  <string name="rename">Preimenuj</string>
+  <string name="remove_custom_preset_warning_message">Ali res želite odstraniti %1$s?</string>
+  <string name="powered_by">omogoča</string>
 </resources>

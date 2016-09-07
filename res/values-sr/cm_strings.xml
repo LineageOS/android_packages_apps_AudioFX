@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX није подразумевани контролор ефеката.</string>
+  <string name="snack_bar_not_default_set">Постави подразумевано</string>
+  <string name="snack_bar_not_default_not_now">Не сад</string>
+  <string name="qs_tile_content_description">Укључи/искључи AudioFX за тренутни уређај</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Нормално</string>
   <string name="classical">Класика</string>
   <string name="dance">Денс</string>
@@ -26,9 +31,10 @@
   <string name="jazz">Џез</string>
   <string name="pop">Поп</string>
   <string name="rock">Рок</string>
-  <string name="ci_extreme">Електроника</string>
+  <string name="electronic">Електроника</string>
   <string name="small_speakers">Мали звучници</string>
-  <string name="user">Прилагођено</string>
+  <string name="multimedia">Мултимедија</string>
+  <string name="custom">Прилагођено</string>
   <string name="none">Ниједно</string>
   <string name="smallroom">Мала соба</string>
   <string name="mediumroom">Средња соба</string>
