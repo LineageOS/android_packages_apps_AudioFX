@@ -57,7 +57,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-class DevicePreferenceManager implements AudioOutputChangeListener.AudioOutputChangedCallback {
+public class DevicePreferenceManager
+        implements AudioOutputChangeListener.AudioOutputChangedCallback {
+
+    // Current pref version, bump to rebuild prefs
+    public static final int CURRENT_PREFS_INT_VERSION = 4;
 
     private static final String TAG = AudioFxService.TAG;
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
@@ -119,12 +123,12 @@ class DevicePreferenceManager implements AudioOutputChangeListener.AudioOutputCh
         SharedPreferences prefs = Constants.getGlobalPrefs(mContext);
 
         final int currentPrefVer = prefs.getInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT, 0);
-        boolean needsPrefsUpdate = currentPrefVer < Constants.CURRENT_PREFS_INT_VERSION
+        boolean needsPrefsUpdate = currentPrefVer < CURRENT_PREFS_INT_VERSION
                 || overridePrevious;
 
         if (needsPrefsUpdate) {
             Log.d(TAG, "rebuilding presets due to preference upgrade from " + currentPrefVer
-                    + " to " + Constants.CURRENT_PREFS_INT_VERSION);
+                    + " to " + CURRENT_PREFS_INT_VERSION);
         }
 
         if (prefs.getBoolean(SAVED_DEFAULTS, false) && !needsPrefsUpdate) {
@@ -193,7 +197,7 @@ class DevicePreferenceManager implements AudioOutputChangeListener.AudioOutputCh
         prefs
                 .edit()
                 .putInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT,
-                            Constants.CURRENT_PREFS_INT_VERSION)
+                            CURRENT_PREFS_INT_VERSION)
                 .putBoolean(Constants.SAVED_DEFAULTS, true)
                 .commit();
     }
