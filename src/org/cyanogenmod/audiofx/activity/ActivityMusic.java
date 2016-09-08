@@ -35,6 +35,7 @@ import org.cyanogenmod.audiofx.R;
 import org.cyanogenmod.audiofx.fragment.AudioFxFragment;
 import org.cyanogenmod.audiofx.knobs.KnobCommander;
 import org.cyanogenmod.audiofx.service.AudioFxService;
+import org.cyanogenmod.audiofx.service.DevicePreferenceManager;
 import org.cyanogenmod.audiofx.stats.AppState;
 import org.cyanogenmod.audiofx.stats.UserSession;
 
@@ -107,7 +108,7 @@ public class ActivityMusic extends Activity {
     }
 
     private boolean defaultsSetup() {
-        final int targetVersion = Constants.CURRENT_PREFS_INT_VERSION;
+        final int targetVersion = DevicePreferenceManager.CURRENT_PREFS_INT_VERSION;
         final SharedPreferences prefs = Constants.getGlobalPrefs(this);
         final int currentVersion = prefs.getInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT, 0);
         final boolean defaultsSaved = prefs.getBoolean(Constants.SAVED_DEFAULTS, false);
