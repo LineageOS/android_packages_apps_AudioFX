@@ -125,7 +125,7 @@ class AndroidEffects extends EffectSetWithAndroidEq {
 
     @Override
     public boolean hasVirtualizer() {
-        return mVirtualizer != null && mVirtualizer.getStrengthSupported();
+        return mVirtualizer != null;
     }
 
     @Override
