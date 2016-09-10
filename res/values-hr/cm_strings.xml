@@ -35,6 +35,7 @@
   <string name="small_speakers">Mali zvučnici</string>
   <string name="multimedia">Multimedija</string>
   <string name="custom">Prilagođeno</string>
+  <string name="custom_n">Prilagođeni <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Ništa</string>
   <string name="smallroom">Mala soba</string>
   <string name="mediumroom">Srednja soba</string>

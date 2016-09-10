@@ -35,6 +35,7 @@
   <string name="small_speakers">Малки говорители</string>
   <string name="multimedia">Мултимедия</string>
   <string name="custom">По избор</string>
+  <string name="custom_n">По избор <xliff:g id="preset_num">%1$d </xliff:g></string>
   <string name="none">Без</string>
   <string name="smallroom">Малка стая</string>
   <string name="mediumroom">Среднa стая</string>

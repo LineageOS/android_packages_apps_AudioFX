@@ -35,6 +35,7 @@
   <string name="small_speakers">Majhni zvočniki</string>
   <string name="multimedia">Večpredstavnost</string>
   <string name="custom">Po meri</string>
+  <string name="custom_n"><xliff:g id="preset_num">%1$d</xliff:g> po meri</string>
   <string name="none">Brez</string>
   <string name="smallroom">Majhna soba</string>
   <string name="mediumroom">Srednja soba</string>
