@@ -35,6 +35,7 @@
   <string name="small_speakers">Bozgorailu txikiak</string>
   <string name="multimedia">Multimedia</string>
   <string name="custom">Pertsonalizatua</string>
+  <string name="custom_n">Pertsonalizatua <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Bat ere ez</string>
   <string name="smallroom">Gela txikia</string>
   <string name="mediumroom">Gela ertaina</string>

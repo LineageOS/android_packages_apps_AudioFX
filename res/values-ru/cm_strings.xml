@@ -35,6 +35,7 @@
   <string name="small_speakers">Маленькие динамики</string>
   <string name="multimedia">Мультимедиа</string>
   <string name="custom">Пользовательские настр.</string>
+  <string name="custom_n">Пользоват. <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Нет</string>
   <string name="smallroom">Маленькая комната</string>
   <string name="mediumroom">Средняя комната</string>
