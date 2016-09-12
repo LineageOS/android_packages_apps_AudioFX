@@ -340,7 +340,7 @@ public class AudioFxService extends Service
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (!mLastLocale.equals(newConfig.locale)) {
+        if (!newConfig.locale.equals(mLastLocale)) {
             updateQsTile();
         }
     }
