@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normal</string>
   <string name="classical">Classical</string>
   <string name="dance">Dance</string>
@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Electronic</string>
+  <string name="electronic">Electronic</string>
   <string name="small_speakers">Small speakers</string>
-  <string name="user">Custom</string>
+  <string name="custom">Custom</string>
   <string name="none">None</string>
   <string name="smallroom">Small room</string>
   <string name="mediumroom">Medium room</string>

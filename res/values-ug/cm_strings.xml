@@ -15,22 +15,20 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">ئادەتتىكى</string>
   <string name="classical">كىلاسسىك</string>
   <string name="dance">ئۇسسۇل</string>
-  <string name="flat">يېنىك</string>
+  <string name="flat">تەكشىلىك</string>
   <string name="folk">خەلق ناخشىسى</string>
   <string name="heavy_metal">ئېغىر مېتال</string>
   <string name="hip_hop">Hip Hop</string>
   <string name="jazz">جاز</string>
   <string name="pop">مودا نەغمە</string>
   <string name="rock">تولغىما ئۇسسۇل</string>
-  <string name="ci_extreme">ئېلېكتىرونلۇق</string>
+  <string name="electronic">ئېلېكتىرونلۇق</string>
   <string name="small_speakers">كىچىك ياڭراتقۇلار</string>
-  <string name="multimedia">كۆپ ۋاستە</string>
-  <string name="user">ئىختىيارى</string>
-  <string name="user_n">خاسلاشتۇرۇش <xliff:g id="preset_num">%1$d</xliff:g></string>
+  <string name="custom">ئىختىيارىي</string>
   <string name="none">يوق</string>
   <string name="smallroom">كىچىك ئۆي</string>
   <string name="mediumroom">ئوتتۇرىھال ئۆي</string>
@@ -45,12 +43,7 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">كۆكچىش</string>
   <string name="device_wireless">سىمسىز</string>
+  <string name="device_line_out">سىمنى چىقىرىش</string>
   <string name="reverb">ئارىلاش ئاۋاز</string>
   <string name="eq_preset">تەڭشىگۈچنى ئالدىن تەڭشەش</string>
-  <string name="devices">ئۈسكىنە</string>
-  <string name="virtualizer">مەۋھۇم تەڭشىگۈچ</string>
-  <string name="treble">ئۈچ ھەسسە</string>
-  <string name="bass">تۆۋەن ئاۋاز</string>
-  <string name="rename">قايتا ناملاش</string>
-  <string name="remove_custom_preset_warning_message">%1$s نى راستلا ئۆچۈرۋېتەمسىز؟</string>
 </resources>

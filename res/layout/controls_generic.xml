@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.cyngn.audiofx.knobs.KnobContainer
+<org.cyanogenmod.audiofx.knobs.KnobContainer
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:background="@color/knob_container_background"
         android:id="@+id/knob_container"

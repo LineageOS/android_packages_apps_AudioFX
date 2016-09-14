@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normálne</string>
   <string name="classical">Klasická hudba</string>
   <string name="dance">Tanec</string>
@@ -26,11 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronická hudba</string>
+  <string name="electronic">Elektronická hudba</string>
   <string name="small_speakers">Malé reproduktory</string>
-  <string name="multimedia">Multimédiá</string>
-  <string name="user">Vlastné</string>
-  <string name="user_n">Vlastné <xliff:g id="preset_num">%1$d </xliff:g></string>
+  <string name="custom">Vlastné</string>
   <string name="none">Žiadny</string>
   <string name="smallroom">Malá miestnosť</string>
   <string name="mediumroom">Stredná miestnosť</string>
@@ -47,10 +45,4 @@
   <string name="device_wireless">Bezdrôtové</string>
   <string name="reverb">Reverb</string>
   <string name="eq_preset">Predvoľba ekvalizéra</string>
-  <string name="devices">Zariadenia</string>
-  <string name="virtualizer">Virtualizér</string>
-  <string name="treble">Výšky</string>
-  <string name="bass">Basy</string>
-  <string name="rename">Premenovať</string>
-  <string name="remove_custom_preset_warning_message">Naozaj chcete odstrániť %1$s?</string>
 </resources>

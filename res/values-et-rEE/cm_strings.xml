@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Tavaline</string>
   <string name="classical">Klassika</string>
   <string name="dance">Tants</string>
@@ -26,9 +26,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rokk</string>
-  <string name="ci_extreme">Elektrooniline</string>
+  <string name="electronic">Elektrooniline</string>
   <string name="small_speakers">Väiksed kõlarid</string>
-  <string name="user">Kohandatud</string>
+  <string name="custom">Kohandatud</string>
   <string name="none">Puudub</string>
   <string name="smallroom">Väike tuba</string>
   <string name="mediumroom">Keskmine tuba</string>
@@ -43,6 +43,7 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Juhtmeta</string>
-  <string name="eq_preset">Ekvalaiseri eelsäte</string>
+  <string name="device_line_out">Heliväljund</string>
   <string name="reverb">Peegeldus</string>
+  <string name="eq_preset">Ekvalaiseri eelsäte</string>
 </resources>

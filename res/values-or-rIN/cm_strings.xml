@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">ସାଧାରଣ</string>
   <string name="classical">କ୍ଲାସିକାଲ୍</string>
   <string name="dance">ନୃତ୍ୟ</string>
@@ -26,11 +26,9 @@
   <string name="jazz">ଜାଜ୍</string>
   <string name="pop">ପପ୍‌</string>
   <string name="rock">ରକ୍</string>
-  <string name="ci_extreme">ବୈଦ୍ୟୁତିକ</string>
+  <string name="electronic">ବୈଦ୍ୟୁତିକ</string>
   <string name="small_speakers">ଛୋଟ ସ୍ପିକର୍‍ଗୁଡିକ</string>
-  <string name="multimedia">ମଲ୍ଟିମିଡିଆ</string>
-  <string name="user">କଷ୍ଟମ୍</string>
-  <string name="user_n">କଷ୍ଟମ୍ <xliff:g id="preset_num">%1$d</xliff:g></string>
+  <string name="custom">କଷ୍ଟମ୍</string>
   <string name="none">କିଛି ନୁହେଁ</string>
   <string name="smallroom">ଛୋଟ ରୁମ୍‍</string>
   <string name="mediumroom">ମଧ୍ୟମ ରୁମ୍</string>
@@ -47,10 +45,4 @@
   <string name="device_wireless">ଓୟାର୍‍ଲେସ୍‍</string>
   <string name="reverb">ର୍ରିଭର୍ବ:</string>
   <string name="eq_preset">ଇକ୍ୱାଲାଇଜର୍‍ ପ୍ରିସେଟ୍‍</string>
-  <string name="devices">ଡିଭାଇସଗୁଡିକ</string>
-  <string name="virtualizer">ଭର୍ଚୁଆଲାଇଜର୍‍</string>
-  <string name="treble">ଟ୍ରେବେଲ୍‍</string>
-  <string name="bass">ବାସ୍‍</string>
-  <string name="rename">ପୁନଃନାମ</string>
-  <string name="remove_custom_preset_warning_message">ଆପଣ %1$s ଅପସାରଣ କରିବାକୁ ଚାହୁଁଛନ୍ତି, ଏଥିରେ ଆପଣ ସୁନି୍ଶ୍ଚିତ କି?</string>
 </resources>

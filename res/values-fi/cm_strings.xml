@@ -15,7 +15,12 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX ei ole ääniefektien ohjauksen oletussovelluksena.</string>
+  <string name="snack_bar_not_default_set">Aseta oletukseksi</string>
+  <string name="snack_bar_not_default_not_now">Ei nyt</string>
+  <string name="qs_tile_content_description">Ota AudioFX käyttöön/pois käytöstä nykyiselle laitteelle</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normaali</string>
   <string name="classical">Klassinen</string>
   <string name="dance">Tanssi</string>
@@ -26,11 +31,11 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektroninen</string>
+  <string name="electronic">Elektroninen</string>
   <string name="small_speakers">Pienet kaiuttimet</string>
   <string name="multimedia">Multimedia</string>
-  <string name="user">Muokattu</string>
-  <string name="user_n">Mukautettu <xliff:g id="preset_num">%1$d</xliff:g></string>
+  <string name="custom">Muokattu</string>
+  <string name="custom_n">Mukautettu <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Ei mitään</string>
   <string name="smallroom">Pieni huone</string>
   <string name="mediumroom">Keskikokoinen huone</string>
@@ -45,6 +50,7 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Langaton</string>
+  <string name="device_line_out">Ulostulo</string>
   <string name="reverb">Kaikuefekti</string>
   <string name="eq_preset">Taajuuskorjaimen esiasetus</string>
   <string name="devices">Laitteet</string>
@@ -53,4 +59,5 @@
   <string name="bass">Basso</string>
   <string name="rename">Nimeä uudelleen</string>
   <string name="remove_custom_preset_warning_message">Haluatko varmasti poistaa asetusen %1$s?</string>
+  <string name="powered_by">powered by</string>
 </resources>

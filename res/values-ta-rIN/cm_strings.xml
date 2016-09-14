@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">இயல்பு</string>
   <string name="classical">கிளாசிக்கல்</string>
   <string name="dance">டான்ஸ்</string>
@@ -26,11 +26,9 @@
   <string name="jazz">ஜாஸ்</string>
   <string name="pop">பாப்</string>
   <string name="rock">ராக்</string>
-  <string name="ci_extreme">மின்னணு</string>
+  <string name="electronic">மின்னணு</string>
   <string name="small_speakers">சிறிய ஒலிபெருக்கிகள்</string>
-  <string name="multimedia">மல்டிமீடியா</string>
-  <string name="user">தனிப்பயன்</string>
-  <string name="user_n">தனிப்பயன் <xliff:g id="preset_num">%1$d</xliff:g></string>
+  <string name="custom">தனிப்பயன்</string>
   <string name="none">ஏதுமில்லை</string>
   <string name="smallroom">சிறிய அறை</string>
   <string name="mediumroom">நடுத்தர அறை</string>
@@ -47,10 +45,4 @@
   <string name="device_wireless">கம்பியில்லா</string>
   <string name="reverb">எதிர்முழக்கம்</string>
   <string name="eq_preset">சமனாக்கி முன்னமை</string>
-  <string name="devices">சாதனங்கள்</string>
-  <string name="virtualizer">தோற்றநிலையாக்கி</string>
-  <string name="treble">டிரெபில்</string>
-  <string name="bass">பேஸ்</string>
-  <string name="rename">மறுபெயரிடு</string>
-  <string name="remove_custom_preset_warning_message">%1$sஐ நீக்க நீங்கள் நிச்சயமாக விரும்புகிறீர்களா?</string>
 </resources>

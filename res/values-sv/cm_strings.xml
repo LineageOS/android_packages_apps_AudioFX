@@ -15,7 +15,8 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default_not_now">Inte nu</string>
   <string name="normal">Normal</string>
   <string name="classical">Klassisk</string>
   <string name="dance">Dance</string>
@@ -26,11 +27,9 @@
   <string name="jazz">Jazz</string>
   <string name="pop">Pop</string>
   <string name="rock">Rock</string>
-  <string name="ci_extreme">Elektronisk</string>
+  <string name="electronic">Elektronisk</string>
   <string name="small_speakers">Små högtalare</string>
-  <string name="multimedia">Multimedia</string>
-  <string name="user">Anpassad</string>
-  <string name="user_n">Anpassade <xliff:g id="preset_num">%1$d</xliff:g></string>
+  <string name="custom">Anpassad</string>
   <string name="none">Ingen</string>
   <string name="smallroom">Litet rum</string>
   <string name="mediumroom">Medelstort rum</string>
@@ -45,12 +44,7 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Trådlös</string>
+  <string name="device_line_out">Linjeutgång</string>
   <string name="reverb">Rumsklang</string>
   <string name="eq_preset">Equalizerförval</string>
-  <string name="devices">Enheter</string>
-  <string name="virtualizer">Virtualiserare</string>
-  <string name="treble">Diskant</string>
-  <string name="bass">Bas</string>
-  <string name="rename">Byt namn</string>
-  <string name="remove_custom_preset_warning_message">Är du säker du vill ta bort %1$s?</string>
 </resources>

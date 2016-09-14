@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">सामान्य</string>
   <string name="classical">शास्त्रीय</string>
   <string name="dance">नृत्य</string>
@@ -26,7 +26,9 @@
   <string name="jazz">जैस</string>
   <string name="pop">पॉप</string>
   <string name="rock">रॉक</string>
+  <string name="electronic">इलेक्ट्रॉनिक</string>
   <string name="small_speakers">छोटे स्पीकर</string>
+  <string name="custom">मनपसंद</string>
   <string name="none">कोई नहीं</string>
   <string name="smallroom">छोटा कमरा</string>
   <string name="mediumroom">मध्यम कमरा</string>

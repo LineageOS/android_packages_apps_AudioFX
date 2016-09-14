@@ -6,7 +6,7 @@
              android:layout_gravity="center_vertical"
              android:paddingBottom="@dimen/knob_container_padding_bottom">
 
-    <com.cyngn.audiofx.knobs.RadialKnob
+    <org.cyanogenmod.audiofx.knobs.RadialKnob
             android:id="@+id/knob"
             android:layout_gravity="top|center_horizontal"
             android:layout_width="wrap_content"

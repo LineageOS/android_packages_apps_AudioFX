@@ -16,7 +16,9 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name" msgid="5717136097222561957">"MusicFX"</string>
     <string name="no_effects" msgid="5067916002004255814">"प्रभाव उपलब्ध नहीं."</string>
+    <string name="eq_dialog_title" msgid="2020244436368289652">"इक्वलाइज़र"</string>
     <string name="headset_plug" msgid="4505819850289423141">"इन प्रभावों के लिए हेडफ़ोन प्‍लग इन करें."</string>
     <string name="bass_boost_strength" msgid="882301530007752270">"बेस बढ़ाएं"</string>
     <string name="virtualizer_strength" msgid="106561253469770096">"सराउंड साउंड"</string>

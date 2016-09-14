@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="normal">Normale</string>
   <string name="classical">Klasika</string>
   <string name="dance">Dancmuziko</string>
@@ -26,7 +26,9 @@
   <string name="jazz">Ĵazo</string>
   <string name="pop">Popo</string>
   <string name="rock">Roko</string>
+  <string name="electronic">Elektronika</string>
   <string name="small_speakers">Malgranda laŭtparolilo</string>
+  <string name="custom">Propra</string>
   <string name="none">Nenio</string>
   <string name="smallroom">Malgranda ĉambro</string>
   <string name="mediumroom">Mezgranda ĉambro</string>

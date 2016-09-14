@@ -1,4 +1,4 @@
-package com.cyngn.audiofx.tests;
+package org.cyanogenmod.audiofx.tests;
 
 import android.media.AudioManager;
 import android.media.AudioSystem;
@@ -6,7 +6,7 @@ import android.media.RingtoneManager;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.cyngn.audiofx.util.TestDuckingMediaPlayer;
+import org.cyanogenmod.audiofx.util.TestDuckingMediaPlayer;
 
 /**
  * Created by roman on 3/8/16.
