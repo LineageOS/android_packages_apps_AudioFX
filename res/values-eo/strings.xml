@@ -16,5 +16,6 @@
 -->
 <resources>
   <!-- ControlPanelMusic strings -->
+  <string name="user">Uzanto</string>
   <!-- title of control panel picker dialog [CHAR LIMIT=30] -->
 </resources>
