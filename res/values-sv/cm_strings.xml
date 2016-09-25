@@ -17,6 +17,7 @@
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="snack_bar_not_default_not_now">Inte nu</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normal</string>
   <string name="classical">Klassisk</string>
   <string name="dance">Dance</string>
@@ -47,4 +48,9 @@
   <string name="device_line_out">Linjeutgång</string>
   <string name="reverb">Rumsklang</string>
   <string name="eq_preset">Equalizerförval</string>
+  <string name="devices">Enheter</string>
+  <string name="virtualizer">Virtualiserare</string>
+  <string name="treble">Diskant</string>
+  <string name="bass">Bas</string>
+  <string name="rename">Byt namn</string>
 </resources>

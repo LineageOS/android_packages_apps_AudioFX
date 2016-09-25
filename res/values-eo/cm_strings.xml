@@ -16,7 +16,6 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
-  <string name="normal">Normale</string>
   <string name="classical">Klasika</string>
   <string name="dance">Dancmuziko</string>
   <string name="flat">Plata</string>

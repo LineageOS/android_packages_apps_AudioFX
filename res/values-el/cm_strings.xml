@@ -35,6 +35,7 @@
   <string name="small_speakers">Μικρά ηχεία</string>
   <string name="multimedia">Πολυμέσα</string>
   <string name="custom">Προσαρμοσμένο</string>
+  <string name="custom_n">Προσαρμοσμένο <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Κανένα</string>
   <string name="smallroom">Μικρό δωμάτιο</string>
   <string name="mediumroom">Μεσαίο δωμάτιο</string>

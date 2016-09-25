@@ -35,6 +35,7 @@
   <string name="small_speakers">小型喇叭</string>
   <string name="multimedia">多媒体</string>
   <string name="custom">自定义</string>
+  <string name="custom_n">自定义 <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">无</string>
   <string name="smallroom">小房间</string>
   <string name="mediumroom">中等房间</string>

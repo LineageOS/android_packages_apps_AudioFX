@@ -52,4 +52,11 @@
   <string name="device_line_out">Излаз</string>
   <string name="reverb">Reverb</string>
   <string name="eq_preset">Еквилајзер унапред постављен</string>
+  <string name="devices">Уређаји</string>
+  <string name="virtualizer">Визуелно</string>
+  <string name="treble">Високи</string>
+  <string name="bass">Бас</string>
+  <string name="rename">Преименуј</string>
+  <string name="remove_custom_preset_warning_message">Да ли сигурно желиш уклонити %1$s?</string>
+  <string name="powered_by">омогућено од</string>
 </resources>
