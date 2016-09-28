@@ -16,7 +16,6 @@
  */
 package org.cyanogenmod.audiofx.service;
 
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -31,16 +30,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import org.cyanogenmod.audiofx.R;
-import org.cyanogenmod.audiofx.activity.ActivityMusic;
 import org.cyanogenmod.audiofx.activity.MasterConfigControl;
 import org.cyanogenmod.audiofx.backends.EffectSet;
-import org.cyanogenmod.audiofx.receiver.QuickSettingsTileReceiver;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-import cyanogenmod.app.CMStatusBarManager;
-import cyanogenmod.app.CustomTile;
 import cyanogenmod.media.AudioSessionInfo;
 import cyanogenmod.media.CMAudioManager;
 
@@ -63,8 +58,6 @@ public class AudioFxService extends Service
     public static final String ACTION_DEVICE_OUTPUT_CHANGED
             = "org.cyanogenmod.audiofx.ACTION_DEVICE_OUTPUT_CHANGED";
 
-    public static final String ACTION_UPDATE_TILE = "org.cyanogenmod.audiofx.action.UPDATE_TILE";
-
     public static final String EXTRA_DEVICE = "device";
 
     // flags for updateService to minimize DSP traffic
@@ -80,13 +73,6 @@ public class AudioFxService extends Service
     static final int AUDIO_OUTPUT_FLAG_FAST = 0x4;
     static final int AUDIO_OUTPUT_FLAG_DEEP_BUFFER = 0x8;
     static final int AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD = 0x10;
-
-    private static final int TILE_ID = 555;
-
-    private Locale mLastLocale;
-
-    private CustomTile mTile;
-    private CustomTile.Builder mTileBuilder;
 
     private AudioOutputChangeListener mOutputListener;
     private DevicePreferenceManager mDevicePrefs;
@@ -156,8 +142,6 @@ public class AudioFxService extends Service
         for (AudioSessionInfo asi : cma.listAudioSessions(AudioManager.STREAM_MUSIC)) {
             mSessionManager.addSession(asi);
         }
-
-        updateQsTile();
     }
 
     @Override
@@ -167,43 +151,38 @@ public class AudioFxService extends Service
                     + flags + "], startId = [" + startId + "]");
         }
         if (intent != null && intent.getAction() != null) {
-            if (ACTION_UPDATE_TILE.equals(intent.getAction())) {
-                update(ALL_CHANGED);
-            } else {
-                String action = intent.getAction();
-                int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
-                String pkg = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
-                int stream = mapContentTypeToStream(
-                        intent.getIntExtra(AudioEffect.EXTRA_CONTENT_TYPE,
-                                AudioEffect.CONTENT_TYPE_MUSIC));
+            String action = intent.getAction();
+            int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
+            String pkg = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
+            int stream = mapContentTypeToStream(
+                    intent.getIntExtra(AudioEffect.EXTRA_CONTENT_TYPE,
+                            AudioEffect.CONTENT_TYPE_MUSIC));
 
-                if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
-                    if (DEBUG) {
-                        Log.i(TAG, String.format("New audio session: %d package: %s contentType=%d",
-                                sessionId, pkg, stream));
+            if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
+                if (DEBUG) {
+                    Log.i(TAG, String.format("New audio session: %d package: %s contentType=%d",
+                            sessionId, pkg, stream));
+                }
+                AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1, -1, -1);
+                mSessionManager.addSession(info);
+
+            } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
+
+                AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1, -1, -1);
+                mSessionManager.removeSession(info);
+
+            } else if (action.equals(CMAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
+
+                final AudioSessionInfo info = (AudioSessionInfo) intent.getParcelableExtra(
+                        CMAudioManager.EXTRA_SESSION_INFO);
+                if (info != null && info.getSessionId() > 0) {
+                    boolean added = intent.getBooleanExtra(CMAudioManager.EXTRA_SESSION_ADDED,
+                            false);
+                    if (added) {
+                        mSessionManager.addSession(info);
+                    } else {
+                        mSessionManager.removeSession(info);
                     }
-                    AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1, -1, -1);
-                    mSessionManager.addSession(info);
-
-                } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
-
-                    AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1, -1, -1);
-                    mSessionManager.removeSession(info);
-
-                } else if (action.equals(CMAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
-
-                    final AudioSessionInfo info = (AudioSessionInfo) intent.getParcelableExtra(
-                            CMAudioManager.EXTRA_SESSION_INFO);
-                    if (info != null && info.getSessionId() > 0) {
-                        boolean added = intent.getBooleanExtra(CMAudioManager.EXTRA_SESSION_ADDED,
-                                false);
-                        if (added) {
-                            mSessionManager.addSession(info);
-                        } else {
-                            mSessionManager.removeSession(info);
-                        }
-                    }
-
                 }
             }
         }
@@ -243,45 +222,6 @@ public class AudioFxService extends Service
         Intent intent = new Intent(ACTION_DEVICE_OUTPUT_CHANGED);
         intent.putExtra("device", outputDevice.getId());
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-
-        updateQsTile();
-    }
-
-    private void updateQsTile() {
-        if (mCurrentDevice == null || mDevicePrefs == null) {
-            // too early
-            return;
-        }
-        if (mTileBuilder == null) {
-            mTileBuilder = new CustomTile.Builder(this);
-        }
-
-        mLastLocale = getResources().getConfiguration().locale;
-        final PendingIntent pi = PendingIntent.getBroadcast(this, 0,
-                new Intent(QuickSettingsTileReceiver.ACTION_TOGGLE_CURRENT_DEVICE)
-                        .addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
-                        .setClass(this, QuickSettingsTileReceiver.class), 0);
-
-        final PendingIntent longPress = PendingIntent.getActivity(this, 0,
-                new Intent(this, ActivityMusic.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0);
-
-        String label = getString(R.string.qs_tile_label,
-                MasterConfigControl.getDeviceDisplayString(this, mCurrentDevice));
-
-        mTileBuilder
-                .hasSensitiveData(false)
-                .setIcon(mDevicePrefs.isGlobalEnabled() ? R.drawable.ic_qs_visualizer_on
-                        : R.drawable.ic_qs_visualizer_off)
-                .setLabel(label)
-                .setContentDescription(R.string.qs_tile_content_description)
-                .shouldCollapsePanel(false)
-                .setOnClickIntent(pi)
-                .setOnLongClickIntent(longPress);
-
-        mTile = mTileBuilder.build();
-
-        CMStatusBarManager.getInstance(this).publishTile(TILE_ID, mTile);
     }
 
     @Override
@@ -290,8 +230,6 @@ public class AudioFxService extends Service
 
         mOutputListener.removeCallback(this, mSessionManager, mDevicePrefs);
         mSessionManager.onDestroy();
-
-        CMStatusBarManager.getInstance(this).removeTile(TILE_ID);
 
         super.onDestroy();
     }
@@ -328,17 +266,5 @@ public class AudioFxService extends Service
      */
     private void update(int flags) {
         mSessionManager.update(flags);
-
-        if ((flags & ALL_CHANGED) == ALL_CHANGED) {
-            updateQsTile();
-        }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (!newConfig.locale.equals(mLastLocale)) {
-            updateQsTile();
-        }
     }
 }
