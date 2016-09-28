@@ -28,7 +28,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <uses-permission android:name="cyanogenmod.permission.PUBLISH_CUSTOM_TILE" />
     <uses-permission android:name="cyanogenmod.permission.OBSERVE_AUDIO_SESSIONS" />
 
     <application
@@ -75,12 +74,14 @@
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
-
-        <receiver android:name=".receiver.QuickSettingsTileReceiver">
+        <service
+                android:name=".service.QuickSettingsTileService"
+                android:icon="@drawable/ic_qs_visualizer_on"
+                android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
-                <action android:name="org.cyanogenmod.audiofx.action.TOGGLE_DEVICE" />
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
-        </receiver>
+        </service>
 
         <service
                 android:name="Compatibility$Service"
