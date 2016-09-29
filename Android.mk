@@ -4,8 +4,6 @@ include $(CLEAR_VARS)
 LOCAL_PACKAGE_NAME	:= AudioFX
 LOCAL_MODULE_TAGS	:= optional
 
-LOCAL_OVERRIDES_PACKAGES := DSPManager
-
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
 ifeq ($(wildcard $(LOCAL_PATH)/src_effects_priv),)
