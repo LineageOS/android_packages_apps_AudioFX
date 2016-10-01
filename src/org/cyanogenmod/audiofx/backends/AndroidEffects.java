@@ -130,7 +130,7 @@ class AndroidEffects extends EffectSetWithAndroidEq {
 
     @Override
     public boolean hasBassBoost() {
-        return mBassBoost != null && mBassBoost.getStrengthSupported();
+        return mBassBoost != null;
     }
 
     @Override
