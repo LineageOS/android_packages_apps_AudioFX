@@ -26,7 +26,6 @@ import org.cyanogenmod.audiofx.Preset;
 import org.cyanogenmod.audiofx.R;
 import org.cyanogenmod.audiofx.eq.EqUtils;
 import org.cyanogenmod.audiofx.service.AudioFxService;
-import org.cyanogenmod.audiofx.stats.UserSession;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -274,10 +273,6 @@ public class EqualizerManager {
      * @return the index that the levels were copied to
      */
     private int addPreset(float[] levels) {
-        if (UserSession.getInstance() != null) {
-            UserSession.getInstance().presetCreated();
-        }
-
         final int customPresets = Constants.getCustomPresets(mContext, mNumBands).size();
         // format the name so it's like "Custom <N>", start with "Custom 2"
         final String name = String.format(mContext.getString(R.string.custom_n), customPresets + 2);
@@ -588,10 +583,6 @@ public class EqualizerManager {
     }
 
     public void renameCurrentPreset(String s) {
-        if (UserSession.getInstance() != null) {
-            UserSession.getInstance().presetRenamed();
-        }
-
         if (isUserPreset()) {
             ((Preset.CustomPreset) getCurrentPreset()).setName(s);
         }
@@ -602,10 +593,6 @@ public class EqualizerManager {
     }
 
     public boolean removePreset(int index) {
-        if (UserSession.getInstance() != null) {
-            UserSession.getInstance().presetRemoved();
-        }
-
         if (index > mEQCustomPresetPosition) {
             mEqPresets.remove(index);
             mConfig.getCallbacks().notifyPresetsChanged();

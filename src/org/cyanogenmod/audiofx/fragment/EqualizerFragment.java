@@ -46,7 +46,6 @@ import org.cyanogenmod.audiofx.eq.EqContainerView;
 import org.cyanogenmod.audiofx.preset.InfinitePagerAdapter;
 import org.cyanogenmod.audiofx.preset.InfiniteViewPager;
 import org.cyanogenmod.audiofx.preset.PresetPagerAdapter;
-import org.cyanogenmod.audiofx.stats.UserSession;
 import org.cyanogenmod.audiofx.viewpagerindicator.CirclePageIndicator;
 
 public class EqualizerFragment extends AudioFxBaseFragment
@@ -516,9 +515,6 @@ public class EqualizerFragment extends AudioFxBaseFragment
             mSelectedPosition = position;
             if (!mDeviceChanging) {
                 mSelectedPositionBands = mEqManager.getPresetLevels(mSelectedPosition);
-                if (UserSession.getInstance() != null) {
-                    UserSession.getInstance().presetSelected();
-                }
             }
         }
 
