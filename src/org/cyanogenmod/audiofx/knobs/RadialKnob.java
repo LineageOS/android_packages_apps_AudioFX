@@ -49,7 +49,6 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.Toast;
 import org.cyanogenmod.audiofx.R;
-import org.cyanogenmod.audiofx.stats.UserSession;
 
 public class RadialKnob extends View {
 
@@ -454,10 +453,6 @@ public class RadialKnob extends View {
 
                         setOn(!mOn);
                     }
-                }
-                if (mMoved) {
-                    UserSession.getInstance()
-                            .knobOptionsAdjusted(((KnobContainer.KnobInfo)getTag()).whichKnob);
                 }
                 mLastX = -1;
                 mLastY = -1;

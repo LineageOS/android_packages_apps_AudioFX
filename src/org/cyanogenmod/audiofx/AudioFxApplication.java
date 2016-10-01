@@ -18,30 +18,13 @@ package org.cyanogenmod.audiofx;
 import android.app.Application;
 import android.util.Log;
 
-import com.cyanogen.ambient.analytics.AnalyticsServices;
-import com.cyanogen.ambient.analytics.Event;
-import com.cyanogen.ambient.common.api.AmbientApiClient;
-
 public class AudioFxApplication extends Application {
 
     private static final String TAG = AudioFxApplication.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    private AmbientApiClient mClient;
-
     @Override
     public void onCreate() {
         super.onCreate();
-        mClient = new AmbientApiClient.Builder(this)
-                .addApi(AnalyticsServices.API)
-                .build();
-        mClient.connect();
-    }
-
-    public void sendEvent(Event event) {
-        if (DEBUG) {
-            Log.i(TAG, "sendEvent() called with event = [" + event + "]");
-        }
-        AnalyticsServices.AnalyticsApi.sendEvent(mClient, event);
     }
 }
