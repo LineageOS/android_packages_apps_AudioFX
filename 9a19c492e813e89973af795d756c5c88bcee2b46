@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff2e2bb8_1da4f256",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 7880
+      },
+      "writtenOn": "2016-10-28T08:18:52Z",
+      "side": 1,
+      "message": "nit: Wrap the operation with a null check.",
+      "revId": "9a19c492e813e89973af795d756c5c88bcee2b46",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
