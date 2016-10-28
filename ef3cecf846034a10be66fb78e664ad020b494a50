@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff2e2bb8_7dda5ee9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 7880
+      },
+      "writtenOn": "2016-10-28T08:04:04Z",
+      "side": 1,
+      "message": "nit: initialised",
+      "revId": "ef3cecf846034a10be66fb78e664ad020b494a50",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ff2e2bb8_5dd79ac0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 7880
+      },
+      "writtenOn": "2016-10-28T08:04:04Z",
+      "side": 1,
+      "message": "nit: a null check",
+      "revId": "ef3cecf846034a10be66fb78e664ad020b494a50",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
