@@ -43,6 +43,7 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Бездротові</string>
+  <string name="device_line_out">Аналоговий вихід</string>
   <string name="reverb">Реверберація</string>
   <string name="eq_preset">Налаштування еквалайзера</string>
 </resources>
