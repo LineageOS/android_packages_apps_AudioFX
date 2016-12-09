@@ -35,6 +35,7 @@
   <string name="small_speakers">Kleine luidsprekers</string>
   <string name="multimedia">Multimedia</string>
   <string name="custom">Aangepast</string>
+  <string name="custom_n">Aangepast <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Geen</string>
   <string name="smallroom">Kleine ruimte</string>
   <string name="mediumroom">Middelgrote ruimte</string>

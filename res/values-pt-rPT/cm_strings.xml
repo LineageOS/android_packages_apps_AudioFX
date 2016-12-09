@@ -35,6 +35,7 @@
   <string name="small_speakers">Altifalantes pequenos</string>
   <string name="multimedia">Multimédia</string>
   <string name="custom">Personalizado</string>
+  <string name="custom_n">Personalizado <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Nenhum</string>
   <string name="smallroom">Quarto pequeno</string>
   <string name="mediumroom">Quarto médio</string>
@@ -56,6 +57,7 @@
   <string name="virtualizer">Virtualizador</string>
   <string name="treble">Agudos</string>
   <string name="bass">Graves</string>
+  <string name="rename">Mudar o nome</string>
   <string name="remove_custom_preset_warning_message">Tem a certeza que deseja remover %1$s?</string>
   <string name="powered_by">powered by</string>
 </resources>

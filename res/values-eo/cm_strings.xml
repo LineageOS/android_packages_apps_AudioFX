@@ -16,33 +16,5 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
-  <string name="normal">Normale</string>
-  <string name="classical">Klasika</string>
-  <string name="dance">Dancmuziko</string>
-  <string name="flat">Plata</string>
-  <string name="folk">Folko</string>
-  <string name="heavy_metal">Metalroko</string>
-  <string name="hip_hop">Hiphopo</string>
-  <string name="jazz">Ĵazo</string>
-  <string name="pop">Popo</string>
-  <string name="rock">Roko</string>
-  <string name="electronic">Elektronika</string>
-  <string name="small_speakers">Malgranda laŭtparolilo</string>
-  <string name="custom">Propra</string>
-  <string name="none">Nenio</string>
-  <string name="smallroom">Malgranda ĉambro</string>
-  <string name="mediumroom">Mezgranda ĉambro</string>
-  <string name="largeroom">Granda ĉambro</string>
-  <string name="mediumhall">Mezgranda halo</string>
-  <string name="largehall">Granda halo</string>
-  <string name="plate">Plata</string>
-  <string name="power_on_prompt">Premu ŝaltilon supr-desktre.</string>
-  <string name="effect_unavalable_for_speaker">Efekto ne disponeblas por la laŭtparolila modo.</string>
-  <string name="device_headset">Kapaŭskultilo</string>
-  <string name="device_speaker">Parolilo</string>
-  <string name="device_usb">USB</string>
-  <string name="device_bluetooth">Bludento</string>
-  <string name="device_wireless">Sendrata</string>
-  <string name="reverb">Resono</string>
-  <string name="eq_preset">Filtrilo antaŭagordo</string>
+  <string name="devices">Aparatoj</string>
 </resources>

@@ -35,6 +35,7 @@
   <string name="small_speakers">Små højttalere</string>
   <string name="multimedia">Multimedier</string>
   <string name="custom">Brugerdefineret</string>
+  <string name="custom_n">Tilpasset <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Ingen</string>
   <string name="smallroom">Lille værelse</string>
   <string name="mediumroom">Mellemstort værelse</string>

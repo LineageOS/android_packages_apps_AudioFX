@@ -15,7 +15,7 @@
      limitations under the License.
 -->
 <resources>
+  <string name="app_name">MusicFX</string>
   <!-- ControlPanelMusic strings -->
-  <string name="user">Uzanto</string>
   <!-- title of control panel picker dialog [CHAR LIMIT=30] -->
 </resources>

@@ -35,6 +35,7 @@
   <string name="small_speakers">Altoparlanti piccoli</string>
   <string name="multimedia">Multimedia</string>
   <string name="custom">Personalizzato</string>
+  <string name="custom_n">Personalizzato <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Nessuno</string>
   <string name="smallroom">Stanza piccola</string>
   <string name="mediumroom">Stanza media</string>

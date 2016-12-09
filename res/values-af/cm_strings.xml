@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX is nie jou standaard effekte beheer paneel nie.</string>
+  <string name="snack_bar_not_default_set">Stel as standaard</string>
+  <string name="snack_bar_not_default_not_now">Nie nou nie</string>
+  <string name="qs_tile_content_description">Verander AudioFX om aan-af te skakel vir huidige toestel</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normaal</string>
   <string name="classical">Klassiek</string>
   <string name="dance">Dans</string>
@@ -28,7 +33,9 @@
   <string name="rock">Rock</string>
   <string name="electronic">Elektronies</string>
   <string name="small_speakers">Klein luidsprekers</string>
+  <string name="multimedia">Multimedia</string>
   <string name="custom">Persoonlik</string>
+  <string name="custom_n">Persoonlik <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Geen</string>
   <string name="smallroom">Klein kamer</string>
   <string name="mediumroom">Medium kamer</string>
@@ -46,4 +53,11 @@
   <string name="device_line_out">Line out</string>
   <string name="reverb">Galm</string>
   <string name="eq_preset">Voorafbepaalde gelykmaker</string>
+  <string name="devices">Toestelle</string>
+  <string name="virtualizer">Virtualiseerder</string>
+  <string name="treble">Treble</string>
+  <string name="bass">Bas</string>
+  <string name="rename">Hernoem</string>
+  <string name="remove_custom_preset_warning_message">Is jy seker jy wil dit verwyder %1$s?</string>
+  <string name="powered_by">aangedryf deur</string>
 </resources>

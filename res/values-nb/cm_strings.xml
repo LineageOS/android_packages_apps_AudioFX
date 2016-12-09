@@ -35,6 +35,7 @@
   <string name="small_speakers">Små høyttalere</string>
   <string name="multimedia">Multimedia</string>
   <string name="custom">Egendefinert</string>
+  <string name="custom_n">Egendefinert <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Ingen</string>
   <string name="smallroom">Lite rom</string>
   <string name="mediumroom">Medium rom</string>

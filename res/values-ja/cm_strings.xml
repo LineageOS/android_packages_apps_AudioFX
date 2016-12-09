@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFXはデフォルトのエフェクトコントロールパネルに設定されていません。</string>
+  <string name="snack_bar_not_default_set">デフォルトに設定</string>
+  <string name="snack_bar_not_default_not_now">後で</string>
+  <string name="qs_tile_content_description">現在のデバイスのAudioFxのON/OFFを切り替える</string>
+  <string name="qs_tile_label">AudioFX（%1$s）</string>
   <string name="normal">Normal</string>
   <string name="classical">Classical</string>
   <string name="dance">Dance</string>
@@ -28,7 +33,9 @@
   <string name="rock">Rock</string>
   <string name="electronic">Electronic</string>
   <string name="small_speakers">Small speakers</string>
+  <string name="multimedia">マルチメディア</string>
   <string name="custom">カスタム</string>
+  <string name="custom_n">カスタム<xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">なし</string>
   <string name="smallroom">小さい部屋</string>
   <string name="mediumroom">中くらいの部屋</string>
@@ -37,7 +44,7 @@
   <string name="largehall">大きいホール</string>
   <string name="plate">プレート</string>
   <string name="power_on_prompt">右上の電源ボタンを押してください</string>
-  <string name="effect_unavalable_for_speaker">スピーカーモードでは効果は利用できません。</string>
+  <string name="effect_unavalable_for_speaker">スピーカーモードではエフェクトは利用できません。</string>
   <string name="device_headset">ヘッドセット</string>
   <string name="device_speaker">スピーカー</string>
   <string name="device_usb">USB</string>
@@ -46,4 +53,11 @@
   <string name="device_line_out">ライン出力</string>
   <string name="reverb">リバーブ</string>
   <string name="eq_preset">イコライザープリセット</string>
+  <string name="devices">デバイス</string>
+  <string name="virtualizer">Virtualizer</string>
+  <string name="treble">Treble</string>
+  <string name="bass">Bass</string>
+  <string name="rename">名前の変更</string>
+  <string name="remove_custom_preset_warning_message">%1$sを削除してもよろしいですか？</string>
+  <string name="powered_by">Powered by</string>
 </resources>
