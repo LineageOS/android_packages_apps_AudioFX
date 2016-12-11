@@ -16,6 +16,7 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default_not_now">Не цяпер</string>
   <string name="normal">Звычайная</string>
   <string name="classical">Класічная</string>
   <string name="dance">Танцы</string>
@@ -47,6 +48,9 @@
   <string name="reverb">Рэверберацыя</string>
   <string name="eq_preset">Прадусталёўкі эквалайзера</string>
   <string name="devices">Прылады</string>
+  <string name="virtualizer">Віртуалізацыя</string>
+  <string name="treble">Высокія частоты</string>
+  <string name="bass">Бас</string>
   <string name="rename">Пераназваць</string>
   <string name="remove_custom_preset_warning_message">Сапраўды жадаеш выдаліць %1$s?</string>
 </resources>
