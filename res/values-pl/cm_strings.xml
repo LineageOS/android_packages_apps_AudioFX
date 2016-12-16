@@ -54,6 +54,7 @@
   <string name="reverb">Pogłos</string>
   <string name="eq_preset">Ustawienia korektora</string>
   <string name="devices">Urządzenia</string>
+  <string name="virtualizer">Wirtualizacja</string>
   <string name="treble">Sopran</string>
   <string name="bass">Basy</string>
   <string name="rename">Zmień nazwę</string>
