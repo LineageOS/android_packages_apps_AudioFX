@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX nie je východzí ovládací panel pre zmenu audio efektov.</string>
+  <string name="snack_bar_not_default_set">Predvolené systémom</string>
+  <string name="snack_bar_not_default_not_now">Teraz nie</string>
+  <string name="qs_tile_content_description">Prepnúť stav AudioFX</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normálne</string>
   <string name="classical">Klasická hudba</string>
   <string name="dance">Tanec</string>
@@ -28,7 +33,9 @@
   <string name="rock">Rock</string>
   <string name="electronic">Elektronická hudba</string>
   <string name="small_speakers">Malé reproduktory</string>
+  <string name="multimedia">Multimédiá</string>
   <string name="custom">Vlastné</string>
+  <string name="custom_n">Vlastné <xliff:g id="preset_num">%1$d </xliff:g></string>
   <string name="none">Žiadny</string>
   <string name="smallroom">Malá miestnosť</string>
   <string name="mediumroom">Stredná miestnosť</string>
@@ -43,6 +50,14 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Bezdrôtové</string>
+  <string name="device_line_out">Linkový výstup</string>
   <string name="reverb">Reverb</string>
   <string name="eq_preset">Predvoľba ekvalizéra</string>
+  <string name="devices">Zariadenia</string>
+  <string name="virtualizer">Virtualizér</string>
+  <string name="treble">Výšky</string>
+  <string name="bass">Basy</string>
+  <string name="rename">Premenovať</string>
+  <string name="remove_custom_preset_warning_message">Naozaj chcete odstrániť %1$s?</string>
+  <string name="powered_by">Používa služby</string>
 </resources>
