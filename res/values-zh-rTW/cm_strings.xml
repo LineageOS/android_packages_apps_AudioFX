@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX 並非您預設的效果控制台。</string>
+  <string name="snack_bar_not_default_set">設為預設</string>
+  <string name="snack_bar_not_default_not_now">稍後</string>
+  <string name="qs_tile_content_description">為目前裝置切換至 AudioFX 開/關</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">正常</string>
   <string name="classical">古典</string>
   <string name="dance">舞曲</string>
@@ -28,7 +33,9 @@
   <string name="rock">搖滾</string>
   <string name="electronic">電子</string>
   <string name="small_speakers">小型揚聲器</string>
+  <string name="multimedia">多媒體</string>
   <string name="custom">自訂</string>
+  <string name="custom_n">自訂 <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">無</string>
   <string name="smallroom">小型房間</string>
   <string name="mediumroom">中型房間</string>
@@ -46,4 +53,11 @@
   <string name="device_line_out">線路輸出</string>
   <string name="reverb">混響</string>
   <string name="eq_preset">預設等化器</string>
+  <string name="devices">裝置</string>
+  <string name="virtualizer">視覺均衡器</string>
+  <string name="treble">高音</string>
+  <string name="bass">低音</string>
+  <string name="rename">重新命名</string>
+  <string name="remove_custom_preset_warning_message">您確定要移除 %1$s?</string>
+  <string name="powered_by">技術支援</string>
 </resources>
