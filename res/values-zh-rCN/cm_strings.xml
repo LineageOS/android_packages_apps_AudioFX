@@ -58,6 +58,6 @@
   <string name="treble">三倍</string>
   <string name="bass">低音</string>
   <string name="rename">重命名</string>
-  <string name="remove_custom_preset_warning_message">您确定想要移除 %1$s ？</string>
+  <string name="remove_custom_preset_warning_message">您确定要移除 %1$s？</string>
   <string name="powered_by">强力驱动由</string>
 </resources>
