@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX varsayılan kontrol paneliniz değil.</string>
+  <string name="snack_bar_not_default_set">Varsayılan olarak ayarla</string>
+  <string name="snack_bar_not_default_not_now">Şimdi değil</string>
+  <string name="qs_tile_content_description">Varsayılan cihaz için AudioFX aç/kapa</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normal</string>
   <string name="classical">Klasik</string>
   <string name="dance">Dans</string>
@@ -28,7 +33,9 @@
   <string name="rock">Rock</string>
   <string name="electronic">Elektronik</string>
   <string name="small_speakers">Küçük hoparlörler</string>
+  <string name="multimedia">Multimedya</string>
   <string name="custom">Özel</string>
+  <string name="custom_n">Özel <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Yok</string>
   <string name="smallroom">Küçük oda</string>
   <string name="mediumroom">Orta boy oda</string>
@@ -46,4 +53,11 @@
   <string name="device_line_out">Hat çıkışı</string>
   <string name="reverb">Yankı</string>
   <string name="eq_preset">Equalizer önayarı</string>
+  <string name="devices">Aygıtlar</string>
+  <string name="virtualizer">Virtualizer</string>
+  <string name="treble">Tiz</string>
+  <string name="bass">Bas</string>
+  <string name="rename">Yeniden Adlandır</string>
+  <string name="remove_custom_preset_warning_message">%1$s kaldırmak istediğinden emin misin?</string>
+  <string name="powered_by">destekleyen</string>
 </resources>
