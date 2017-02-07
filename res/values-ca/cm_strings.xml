@@ -43,7 +43,7 @@
   <string name="mediumhall">Sala mitjana</string>
   <string name="largehall">Sala gran</string>
   <string name="plate">Estudi</string>
-  <string name="power_on_prompt">Apreta el botó d\'apagat a la part superior dreta.</string>
+  <string name="power_on_prompt">Prem el botó d\'apagat a la part superior dreta.</string>
   <string name="effect_unavalable_for_speaker">L\'efecte no està disponible en el mode Altaveu.</string>
   <string name="device_headset">Auriculars</string>
   <string name="device_speaker">Altaveu</string>
