@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX không phải là bảng điều khiển hiệu ứng mặc định.</string>
+  <string name="snack_bar_not_default_set">Đặt làm mặc định</string>
+  <string name="snack_bar_not_default_not_now">Không phải bây giờ</string>
+  <string name="qs_tile_content_description">Chuyển đổi AudioFX bật/tắt cho thiết bị hiện tại</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Bình thường</string>
   <string name="classical">Cổ điển</string>
   <string name="dance">Dance</string>
@@ -28,7 +33,9 @@
   <string name="rock">Rock</string>
   <string name="electronic">Electronic</string>
   <string name="small_speakers">Loa nhỏ</string>
+  <string name="multimedia">Đa phương tiện</string>
   <string name="custom">Tùy chỉnh</string>
+  <string name="custom_n">Tuỳ chỉnh <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Không</string>
   <string name="smallroom">Phòng nhỏ</string>
   <string name="mediumroom">Phòng trung bình</string>
@@ -46,4 +53,11 @@
   <string name="device_line_out">Đường tín hiệu cho đầu ra</string>
   <string name="reverb">Âm vang</string>
   <string name="eq_preset">Cài sẵn bộ chỉnh âm</string>
+  <string name="devices">Thiết bị</string>
+  <string name="virtualizer">Trình trực quan</string>
+  <string name="treble">Âm cao</string>
+  <string name="bass">Âm trầm</string>
+  <string name="rename">Đổi tên</string>
+  <string name="remove_custom_preset_warning_message">Bạn có chắc chắn muốn xóa %1$s?</string>
+  <string name="powered_by">cung cấp bởi</string>
 </resources>
