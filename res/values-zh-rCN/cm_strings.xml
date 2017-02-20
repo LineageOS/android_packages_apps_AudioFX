@@ -43,7 +43,7 @@
   <string name="mediumhall">中厅</string>
   <string name="largehall">大厅</string>
   <string name="plate">碟</string>
-  <string name="power_on_prompt">按上右上角的电源按钮。</string>
+  <string name="power_on_prompt">按下右上方的电源键。</string>
   <string name="effect_unavalable_for_speaker">效果不适用于扬声器模式。</string>
   <string name="device_headset">耳机</string>
   <string name="device_speaker">扬声器​​​​</string>
