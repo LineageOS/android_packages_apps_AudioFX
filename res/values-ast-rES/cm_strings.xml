@@ -15,35 +15,4 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
-  <string name="normal">Normal</string>
-  <string name="classical">Clásica</string>
-  <string name="dance">Dance</string>
-  <string name="flat">Plana</string>
-  <string name="folk">Folk</string>
-  <string name="heavy_metal">Heavy Metal</string>
-  <string name="hip_hop">Hip Hop</string>
-  <string name="jazz">Jazz</string>
-  <string name="pop">Pop</string>
-  <string name="rock">Rock</string>
-  <string name="electronic">Electronic</string>
-  <string name="small_speakers">Altavoces pequeños</string>
-  <string name="custom">Custom</string>
-  <string name="none">Nengún</string>
-  <string name="smallroom">Habitación pequeña</string>
-  <string name="mediumroom">Habitación media</string>
-  <string name="largeroom">Habitación grande</string>
-  <string name="mediumhall">Sala media</string>
-  <string name="largehall">Sala grande</string>
-  <string name="plate">Estudiu</string>
-  <string name="power_on_prompt">Calca nel botón d\'apagar na parte superior a mandrecha.</string>
-  <string name="effect_unavalable_for_speaker">L\'efeutu nun ta disponible nel mou altavoz.</string>
-  <string name="device_headset">Auriculares</string>
-  <string name="device_speaker">Altavoz</string>
-  <string name="device_usb">USB</string>
-  <string name="device_bluetooth">Bluetooth</string>
-  <string name="device_wireless">Wireless</string>
-  <string name="device_line_out">Salida de llinia</string>
-  <string name="reverb">Reverberación</string>
-  <string name="eq_preset">Ecualizador preestablecíu</string>
-</resources>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2"></resources>
