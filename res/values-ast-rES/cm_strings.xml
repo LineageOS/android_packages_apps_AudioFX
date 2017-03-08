@@ -15,4 +15,32 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2"></resources>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX nun ye\'l to panel de control por defeutu d\'efeutos.</string>
+  <string name="snack_bar_not_default_set">Predeterminar</string>
+  <string name="snack_bar_not_default_not_now">Agora non</string>
+  <string name="qs_tile_content_description">Alterna la des/activación d\'AudioFX nel preséu actual</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
+  <string name="normal">Normal</string>
+  <string name="heavy_metal">Heavy metal</string>
+  <string name="jazz">Jazz</string>
+  <string name="pop">Pop</string>
+  <string name="rock">Rock</string>
+  <string name="small_speakers">Altavoces pequeños</string>
+  <string name="multimedia">Multimedia</string>
+  <string name="largeroom">Habitación grande</string>
+  <string name="largehall">Sala grande</string>
+  <string name="power_on_prompt">Primi\'l botón de prendíu na parte cimera drecha.</string>
+  <string name="effect_unavalable_for_speaker">L\'efeutu nun ta disponible nel mou altavoz.</string>
+  <string name="device_headset">Auriculares</string>
+  <string name="device_speaker">Altavoz</string>
+  <string name="device_usb">USB</string>
+  <string name="device_bluetooth">Bluetooth</string>
+  <string name="reverb">Reverberación</string>
+  <string name="eq_preset">Preaxuste d\'ecualizador</string>
+  <string name="devices">Preseos</string>
+  <string name="virtualizer">Virtualizador</string>
+  <string name="rename">Renomar</string>
+  <string name="remove_custom_preset_warning_message">¿De xuru que quies desaniciar %1$s?</string>
+  <string name="powered_by">cola potencia de</string>
+</resources>

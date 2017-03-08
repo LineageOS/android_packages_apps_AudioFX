@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX n’est pas votre panneau de contrôle des effets par défaut.</string>
+  <string name="snack_bar_not_default_set">Définir par défaut</string>
+  <string name="snack_bar_not_default_not_now">Pas maintenant</string>
+  <string name="qs_tile_content_description">Activer/désactiver AudioFX pour le périphérique actuel</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normal</string>
   <string name="classical">Classique</string>
   <string name="dance">Dance</string>
@@ -28,6 +33,7 @@
   <string name="rock">Rock</string>
   <string name="electronic">Électronique</string>
   <string name="small_speakers">Petits haut-parleurs</string>
+  <string name="multimedia">Multimédia</string>
   <string name="custom">Personnalisé</string>
   <string name="none">Aucun</string>
   <string name="smallroom">Petite salle</string>
@@ -46,4 +52,9 @@
   <string name="device_line_out">Sortie ligne</string>
   <string name="reverb">Réverbération</string>
   <string name="eq_preset">Égaliseur prédéfini</string>
+  <string name="devices">Appareils</string>
+  <string name="treble">Aigus</string>
+  <string name="bass">Graves</string>
+  <string name="rename">Renommer</string>
+  <string name="remove_custom_preset_warning_message">Êtes-vous sûr de vouloir supprimer %1$s ?</string>
 </resources>
