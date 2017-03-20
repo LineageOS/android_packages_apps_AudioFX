@@ -43,7 +43,7 @@
   <string name="mediumhall">Sala mediana</string>
   <string name="largehall">Sala grande</string>
   <string name="plate">Vinilo</string>
-  <string name="power_on_prompt">Pulsar el botón de encendido en la parte superior derecha.</string>
+  <string name="power_on_prompt">Pulsa el botón de encendido en la parte superior derecha.</string>
   <string name="effect_unavalable_for_speaker">Efecto no disponible para el modo altavoz.</string>
   <string name="device_headset">Auriculares</string>
   <string name="device_speaker">Altavoz</string>
