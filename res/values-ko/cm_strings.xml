@@ -30,7 +30,9 @@
   <string name="rock">락</string>
   <string name="electronic">일렉트로닉</string>
   <string name="small_speakers">작은 스피커</string>
+  <string name="multimedia">멀티미디어</string>
   <string name="custom">사용자 정의</string>
+  <string name="custom_n">사용자 정의 <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">없음</string>
   <string name="smallroom">작은 방</string>
   <string name="mediumroom">중간 방</string>
@@ -48,6 +50,9 @@
   <string name="device_line_out">출력</string>
   <string name="reverb">리버브</string>
   <string name="eq_preset">이퀄라이저 프리셋</string>
+  <string name="virtualizer">버추얼라이저</string>
+  <string name="treble">고음</string>
+  <string name="bass">저음</string>
   <string name="rename">이름 바꾸기</string>
   <string name="remove_custom_preset_warning_message">정말 %1$s을(를) 제거하시겠습니까?</string>
 </resources>
