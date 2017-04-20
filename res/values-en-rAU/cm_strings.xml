@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX is not your default effects control panel.</string>
+  <string name="snack_bar_not_default_set">Set default</string>
+  <string name="snack_bar_not_default_not_now">Not now</string>
+  <string name="qs_tile_content_description">Toggle AudioFX on/off for the current device</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normal</string>
   <string name="classical">Classical</string>
   <string name="dance">Dance</string>
@@ -28,7 +33,9 @@
   <string name="rock">Rock</string>
   <string name="electronic">Electronic</string>
   <string name="small_speakers">Small speakers</string>
+  <string name="multimedia">Multimedia</string>
   <string name="custom">Custom</string>
+  <string name="custom_n">Custom <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">None</string>
   <string name="smallroom">Small room</string>
   <string name="mediumroom">Medium room</string>
@@ -43,6 +50,14 @@
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
   <string name="device_wireless">Wireless</string>
+  <string name="device_line_out">Line out</string>
   <string name="reverb">Reverb</string>
   <string name="eq_preset">Equaliser preset</string>
+  <string name="devices">Devices</string>
+  <string name="virtualizer">Virtualiser</string>
+  <string name="treble">Treble</string>
+  <string name="bass">Bass</string>
+  <string name="rename">Rename</string>
+  <string name="remove_custom_preset_warning_message">Are you sure you want to remove %1$s?</string>
+  <string name="powered_by">powered by</string>
 </resources>
