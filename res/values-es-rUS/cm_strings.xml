@@ -16,10 +16,10 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
-  <string name="snack_bar_not_default">AudioFX no es su controlador de efectos predeterminado.</string>
-  <string name="snack_bar_not_default_set">Establecer como predeterminado</string>
+  <string name="snack_bar_not_default">AudioFX no es el controlador de efectos predefinido.</string>
+  <string name="snack_bar_not_default_set">Establecer como predefinido</string>
   <string name="snack_bar_not_default_not_now">Ahora no</string>
-  <string name="qs_tile_content_description">Alternar encendido/apagado de AudioFX del dispositivo actual</string>
+  <string name="qs_tile_content_description">Alterna el encendido y apagado de AudioFX del dispositivo actual</string>
   <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normal</string>
   <string name="classical">Clásica</string>
@@ -43,7 +43,7 @@
   <string name="mediumhall">Sala mediana</string>
   <string name="largehall">Sala grande</string>
   <string name="plate">Vinilo</string>
-  <string name="power_on_prompt">Pulsar el botón de encendido en la parte superior derecha.</string>
+  <string name="power_on_prompt">Pulsa el botón de encendido en la parte superior derecha.</string>
   <string name="effect_unavalable_for_speaker">Efecto no disponible para el modo altavoz.</string>
   <string name="device_headset">Auriculares</string>
   <string name="device_speaker">Altavoz</string>

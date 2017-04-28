@@ -15,4 +15,49 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2"></resources>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX nuk është paneli i paracaktuar i kontrollit të efekteve.</string>
+  <string name="snack_bar_not_default_set">Cakto si të paracaktuar</string>
+  <string name="snack_bar_not_default_not_now">Jo tani</string>
+  <string name="qs_tile_content_description">Aktivizo/çaktivizo AudioFX për këtë pajisje</string>
+  <string name="qs_tile_label">AudioFX (%1$s)</string>
+  <string name="normal">Normal</string>
+  <string name="classical">Klasike</string>
+  <string name="dance">Dance</string>
+  <string name="flat">E lehtë</string>
+  <string name="folk">Folk</string>
+  <string name="heavy_metal">Heavy Metal</string>
+  <string name="hip_hop">Hip Hop</string>
+  <string name="jazz">Xhaz</string>
+  <string name="pop">Pop</string>
+  <string name="rock">Rock</string>
+  <string name="electronic">Elektronike</string>
+  <string name="small_speakers">Bokse të vegjël</string>
+  <string name="multimedia">Multimedia</string>
+  <string name="custom">E personalizuar</string>
+  <string name="custom_n">E personalizuar <xliff:g id="preset_num">%1$d</xliff:g></string>
+  <string name="none">Asnjë</string>
+  <string name="smallroom">Dhomë e vogël</string>
+  <string name="mediumroom">Dhomë mesatare</string>
+  <string name="largeroom">Dhomë e madhe</string>
+  <string name="mediumhall">Sallë mesatare</string>
+  <string name="largehall">Sallë e madhe</string>
+  <string name="plate">Pllakë</string>
+  <string name="power_on_prompt">Shtyp butonin e ndezjes në anën e djathtë lart.</string>
+  <string name="effect_unavalable_for_speaker">Efekt i padisponueshëm për profilin Altoparlant.</string>
+  <string name="device_headset">Kufje</string>
+  <string name="device_speaker">Altoparlant</string>
+  <string name="device_usb">USB</string>
+  <string name="device_bluetooth">Bluetooth</string>
+  <string name="device_wireless">Wireless</string>
+  <string name="device_line_out">Linja dalëse</string>
+  <string name="reverb">Kumbimi</string>
+  <string name="eq_preset">Barazuesi</string>
+  <string name="devices">Pajisjet</string>
+  <string name="virtualizer">Virtualizuesi</string>
+  <string name="treble">Notë e lartë</string>
+  <string name="bass">Basi</string>
+  <string name="rename">Riemërto</string>
+  <string name="remove_custom_preset_warning_message">A jeni të sigurt që doni të hiqni %1$s?</string>
+  <string name="powered_by">mundësuar nga</string>
+</resources>
