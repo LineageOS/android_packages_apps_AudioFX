@@ -116,7 +116,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
     @Override
     public void updateFragmentBackgroundColors(int color) {
         if (getActivity() != null && getActivity().getWindow() != null) {
-            getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(color));
+            getActivity().getWindow().getDecorView().setBackgroundColor(color);
         }
     }
 
