@@ -20,10 +20,7 @@ LOCAL_PROGUARD_ENABLED := disabled
 
 LOCAL_PRIVILEGED_MODULE := true
 
-# Sign the package when not using test-keys
-ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/target/product/security/testkey)
-LOCAL_CERTIFICATE := cyngn-app
-endif
+LOCAL_CERTIFICATE := platform
 
 include $(BUILD_PACKAGE)
 
