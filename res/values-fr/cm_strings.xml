@@ -35,6 +35,7 @@
   <string name="small_speakers">Petits haut-parleurs</string>
   <string name="multimedia">Multimédia</string>
   <string name="custom">Personnalisé</string>
+  <string name="custom_n">Personnaliser <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Aucun</string>
   <string name="smallroom">Petite salle</string>
   <string name="mediumroom">Salle moyenne</string>
@@ -53,8 +54,10 @@
   <string name="reverb">Réverbération</string>
   <string name="eq_preset">Égaliseur prédéfini</string>
   <string name="devices">Appareils</string>
+  <string name="virtualizer">Spatialisation</string>
   <string name="treble">Aigus</string>
   <string name="bass">Graves</string>
   <string name="rename">Renommer</string>
   <string name="remove_custom_preset_warning_message">Êtes-vous sûr de vouloir supprimer %1$s ?</string>
+  <string name="powered_by">fonctionnant grâce à</string>
 </resources>
