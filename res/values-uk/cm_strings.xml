@@ -57,7 +57,7 @@
   <string name="virtualizer">Віртуалізатор</string>
   <string name="treble">Високі</string>
   <string name="bass">Низькі частоти</string>
-  <string name="rename">Перейменувати</string>
+  <string name="rename">Змінити назву</string>
   <string name="remove_custom_preset_warning_message">Ви дійсно бажаєте видалити %1$s?</string>
   <string name="powered_by">працює на</string>
 </resources>
