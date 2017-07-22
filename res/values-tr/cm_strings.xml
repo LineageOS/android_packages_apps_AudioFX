@@ -16,7 +16,7 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
-  <string name="snack_bar_not_default">AudioFX varsayılan kontrol paneliniz değil.</string>
+  <string name="snack_bar_not_default">AudioFX varsayılan efekt kontrol paneliniz değil.</string>
   <string name="snack_bar_not_default_set">Varsayılan olarak ayarla</string>
   <string name="snack_bar_not_default_not_now">Şimdi değil</string>
   <string name="qs_tile_content_description">Varsayılan cihaz için AudioFX aç/kapa</string>
@@ -36,7 +36,7 @@
   <string name="multimedia">Multimedya</string>
   <string name="custom">Özel</string>
   <string name="custom_n">Özel <xliff:g id="preset_num">%1$d</xliff:g></string>
-  <string name="none">Yok</string>
+  <string name="none">Hiçbiri</string>
   <string name="smallroom">Küçük oda</string>
   <string name="mediumroom">Orta boy oda</string>
   <string name="largeroom">Geniş oda</string>
@@ -44,7 +44,7 @@
   <string name="largehall">Geniş salon</string>
   <string name="plate">Plak</string>
   <string name="power_on_prompt">Sağ üstteki güç tuşuna basın.</string>
-  <string name="effect_unavalable_for_speaker">Efekt Hoparlör modunda kullanılamıyor.</string>
+  <string name="effect_unavalable_for_speaker">Hoparlör modu için efekt mevcut değil.</string>
   <string name="device_headset">Kulaklık</string>
   <string name="device_speaker">Hoparlör</string>
   <string name="device_usb">USB</string>
@@ -52,12 +52,12 @@
   <string name="device_wireless">Kablosuz</string>
   <string name="device_line_out">Hat çıkışı</string>
   <string name="reverb">Yankı</string>
-  <string name="eq_preset">Equalizer önayarı</string>
-  <string name="devices">Aygıtlar</string>
+  <string name="eq_preset">Ekolayzer önayarı</string>
+  <string name="devices">Cihazlar</string>
   <string name="virtualizer">Virtualizer</string>
   <string name="treble">Tiz</string>
   <string name="bass">Bas</string>
-  <string name="rename">Yeniden Adlandır</string>
+  <string name="rename">Yeniden adlandır</string>
   <string name="remove_custom_preset_warning_message">%1$s kaldırmak istediğinden emin misin?</string>
   <string name="powered_by">destekleyen</string>
 </resources>
