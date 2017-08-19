@@ -43,7 +43,7 @@
   <string name="mediumhall">Areto ertaina</string>
   <string name="largehall">Areto handia</string>
   <string name="plate">Biniloa</string>
-  <string name="power_on_prompt">Sakatu goi-eskumako pizte botoia.</string>
+  <string name="power_on_prompt">Sakatu goi-eskuineko pizte botoia.</string>
   <string name="effect_unavalable_for_speaker">Efektua ez dago bozgorailu modurako eskuragarri.</string>
   <string name="device_headset">Aurikularrak</string>
   <string name="device_speaker">Bozgorailua</string>
