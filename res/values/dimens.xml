@@ -51,6 +51,8 @@
     <dimen name="radial_text_size">18sp</dimen>
     <dimen name="radial_knob_stroke">22dp</dimen>
 
+    <dimen name="reverb_switch_label_size">16sp</dimen>
+
     <dimen name="action_bar_dts_switch_padding">48dp</dimen>
 
 </resources>
