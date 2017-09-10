@@ -29,7 +29,6 @@ import static org.cyanogenmod.audiofx.Constants.DEVICE_DEFAULT_GLOBAL_ENABLE;
 import static org.cyanogenmod.audiofx.activity.MasterConfigControl.getDeviceIdentifierString;
 import static org.cyanogenmod.audiofx.service.AudioFxService.ALL_CHANGED;
 import static org.cyanogenmod.audiofx.service.AudioFxService.BASS_BOOST_CHANGED;
-import static org.cyanogenmod.audiofx.service.AudioFxService.ENABLE_REVERB;
 import static org.cyanogenmod.audiofx.service.AudioFxService.EQ_CHANGED;
 import static org.cyanogenmod.audiofx.service.AudioFxService.REVERB_CHANGED;
 import static org.cyanogenmod.audiofx.service.AudioFxService.TREBLE_BOOST_CHANGED;
@@ -241,17 +240,15 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
             }
 
             // reverb
-            if (ENABLE_REVERB) {
-                try {
-                    if ((flags & REVERB_CHANGED) > 0 && session.hasReverb()) {
-                        short preset = Short.decode(prefs.getString(DEVICE_AUDIOFX_REVERB_PRESET,
-                                String.valueOf(PresetReverb.PRESET_NONE)));
-                        session.enableReverb(preset > 0);
-                        session.setReverbPreset(preset);
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Error enabling reverb preset", e);
+            try {
+                if ((flags & REVERB_CHANGED) > 0 && session.hasReverb()) {
+                    short preset = Short.decode(prefs.getString(DEVICE_AUDIOFX_REVERB_PRESET,
+                            String.valueOf(PresetReverb.PRESET_NONE)));
+                    session.enableReverb(preset > 0);
+                    session.setReverbPreset(preset);
                 }
+            } catch (Exception e) {
+                Log.e(TAG, "Error enabling reverb preset", e);
             }
 
             // virtualizer
