@@ -11,3 +11,21 @@
         android:elevation="8dp"
         android:padding="4dp"
         android:layout_weight="1"/>
+
+    <LinearLayout
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:minHeight="?android:listPreferredItemHeightSmall"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+        <CheckBox
+                android:id="@+id/reverb_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/toggle_check"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"/>
+    </LinearLayout>
