@@ -1,15 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.cyanogenmod.audiofx.knobs.KnobContainer
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:background="@color/knob_container_background"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="164dp"
+    android:layout_height="match_parent"
+    android:background="@color/knob_container_background"
+    android:elevation="8dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/reverb_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/preset_text_padding"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif"
+            android:maxLines="1"
+            android:text="@string/reverb"
+            android:textColor="@color/white"
+            android:textSize="@dimen/reverb_switch_label_size" />
+
+        <Switch
+            android:id="@+id/reverb_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+    </LinearLayout>
+
+    <org.cyanogenmod.audiofx.knobs.KnobContainer
         android:id="@+id/knob_container"
-        android:layout_width="160dp"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
-        android:elevation="8dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"/>
+        android:gravity="center"
+        android:orientation="vertical" />
+
+</LinearLayout>

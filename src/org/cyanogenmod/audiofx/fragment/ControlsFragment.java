@@ -38,6 +38,7 @@ public class ControlsFragment extends AudioFxBaseFragment {
     KnobCommander mKnobCommander;
     KnobContainer mKnobContainer;
     Switch mMaxxVolumeSwitch;
+    Switch mReverbSwitch;
 
     private CompoundButton.OnCheckedChangeListener mMaxxVolumeListener
             = new CompoundButton.OnCheckedChangeListener() {
@@ -46,6 +47,16 @@ public class ControlsFragment extends AudioFxBaseFragment {
             if (mConfig.getMaxxVolumeEnabled() != isChecked) {
             }
             mConfig.setMaxxVolumeEnabled(isChecked);
+        }
+    };
+
+    private CompoundButton.OnCheckedChangeListener mReverbListener
+            = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (mConfig.getReverbEnabled() != isChecked) {
+            }
+            mConfig.setReverbEnabled(isChecked);
         }
     };
 
@@ -88,6 +99,11 @@ public class ControlsFragment extends AudioFxBaseFragment {
             mMaxxVolumeSwitch.setChecked(mConfig.getMaxxVolumeEnabled());
             mMaxxVolumeSwitch.setEnabled(currentDeviceEnabled);
         }
+
+        if (mReverbSwitch != null) {
+            mReverbSwitch.setChecked(mConfig.getReverbEnabled());
+            mReverbSwitch.setEnabled(currentDeviceEnabled);
+        }
     }
 
     @Override
@@ -104,11 +120,15 @@ public class ControlsFragment extends AudioFxBaseFragment {
 
         mKnobContainer = (KnobContainer) view.findViewById(R.id.knob_container);
         mMaxxVolumeSwitch = (Switch) view.findViewById(R.id.maxx_volume_switch);
+        mReverbSwitch = (Switch) view.findViewById(R.id.reverb_switch);
 
         updateFragmentBackgroundColors(getCurrentBackgroundColor());
 
         if (mMaxxVolumeSwitch != null) {
             mMaxxVolumeSwitch.setOnCheckedChangeListener(mMaxxVolumeListener);
+        }
+        if (mReverbSwitch != null) {
+            mReverbSwitch.setOnCheckedChangeListener(mReverbListener);
         }
     }
 

@@ -46,6 +46,7 @@ public class Constants {
     public static final String AUDIOFX_GLOBAL_ENABLE_DTS = "audiofx.global.dts.enable";
     public static final String AUDIOFX_GLOBAL_HAS_MAXXAUDIO = "audiofx.global.hasmaxxaudio";
     public static final String AUDIOFX_GLOBAL_HAS_BASSBOOST = "audiofx.global.hasbassboost";
+    public static final String AUDIOFX_GLOBAL_HAS_REVERB = "audiofx.global.hasreverb";
     public static final String AUDIOFX_GLOBAL_HAS_VIRTUALIZER = "audiofx.global.hasvirtualizer";
     public static final String AUDIOFX_GLOBAL_PREFS_VERSION_INT = "audiofx.global.prefs.version";
 
