@@ -118,18 +118,14 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
      * intents and should not conflict with them. This feature may not be available on
      * all devices.
      *
-     * Default logic is to do our best to only attach to music streams. We never attach
-     * to low-latency streams automatically, and we don't attach to mono streams by default
-     * either since these are usually notifications/ringtones/etc.
+     * Default logic is to do our best to only attach to music streams. We don't attach
+     * to mono streams by default since these are usually notifications/ringtones/etc.
      */
     public boolean shouldHandleSession(AudioSessionInfo info) {
         final boolean music = info.getStream() == AudioManager.STREAM_MUSIC;
-        final boolean offloaded = (info.getFlags() < 0)
-                || (info.getFlags() & AudioFxService.AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD) > 0
-                || (info.getFlags() & AudioFxService.AUDIO_OUTPUT_FLAG_DEEP_BUFFER) > 0;
         final boolean stereo = info.getChannelMask() < 0 || info.getChannelMask() > 1;
 
-        return music && offloaded && stereo && info.getSessionId() > 0;
+        return music && stereo && info.getSessionId() > 0;
     }
 
     public void addSession(AudioSessionInfo info) {
