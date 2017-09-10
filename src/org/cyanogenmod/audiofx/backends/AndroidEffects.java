@@ -129,6 +129,11 @@ class AndroidEffects extends EffectSetWithAndroidEq {
     }
 
     @Override
+    public boolean hasReverb() {
+        return mPresetReverb != null;
+    }
+
+    @Override
     public boolean hasBassBoost() {
         return mBassBoost != null;
     }

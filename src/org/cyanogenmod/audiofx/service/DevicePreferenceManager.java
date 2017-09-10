@@ -19,6 +19,7 @@ import static org.cyanogenmod.audiofx.Constants.AUDIOFX_GLOBAL_FILE;
 import static org.cyanogenmod.audiofx.Constants.AUDIOFX_GLOBAL_HAS_BASSBOOST;
 import static org.cyanogenmod.audiofx.Constants.AUDIOFX_GLOBAL_HAS_DTS;
 import static org.cyanogenmod.audiofx.Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO;
+import static org.cyanogenmod.audiofx.Constants.AUDIOFX_GLOBAL_HAS_REVERB;
 import static org.cyanogenmod.audiofx.Constants.AUDIOFX_GLOBAL_HAS_VIRTUALIZER;
 import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_BASS_ENABLE;
 import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_BASS_STRENGTH;
@@ -186,6 +187,7 @@ public class DevicePreferenceManager
         editor.putString(EQUALIZER_PRESET_NAMES, presetNames.toString());
 
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer());
+        editor.putBoolean(AUDIOFX_GLOBAL_HAS_REVERB, temp.hasReverb());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.getBrand() == Constants.EFFECT_TYPE_MAXXAUDIO);
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_DTS, temp.getBrand() == Constants.EFFECT_TYPE_DTS);
