@@ -22,8 +22,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import org.cyanogenmod.audiofx.R;
 import org.cyanogenmod.audiofx.activity.MasterConfigControl;
@@ -37,7 +37,7 @@ public class ControlsFragment extends AudioFxBaseFragment {
 
     KnobCommander mKnobCommander;
     KnobContainer mKnobContainer;
-    CheckBox mMaxxVolumeSwitch;
+    Switch mMaxxVolumeSwitch;
 
     private CompoundButton.OnCheckedChangeListener mMaxxVolumeListener
             = new CompoundButton.OnCheckedChangeListener() {
@@ -103,7 +103,7 @@ public class ControlsFragment extends AudioFxBaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         mKnobContainer = (KnobContainer) view.findViewById(R.id.knob_container);
-        mMaxxVolumeSwitch = (CheckBox) view.findViewById(R.id.maxx_volume_switch);
+        mMaxxVolumeSwitch = (Switch) view.findViewById(R.id.maxx_volume_switch);
 
         updateFragmentBackgroundColors(getCurrentBackgroundColor());
 
