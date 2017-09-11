@@ -33,7 +33,6 @@
     <dimen name="preset_text_size">30sp</dimen>
     <dimen name="preset_text_padding">4dp</dimen>
 
-    <dimen name="action_bar_switch_padding">16dip</dimen>
     <dimen name="action_bar_button_width">96dip</dimen>
     <dimen name="action_bar_button_height">34dip</dimen>
 
