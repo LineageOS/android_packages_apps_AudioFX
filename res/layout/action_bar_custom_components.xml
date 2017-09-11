@@ -11,13 +11,11 @@
             android:layout_height="wrap_content"
     />
 
-    <CheckBox
+    <Switch
             android:id="@+id/global_toggle"
             android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:button="@drawable/toggle_check"
-            android:paddingRight="@dimen/action_bar_switch_padding"
     />
 
 </LinearLayout>
