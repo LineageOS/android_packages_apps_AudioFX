@@ -451,12 +451,17 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
         final Animator.AnimatorListener animatorListener = new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
+                if (checked) {
+                    updateEnabledState();
+                }
                 buttonView.setEnabled(false);
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                updateEnabledState();
+                if (!checked) {
+                    updateEnabledState();
+                }
                 buttonView.setEnabled(true);
             }
 
