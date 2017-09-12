@@ -16,6 +16,9 @@
 package org.cyanogenmod.audiofx.fragment;
 
 import android.annotation.Nullable;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.media.AudioDeviceInfo;
 import android.os.Bundle;
 import android.util.Log;
@@ -84,6 +87,12 @@ public class ControlsFragment extends AudioFxBaseFragment {
         if (mKnobContainer != null) {
             mKnobContainer.updateKnobHighlights(color);
         }
+        if (mMaxxVolumeSwitch != null) {
+            updateSwitchColor(mMaxxVolumeSwitch, color);
+        }
+        if (mReverbSwitch != null) {
+            updateSwitchColor(mReverbSwitch, color);
+        }
     }
 
 
@@ -104,6 +113,39 @@ public class ControlsFragment extends AudioFxBaseFragment {
             mReverbSwitch.setChecked(mConfig.getReverbEnabled());
             mReverbSwitch.setEnabled(currentDeviceEnabled);
         }
+    }
+
+    private void updateSwitchColor(Switch view, int color) {
+        ColorStateList thumbStates = new ColorStateList(
+                new int[][] {
+                    new int[] { -android.R.attr.state_enabled },
+                    new int[] { android.R.attr.state_checked },
+                    new int[] {}
+                },
+                new int[] {
+                    color,
+                    color,
+                    Color.LTGRAY
+                }
+        );
+
+        ColorStateList trackStates = new ColorStateList(
+                new int[][] {
+                    new int[] { -android.R.attr.state_enabled },
+                    new int[] { android.R.attr.state_checked },
+                    new int[] {}
+                },
+                new int[] {
+                    color,
+                    color,
+                    Color.GRAY
+                }
+        );
+
+        view.setThumbTintList(thumbStates);
+        view.setTrackTintList(trackStates);
+        view.setTrackTintMode(PorterDuff.Mode.OVERLAY);
+        view.invalidate();
     }
 
     @Override
