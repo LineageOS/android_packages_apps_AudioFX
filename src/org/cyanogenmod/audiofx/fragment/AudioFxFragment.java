@@ -307,7 +307,7 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
             int viewId = View.generateViewId();
             MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
                     Menu.NONE, MasterConfigControl.getDeviceDisplayString(getActivity(), ai));
-            item.setIcon(R.drawable.ic_action_dsp_icons_bluetoof);
+            item.setIcon(R.drawable.ic_action_dsp_icons_bluetooth);
             mMenuItems.put(item, ai);
             if (currentDevice.getId() == ai.getId()) {
                 selectedItem = item;
