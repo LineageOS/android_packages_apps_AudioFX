@@ -21,6 +21,7 @@
 
     <style name="AppThemeV2" parent="android:Theme.Material">
         <item name="android:actionBarStyle">@style/ActionBar</item>
+        <item name="android:colorAccent">@color/white</item>
     </style>
 
     <style name="ActionBar" parent="android:Widget.Material.ActionBar.Solid">
