@@ -17,6 +17,7 @@
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
   <string name="snack_bar_not_default_not_now">Inte nu</string>
+  <string name="qs_tile_content_description">Växla mellan AudioFX på/av för den aktuella enheten</string>
   <string name="qs_tile_label">AudioFX (%1$s)</string>
   <string name="normal">Normal</string>
   <string name="classical">Klassisk</string>
@@ -54,5 +55,6 @@
   <string name="treble">Diskant</string>
   <string name="bass">Bas</string>
   <string name="rename">Byt namn</string>
+  <string name="remove_custom_preset_warning_message">Är du säker på att du vill ta bort %1$s?</string>
   <string name="powered_by">drivs av</string>
 </resources>
