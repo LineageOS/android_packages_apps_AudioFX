@@ -34,6 +34,8 @@
   <string name="electronic">Electronic</string>
   <string name="small_speakers">Altavoces pequeños</string>
   <string name="multimedia">Multimedia</string>
+  <string name="smallroom">Sala pequeña</string>
+  <string name="mediumroom">Sala mediana</string>
   <string name="largeroom">Habitación grande</string>
   <string name="largehall">Sala grande</string>
   <string name="power_on_prompt">Primi\'l botón de prendíu na parte cimera drecha.</string>
@@ -46,6 +48,7 @@
   <string name="eq_preset">Preaxuste d\'ecualizador</string>
   <string name="devices">Preseos</string>
   <string name="virtualizer">Virtualizador</string>
+  <string name="bass">Baxos</string>
   <string name="rename">Renomar</string>
   <string name="remove_custom_preset_warning_message">¿De xuru que quies desaniciar %1$s?</string>
   <string name="powered_by">cola potencia de</string>
