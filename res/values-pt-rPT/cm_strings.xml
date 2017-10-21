@@ -45,7 +45,7 @@
   <string name="plate">Prato</string>
   <string name="power_on_prompt">Pressione o botão ligar/desligar na parte superior direita.</string>
   <string name="effect_unavalable_for_speaker">Efeito não disponível no modo de altifalante.</string>
-  <string name="device_headset">Auricular</string>
+  <string name="device_headset">Auscultadores</string>
   <string name="device_speaker">Altifalante</string>
   <string name="device_usb">USB</string>
   <string name="device_bluetooth">Bluetooth</string>
