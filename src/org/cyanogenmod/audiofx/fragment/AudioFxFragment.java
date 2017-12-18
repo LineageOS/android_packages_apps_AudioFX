@@ -329,8 +329,8 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
         mMenuDevices.getSubMenu().setGroupCheckable(R.id.devices, true, true);
         if (selectedItem != null) {
             selectedItem.setChecked(true);
+            mMenuDevices.setIcon(selectedItem.getIcon());
         }
-        mMenuDevices.setIcon(selectedItem.getIcon());
     }
 
     @Override
