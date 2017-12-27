@@ -23,8 +23,8 @@ import android.util.Log;
 
 import org.cyanogenmod.audiofx.service.AudioFxService;
 
-import cyanogenmod.media.AudioSessionInfo;
-import cyanogenmod.media.CMAudioManager;
+import lineageos.media.AudioSessionInfo;
+import lineageos.media.LineageAudioManager;
 
 public class ServiceDispatcher extends BroadcastReceiver {
     @Override
@@ -42,14 +42,14 @@ public class ServiceDispatcher extends BroadcastReceiver {
             service.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, sessionId);
             service.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, pkg);
 
-        } else if (action.equals(CMAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
+        } else if (action.equals(LineageAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
 
-            // callback from CMAudioService
+            // callback from LineageAudioService
             final AudioSessionInfo info = (AudioSessionInfo) intent.getParcelableExtra(
-                    CMAudioManager.EXTRA_SESSION_INFO);
-            boolean added = intent.getBooleanExtra(CMAudioManager.EXTRA_SESSION_ADDED, false);
-            service.putExtra(CMAudioManager.EXTRA_SESSION_INFO, info);
-            service.putExtra(CMAudioManager.EXTRA_SESSION_ADDED, added);
+                    LineageAudioManager.EXTRA_SESSION_INFO);
+            boolean added = intent.getBooleanExtra(LineageAudioManager.EXTRA_SESSION_ADDED, false);
+            service.putExtra(LineageAudioManager.EXTRA_SESSION_INFO, info);
+            service.putExtra(LineageAudioManager.EXTRA_SESSION_ADDED, added);
         }
 
         service.setAction(action);

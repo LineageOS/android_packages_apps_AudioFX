@@ -38,10 +38,10 @@ import org.cyanogenmod.audiofx.receiver.QuickSettingsTileReceiver;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-import cyanogenmod.app.CMStatusBarManager;
-import cyanogenmod.app.CustomTile;
-import cyanogenmod.media.AudioSessionInfo;
-import cyanogenmod.media.CMAudioManager;
+import lineageos.app.LineageStatusBarManager;
+import lineageos.app.CustomTile;
+import lineageos.media.AudioSessionInfo;
+import lineageos.media.LineageAudioManager;
 
 /**
  * This service is responsible for applying all requested effects from the AudioFX UI.
@@ -149,8 +149,8 @@ public class AudioFxService extends Service
                 mCurrentDevice);
         mOutputListener.addCallback(mDevicePrefs, mSessionManager);
 
-        final CMAudioManager cma = CMAudioManager.getInstance(getApplicationContext());
-        for (AudioSessionInfo asi : cma.listAudioSessions(AudioManager.STREAM_MUSIC)) {
+        final LineageAudioManager lam = LineageAudioManager.getInstance(getApplicationContext());
+        for (AudioSessionInfo asi : lam.listAudioSessions(AudioManager.STREAM_MUSIC)) {
             mSessionManager.addSession(asi);
         }
 
@@ -187,13 +187,13 @@ public class AudioFxService extends Service
                     AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1, -1, -1);
                     mSessionManager.removeSession(info);
 
-                } else if (action.equals(CMAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
+                } else if (action.equals(LineageAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
 
                     final AudioSessionInfo info = (AudioSessionInfo) intent.getParcelableExtra(
-                            CMAudioManager.EXTRA_SESSION_INFO);
+                            LineageAudioManager.EXTRA_SESSION_INFO);
                     if (info != null && info.getSessionId() > 0) {
-                        boolean added = intent.getBooleanExtra(CMAudioManager.EXTRA_SESSION_ADDED,
-                                false);
+                        boolean added = intent.getBooleanExtra(
+                                LineageAudioManager.EXTRA_SESSION_ADDED, false);
                         if (added) {
                             mSessionManager.addSession(info);
                         } else {
@@ -278,7 +278,7 @@ public class AudioFxService extends Service
 
         mTile = mTileBuilder.build();
 
-        CMStatusBarManager.getInstance(this).publishTile(TILE_ID, mTile);
+        LineageStatusBarManager.getInstance(this).publishTile(TILE_ID, mTile);
     }
 
     @Override
@@ -290,7 +290,7 @@ public class AudioFxService extends Service
             mSessionManager.onDestroy();
         }
 
-        CMStatusBarManager.getInstance(this).removeTile(TILE_ID);
+        LineageStatusBarManager.getInstance(this).removeTile(TILE_ID);
 
         super.onDestroy();
     }

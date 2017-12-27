@@ -51,8 +51,8 @@ import org.cyanogenmod.audiofx.backends.EffectSet;
 import org.cyanogenmod.audiofx.backends.EffectsFactory;
 import org.cyanogenmod.audiofx.eq.EqUtils;
 
-import cyanogenmod.media.AudioSessionInfo;
-import cyanogenmod.media.CMAudioManager;
+import lineageos.media.AudioSessionInfo;
+import lineageos.media.LineageAudioManager;
 
 class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCallback {
 
@@ -62,7 +62,7 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
     private final Context mContext;
     private final Handler mHandler;
     private final DevicePreferenceManager mDevicePrefs;
-    private final CMAudioManager mCMAudio;
+    private final LineageAudioManager mLineageAudio;
 
     /**
      * All fields ending with L should be locked on {@link #mAudioSessionsL}
@@ -82,7 +82,7 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
     public SessionManager(Context context, Handler handler, DevicePreferenceManager devicePrefs,
             AudioDeviceInfo outputDevice) {
         mContext = context;
-        mCMAudio = CMAudioManager.getInstance(context);
+        mLineageAudio = LineageAudioManager.getInstance(context);
         mDevicePrefs = devicePrefs;
         mCurrentDevice = outputDevice;
         mHandler = new Handler(handler.getLooper(), new AudioServiceHandler());
@@ -112,7 +112,7 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
 
     /**
      * Callback which listens for session updates from AudioPolicyManager. This is a
-     * feature added by CM which notifies when sessions are created or
+     * feature added by LineageOS which notifies when sessions are created or
      * destroyed on a particular stream. This is independent of the standard control
      * intents and should not conflict with them. This feature may not be available on
      * all devices.
