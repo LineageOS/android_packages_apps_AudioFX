@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.cyanogenmod.audiofx.activity;
+package org.lineageos.audiofx.activity;
 
 import com.android.internal.app.AlertActivity;
 import com.android.internal.app.AlertController;
 import com.android.internal.app.AlertController.AlertParams.OnPrepareListViewListener;
-import org.cyanogenmod.audiofx.Compatibility;
-import org.cyanogenmod.audiofx.Compatibility.Service;
+import org.lineageos.audiofx.Compatibility;
+import org.lineageos.audiofx.Compatibility.Service;
 
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -33,7 +33,7 @@ import android.database.MatrixCursor;
 import android.media.audiofx.AudioEffect;
 import android.os.Bundle;
 import android.widget.ListView;
-import org.cyanogenmod.audiofx.R;
+import org.lineageos.audiofx.R;
 
 import java.util.List;
 

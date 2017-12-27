@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cyanogenmod.audiofx;
+package org.lineageos.audiofx;
 
 import android.app.Activity;
 import android.app.IntentService;
@@ -30,7 +30,7 @@ import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import org.cyanogenmod.audiofx.activity.ActivityMusic;
+import org.lineageos.audiofx.activity.ActivityMusic;
 
 import java.util.List;
 

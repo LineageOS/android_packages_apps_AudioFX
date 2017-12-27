@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.widget;
+package org.lineageos.audiofx.widget;
 
 /**
  * Java support for complex numbers.

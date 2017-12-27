@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.fragment;
+package org.lineageos.audiofx.fragment;
 
 import android.animation.Animator;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.widget.CompoundButton;
-import org.cyanogenmod.audiofx.activity.ActivityMusic;
-import org.cyanogenmod.audiofx.activity.MasterConfigControl;
+import org.lineageos.audiofx.activity.ActivityMusic;
+import org.lineageos.audiofx.activity.MasterConfigControl;
 
 public class AudioFxBaseFragment extends Fragment {
 

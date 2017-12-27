@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.widget;
+package org.lineageos.audiofx.widget;
 
 /**
  * Evaluate transfer functions of biquad filters in direct form 1.

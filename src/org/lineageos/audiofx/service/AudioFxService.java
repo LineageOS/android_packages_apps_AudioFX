@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.service;
+package org.lineageos.audiofx.service;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -29,11 +29,11 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import org.cyanogenmod.audiofx.R;
-import org.cyanogenmod.audiofx.activity.ActivityMusic;
-import org.cyanogenmod.audiofx.activity.MasterConfigControl;
-import org.cyanogenmod.audiofx.backends.EffectSet;
-import org.cyanogenmod.audiofx.receiver.QuickSettingsTileReceiver;
+import org.lineageos.audiofx.R;
+import org.lineageos.audiofx.activity.ActivityMusic;
+import org.lineageos.audiofx.activity.MasterConfigControl;
+import org.lineageos.audiofx.backends.EffectSet;
+import org.lineageos.audiofx.receiver.QuickSettingsTileReceiver;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
@@ -58,9 +58,9 @@ public class AudioFxService extends Service
     public static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     public static final String ACTION_DEVICE_OUTPUT_CHANGED
-            = "org.cyanogenmod.audiofx.ACTION_DEVICE_OUTPUT_CHANGED";
+            = "org.lineageos.audiofx.ACTION_DEVICE_OUTPUT_CHANGED";
 
-    public static final String ACTION_UPDATE_TILE = "org.cyanogenmod.audiofx.action.UPDATE_TILE";
+    public static final String ACTION_UPDATE_TILE = "org.lineageos.audiofx.action.UPDATE_TILE";
 
     public static final String EXTRA_DEVICE = "device";
 

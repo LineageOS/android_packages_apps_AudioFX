@@ -1,4 +1,4 @@
-package org.cyanogenmod.audiofx.util;
+package org.lineageos.audiofx.util;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +7,7 @@ import android.os.IBinder;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ServiceTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import org.cyanogenmod.audiofx.service.AudioFxService;
+import org.lineageos.audiofx.service.AudioFxService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

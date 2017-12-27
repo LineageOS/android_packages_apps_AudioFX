@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.backends;
+package org.lineageos.audiofx.backends;
 
 import android.media.AudioDeviceInfo;
 import android.media.audiofx.Equalizer;
 import android.util.Log;
 
-import org.cyanogenmod.audiofx.eq.EqUtils;
+import org.lineageos.audiofx.eq.EqUtils;
 
 public abstract class EffectSetWithAndroidEq extends EffectSet {
     /**

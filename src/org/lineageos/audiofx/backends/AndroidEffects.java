@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.backends;
+package org.lineageos.audiofx.backends;
 
 import android.media.AudioDeviceInfo;
 import android.media.audiofx.AudioEffect;
@@ -22,7 +22,7 @@ import android.media.audiofx.PresetReverb;
 import android.media.audiofx.Virtualizer;
 import android.util.Log;
 
-import org.cyanogenmod.audiofx.Constants;
+import org.lineageos.audiofx.Constants;
 
 /**
  * EffectSet which comprises standard Android effects

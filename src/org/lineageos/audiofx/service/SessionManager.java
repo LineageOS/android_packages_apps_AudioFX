@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.service;
+package org.lineageos.audiofx.service;
 
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_BASS_ENABLE;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_BASS_STRENGTH;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_REVERB_PRESET;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_ENABLE;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_DEFAULT_GLOBAL_ENABLE;
-import static org.cyanogenmod.audiofx.activity.MasterConfigControl.getDeviceIdentifierString;
-import static org.cyanogenmod.audiofx.service.AudioFxService.ALL_CHANGED;
-import static org.cyanogenmod.audiofx.service.AudioFxService.BASS_BOOST_CHANGED;
-import static org.cyanogenmod.audiofx.service.AudioFxService.EQ_CHANGED;
-import static org.cyanogenmod.audiofx.service.AudioFxService.REVERB_CHANGED;
-import static org.cyanogenmod.audiofx.service.AudioFxService.TREBLE_BOOST_CHANGED;
-import static org.cyanogenmod.audiofx.service.AudioFxService.VIRTUALIZER_CHANGED;
-import static org.cyanogenmod.audiofx.service.AudioFxService.VOLUME_BOOST_CHANGED;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_BASS_ENABLE;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_BASS_STRENGTH;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_REVERB_PRESET;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_ENABLE;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH;
+import static org.lineageos.audiofx.Constants.DEVICE_DEFAULT_GLOBAL_ENABLE;
+import static org.lineageos.audiofx.activity.MasterConfigControl.getDeviceIdentifierString;
+import static org.lineageos.audiofx.service.AudioFxService.ALL_CHANGED;
+import static org.lineageos.audiofx.service.AudioFxService.BASS_BOOST_CHANGED;
+import static org.lineageos.audiofx.service.AudioFxService.EQ_CHANGED;
+import static org.lineageos.audiofx.service.AudioFxService.REVERB_CHANGED;
+import static org.lineageos.audiofx.service.AudioFxService.TREBLE_BOOST_CHANGED;
+import static org.lineageos.audiofx.service.AudioFxService.VIRTUALIZER_CHANGED;
+import static org.lineageos.audiofx.service.AudioFxService.VOLUME_BOOST_CHANGED;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -47,9 +47,9 @@ import android.os.Message;
 import android.util.Log;
 import android.util.SparseArray;
 
-import org.cyanogenmod.audiofx.backends.EffectSet;
-import org.cyanogenmod.audiofx.backends.EffectsFactory;
-import org.cyanogenmod.audiofx.eq.EqUtils;
+import org.lineageos.audiofx.backends.EffectSet;
+import org.lineageos.audiofx.backends.EffectsFactory;
+import org.lineageos.audiofx.eq.EqUtils;
 
 import lineageos.media.AudioSessionInfo;
 import lineageos.media.LineageAudioManager;

@@ -15,7 +15,7 @@
 -->
 <manifest
         xmlns:android="http://schemas.android.com/apk/res/android"
-        package="org.cyanogenmod.audiofx"
+        package="org.lineageos.audiofx"
         android:versionName="2.2.0"
         android:versionCode="20200">
 
@@ -34,7 +34,7 @@
     <application
             android:icon="@mipmap/ic_launcher"
             android:allowBackup="false"
-            android:label="@string/app_name_cm"
+            android:label="@string/app_name_lineage"
             android:supportsRtl="true"
             android:persistent="true"
             android:hardwareAccelerated="true"
@@ -43,7 +43,7 @@
         <activity
                 android:name=".activity.ActivityMusic"
                 android:theme="@style/AppThemeV2"
-                android:label="@string/app_name_cm"
+                android:label="@string/app_name_lineage"
                 android:launchMode="singleInstance"
                 android:configChanges="locale|orientation">
             <intent-filter>
@@ -78,7 +78,7 @@
 
         <receiver android:name=".receiver.QuickSettingsTileReceiver">
             <intent-filter>
-                <action android:name="org.cyanogenmod.audiofx.action.TOGGLE_DEVICE" />
+                <action android:name="org.lineageos.audiofx.action.TOGGLE_DEVICE" />
             </intent-filter>
         </receiver>
 

@@ -2,7 +2,7 @@
 
 <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:custom="http://schemas.android.com/apk/res/org.cyanogenmod.audiofx"
+        xmlns:custom="http://schemas.android.com/apk/res/org.lineageos.audiofx"
         android:id="@+id/main_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

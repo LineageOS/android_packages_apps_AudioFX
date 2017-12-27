@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.fragment;
+package org.lineageos.audiofx.fragment;
 
 import android.annotation.Nullable;
 import android.content.res.ColorStateList;
@@ -28,10 +28,10 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
-import org.cyanogenmod.audiofx.R;
-import org.cyanogenmod.audiofx.activity.MasterConfigControl;
-import org.cyanogenmod.audiofx.knobs.KnobCommander;
-import org.cyanogenmod.audiofx.knobs.KnobContainer;
+import org.lineageos.audiofx.R;
+import org.lineageos.audiofx.activity.MasterConfigControl;
+import org.lineageos.audiofx.knobs.KnobCommander;
+import org.lineageos.audiofx.knobs.KnobContainer;
 
 public class ControlsFragment extends AudioFxBaseFragment {
 

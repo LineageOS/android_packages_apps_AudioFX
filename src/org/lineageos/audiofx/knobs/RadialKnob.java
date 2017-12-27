@@ -27,7 +27,7 @@
  * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.cyanogenmod.audiofx.knobs;
+package org.lineageos.audiofx.knobs;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -48,7 +48,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.Toast;
-import org.cyanogenmod.audiofx.R;
+import org.lineageos.audiofx.R;
 
 public class RadialKnob extends View {
 

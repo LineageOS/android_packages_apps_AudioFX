@@ -37,7 +37,7 @@
 
     </LinearLayout>
 
-    <org.cyanogenmod.audiofx.knobs.KnobContainer
+    <org.lineageos.audiofx.knobs.KnobContainer
             android:id="@+id/knob_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -59,7 +59,7 @@
                 android:layout_gravity="center_horizontal"
                 android:paddingBottom="@dimen/knob_container_padding_bottom">
 
-            <org.cyanogenmod.audiofx.knobs.RadialKnob
+            <org.lineageos.audiofx.knobs.RadialKnob
                     android:id="@+id/knob"
                     android:layout_width="@dimen/knob_width"
                     android:layout_gravity="top|center_horizontal"
@@ -89,7 +89,7 @@
                 android:id="@+id/bass_knob_container"
                 android:paddingBottom="@dimen/knob_container_padding_bottom">
 
-            <org.cyanogenmod.audiofx.knobs.RadialKnob
+            <org.lineageos.audiofx.knobs.RadialKnob
                     android:id="@+id/knob"
                     android:layout_gravity="top|center_horizontal"
                     android:layout_width="@dimen/knob_width"
@@ -120,7 +120,7 @@
                 android:layout_gravity="center_horizontal"
                 android:paddingBottom="@dimen/knob_container_padding_bottom">
 
-            <org.cyanogenmod.audiofx.knobs.RadialKnob
+            <org.lineageos.audiofx.knobs.RadialKnob
                     android:id="@+id/knob"
                     android:layout_gravity="top|center_horizontal"
                     android:layout_width="@dimen/knob_width"
@@ -142,6 +142,6 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"/>
 
-    </org.cyanogenmod.audiofx.knobs.KnobContainer>
+    </org.lineageos.audiofx.knobs.KnobContainer>
 
 </LinearLayout>

@@ -17,7 +17,7 @@
  * - Modified extensively by cyanogen for multi-band support
  */
 
-package org.cyanogenmod.audiofx.widget;
+package org.lineageos.audiofx.widget;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -38,7 +38,7 @@ import android.view.SurfaceView;
 import android.view.View;
 
 import android.view.animation.DecelerateInterpolator;
-import org.cyanogenmod.audiofx.R;
+import org.lineageos.audiofx.R;
 
 import java.util.Arrays;
 

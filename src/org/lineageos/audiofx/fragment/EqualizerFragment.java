@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.fragment;
+package org.lineageos.audiofx.fragment;
 
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;
@@ -37,16 +37,16 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.cyanogenmod.audiofx.Preset;
-import org.cyanogenmod.audiofx.R;
-import org.cyanogenmod.audiofx.activity.EqualizerManager;
-import org.cyanogenmod.audiofx.activity.MasterConfigControl;
-import org.cyanogenmod.audiofx.activity.StateCallbacks;
-import org.cyanogenmod.audiofx.eq.EqContainerView;
-import org.cyanogenmod.audiofx.preset.InfinitePagerAdapter;
-import org.cyanogenmod.audiofx.preset.InfiniteViewPager;
-import org.cyanogenmod.audiofx.preset.PresetPagerAdapter;
-import org.cyanogenmod.audiofx.viewpagerindicator.CirclePageIndicator;
+import org.lineageos.audiofx.Preset;
+import org.lineageos.audiofx.R;
+import org.lineageos.audiofx.activity.EqualizerManager;
+import org.lineageos.audiofx.activity.MasterConfigControl;
+import org.lineageos.audiofx.activity.StateCallbacks;
+import org.lineageos.audiofx.eq.EqContainerView;
+import org.lineageos.audiofx.preset.InfinitePagerAdapter;
+import org.lineageos.audiofx.preset.InfiniteViewPager;
+import org.lineageos.audiofx.preset.PresetPagerAdapter;
+import org.lineageos.audiofx.viewpagerindicator.CirclePageIndicator;
 
 public class EqualizerFragment extends AudioFxBaseFragment
         implements StateCallbacks.DeviceChangedCallback, StateCallbacks.EqUpdatedCallback {

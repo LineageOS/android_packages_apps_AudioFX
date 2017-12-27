@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.knobs;
+package org.lineageos.audiofx.knobs;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -31,9 +31,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.cyanogenmod.audiofx.R;
-import org.cyanogenmod.audiofx.activity.MasterConfigControl;
-import org.cyanogenmod.audiofx.activity.StateCallbacks;
+import org.lineageos.audiofx.R;
+import org.lineageos.audiofx.activity.MasterConfigControl;
+import org.lineageos.audiofx.activity.StateCallbacks;
 
 public class KnobContainer extends LinearLayout
         implements StateCallbacks.DeviceChangedCallback {

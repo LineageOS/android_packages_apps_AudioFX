@@ -36,7 +36,7 @@
 
     </LinearLayout>
 
-    <org.cyanogenmod.audiofx.knobs.KnobContainer
+    <org.lineageos.audiofx.knobs.KnobContainer
         android:id="@+id/knob_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.eq;
+package org.lineageos.audiofx.eq;
 
 import android.util.Log;
 

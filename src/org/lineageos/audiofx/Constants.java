@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx;
+package org.lineageos.audiofx;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import org.cyanogenmod.audiofx.eq.EqUtils;
+import org.lineageos.audiofx.eq.EqUtils;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.knobs;
+package org.lineageos.audiofx.knobs;
 
 import android.content.Context;
-import org.cyanogenmod.audiofx.Constants;
-import org.cyanogenmod.audiofx.activity.MasterConfigControl;
-import org.cyanogenmod.audiofx.service.AudioFxService;
+import org.lineageos.audiofx.Constants;
+import org.lineageos.audiofx.activity.MasterConfigControl;
+import org.lineageos.audiofx.service.AudioFxService;
 
 public class KnobCommander {
 

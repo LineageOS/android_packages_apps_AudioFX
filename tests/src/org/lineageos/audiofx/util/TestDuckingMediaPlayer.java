@@ -1,10 +1,10 @@
-package org.cyanogenmod.audiofx.util;
+package org.lineageos.audiofx.util;
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.util.Log;
 
-import org.cyanogenmod.audiofx.tests.R;
+import org.lineageos.audiofx.tests.R;
 
 import static junit.framework.Assert.assertNotNull;
 

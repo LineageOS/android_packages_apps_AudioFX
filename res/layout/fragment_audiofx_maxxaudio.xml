@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<org.cyanogenmod.audiofx.widget.InterceptableLinearLayout
+<org.lineageos.audiofx.widget.InterceptableLinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:custom="http://schemas.android.com/apk/res/org.cyanogenmod.audiofx"
+        xmlns:custom="http://schemas.android.com/apk/res/org.lineageos.audiofx"
         android:id="@+id/interceptable_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
     <!-- equalizer layout -->
-    <FrameLayout class="org.cyanogenmod.audiofx.fragment.EqualizerFragment"
+    <FrameLayout class="org.lineageos.audiofx.fragment.EqualizerFragment"
               android:id="@+id/equalizer"
               android:layout_weight="1"
               android:layout_width="match_parent"
               android:layout_height="0dp"/>
 
     <!-- knobs -->
-    <FrameLayout class="org.cyanogenmod.audiofx.fragment.ControlsFragment"
+    <FrameLayout class="org.lineageos.audiofx.fragment.ControlsFragment"
               android:id="@+id/controls"
               android:layout_weight="0"
               android:layout_width="match_parent"
               android:layout_height="200dp"/>
 
-</org.cyanogenmod.audiofx.widget.InterceptableLinearLayout>
+</org.lineageos.audiofx.widget.InterceptableLinearLayout>

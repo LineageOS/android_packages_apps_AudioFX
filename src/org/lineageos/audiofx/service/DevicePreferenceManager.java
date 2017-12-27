@@ -13,32 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.service;
+package org.lineageos.audiofx.service;
 
-import static org.cyanogenmod.audiofx.Constants.AUDIOFX_GLOBAL_FILE;
-import static org.cyanogenmod.audiofx.Constants.AUDIOFX_GLOBAL_HAS_BASSBOOST;
-import static org.cyanogenmod.audiofx.Constants.AUDIOFX_GLOBAL_HAS_DTS;
-import static org.cyanogenmod.audiofx.Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO;
-import static org.cyanogenmod.audiofx.Constants.AUDIOFX_GLOBAL_HAS_REVERB;
-import static org.cyanogenmod.audiofx.Constants.AUDIOFX_GLOBAL_HAS_VIRTUALIZER;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_BASS_ENABLE;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_BASS_STRENGTH;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_EQ_PRESET;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_ENABLE;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_HEADSET;
-import static org.cyanogenmod.audiofx.Constants.DEVICE_SPEAKER;
-import static org.cyanogenmod.audiofx.Constants.EQUALIZER_BAND_LEVEL_RANGE;
-import static org.cyanogenmod.audiofx.Constants.EQUALIZER_CENTER_FREQS;
-import static org.cyanogenmod.audiofx.Constants.EQUALIZER_NUMBER_OF_BANDS;
-import static org.cyanogenmod.audiofx.Constants.EQUALIZER_NUMBER_OF_PRESETS;
-import static org.cyanogenmod.audiofx.Constants.EQUALIZER_PRESET;
-import static org.cyanogenmod.audiofx.Constants.EQUALIZER_PRESET_NAMES;
-import static org.cyanogenmod.audiofx.Constants.SAVED_DEFAULTS;
+import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_FILE;
+import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_BASSBOOST;
+import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_DTS;
+import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO;
+import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_REVERB;
+import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_VIRTUALIZER;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_BASS_ENABLE;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_BASS_STRENGTH;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_EQ_PRESET;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_ENABLE;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE;
+import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH;
+import static org.lineageos.audiofx.Constants.DEVICE_HEADSET;
+import static org.lineageos.audiofx.Constants.DEVICE_SPEAKER;
+import static org.lineageos.audiofx.Constants.EQUALIZER_BAND_LEVEL_RANGE;
+import static org.lineageos.audiofx.Constants.EQUALIZER_CENTER_FREQS;
+import static org.lineageos.audiofx.Constants.EQUALIZER_NUMBER_OF_BANDS;
+import static org.lineageos.audiofx.Constants.EQUALIZER_NUMBER_OF_PRESETS;
+import static org.lineageos.audiofx.Constants.EQUALIZER_PRESET;
+import static org.lineageos.audiofx.Constants.EQUALIZER_PRESET_NAMES;
+import static org.lineageos.audiofx.Constants.SAVED_DEFAULTS;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -47,11 +47,11 @@ import android.media.AudioDeviceInfo;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.cyanogenmod.audiofx.Constants;
-import org.cyanogenmod.audiofx.R;
-import org.cyanogenmod.audiofx.activity.MasterConfigControl;
-import org.cyanogenmod.audiofx.backends.EffectSet;
-import org.cyanogenmod.audiofx.backends.EffectsFactory;
+import org.lineageos.audiofx.Constants;
+import org.lineageos.audiofx.R;
+import org.lineageos.audiofx.activity.MasterConfigControl;
+import org.lineageos.audiofx.backends.EffectSet;
+import org.lineageos.audiofx.backends.EffectsFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;

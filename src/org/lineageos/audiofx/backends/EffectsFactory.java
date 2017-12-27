@@ -1,6 +1,6 @@
-package org.cyanogenmod.audiofx.backends;
+package org.lineageos.audiofx.backends;
 
-import org.cyanogenmod.audiofx.Constants;
+import org.lineageos.audiofx.Constants;
 
 import android.content.Context;
 import android.media.AudioDeviceInfo;

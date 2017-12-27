@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.eq;
+package org.lineageos.audiofx.eq;
 
 import android.content.Context;
 import android.provider.Settings;
@@ -24,10 +24,10 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import org.cyanogenmod.audiofx.R;
-import org.cyanogenmod.audiofx.activity.EqualizerManager;
-import org.cyanogenmod.audiofx.activity.MasterConfigControl;
-import org.cyanogenmod.audiofx.preset.InfiniteViewPager;
+import org.lineageos.audiofx.R;
+import org.lineageos.audiofx.activity.EqualizerManager;
+import org.lineageos.audiofx.activity.MasterConfigControl;
+import org.lineageos.audiofx.preset.InfiniteViewPager;
 
 public class EqSwipeController extends LinearLayout {
 

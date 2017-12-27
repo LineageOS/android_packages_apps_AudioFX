@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.preset;
+package org.lineageos.audiofx.preset;
 
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;

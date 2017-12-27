@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.preset;
+package org.lineageos.audiofx.preset;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
@@ -22,10 +22,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.cyanogenmod.audiofx.Preset;
-import org.cyanogenmod.audiofx.R;
-import org.cyanogenmod.audiofx.activity.EqualizerManager;
-import org.cyanogenmod.audiofx.activity.MasterConfigControl;
+import org.lineageos.audiofx.Preset;
+import org.lineageos.audiofx.R;
+import org.lineageos.audiofx.activity.EqualizerManager;
+import org.lineageos.audiofx.activity.MasterConfigControl;
 
 public class PresetPagerAdapter extends PagerAdapter {
 

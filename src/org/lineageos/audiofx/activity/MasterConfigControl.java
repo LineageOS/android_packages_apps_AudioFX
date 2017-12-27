@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.activity;
+package org.lineageos.audiofx.activity;
 
 import static android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP;
 import static android.media.AudioDeviceInfo.TYPE_BLUETOOTH_SCO;
@@ -40,8 +40,8 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import org.cyanogenmod.audiofx.Constants;
-import org.cyanogenmod.audiofx.service.AudioFxService;
+import org.lineageos.audiofx.Constants;
+import org.lineageos.audiofx.service.AudioFxService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -330,10 +330,10 @@ public class MasterConfigControl {
         switch (type) {
             case TYPE_WIRED_HEADSET:
             case TYPE_WIRED_HEADPHONES:
-                return context.getString(org.cyanogenmod.audiofx.R.string.device_headset);
+                return context.getString(org.lineageos.audiofx.R.string.device_headset);
             case TYPE_LINE_ANALOG:
             case TYPE_LINE_DIGITAL:
-                return context.getString(org.cyanogenmod.audiofx.R.string.device_line_out);
+                return context.getString(org.lineageos.audiofx.R.string.device_line_out);
             case TYPE_BLUETOOTH_SCO:
             case TYPE_BLUETOOTH_A2DP:
             case TYPE_USB_DEVICE:
@@ -342,7 +342,7 @@ public class MasterConfigControl {
             case TYPE_IP:
                 return info.getProductName().toString();
             default:
-                return context.getString(org.cyanogenmod.audiofx.R.string.device_speaker);
+                return context.getString(org.lineageos.audiofx.R.string.device_speaker);
         }
     }
 

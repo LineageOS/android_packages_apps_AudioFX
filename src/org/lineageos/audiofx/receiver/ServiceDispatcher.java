@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.receiver;
+package org.lineageos.audiofx.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -21,7 +21,7 @@ import android.content.Intent;
 import android.media.audiofx.AudioEffect;
 import android.util.Log;
 
-import org.cyanogenmod.audiofx.service.AudioFxService;
+import org.lineageos.audiofx.service.AudioFxService;
 
 import lineageos.media.AudioSessionInfo;
 import lineageos.media.LineageAudioManager;

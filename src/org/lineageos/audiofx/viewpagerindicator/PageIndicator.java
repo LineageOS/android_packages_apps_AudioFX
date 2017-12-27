@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.cyanogenmod.audiofx.viewpagerindicator;
+package org.lineageos.audiofx.viewpagerindicator;
 
 import android.support.v4.view.ViewPager;
 

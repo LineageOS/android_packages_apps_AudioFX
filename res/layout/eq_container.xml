@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<org.cyanogenmod.audiofx.eq.EqContainerView
+<org.lineageos.audiofx.eq.EqContainerView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/eq_container"
         android:layout_width="match_parent"
@@ -54,4 +54,4 @@
     </FrameLayout>
 
 
-</org.cyanogenmod.audiofx.eq.EqContainerView>
+</org.lineageos.audiofx.eq.EqContainerView>

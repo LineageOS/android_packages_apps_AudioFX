@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.receiver;
+package org.lineageos.audiofx.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import org.cyanogenmod.audiofx.activity.MasterConfigControl;
-import org.cyanogenmod.audiofx.service.AudioFxService;
+import org.lineageos.audiofx.activity.MasterConfigControl;
+import org.lineageos.audiofx.service.AudioFxService;
 
 public class QuickSettingsTileReceiver extends BroadcastReceiver {
 
@@ -28,7 +28,7 @@ public class QuickSettingsTileReceiver extends BroadcastReceiver {
     private static final String TAG = "QSTileReceiver";
 
     public static final String ACTION_TOGGLE_CURRENT_DEVICE
-            = "org.cyanogenmod.audiofx.action.TOGGLE_DEVICE";
+            = "org.lineageos.audiofx.action.TOGGLE_DEVICE";
 
     @Override
     public void onReceive(Context context, Intent intent) {

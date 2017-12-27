@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.activity;
+package org.lineageos.audiofx.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -28,13 +28,13 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import org.cyanogenmod.audiofx.AudioFxApplication;
-import org.cyanogenmod.audiofx.Constants;
-import org.cyanogenmod.audiofx.R;
-import org.cyanogenmod.audiofx.fragment.AudioFxFragment;
-import org.cyanogenmod.audiofx.knobs.KnobCommander;
-import org.cyanogenmod.audiofx.service.AudioFxService;
-import org.cyanogenmod.audiofx.service.DevicePreferenceManager;
+import org.lineageos.audiofx.AudioFxApplication;
+import org.lineageos.audiofx.Constants;
+import org.lineageos.audiofx.R;
+import org.lineageos.audiofx.fragment.AudioFxFragment;
+import org.lineageos.audiofx.knobs.KnobCommander;
+import org.lineageos.audiofx.service.AudioFxService;
+import org.lineageos.audiofx.service.DevicePreferenceManager;
 
 public class ActivityMusic extends Activity {
 
@@ -130,7 +130,7 @@ public class ActivityMusic extends Activity {
         mConfig = MasterConfigControl.getInstance(this);
 
         ActionBar ab = getActionBar();
-        ab.setTitle(R.string.app_name_cm);
+        ab.setTitle(R.string.app_name_lineage);
         ab.setDisplayShowTitleEnabled(true);
 
         final View extraView = LayoutInflater.from(this)

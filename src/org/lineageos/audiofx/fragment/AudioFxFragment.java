@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.fragment;
+package org.lineageos.audiofx.fragment;
 
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;
@@ -38,14 +38,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import org.cyanogenmod.audiofx.Compatibility;
-import org.cyanogenmod.audiofx.Constants;
-import org.cyanogenmod.audiofx.R;
-import org.cyanogenmod.audiofx.activity.ActivityMusic;
-import org.cyanogenmod.audiofx.activity.EqualizerManager;
-import org.cyanogenmod.audiofx.activity.MasterConfigControl;
-import org.cyanogenmod.audiofx.activity.StateCallbacks;
-import org.cyanogenmod.audiofx.widget.InterceptableLinearLayout;
+import org.lineageos.audiofx.Compatibility;
+import org.lineageos.audiofx.Constants;
+import org.lineageos.audiofx.R;
+import org.lineageos.audiofx.activity.ActivityMusic;
+import org.lineageos.audiofx.activity.EqualizerManager;
+import org.lineageos.audiofx.activity.MasterConfigControl;
+import org.lineageos.audiofx.activity.StateCallbacks;
+import org.lineageos.audiofx.widget.InterceptableLinearLayout;
 
 import java.util.List;
 import java.util.Map;

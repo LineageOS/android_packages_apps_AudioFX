@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cyanogenmod.audiofx.activity;
+package org.lineageos.audiofx.activity;
 
 import android.content.Context;
 import android.os.Handler;
@@ -21,11 +21,11 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.CompoundButton;
 
-import org.cyanogenmod.audiofx.Constants;
-import org.cyanogenmod.audiofx.Preset;
-import org.cyanogenmod.audiofx.R;
-import org.cyanogenmod.audiofx.eq.EqUtils;
-import org.cyanogenmod.audiofx.service.AudioFxService;
+import org.lineageos.audiofx.Constants;
+import org.lineageos.audiofx.Preset;
+import org.lineageos.audiofx.R;
+import org.lineageos.audiofx.eq.EqUtils;
+import org.lineageos.audiofx.service.AudioFxService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
