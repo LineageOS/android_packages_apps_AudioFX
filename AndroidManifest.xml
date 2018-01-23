@@ -28,7 +28,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <uses-permission android:name="lineageos.permission.PUBLISH_CUSTOM_TILE" />
     <uses-permission android:name="lineageos.permission.OBSERVE_AUDIO_SESSIONS" />
 
     <application
@@ -73,12 +72,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REMOVED"/>
                 <data android:scheme="package"/>
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name=".receiver.QuickSettingsTileReceiver">
-            <intent-filter>
-                <action android:name="org.lineageos.audiofx.action.TOGGLE_DEVICE" />
             </intent-filter>
         </receiver>
 
