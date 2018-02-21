@@ -10,6 +10,8 @@ LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4 org.lineageos.platform.sdk
 
 LOCAL_PROGUARD_ENABLED := disabled
 
+LOCAL_PRIVATE_PLATFORM_APIS := true
+
 LOCAL_PRIVILEGED_MODULE := true
 
 LOCAL_CERTIFICATE := platform
