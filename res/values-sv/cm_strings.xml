@@ -16,6 +16,8 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="snack_bar_not_default">AudioFX är inte din standardpanel för effekter.</string>
+  <string name="snack_bar_not_default_set">Ställ om till standard</string>
   <string name="snack_bar_not_default_not_now">Inte nu</string>
   <string name="qs_tile_content_description">Växla mellan AudioFX på/av för den aktuella enheten</string>
   <string name="qs_tile_label">AudioFX (%1$s)</string>
@@ -33,6 +35,7 @@
   <string name="small_speakers">Små högtalare</string>
   <string name="multimedia">Multimedia</string>
   <string name="custom">Anpassad</string>
+  <string name="custom_n">Anpassad <xliff:g id="preset_num">%1$d</xliff:g></string>
   <string name="none">Ingen</string>
   <string name="smallroom">Litet rum</string>
   <string name="mediumroom">Medelstort rum</string>
