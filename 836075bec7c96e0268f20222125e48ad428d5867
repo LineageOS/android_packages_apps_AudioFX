@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9c941795_743f2811",
+        "filename": "src/org/lineageos/audiofx/activity/MasterConfigControl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 314,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2018-04-11T19:56:53Z",
+      "side": 1,
+      "message": "100 chars",
+      "revId": "836075bec7c96e0268f20222125e48ad428d5867",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d0ab53ce_f3ccb2d9",
+        "filename": "src/org/lineageos/audiofx/activity/MasterConfigControl.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 323,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2018-04-11T19:56:53Z",
+      "side": 1,
+      "message": "100 chars",
+      "revId": "836075bec7c96e0268f20222125e48ad428d5867",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
