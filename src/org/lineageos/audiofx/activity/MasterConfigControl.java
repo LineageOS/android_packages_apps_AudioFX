@@ -42,6 +42,7 @@ import android.util.Log;
 
 import org.lineageos.audiofx.Constants;
 import org.lineageos.audiofx.service.AudioFxService;
+import org.lineageos.audiofx.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +79,8 @@ public class MasterConfigControl {
     private static MasterConfigControl sInstance;
     private boolean mShouldBindToService = false;
 
+    private final String mReverbPreset;
+
     public static MasterConfigControl getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new MasterConfigControl(context);
@@ -92,6 +95,8 @@ public class MasterConfigControl {
 
         mCallbacks = new StateCallbacks(this);
         mEqManager = new EqualizerManager(context, this);
+
+        mReverbPreset = mContext.getString(R.string.config_reverbPreset);
     }
 
     public void onResetDefaults() {
@@ -306,7 +311,7 @@ public class MasterConfigControl {
     }
 
     public boolean getReverbEnabled() {
-        return getPrefs().getString(Constants.DEVICE_AUDIOFX_REVERB_PRESET, "0").equals("1");
+        return getPrefs().getString(Constants.DEVICE_AUDIOFX_REVERB_PRESET, "0").equals(mReverbPreset);
     }
 
     public void setMaxxVolumeEnabled(boolean enable) {
@@ -315,7 +320,7 @@ public class MasterConfigControl {
     }
 
     public void setReverbEnabled(boolean enable) {
-        getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_REVERB_PRESET, enable ? "1" : "0").apply();
+        getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_REVERB_PRESET, enable ? mReverbPreset : "0").apply();
         updateService(AudioFxService.REVERB_CHANGED);
     }
 
