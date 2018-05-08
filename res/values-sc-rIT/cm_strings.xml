@@ -15,4 +15,8 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2"></resources>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+  <string name="custom">Personalizadu</string>
+  <string name="none">Nudda</string>
+  <string name="device_speaker">Altoparlante</string>
+</resources>

@@ -44,7 +44,7 @@
   <string name="largehall">Sala grande</string>
   <string name="plate">Piatto</string>
   <string name="power_on_prompt">Premi il tasto di accensione in alto a destra.</string>
-  <string name="effect_unavalable_for_speaker">Effetto non disponibile per la modalità vivavoce.</string>
+  <string name="effect_unavalable_for_speaker">Effetto non disponibile per la modalità altoparlante.</string>
   <string name="device_headset">Cuffie</string>
   <string name="device_speaker">Altoparlante</string>
   <string name="device_usb">USB</string>
