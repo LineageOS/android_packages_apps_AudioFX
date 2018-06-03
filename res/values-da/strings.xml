@@ -22,7 +22,7 @@
     <string name="headset_plug" msgid="4505819850289423141">"Tilslut hovedtelefoner for at få disse effekter."</string>
     <string name="bass_boost_strength" msgid="882301530007752270">"Bass boost"</string>
     <string name="virtualizer_strength" msgid="106561253469770096">"Surroundsound"</string>
-    <string name="setup" msgid="1103677904576339192">"Opsætning"</string>
+    <string name="setup" msgid="1103677904576339192">"Konfiguration"</string>
     <string name="ci_extreme" msgid="1736938429763948084">"FX booster"</string>
     <string name="user" msgid="3949460956502898057">"Tilpasset"</string>
     <string name="picker_title" msgid="8464126693702817261">"Kontrolpanel for musikeffekter"</string>
