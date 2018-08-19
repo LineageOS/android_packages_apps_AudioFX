@@ -6,7 +6,9 @@ LOCAL_MODULE_TAGS	:= optional
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
-LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4 org.lineageos.platform.sdk
+LOCAL_STATIC_JAVA_LIBRARIES := \
+    android-support-v4 \
+    org.lineageos.platform.internal
 
 LOCAL_PROGUARD_ENABLED := disabled
 
