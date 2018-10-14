@@ -58,6 +58,6 @@
   <string name="treble">Agudos</string>
   <string name="bass">Bajos</string>
   <string name="rename">Renombrar</string>
-  <string name="remove_custom_preset_warning_message">¿Desea borrar %1$s?</string>
+  <string name="remove_custom_preset_warning_message">¿Quieres borrar %1$s?</string>
   <string name="powered_by">funciona con</string>
 </resources>
