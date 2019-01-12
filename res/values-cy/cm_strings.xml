@@ -15,4 +15,32 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2"></resources>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">Nid AudioFX yw dy banel rheoli effeithiau rhagosodedig.</string>
+    <string name="snack_bar_not_default_not_now">Dim nawr</string>
+    <string name="qs_tile_label">AudioFX (%1$s)</string>
+    <string name="normal">Arferol</string>
+    <string name="classical">Clasurol</string>
+    <string name="dance">Dawns</string>
+    <string name="flat">Fflat</string>
+    <string name="folk">Gwerin</string>
+    <string name="hip_hop">Hip Hop</string>
+    <string name="pop">Bop</string>
+    <string name="rock">Roc</string>
+    <string name="electronic">Electroneg</string>
+    <string name="multimedia">Aml-gyfrwng</string>
+    <string name="custom">Addasedig</string>
+    <string name="none">Dim</string>
+    <string name="smallroom">Ystafell fach</string>
+    <string name="largeroom">Ystafell fawr</string>
+    <string name="largehall">Neuadd fawr</string>
+    <string name="device_headset">Clustffonau</string>
+    <string name="device_speaker">Seinydd</string>
+    <string name="device_usb">USB</string>
+    <string name="device_bluetooth">Bluetooth</string>
+    <string name="device_wireless">Diwifr</string>
+    <string name="devices">Dyfeisiau</string>
+    <string name="rename">Ailenwi</string>
+    <string name="remove_custom_preset_warning_message">Wyt ti\'n bendant am dynnu %1$s?</string>
+    <string name="powered_by">pwerir gan</string>
+</resources>

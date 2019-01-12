@@ -16,5 +16,5 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
-  <string name="devices">Aparatoj</string>
+    <string name="devices">Aparatoj</string>
 </resources>

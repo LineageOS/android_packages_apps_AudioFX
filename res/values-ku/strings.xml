@@ -15,11 +15,11 @@
      limitations under the License.
 -->
 <resources>
-  <!-- ControlPanelMusic strings -->
-  <string name="no_effects">کاریگەر لەکارەنیە.</string>
-  <string name="headset_plug">تکایه‌ بیستۆکی پێوه‌بکه‌ بۆ کاریگه‌ری.</string>
-  <string name="bass_boost_strength">زیادکردنی دەنگی دور</string>
-  <string name="virtualizer_strength">دەوردانی دەنگ</string>
-  <string name="setup">دامه‌زراندن</string>
-  <!-- title of control panel picker dialog [CHAR LIMIT=30] -->
+    <!-- ControlPanelMusic strings -->
+    <string name="no_effects">کاریگەر لەکارەنیە.</string>
+    <string name="headset_plug">تکایه‌ بیستۆکی پێوه‌بکه‌ بۆ کاریگه‌ری.</string>
+    <string name="bass_boost_strength">زیادکردنی دەنگی دور</string>
+    <string name="virtualizer_strength">دەوردانی دەنگ</string>
+    <string name="setup">دامه‌زراندن</string>
+    <!-- title of control panel picker dialog [CHAR LIMIT=30] -->
 </resources>
