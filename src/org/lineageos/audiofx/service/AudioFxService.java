@@ -125,6 +125,8 @@ public class AudioFxService extends Service
         mOutputListener = new AudioOutputChangeListener(getApplicationContext(), mHandler);
         mOutputListener.addCallback(this);
 
+        mCurrentDevice = mOutputListener.getCurrentDevice();
+
         mDevicePrefs = new DevicePreferenceManager(getApplicationContext(), mCurrentDevice);
         if (!mDevicePrefs.initDefaults()) {
             stopSelf();
