@@ -19,7 +19,7 @@
     <!-- ControlPanelMusic strings -->
     <string name="no_effects">Dyw effeithiau ddim ar gael.</string>
     <string name="eq_dialog_title">Cydraddolydd</string>
-    <string name="headset_plug">Cysyllta clustffonau am yr effeithiau hyn.</string>
+    <string name="headset_plug">Cysyllta glustffonau am yr effeithiau hyn.</string>
     <string name="bass_boost_strength">Hwb i\'r bas</string>
     <string name="virtualizer_strength">Sain amgylchynu</string>
     <string name="setup">Gosod</string>
