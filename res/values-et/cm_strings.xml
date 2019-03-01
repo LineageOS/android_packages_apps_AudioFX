@@ -16,6 +16,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">AudioFX ei ole vaikimisi ekvalaiseri kontrollpaneel.</string>
+    <string name="snack_bar_not_default_set">Määra vaikeseadeks</string>
+    <string name="snack_bar_not_default_not_now">Mitte praegu</string>
+    <string name="qs_tile_content_description">Lülita AudioFX sisse/välja praeguse seadme jaoks</string>
+    <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">Tavaline</string>
     <string name="classical">Klassika</string>
     <string name="dance">Tants</string>
@@ -28,7 +33,9 @@
     <string name="rock">Rokk</string>
     <string name="electronic">Elektrooniline</string>
     <string name="small_speakers">Väiksed kõlarid</string>
+    <string name="multimedia">Multimeedia</string>
     <string name="custom">Kohandatud</string>
+    <string name="custom_n">Kohandatud <xliff:g id="preset_num">%1$d </xliff:g></string>
     <string name="none">Puudub</string>
     <string name="smallroom">Väike tuba</string>
     <string name="mediumroom">Keskmine tuba</string>
@@ -46,4 +53,9 @@
     <string name="device_line_out">Heliväljund</string>
     <string name="reverb">Peegeldus</string>
     <string name="eq_preset">Ekvalaiseri eelsäte</string>
+    <string name="devices">Seadmed</string>
+    <string name="virtualizer">Virtualiseerija</string>
+    <string name="treble">Kõrged</string>
+    <string name="bass">Bass</string>
+    <string name="powered_by">kasutatud tarkvara</string>
 </resources>
