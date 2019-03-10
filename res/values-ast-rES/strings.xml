@@ -16,7 +16,6 @@
 -->
 <resources>
     <string name="app_name">MusicFX</string>
-    <!-- ControlPanelMusic strings -->
     <string name="no_effects">Efeutos non disponibles.</string>
     <string name="eq_dialog_title">Ecualizador</string>
     <string name="headset_plug">Enchufa los cascos pa estos efeutos.</string>
@@ -25,5 +24,4 @@
     <string name="setup">Configuración</string>
     <string name="ci_extreme">FX booster</string>
     <string name="user">Usuariu</string>
-    <!-- title of control panel picker dialog [CHAR LIMIT=30] -->
 </resources>
