@@ -15,4 +15,22 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2"/>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+    <string name="dance">Plesna</string>
+    <string name="hip_hop">Hip-Hop</string>
+    <string name="pop">Pop</string>
+    <string name="rock">Rok</string>
+    <string name="small_speakers">Mali zvučnici</string>
+    <string name="none">Ništa</string>
+    <string name="smallroom">Mala soba</string>
+    <string name="mediumroom">Srednja soba</string>
+    <string name="largeroom">Velika soba</string>
+    <string name="device_headset">Slušalice</string>
+    <string name="device_speaker">Zvučnik</string>
+    <string name="device_usb">USB</string>
+    <string name="device_bluetooth">Bluetooth</string>
+    <string name="devices">Uređaji</string>
+    <string name="rename">Preimenuj</string>
+    <string name="remove_custom_preset_warning_message">Jeste li sigurni da želite ukloniti %1$s?</string>
+    <string name="powered_by">pokreće</string>
+</resources>
