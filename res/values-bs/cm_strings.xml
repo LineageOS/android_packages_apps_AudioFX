@@ -25,6 +25,8 @@
     <string name="smallroom">Mala soba</string>
     <string name="mediumroom">Srednja soba</string>
     <string name="largeroom">Velika soba</string>
+    <string name="mediumhall">Srednja sala</string>
+    <string name="largehall">Velika sala</string>
     <string name="device_headset">Slušalice</string>
     <string name="device_speaker">Zvučnik</string>
     <string name="device_usb">USB</string>
