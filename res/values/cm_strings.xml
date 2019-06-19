@@ -14,7 +14,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name_lineage" translatable="false">AudioFX</string>
 
     <string name="snack_bar_not_default">AudioFX is not your default effects control panel.</string>
