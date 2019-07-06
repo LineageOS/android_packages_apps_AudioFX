@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="snack_bar_not_default">AudioFX не є еквалайзером за замовчуванням.</string>
     <string name="snack_bar_not_default_set">Встановити за замовчуванням</string>
     <string name="snack_bar_not_default_not_now">Не зараз</string>

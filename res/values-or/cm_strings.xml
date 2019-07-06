@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="normal">ସାଧାରଣ</string>
     <string name="classical">କ୍ଲାସିକାଲ୍</string>
     <string name="dance">ନୃତ୍ୟ</string>
