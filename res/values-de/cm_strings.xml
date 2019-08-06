@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="snack_bar_not_default">AudioFX ist nicht als Standard ausgewählt.</string>
     <string name="snack_bar_not_default_set">Als Standard festlegen</string>
     <string name="snack_bar_not_default_not_now">Nicht jetzt</string>

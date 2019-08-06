@@ -15,7 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="snack_bar_not_default">AudioFX가 기본 효과 컨트롤 패널로 설정되어 있지 않습니다.</string>
     <string name="snack_bar_not_default_set">기본으로 설정</string>
     <string name="snack_bar_not_default_not_now">지금 저장 안 함</string>
