@@ -15,4 +15,49 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2"/>
+<resources xmlns:xliff="rn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">AudioFX is net jo standert betsjinningspaniel foar effekten.</string>
+    <string name="snack_bar_not_default_set">Ynstelle as standert</string>
+    <string name="snack_bar_not_default_not_now">No net</string>
+    <string name="qs_tile_content_description">AudioFX oan-/útsette foar aktuele apparaat</string>
+    <string name="qs_tile_label">AudioFX (%1$s)</string>
+    <string name="normal">Normaal</string>
+    <string name="classical">Klassyk</string>
+    <string name="dance">Dance</string>
+    <string name="flat">Flak</string>
+    <string name="folk">Folksmuzyk</string>
+    <string name="heavy_metal">Heavy Metal</string>
+    <string name="hip_hop">Hiphop</string>
+    <string name="jazz">Jazz</string>
+    <string name="pop">Pop</string>
+    <string name="rock">Rock</string>
+    <string name="electronic">Elektronysk</string>
+    <string name="small_speakers">Lytse lûdsprekkers</string>
+    <string name="multimedia">Multimedia</string>
+    <string name="custom">Oanpast</string>
+    <string name="custom_n">Oanpast <xliff:g id="preset_num">%1$d</xliff:g></string>
+    <string name="none">Gjin</string>
+    <string name="smallroom">Lytse romte</string>
+    <string name="mediumroom">Middelgrutte romte</string>
+    <string name="largeroom">Grutte romte</string>
+    <string name="mediumhall">Middelgrute seal</string>
+    <string name="largehall">Grutte seal</string>
+    <string name="plate">Lp</string>
+    <string name="power_on_prompt">Druk op de oan/út-knop rjochtsboppe.</string>
+    <string name="effect_unavalable_for_speaker">Effekt net beskikber foar lûdsprekkermodus.</string>
+    <string name="device_headset">Koptelefoan</string>
+    <string name="device_speaker">Lûdsprekker</string>
+    <string name="device_usb">USB</string>
+    <string name="device_bluetooth">Bluetooth</string>
+    <string name="device_wireless">Triedleas</string>
+    <string name="device_line_out">Lineútgong</string>
+    <string name="reverb">Galm</string>
+    <string name="eq_preset">Equalizer-preset</string>
+    <string name="devices">Apparaten</string>
+    <string name="virtualizer">Firtualisearder</string>
+    <string name="treble">Hege toanen</string>
+    <string name="bass">Bas</string>
+    <string name="rename">Omneame</string>
+    <string name="remove_custom_preset_warning_message">Binne jo wis dat jo %1$s fuortsmite wolle?</string>
+    <string name="powered_by">mooglik makke troch</string>
+</resources>
