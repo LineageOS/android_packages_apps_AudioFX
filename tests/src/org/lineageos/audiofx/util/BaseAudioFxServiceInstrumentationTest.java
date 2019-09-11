@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.audiofx.AudioEffect;
 import android.os.IBinder;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ServiceTestRule;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.ServiceTestRule;
+import androidx.test.runner.AndroidJUnit4;
+
 import org.lineageos.audiofx.service.AudioFxService;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

@@ -37,8 +37,9 @@ import android.content.SharedPreferences;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.lineageos.audiofx.Constants;
 import org.lineageos.audiofx.service.AudioFxService;

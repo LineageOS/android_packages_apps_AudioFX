@@ -16,10 +16,11 @@
 package org.lineageos.audiofx.preset;
 
 import android.content.Context;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import org.lineageos.audiofx.R;
 import org.lineageos.audiofx.activity.EqualizerManager;

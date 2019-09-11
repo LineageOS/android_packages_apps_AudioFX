@@ -26,7 +26,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.AudioDeviceInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -36,6 +35,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.viewpager.widget.ViewPager;
 
 import org.lineageos.audiofx.Preset;
 import org.lineageos.audiofx.R;

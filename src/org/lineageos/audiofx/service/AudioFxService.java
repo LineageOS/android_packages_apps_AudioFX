@@ -25,8 +25,9 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.lineageos.audiofx.R;
 import org.lineageos.audiofx.activity.MasterConfigControl;
