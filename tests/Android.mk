@@ -9,11 +9,11 @@ LOCAL_SRC_FILES := $(call all-subdir-java-files)
 LOCAL_PACKAGE_NAME := AudioFXTests
 LOCAL_INSTRUMENTATION_FOR := AudioFX
 
+LOCAL_STATIC_ANDROID_LIBRARIES := \
+    androidx.core_core
+
 LOCAL_STATIC_JAVA_LIBRARIES := \
         audiofx-android-support-test
-
-LOCAL_JAVA_LIBRARIES := \
-        android-support-v4 \
 
 LOCAL_PROGUARD_ENABLED := disabled
 
