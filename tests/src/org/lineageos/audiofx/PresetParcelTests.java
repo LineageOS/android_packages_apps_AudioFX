@@ -1,8 +1,11 @@
 package org.lineageos.audiofx;
 
 import android.os.Parcel;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.runner.AndroidJUnit4;
+
 import org.lineageos.audiofx.Preset;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
