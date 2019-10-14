@@ -23,6 +23,7 @@ import static android.media.AudioDeviceInfo.TYPE_LINE_ANALOG;
 import static android.media.AudioDeviceInfo.TYPE_LINE_DIGITAL;
 import static android.media.AudioDeviceInfo.TYPE_USB_ACCESSORY;
 import static android.media.AudioDeviceInfo.TYPE_USB_DEVICE;
+import static android.media.AudioDeviceInfo.TYPE_USB_HEADSET;
 import static android.media.AudioDeviceInfo.TYPE_WIRED_HEADPHONES;
 import static android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET;
 import static android.media.AudioDeviceInfo.convertDeviceTypeToInternalDevice;
@@ -339,6 +340,7 @@ public class MasterConfigControl {
             case TYPE_BLUETOOTH_A2DP:
             case TYPE_USB_DEVICE:
             case TYPE_USB_ACCESSORY:
+            case TYPE_USB_HEADSET:
             case TYPE_DOCK:
             case TYPE_IP:
                 return info.getProductName().toString();
@@ -377,6 +379,7 @@ public class MasterConfigControl {
                 return appendDeviceAddress(info, Constants.DEVICE_PREFIX_BLUETOOTH);
             case TYPE_USB_DEVICE:
             case TYPE_USB_ACCESSORY:
+            case TYPE_USB_HEADSET:
             case TYPE_DOCK:
                 return appendProductName(info, Constants.DEVICE_PREFIX_USB);
             case TYPE_IP:
