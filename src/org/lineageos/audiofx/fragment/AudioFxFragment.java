@@ -315,7 +315,8 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
         }
 
         List<AudioDeviceInfo> usbDevices = mConfig.getConnectedDevices(
-                AudioDeviceInfo.TYPE_USB_ACCESSORY, AudioDeviceInfo.TYPE_USB_DEVICE);
+                AudioDeviceInfo.TYPE_USB_ACCESSORY, AudioDeviceInfo.TYPE_USB_DEVICE,
+                AudioDeviceInfo.TYPE_USB_HEADSET);
         for (AudioDeviceInfo ai : usbDevices) {
             int viewId = View.generateViewId();
             MenuItem item = mMenuDevices.getSubMenu().add(R.id.devices, viewId,
