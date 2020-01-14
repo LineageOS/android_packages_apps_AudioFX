@@ -57,5 +57,6 @@
     <string name="virtualizer">Virtualiseerija</string>
     <string name="treble">Kõrged</string>
     <string name="bass">Bass</string>
+    <string name="rename">Nimeta ümber</string>
     <string name="powered_by">kasutatud tarkvara</string>
 </resources>
