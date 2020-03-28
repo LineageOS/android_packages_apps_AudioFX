@@ -14,13 +14,9 @@
      limitations under the License.
 -->
 <resources>
-    <string name="app_name">MusicFX</string>
-    <string name="no_effects">Effekter net disponibel.</string>
-    <string name="eq_dialog_title">Equalizer</string>
-    <string name="headset_plug">Schléiss Kopfhörer u fir dës Effekter.</string>
-    <string name="bass_boost_strength">Bassunhiewung</string>
-    <string name="virtualizer_strength">Surround-Toun</string>
-    <string name="setup">Astellen</string>
-    <string name="ci_extreme">FX-Booster</string>
-    <string name="user">Benotzer</string>
+    <string name="eq_dialog_title">Cothromaiche</string>
+    <string name="headset_plug">Cuir a-steach headphones airson nan èifeachdan seo.</string>
+    <string name="bass_boost_strength">Spionnadh a’ bheus</string>
+    <string name="setup">Suidheachadh</string>
+    <string name="user">Cleachdaiche</string>
 </resources>
