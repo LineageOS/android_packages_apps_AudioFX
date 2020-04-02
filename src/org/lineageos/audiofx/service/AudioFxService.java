@@ -163,12 +163,12 @@ public class AudioFxService extends Service
                     Log.i(TAG, String.format("New audio session: %d package: %s contentType=%d",
                             sessionId, pkg, stream));
                 }
-                AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1, -1, -1);
+                AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1);
                 mSessionManager.addSession(info);
 
             } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
 
-                AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1, -1, -1);
+                AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1);
                 mSessionManager.removeSession(info);
 
             } else if (action.equals(LineageAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {

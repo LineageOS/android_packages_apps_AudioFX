@@ -116,15 +116,11 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
      * destroyed on a particular stream. This is independent of the standard control
      * intents and should not conflict with them. This feature may not be available on
      * all devices.
-     *
-     * Default logic is to do our best to only attach to music streams. We don't attach
-     * to mono streams by default since these are usually notifications/ringtones/etc.
      */
     public boolean shouldHandleSession(AudioSessionInfo info) {
         final boolean music = info.getStream() == AudioManager.STREAM_MUSIC;
-        final boolean stereo = info.getChannelMask() < 0 || info.getChannelMask() > 1;
 
-        return music && stereo && info.getSessionId() > 0;
+        return music && info.getSessionId() > 0;
     }
 
     public void addSession(AudioSessionInfo info) {
