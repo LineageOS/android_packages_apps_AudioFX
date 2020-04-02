@@ -122,9 +122,8 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
      */
     public boolean shouldHandleSession(AudioSessionInfo info) {
         final boolean music = info.getStream() == AudioManager.STREAM_MUSIC;
-        final boolean stereo = info.getChannelMask() < 0 || info.getChannelMask() > 1;
 
-        return music && stereo && info.getSessionId() > 0;
+        return music && info.getSessionId() > 0;
     }
 
     public void addSession(AudioSessionInfo info) {
