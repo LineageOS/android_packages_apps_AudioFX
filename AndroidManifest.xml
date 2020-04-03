@@ -95,8 +95,6 @@
             <intent-filter>
                 <action android:name="android.media.action.OPEN_AUDIO_EFFECT_CONTROL_SESSION"/>
                 <action android:name="android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION"/>
-                <action android:name="android.media.AUDIO_BECOMING_NOISY"/>
-                <action android:name="lineageos.intent.action.ACTION_AUDIO_SESSIONS_CHANGED" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
