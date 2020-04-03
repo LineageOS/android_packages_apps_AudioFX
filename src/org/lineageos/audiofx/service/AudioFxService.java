@@ -17,9 +17,7 @@ package org.lineageos.audiofx.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.media.AudioDeviceInfo;
-import android.media.AudioManager;
 import android.media.audiofx.AudioEffect;
 import android.os.Binder;
 import android.os.Handler;
@@ -29,15 +27,9 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import org.lineageos.audiofx.R;
-import org.lineageos.audiofx.activity.MasterConfigControl;
 import org.lineageos.audiofx.backends.EffectSet;
 
 import java.lang.ref.WeakReference;
-import java.util.Locale;
-
-import lineageos.media.AudioSessionInfo;
-import lineageos.media.LineageAudioManager;
 
 /**
  * This service is responsible for applying all requested effects from the AudioFX UI.
@@ -46,8 +38,8 @@ import lineageos.media.LineageAudioManager;
  * the service is also responsible for applying the effects properly based on user configuration,
  * and the current device output state.
  */
-public class AudioFxService extends Service
-        implements AudioOutputChangeListener.AudioOutputChangedCallback {
+public class AudioFxService extends Service implements
+        AudioOutputChangeListener.AudioOutputChangedCallback {
 
     static final String TAG = AudioFxService.class.getSimpleName();
 
@@ -59,18 +51,13 @@ public class AudioFxService extends Service
     public static final String EXTRA_DEVICE = "device";
 
     // flags for updateService to minimize DSP traffic
-    public static final int EQ_CHANGED              = 0x1;
-    public static final int BASS_BOOST_CHANGED      = 0x2;
-    public static final int VIRTUALIZER_CHANGED     = 0x4;
-    public static final int TREBLE_BOOST_CHANGED    = 0x8;
-    public static final int VOLUME_BOOST_CHANGED    = 0x10;
-    public static final int REVERB_CHANGED          = 0x20;
-    public static final int ALL_CHANGED             = 0xFF;
-
-    // flags from audio.h, used by session callbacks
-    static final int AUDIO_OUTPUT_FLAG_FAST = 0x4;
-    static final int AUDIO_OUTPUT_FLAG_DEEP_BUFFER = 0x8;
-    static final int AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD = 0x10;
+    public static final int EQ_CHANGED = 0x1;
+    public static final int BASS_BOOST_CHANGED = 0x2;
+    public static final int VIRTUALIZER_CHANGED = 0x4;
+    public static final int TREBLE_BOOST_CHANGED = 0x8;
+    public static final int VOLUME_BOOST_CHANGED = 0x10;
+    public static final int REVERB_CHANGED = 0x20;
+    public static final int ALL_CHANGED = 0xFF;
 
     private AudioOutputChangeListener mOutputListener;
     private DevicePreferenceManager mDevicePrefs;
@@ -137,11 +124,6 @@ public class AudioFxService extends Service
         mSessionManager = new SessionManager(getApplicationContext(), mHandler, mDevicePrefs,
                 mCurrentDevice);
         mOutputListener.addCallback(mDevicePrefs, mSessionManager);
-
-        final LineageAudioManager lam = LineageAudioManager.getInstance(getApplicationContext());
-        for (AudioSessionInfo asi : lam.listAudioSessions(AudioManager.STREAM_MUSIC)) {
-            mSessionManager.addSession(asi);
-        }
     }
 
     @Override
@@ -152,58 +134,17 @@ public class AudioFxService extends Service
         }
         if (intent != null && intent.getAction() != null) {
             String action = intent.getAction();
-            int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
+            int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION,
+                    AudioEffect.ERROR_BAD_VALUE);
             String pkg = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
-            int stream = mapContentTypeToStream(
-                    intent.getIntExtra(AudioEffect.EXTRA_CONTENT_TYPE,
-                            AudioEffect.CONTENT_TYPE_MUSIC));
 
             if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)) {
-                if (DEBUG) {
-                    Log.i(TAG, String.format("New audio session: %d package: %s contentType=%d",
-                            sessionId, pkg, stream));
-                }
-                AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1, -1, -1);
-                mSessionManager.addSession(info);
-
+                mSessionManager.addSession(sessionId);
             } else if (action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
-
-                AudioSessionInfo info = new AudioSessionInfo(sessionId, stream, -1, -1, -1);
-                mSessionManager.removeSession(info);
-
-            } else if (action.equals(LineageAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
-
-                final AudioSessionInfo info = (AudioSessionInfo) intent.getParcelableExtra(
-                        LineageAudioManager.EXTRA_SESSION_INFO);
-                if (info != null && info.getSessionId() > 0) {
-                    boolean added = intent.getBooleanExtra(
-                            LineageAudioManager.EXTRA_SESSION_ADDED, false);
-                    if (added) {
-                        mSessionManager.addSession(info);
-                    } else {
-                        mSessionManager.removeSession(info);
-                    }
-                }
+                mSessionManager.removeSession(sessionId);
             }
         }
         return START_STICKY;
-    }
-
-    /**
-     * maps {@link AudioEffect#EXTRA_CONTENT_TYPE} to an AudioManager.STREAM_* item
-     */
-    private static int mapContentTypeToStream(int contentType) {
-        switch (contentType) {
-            case AudioEffect.CONTENT_TYPE_VOICE:
-                return AudioManager.STREAM_VOICE_CALL;
-            case AudioEffect.CONTENT_TYPE_GAME:
-                // explicitly don't support game effects right now
-                return -1;
-            case AudioEffect.CONTENT_TYPE_MOVIE:
-            case AudioEffect.CONTENT_TYPE_MUSIC:
-            default:
-                return AudioManager.STREAM_MUSIC;
-        }
     }
 
     @Override
@@ -215,8 +156,9 @@ public class AudioFxService extends Service
 
         mCurrentDevice = outputDevice;
 
-        if (DEBUG)
+        if (DEBUG) {
             Log.d(TAG, "Broadcasting device changed event");
+        }
 
         // Update the UI with the change
         Intent intent = new Intent(ACTION_DEVICE_OUTPUT_CHANGED);
