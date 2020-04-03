@@ -38,7 +38,6 @@ import static org.lineageos.audiofx.service.AudioFxService.VOLUME_BOOST_CHANGED;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioDeviceInfo;
-import android.media.AudioManager;
 import android.media.AudioSystem;
 import android.media.audiofx.PresetReverb;
 import android.os.Handler;
@@ -51,9 +50,6 @@ import org.lineageos.audiofx.backends.EffectSet;
 import org.lineageos.audiofx.backends.EffectsFactory;
 import org.lineageos.audiofx.eq.EqUtils;
 
-import lineageos.media.AudioSessionInfo;
-import lineageos.media.LineageAudioManager;
-
 class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCallback {
 
     private static final String TAG = AudioFxService.TAG;
@@ -62,7 +58,6 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
     private final Context mContext;
     private final Handler mHandler;
     private final DevicePreferenceManager mDevicePrefs;
-    private final LineageAudioManager mLineageAudio;
 
     /**
      * All fields ending with L should be locked on {@link #mAudioSessionsL}
@@ -82,7 +77,6 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
     public SessionManager(Context context, Handler handler, DevicePreferenceManager devicePrefs,
             AudioDeviceInfo outputDevice) {
         mContext = context;
-        mLineageAudio = LineageAudioManager.getInstance(context);
         mDevicePrefs = devicePrefs;
         mCurrentDevice = outputDevice;
         mHandler = new Handler(handler.getLooper(), new AudioServiceHandler());
@@ -110,23 +104,7 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
         }
     }
 
-    /**
-     * Callback which listens for session updates from AudioPolicyManager. This is a feature added
-     * by LineageOS which notifies when sessions are created or destroyed on a particular stream.
-     * This is independent of the standard control intents and should not conflict with them. This
-     * feature may not be available on all devices.
-     * <p>
-     * Default logic is to do our best to only attach to music streams. We don't attach to mono
-     * streams by default since these are usually notifications/ringtones/etc.
-     */
-    public boolean shouldHandleSession(AudioSessionInfo info) {
-        final boolean music = info.getStream() == AudioManager.STREAM_MUSIC;
-        final boolean stereo = info.getChannelMask() < 0 || info.getChannelMask() > 1;
-
-        return music && stereo && info.getSessionId() > 0;
-    }
-
-    public void addSession(AudioSessionInfo info) {
+    public void addSession(int stream) {
         synchronized (mAudioSessionsL) {
             // Never auto-attach is someone is recording! We don't want to interfere
             // with any sort of loopback mechanisms.
@@ -136,27 +114,24 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                 Log.w(TAG, "Recording in progress, not performing auto-attach!");
                 return;
             }
-            if (shouldHandleSession(info) &&
-                    !mHandler.hasMessages(MSG_ADD_SESSION, info.getSessionId())) {
-                mHandler.removeMessages(MSG_REMOVE_SESSION, info.getSessionId());
-                mHandler.obtainMessage(MSG_ADD_SESSION, info.getSessionId()).sendToTarget();
-                if (DEBUG) Log.i(TAG, "New audio session: " + info.toString());
+            if (!mHandler.hasMessages(MSG_ADD_SESSION, stream)) {
+                mHandler.removeMessages(MSG_REMOVE_SESSION, stream);
+                mHandler.obtainMessage(MSG_ADD_SESSION, stream).sendToTarget();
+                if (DEBUG) Log.i(TAG, "New audio session: " + stream);
             }
         }
     }
 
-    public void removeSession(AudioSessionInfo info) {
+    public void removeSession(int stream) {
         synchronized (mAudioSessionsL) {
-            if (shouldHandleSession(info) &&
-                    !mHandler.hasMessages(MSG_REMOVE_SESSION, info.getSessionId())) {
-                int sid = info.getSessionId();
-                final EffectSet effects = mAudioSessionsL.get(sid);
+            if (!mHandler.hasMessages(MSG_REMOVE_SESSION, stream)) {
+                final EffectSet effects = mAudioSessionsL.get(stream);
                 if (effects != null) {
                     effects.setMarkedForDeath(true);
                     mHandler.sendMessageDelayed(
-                            mHandler.obtainMessage(MSG_REMOVE_SESSION, sid),
+                            mHandler.obtainMessage(MSG_REMOVE_SESSION, stream),
                             effects.getReleaseDelay());
-                    if (DEBUG) Log.i(TAG, "Audio session queued for removal: " + info.toString());
+                    if (DEBUG) Log.i(TAG, "Audio session queued for removal: " + stream);
                 }
             }
         }
