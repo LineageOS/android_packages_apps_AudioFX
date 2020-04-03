@@ -23,40 +23,40 @@ import android.util.Log;
 
 import org.lineageos.audiofx.service.AudioFxService;
 
-import lineageos.media.AudioSessionInfo;
-import lineageos.media.LineageAudioManager;
-
 public class ServiceDispatcher extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        final String action = intent.getAction();
+        final String packageName = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
+        final int audioSession = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION,
+                AudioEffect.ERROR_BAD_VALUE);
+        final int contentType = intent.getIntExtra(AudioEffect.EXTRA_CONTENT_TYPE,
+                AudioEffect.CONTENT_TYPE_MUSIC);
 
-        Intent service = new Intent(context.getApplicationContext(), AudioFxService.class);
-        String action = intent.getAction();
-
-        // We can also get AUDIO_BECOMING_NOISY, which means a device change is
-        // coming and we should wake up to handle it.
-        if (action.equals(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION) ||
-                action.equals(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)) {
-            int sessionId = intent.getIntExtra(AudioEffect.EXTRA_AUDIO_SESSION, 0);
-            String pkg = intent.getStringExtra(AudioEffect.EXTRA_PACKAGE_NAME);
-            service.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, sessionId);
-            service.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, pkg);
-
-        } else if (action.equals(LineageAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
-
-            // callback from LineageAudioService
-            final AudioSessionInfo info = (AudioSessionInfo) intent.getParcelableExtra(
-                    LineageAudioManager.EXTRA_SESSION_INFO);
-            boolean added = intent.getBooleanExtra(LineageAudioManager.EXTRA_SESSION_ADDED, false);
-            service.putExtra(LineageAudioManager.EXTRA_SESSION_INFO, info);
-            service.putExtra(LineageAudioManager.EXTRA_SESSION_ADDED, added);
+        // check package name
+        if (packageName == null) {
+            return;
         }
 
+        // check audio session
+        if (audioSession < 0) {
+            return;
+        }
+
+        // check if it's music
+        if (contentType != AudioEffect.CONTENT_TYPE_MUSIC) {
+            return;
+        }
+
+        Intent service = new Intent(context.getApplicationContext(), AudioFxService.class);
+        service.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, packageName);
+        service.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSession);
+        service.putExtra(AudioEffect.EXTRA_CONTENT_TYPE, contentType);
         service.setAction(action);
+
         context.startService(service);
         if (AudioFxService.DEBUG) {
             Log.d("AudioFX-Dispatcher", "Received " + action);
         }
-
     }
 }
