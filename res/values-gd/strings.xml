@@ -19,4 +19,5 @@
     <string name="bass_boost_strength">Spionnadh a’ bheus</string>
     <string name="setup">Suidheachadh</string>
     <string name="user">Cleachdaiche</string>
+    <string name="picker_title">Panail-smachd nan èifeachdan ciùil</string>
 </resources>
