@@ -35,8 +35,3 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_PATH := $(TARGET_OUT_ETC)/permissions
 LOCAL_SRC_FILES := $(LOCAL_MODULE)
 include $(BUILD_PREBUILT)
-
-# Use the following include to make our test apk.
-ifeq (,$(ONE_SHOT_MAKEFILE))
-include $(call all-makefiles-under,$(LOCAL_PATH))
-endif
