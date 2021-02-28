@@ -15,7 +15,7 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="snack_bar_not_default">AudioFX bukanlah bawaan efek kontrol panel anda.</string>
+    <string name="snack_bar_not_default">AudioFX bukan panel kontrol efek default Anda.</string>
     <string name="snack_bar_not_default_set">Setel bawaan</string>
     <string name="snack_bar_not_default_not_now">Tidak sekarang</string>
     <string name="qs_tile_content_description">Hidup/matikan AudioFX untuk perangkat saat ini</string>
