@@ -17,7 +17,7 @@
     <string name="app_name">Èifeachdan ciùil</string>
     <string name="no_effects">Chan eil èifeachdan ri fhaighinn.</string>
     <string name="eq_dialog_title">Cothromaiche</string>
-    <string name="headset_plug">Cuir a-steach headphones airson nan èifeachdan seo.</string>
+    <string name="headset_plug">Cuir a-steach cluais-fhònaichean airson nan èifeachdan seo.</string>
     <string name="bass_boost_strength">Spionnadh a’ bheus</string>
     <string name="virtualizer_strength">Fuaim cuairteachaidh</string>
     <string name="setup">Suidheachadh</string>

@@ -15,7 +15,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">AudioFX не з\'яўляецца вашай панэллю кіравання гукавымі эфектамі па змаўчанні.</string>
+    <string name="snack_bar_not_default_set">Усталяваць па змаўчанні</string>
     <string name="snack_bar_not_default_not_now">Не цяпер</string>
+    <string name="qs_tile_content_description">Уключыць або выключыць AudioFX на гэтай прыладзе</string>
+    <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">Звычайная</string>
     <string name="classical">Класічная</string>
     <string name="dance">Танцы</string>
@@ -30,6 +34,7 @@
     <string name="small_speakers">Малыя дынамікі</string>
     <string name="multimedia">Мультымедыя</string>
     <string name="custom">Карыстальніцкія</string>
+    <string name="custom_n">Карыст. <xliff:g id="preset_num">%1$d</xliff:g></string>
     <string name="none">Няма</string>
     <string name="smallroom">Маленькі пакой</string>
     <string name="mediumroom">Сярэдні пакой</string>
@@ -44,6 +49,7 @@
     <string name="device_usb">USB</string>
     <string name="device_bluetooth">Bluetooth</string>
     <string name="device_wireless">Бесправодныя прылады</string>
+    <string name="device_line_out">Аналагавы выхад</string>
     <string name="reverb">Рэверберацыя</string>
     <string name="eq_preset">Прадусталёўкі эквалайзера</string>
     <string name="devices">Прылады</string>
@@ -52,4 +58,5 @@
     <string name="bass">Бас</string>
     <string name="rename">Пераназваць</string>
     <string name="remove_custom_preset_warning_message">Сапраўды жадаеш выдаліць %1$s?</string>
+    <string name="powered_by">працуе на</string>
 </resources>
