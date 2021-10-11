@@ -44,6 +44,7 @@
                 android:name=".activity.ActivityMusic"
                 android:theme="@style/AppThemeV2"
                 android:label="@string/app_name_lineage"
+                android:exported="true"
                 android:launchMode="singleInstance"
                 android:configChanges="locale|orientation">
             <intent-filter>
@@ -57,11 +58,13 @@
         </activity>
         <activity
                 android:name=".activity.ControlPanelPicker"
+                android:exported="true"
                 android:theme="@*android:style/Theme.Material.Dialog.Alert"
                 android:excludeFromRecents="true"/>
 
         <receiver
-                android:name="Compatibility$Receiver">
+                android:name="Compatibility$Receiver"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED"/>
                 <data android:scheme="package"/>
@@ -76,12 +79,11 @@
             </intent-filter>
         </receiver>
 
-        <service
-                android:name="Compatibility$Service"
-                android:exported="false"/>
+        <service android:name="Compatibility$Service"
+            android:exported="false"/>
 
-        <activity
-                android:name="Compatibility$Redirector">
+        <activity android:name="Compatibility$Redirector"
+            android:exported="true">
             <intent-filter
                     android:priority="2147483647">
                 <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL"/>
@@ -91,7 +93,8 @@
 
         <service android:name=".service.AudioFxService"/>
 
-        <receiver android:name=".receiver.ServiceDispatcher">
+        <receiver android:name=".receiver.ServiceDispatcher"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.media.action.OPEN_AUDIO_EFFECT_CONTROL_SESSION"/>
                 <action android:name="android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION"/>
@@ -99,7 +102,8 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".service.BootReceiver">
+        <receiver android:name=".service.BootReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
