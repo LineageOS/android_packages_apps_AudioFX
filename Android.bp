@@ -30,6 +30,7 @@ android_app {
     platform_apis: true,
     privileged: true,
     certificate: "platform",
+    system_ext_specific: true,
 
     optimize: {
         enabled: false,
@@ -41,6 +42,7 @@ android_app {
 prebuilt_etc {
     name: "privapp_whitelist_org.lineageos.audiofx",
     src: "privapp_whitelist_org.lineageos.audiofx.xml",
+    system_ext_specific: true,
     sub_dir: "permissions",
     filename_from_src: true,
 }
