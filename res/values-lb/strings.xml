@@ -15,6 +15,7 @@
 -->
 <resources>
     <string name="app_name">MusicFX</string>
+    <!-- ControlPanelMusic strings -->
     <string name="no_effects">Effekter net disponibel.</string>
     <string name="eq_dialog_title">Equalizer</string>
     <string name="headset_plug">Schléiss Kopfhörer u fir dës Effekter.</string>
@@ -23,4 +24,5 @@
     <string name="setup">Astellen</string>
     <string name="ci_extreme">FX-Booster</string>
     <string name="user">Benotzer</string>
+    <!-- title of control panel picker dialog [CHAR LIMIT=30] -->
 </resources>

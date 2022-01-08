@@ -15,6 +15,10 @@
 -->
 <resources>
     <!-- ControlPanelMusic strings -->
-    <string name="user">Uzanto</string>
+    <string name="eq_dialog_title">Amagday</string>
+    <string name="headset_plug">Qqen amsegdal i yisemda-agi.</string>
+    <string name="bass_boost_strength">Asnas n tabbast</string>
+    <string name="setup">Sebdded</string>
+    <string name="user">Aseqdac</string>
     <!-- title of control panel picker dialog [CHAR LIMIT=30] -->
 </resources>
