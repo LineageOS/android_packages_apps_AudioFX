@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9271fe8_f13332e5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2022-01-30T22:49:30Z",
+      "side": 1,
+      "message": "Contains unrelated code style changes, should move them to another commit or reformat the whole project in a different commit.",
+      "revId": "9dc399eae985fb6a06a91546b5604af59140708f",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
