@@ -17,6 +17,7 @@ package org.lineageos.audiofx;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import org.lineageos.audiofx.eq.EqUtils;
 
 public class Preset implements Parcelable {
@@ -63,7 +64,7 @@ public class Preset implements Parcelable {
                 return false;
             }
 
-            for(int i = 0; i < mLevels.length; i++) {
+            for (int i = 0; i < mLevels.length; i++) {
                 if (mLevels[i] != other.mLevels[i]) {
                     return false;
                 }

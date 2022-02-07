@@ -28,11 +28,10 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import org.lineageos.audiofx.AudioFxApplication;
+
 import org.lineageos.audiofx.Constants;
 import org.lineageos.audiofx.R;
 import org.lineageos.audiofx.fragment.AudioFxFragment;
-import org.lineageos.audiofx.knobs.KnobCommander;
 import org.lineageos.audiofx.service.AudioFxService;
 import org.lineageos.audiofx.service.DevicePreferenceManager;
 
@@ -51,20 +50,21 @@ public class ActivityMusic extends Activity {
     private boolean mWaitingForService = true;
     private SharedPreferences.OnSharedPreferenceChangeListener mServiceReadyObserver;
 
-    private CompoundButton.OnCheckedChangeListener mGlobalEnableToggleListener
+    private final CompoundButton.OnCheckedChangeListener mGlobalEnableToggleListener
             = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(final CompoundButton buttonView,
-                                     final boolean isChecked) {
+                final boolean isChecked) {
             mConfig.setCurrentDeviceEnabled(isChecked);
         }
     };
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
-        if (DEBUG)
+        if (DEBUG) {
             Log.i(TAG, "onCreate() called with "
                     + "savedInstanceState = [" + savedInstanceState + "]");
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -81,7 +81,7 @@ public class ActivityMusic extends Activity {
             mServiceReadyObserver = new SharedPreferences.OnSharedPreferenceChangeListener() {
                 @Override
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-                                                      String key) {
+                        String key) {
                     if (key.equals(Constants.SAVED_DEFAULTS) && defaultsSetup()) {
                         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
                         mConfig.onResetDefaults();
@@ -112,7 +112,8 @@ public class ActivityMusic extends Activity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        // should null it out if one was there, compat redirector with package will go through onCreate
+        // should null it out if one was there, compat redirector with package will go through
+        // onCreate
         mCallingPackage = intent.getStringExtra(EXTRA_CALLING_PACKAGE);
     }
 
@@ -140,7 +141,7 @@ public class ActivityMusic extends Activity {
         ab.setCustomView(extraView, lp);
         ab.setDisplayShowCustomEnabled(true);
 
-        mCurrentDeviceToggle = (Switch) ab.getCustomView().findViewById(R.id.global_toggle);
+        mCurrentDeviceToggle = ab.getCustomView().findViewById(R.id.global_toggle);
         mCurrentDeviceToggle.setOnCheckedChangeListener(mGlobalEnableToggleListener);
 
         if (savedInstanceState == null && findViewById(R.id.main_fragment) != null) {
@@ -157,7 +158,7 @@ public class ActivityMusic extends Activity {
         if (mConfig.hasMaxxAudio()) {
             ab.setSubtitle(R.string.powered_by_maxx_audio);
         } else if (mConfig.hasDts()) {
-            final ViewStub stub = (ViewStub) ab.getCustomView().findViewById(R.id.logo_stub);
+            final ViewStub stub = ab.getCustomView().findViewById(R.id.logo_stub);
             stub.setLayoutResource(R.layout.action_bar_dts_logo);
             stub.inflate();
         }
@@ -166,8 +167,10 @@ public class ActivityMusic extends Activity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (DEBUG) Log.i(TAG, "onConfigurationChanged() called with "
-                + "newConfig = [" + newConfig + "]");
+        if (DEBUG) {
+            Log.i(TAG, "onConfigurationChanged() called with "
+                    + "newConfig = [" + newConfig + "]");
+        }
         if (newConfig.orientation != getResources().getConfiguration().orientation) {
             mCurrentDeviceToggle = null;
         }

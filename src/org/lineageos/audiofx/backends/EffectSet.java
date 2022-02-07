@@ -19,8 +19,7 @@ import android.media.AudioDeviceInfo;
 import android.util.Log;
 
 /**
- * Helper class representing the full complement of effects attached to one
- * audio session.
+ * Helper class representing the full complement of effects attached to one audio session.
  */
 public abstract class EffectSet {
 
@@ -47,32 +46,33 @@ public abstract class EffectSet {
     }
 
     /**
-     * Called to do subclass-first initialization in case
-     * an implementation has ordering restrictions.
-     *
-     * This call is wrapped in a try/catch - if an exception is thrown here,
-     * a release will immediately be called.
+     * Called to do subclass-first initialization in case an implementation has ordering
+     * restrictions.
+     * <p>
+     * This call is wrapped in a try/catch - if an exception is thrown here, a release will
+     * immediately be called.
      */
-    protected void onCreate() { }
+    protected void onCreate() {
+    }
 
     /**
      * Destroy all effects in this set.
-     *
-     * Attempting to use this object after calling release is
-     * undefined behavior.
+     * <p>
+     * Attempting to use this object after calling release is undefined behavior.
      */
-    public void release() { }
+    public void release() {
+    }
 
     /**
      * Returns the enumerated brand of this implementation
+     *
      * @return brandId
      */
     public abstract int getBrand();
 
     /**
-     * Called when the user toggles the engine on or off. If the
-     * implementation has a built-in bypass mode, this is where
-     * to use it.
+     * Called when the user toggles the engine on or off. If the implementation has a built-in
+     * bypass mode, this is where to use it.
      *
      * @param globalEnabled
      */
@@ -85,8 +85,7 @@ public abstract class EffectSet {
     }
 
     /**
-     * Called when the output device has changed. All cached
-     * data should be cleared at this point.
+     * Called when the output device has changed. All cached data should be cleared at this point.
      *
      * @param deviceInfo
      */
@@ -96,6 +95,7 @@ public abstract class EffectSet {
 
     /**
      * Return the current active output device
+     *
      * @return deviceInfo
      */
     public AudioDeviceInfo getDevice() {
@@ -103,31 +103,32 @@ public abstract class EffectSet {
     }
 
     /**
-     * Begin bulk-update of parameters. This can be used if the
-     * implementation supports operation in a transactional/atomic
-     * manner. Parameter changes will immediately follow this call
-     * and should be committed to the backend when the subsequent
-     * commitUpdate() is called.
-     *
+     * Begin bulk-update of parameters. This can be used if the implementation supports operation in
+     * a transactional/atomic manner. Parameter changes will immediately follow this call and should
+     * be committed to the backend when the subsequent commitUpdate() is called.
+     * <p>
      * Optional.
      *
      * @return status - false on failure
      */
-    public boolean beginUpdate() { return true; }
+    public boolean beginUpdate() {
+        return true;
+    }
 
     /**
      * Commit accumulated updates to the backend. See above.
-     *
-     * begin/commit are used when a large number of parameters need
-     * to be sent to the backend, such as in the case of a device
-     * switch or preset change. This can increase performance and
-     * reduce click/pop issues.
-     *
+     * <p>
+     * begin/commit are used when a large number of parameters need to be sent to the backend, such
+     * as in the case of a device switch or preset change. This can increase performance and reduce
+     * click/pop issues.
+     * <p>
      * Optional.
      *
      * @return status - false on failure
      */
-    public boolean commitUpdate() { return true; }
+    public boolean commitUpdate() {
+        return true;
+    }
 
     /* ---- Top level effects begin here ---- */
 
@@ -221,10 +222,8 @@ public abstract class EffectSet {
     }
 
     /**
-     * How long should we delay for when releasing the effects?
-     * This helps certain effect implementations when the
-     * app is reusing a session ID. By default this
-     * behavior is disabled.
+     * How long should we delay for when releasing the effects? This helps certain effect
+     * implementations when the app is reusing a session ID. By default this behavior is disabled.
      */
     public int getReleaseDelay() {
         return 0;

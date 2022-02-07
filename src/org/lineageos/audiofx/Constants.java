@@ -17,6 +17,7 @@ package org.lineageos.audiofx;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import org.lineageos.audiofx.eq.EqUtils;
 
 import java.util.ArrayList;
@@ -108,7 +109,8 @@ public class Constants {
     }
 
     public static void saveCustomPresets(Context ctx, List<Preset> presets) {
-        final SharedPreferences.Editor presetPrefs = ctx.getSharedPreferences("custom_presets", 0).edit();
+        final SharedPreferences.Editor presetPrefs = ctx.getSharedPreferences("custom_presets",
+                0).edit();
         presetPrefs.clear();
 
         StringBuffer presetNames = new StringBuffer();
@@ -132,7 +134,8 @@ public class Constants {
     }
 
     public static int[] getBandLevelRange(Context context) {
-        String savedCenterFreqs = context.getSharedPreferences("global", 0).getString("equalizer.band_level_range", null);
+        String savedCenterFreqs = context.getSharedPreferences("global", 0).getString(
+                "equalizer.band_level_range", null);
         if (savedCenterFreqs == null || savedCenterFreqs.isEmpty()) {
             return new int[]{-1500, 1500};
         } else {
@@ -146,7 +149,8 @@ public class Constants {
     }
 
     public static int[] getCenterFreqs(Context context, int eqBands) {
-        String savedCenterFreqs = context.getSharedPreferences("global", 0).getString("equalizer.center_freqs",
+        String savedCenterFreqs = context.getSharedPreferences("global", 0).getString(
+                "equalizer.center_freqs",
                 EqUtils.getZeroedBandsString(eqBands));
         String[] split = savedCenterFreqs.split(";");
         int[] freqs = new int[split.length];

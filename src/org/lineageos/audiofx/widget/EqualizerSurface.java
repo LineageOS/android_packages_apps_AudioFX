@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * - Original code by Antti S. Lankila for DSPManager
  * - Modified extensively by cyanogen for multi-band support
  */
@@ -36,27 +36,27 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
-
 import android.view.animation.DecelerateInterpolator;
+
 import org.lineageos.audiofx.R;
 
 import java.util.Arrays;
 
 public class EqualizerSurface extends SurfaceView implements ValueAnimator.AnimatorUpdateListener {
 
-    private static int SAMPLING_RATE = 44100;
+    private static final int SAMPLING_RATE = 44100;
 
     private int mWidth;
     private int mHeight;
 
     private float mMinFreq = 10;
     private float mMaxFreq = 21000;
-    
+
     private float mMinDB = -15;
     private float mMaxDB = 15;
-    
+
     private int mNumBands = 6;
-        
+
     private float[] mLevels = new float[mNumBands];
     private float[] mTargetLevels = new float[mNumBands];
     private float[] mCenterFreqs = new float[mNumBands];
@@ -76,7 +76,8 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
         mWhite = new Paint();
         mWhite.setColor(getResources().getColor(R.color.color_grey));
         mWhite.setStyle(Style.STROKE);
-        mWhite.setTextSize(mTextSize = context.getResources().getDimensionPixelSize(R.dimen.eq_label_text_size));
+        mWhite.setTextSize(mTextSize =
+                context.getResources().getDimensionPixelSize(R.dimen.eq_label_text_size));
         mWhite.setTypeface(Typeface.DEFAULT_BOLD);
         mWhite.setAntiAlias(true);
 
@@ -112,30 +113,31 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
 
     /**
      * Listener for bands being modified via touch events
-     *
-     * Invoked with the index of the modified band, and the
-     * new value in dB. If the widget is read-only, will set
-     * changed = false.
-     *
+     * <p>
+     * Invoked with the index of the modified band, and the new value in dB. If the widget is
+     * read-only, will set changed = false.
      */
     public interface BandUpdatedListener {
-        public void onBandUpdated(int band, float dB);
-        public void onBandAnimating(int band, float dB);
-        public void onBandAnimationCompleted();
+        void onBandUpdated(int band, float dB);
+
+        void onBandAnimating(int band, float dB);
+
+        void onBandAnimationCompleted();
     }
-    
+
     public void setBandLevelRange(float minDB, float maxDB) {
         mMinDB = minDB;
         mMaxDB = maxDB;
     }
-    
+
     public void setCenterFreqs(float[] centerFreqsKHz) {
         mNumBands = centerFreqsKHz.length;
         mLevels = new float[mNumBands];
         mCenterFreqs = Arrays.copyOf(centerFreqsKHz, mNumBands);
         System.arraycopy(centerFreqsKHz, 0, mCenterFreqs, 0, mNumBands);
         mMinFreq = mCenterFreqs[0] / 2;
-        mMaxFreq = (float) Math.pow(mCenterFreqs[mNumBands - 1], 2) / mCenterFreqs[mNumBands -2] / 2; 
+        mMaxFreq = (float) Math.pow(mCenterFreqs[mNumBands - 1], 2) / mCenterFreqs[mNumBands - 2]
+                / 2;
     }
 
     public float[] softCopyLevels() {
@@ -161,7 +163,7 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
         mLevels = b.getFloatArray("levels");
     }
     */
-    
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -171,11 +173,11 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
     }
 
     /**
-     * Returns a color that is assumed to be blended against black background,
-     * assuming close to sRGB behavior of screen (gamma 2.2 approximation).
+     * Returns a color that is assumed to be blended against black background, assuming close to
+     * sRGB behavior of screen (gamma 2.2 approximation).
      *
      * @param intensity desired physical intensity of color component
-     * @param alpha alpha value of color component
+     * @param alpha     alpha value of color component
      */
     private static int gamma(float intensity, float alpha) {
         /* intensity = (component * alpha)^2.2
@@ -203,26 +205,26 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
          * holo_blue < 0
          * holo_blue_dark < 3
          */
-        int[] responseColors = new int[] {
-            res.getColor(R.color.eq_yellow),
-            res.getColor(R.color.eq_green),
-            res.getColor(R.color.eq_holo_bright),
-            res.getColor(R.color.eq_holo_blue),
-            res.getColor(R.color.eq_holo_dark)
+        int[] responseColors = new int[]{
+                res.getColor(R.color.eq_yellow),
+                res.getColor(R.color.eq_green),
+                res.getColor(R.color.eq_holo_bright),
+                res.getColor(R.color.eq_holo_blue),
+                res.getColor(R.color.eq_holo_dark)
         };
-        float[] responsePositions = new float[] {
-            0, 0.2f, 0.45f, 0.6f, 1f
+        float[] responsePositions = new float[]{
+                0, 0.2f, 0.45f, 0.6f, 1f
         };
 
         mFrequencyResponseBg.setShader(new LinearGradient(0, 0, 0, mHeight - mTextSize,
                 responseColors, responsePositions, Shader.TileMode.CLAMP));
 
-        int[] barColors = new int[] {
+        int[] barColors = new int[]{
                 res.getColor(R.color.cb_shader),
                 res.getColor(R.color.cb_shader_alpha)
         };
-        float[] barPositions = new float[] {
-            0.95f, 1f
+        float[] barPositions = new float[]{
+                0.95f, 1f
         };
 
 //        mControlBar.setShader(new LinearGradient(0, 0, 0, mHeight - mTextSize,
@@ -232,6 +234,7 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
     int mPasses = 140;
     float[] mStartLevels;
     float[] mDeltas;
+
     public void setBands(float[] bands) {
         if (mAnimation != null) {
             mAnimation.cancel();
@@ -247,7 +250,7 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
             mDeltas[i] = mTargetLevels[i] - mStartLevels[i];
         }
 
-        mAnimation = ValueAnimator.ofFloat(0f,1f);
+        mAnimation = ValueAnimator.ofFloat(0f, 1f);
         mAnimation.addUpdateListener(this);
         mAnimation.addListener(new Animator.AnimatorListener() {
             @Override
@@ -283,7 +286,7 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
 
     @Override
     public void onAnimationUpdate(ValueAnimator animation) {
-        final float fraction = (Float) animation.getAnimatedFraction();
+        final float fraction = animation.getAnimatedFraction();
 //        final float fraction = ((Float) (animation.getAnimatedValue())).floatValue();
 
         for (int i = 0; i < mNumBands; i++) {
@@ -327,8 +330,8 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
         Path freqResponse = new Path();
         Complex[] zn = new Complex[biquads.length];
 //        final int passes = 140;
-        for (int i = 0; i < mPasses+1; i ++) {
-            double freq = reverseProjectX(i / (float)mPasses);
+        for (int i = 0; i < mPasses + 1; i++) {
+            double freq = reverseProjectX(i / (float) mPasses);
             double omega = freq / SAMPLING_RATE * Math.PI * 2;
             Complex z = new Complex(Math.cos(omega), Math.sin(omega));
 
@@ -386,7 +389,7 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
 //            canvas.drawText(String.format("%+d", (int)dB), 1, (y - 1), mWhite);
         }
 
-        for (int i = 0; i < mNumBands; i ++) {
+        for (int i = 0; i < mNumBands; i++) {
             float freq = mCenterFreqs[i];
             float x = projectX(freq) * mWidth;
 
@@ -399,28 +402,28 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
 
             int targetHeight = (mHeight);
 
-            int halfX = mBarWidth/2;
+            int halfX = mBarWidth / 2;
             if (y > targetHeight) {
                 int diff = (int) Math.abs(targetHeight - y);
-                canvas.drawRect(x-halfX, y+diff, x+halfX, targetHeight, mControlBar);
+                canvas.drawRect(x - halfX, y + diff, x + halfX, targetHeight, mControlBar);
             } else {
-                canvas.drawRect(x-halfX, y, x+halfX, targetHeight, mControlBar);
+                canvas.drawRect(x - halfX, y, x + halfX, targetHeight, mControlBar);
             }
 
             canvas.drawText(frequencyText, x, mWhite.getTextSize(), mControlBarText);
-            canvas.drawText(String.format("%+1.1f", mLevels[i]), x, y-1, mControlBarText);
+            canvas.drawText(String.format("%+1.1f", mLevels[i]), x, y - 1, mControlBarText);
         }
     }
 
     public void registerBandUpdatedListener(BandUpdatedListener listener) {
         mBandUpdatedListener = listener;
     }
-    
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
         if (!isEnabled()) {
-           return false;
+            return false;
         }
 
         float x = event.getX();
@@ -436,13 +439,13 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
         } else if (level > mMaxDB) {
             level = mMaxDB;
         }
-        
+
         setBand(band, level);
-        
+
         if (mBandUpdatedListener != null) {
             mBandUpdatedListener.onBandUpdated(band, level);
         }
-        
+
         return true;
     }
 
@@ -477,7 +480,7 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
     public int findClosest(float px) {
         int idx = 0;
         float best = 1e9f;
-        for (int i = 0; i < mNumBands; i ++) {
+        for (int i = 0; i < mNumBands; i++) {
             float freq = mCenterFreqs[i];
             float cx = projectX(freq) * mWidth;
             float distance = Math.abs(cx - px);

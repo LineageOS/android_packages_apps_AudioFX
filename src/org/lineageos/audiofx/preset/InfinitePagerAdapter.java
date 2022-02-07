@@ -30,7 +30,7 @@ public class InfinitePagerAdapter extends PagerAdapter {
     private static final String TAG = "InfinitePagerAdapter";
     private static final boolean DEBUG = false;
 
-    private PagerAdapter adapter;
+    private final PagerAdapter adapter;
 
     public InfinitePagerAdapter(PagerAdapter adapter) {
         this.adapter = adapter;

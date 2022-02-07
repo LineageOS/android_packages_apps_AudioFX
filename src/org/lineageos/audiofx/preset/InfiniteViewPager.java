@@ -27,8 +27,8 @@ import org.lineageos.audiofx.activity.EqualizerManager;
 import org.lineageos.audiofx.activity.MasterConfigControl;
 
 /**
- * A {@link ViewPager} that allows pseudo-infinite paging with a wrap-around effect. Should be used with an {@link
- * InfinitePagerAdapter}.
+ * A {@link ViewPager} that allows pseudo-infinite paging with a wrap-around effect. Should be used
+ * with an {@link InfinitePagerAdapter}.
  */
 public class InfiniteViewPager extends ViewPager {
 

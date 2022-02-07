@@ -54,7 +54,7 @@ public class EqualizerManager {
     private float[] mCenterFreqs;
     private float[] mGlobalLevels;
 
-    private AtomicBoolean mAnimatingToCustom = new AtomicBoolean(false);
+    private final AtomicBoolean mAnimatingToCustom = new AtomicBoolean(false);
 
     // whether we are in between presets, animating them and such
     private boolean mChangingPreset = false;
@@ -69,7 +69,7 @@ public class EqualizerManager {
     private static final int MSG_SAVE_PRESETS = 1;
     private static final int MSG_SEND_EQ_OVERRIDE = 2;
 
-    private Handler mHandler = new Handler(new Handler.Callback() {
+    private final Handler mHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
@@ -77,11 +77,12 @@ public class EqualizerManager {
                     Constants.saveCustomPresets(mContext, mEqPresets);
                     break;
                 case MSG_SEND_EQ_OVERRIDE:
-                    mConfig.overrideEqLevels((short)msg.arg1, (short) msg.arg2);
+                    mConfig.overrideEqLevels((short) msg.arg1, (short) msg.arg2);
                     break;
             }
             return true;
-        }}, true);
+        }
+    }, true);
 
     public EqualizerManager(Context context, MasterConfigControl config) {
         mContext = context;
@@ -116,7 +117,8 @@ public class EqualizerManager {
         mCenterFreqs = Arrays.copyOf(centerFreqsKHz, mNumBands);
         System.arraycopy(centerFreqsKHz, 0, mCenterFreqs, 0, mNumBands);
         mMinFreq = mCenterFreqs[0] / 2;
-        mMaxFreq = (float) Math.pow(mCenterFreqs[mNumBands - 1], 2) / mCenterFreqs[mNumBands - 2] / 2;
+        mMaxFreq = (float) Math.pow(mCenterFreqs[mNumBands - 1], 2) / mCenterFreqs[mNumBands - 2]
+                / 2;
 
         // setup equalizer presets
         final int numPresets = Integer.parseInt(getGlobalPref("equalizer.number_of_presets", "0"));
@@ -124,9 +126,11 @@ public class EqualizerManager {
         if (numPresets > 0) {
             // add library-provided presets
             String[] presetNames = getGlobalPref("equalizer.preset_names", "").split("\\|");
-            mPredefinedPresets = presetNames.length + 1; // we consider first EQ to be part of predefined
+            mPredefinedPresets =
+                    presetNames.length + 1; // we consider first EQ to be part of predefined
             for (int i = 0; i < numPresets; i++) {
-                mEqPresets.add(new Preset.StaticPreset(presetNames[i], getPersistedPresetLevels(i)));
+                mEqPresets.add(
+                        new Preset.StaticPreset(presetNames[i], getPersistedPresetLevels(i)));
             }
         } else {
             mPredefinedPresets = 1; // custom is predefined
@@ -237,7 +241,8 @@ public class EqualizerManager {
     public int copyToCustom() {
         updateGlobalLevels(mCurrentPreset);
         if (DEBUG) {
-            Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(mGlobalLevels));
+            Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(
+                    mGlobalLevels));
         }
 
         String levels = EqUtils.floatLevelsToString(
@@ -245,9 +250,12 @@ public class EqualizerManager {
                         mEqPresets.get(mCurrentPreset).getLevels()));
         setGlobalPref("custom", levels);
 
-        ((Preset.PermCustomPreset) mEqPresets.get(mEQCustomPresetPosition)).setLevels(mGlobalLevels);
-        if (DEBUG)
-            Log.i(TAG, "copyToCustom() wrote current preset levels to index: " + mEQCustomPresetPosition);
+        ((Preset.PermCustomPreset) mEqPresets.get(mEQCustomPresetPosition)).setLevels(
+                mGlobalLevels);
+        if (DEBUG) {
+            Log.i(TAG, "copyToCustom() wrote current preset levels to index: "
+                    + mEQCustomPresetPosition);
+        }
         setPreset(mEQCustomPresetPosition);
         savePresetsDelayed();
         return mEQCustomPresetPosition;
@@ -256,20 +264,24 @@ public class EqualizerManager {
     public int addPresetFromCustom() {
         updateGlobalLevels(mEQCustomPresetPosition);
         if (DEBUG) {
-            Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(mGlobalLevels));
+            Log.w(TAG, "using levels from preset: " + mCurrentPreset + ": " + Arrays.toString(
+                    mGlobalLevels));
         }
 
         int writtenToIndex = addPreset(mGlobalLevels);
-        if (DEBUG)
-            Log.i(TAG, "addPresetFromCustom() wrote current preset levels to index: " + writtenToIndex);
+        if (DEBUG) {
+            Log.i(TAG, "addPresetFromCustom() wrote current preset levels to index: "
+                    + writtenToIndex);
+        }
         setPreset(writtenToIndex);
         savePresetsDelayed();
         return writtenToIndex;
     }
 
     /**
-     * Loops through all presets. And finds the first preset that can be written to.
-     * If one is not found, then one is inserted, and that new index is returned.
+     * Loops through all presets. And finds the first preset that can be written to. If one is not
+     * found, then one is inserted, and that new index is returned.
+     *
      * @return the index that the levels were copied to
      */
     private int addPreset(float[] levels) {
@@ -370,7 +382,8 @@ public class EqualizerManager {
 
     private void updateEqControls() {
         final boolean userPreset = isUserPreset();
-        mConfig.getCallbacks().notifyEqControlStateChanged(mEQCustomPresetPosition == mCurrentPreset,
+        mConfig.getCallbacks().notifyEqControlStateChanged(
+                mEQCustomPresetPosition == mCurrentPreset,
                 userPreset, userPreset, userPreset);
     }
 

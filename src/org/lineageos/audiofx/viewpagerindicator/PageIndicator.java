@@ -20,8 +20,8 @@ package org.lineageos.audiofx.viewpagerindicator;
 import androidx.viewpager.widget.ViewPager;
 
 /**
- * A PageIndicator is responsible to show an visual indicator on the total views
- * number and the current visible view.
+ * A PageIndicator is responsible to show an visual indicator on the total views number and the
+ * current visible view.
  */
 public interface PageIndicator extends ViewPager.OnPageChangeListener {
     /**

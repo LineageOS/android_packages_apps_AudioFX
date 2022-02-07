@@ -47,7 +47,7 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.Toast;
+
 import org.lineageos.audiofx.R;
 
 public class RadialKnob extends View {
@@ -81,16 +81,18 @@ public class RadialKnob extends View {
     private float mLastY;
     private boolean mMoved;
     private int mWidth = 0;
-    private RectF mRectF, mOuterRect = new RectF(), mInnerRect = new RectF();
+    private RectF mRectF;
+    private final RectF mOuterRect = new RectF();
+    private final RectF mInnerRect = new RectF();
     private float mLastAngle;
     private Long mLastVibrateTime;
     private int mHighlightColor;
-    private int mBackgroundArcColor;
-    private int mBackgroundArcColorDisabled;
-    private int mRectPadding;
-    private int mStrokeWidth;
-    private float mHandleWidth; // little square indicator where user touches
-    private float mTextOffset;
+    private final int mBackgroundArcColor;
+    private final int mBackgroundArcColorDisabled;
+    private final int mRectPadding;
+    private final int mStrokeWidth;
+    private final float mHandleWidth; // little square indicator where user touches
+    private final float mTextOffset;
 
     Path mPath = new Path();
     PathMeasure mPathMeasure = new PathMeasure();
@@ -322,8 +324,10 @@ public class RadialKnob extends View {
                 float progress = (Float) animation.getAnimatedValue();
                 mProgress = progress;
                 mLastAngle = mProgress * MAX_DEGREES;
-                if (DEBUG) Log.i(TAG, "onAnimationUpdate(): mProgress: "
-                        + mProgress + ", mLastAngle: " + mLastAngle);
+                if (DEBUG) {
+                    Log.i(TAG, "onAnimationUpdate(): mProgress: "
+                            + mProgress + ", mLastAngle: " + mLastAngle);
+                }
 
                 setProgress(mProgress);
                 if (mOnKnobChangeListener != null) {
@@ -365,8 +369,9 @@ public class RadialKnob extends View {
 
                 final boolean inDeadzone = inCircle(x, y, center, center, radius);
                 final boolean inOuterCircle = inCircle(x, y, center, center, radius + 70);
-                if (DEBUG)
+                if (DEBUG) {
                     Log.d(TAG, "inOuterCircle: " + inOuterCircle + ", inDeadzone: " + inDeadzone);
+                }
                 final float delta = getDelta(x, y);
                 final float angle = angleWithOffset(x, y, DEGREE_OFFSET);
 
@@ -408,9 +413,10 @@ public class RadialKnob extends View {
                         } else if (angle > 90) {
                             mOffProgress = 0;
                         }
-                        if (DEBUG)
+                        if (DEBUG) {
                             Log.d(TAG, "OFF, touching angle: " + angle +
                                     ", mOffProgress: " + mOffProgress + ", delta " + delta);
+                        }
                         // we want at least 1%, how many degrees = 1%? + a little padding
                         final float onePercentInDegrees = (MAX_DEGREES / 100) + 1f;
                         if (mOffProgress > 15 && angle < MAX_DEGREES
@@ -537,15 +543,11 @@ public class RadialKnob extends View {
 
 
     private static boolean inCircle(float x, float y, float circleCenterX, float circleCenterY,
-                                    float circleRadius) {
+            float circleRadius) {
         double dx = Math.pow(x - circleCenterX, 2);
         double dy = Math.pow(y - circleCenterY, 2);
 
-        if ((dx + dy) < Math.pow(circleRadius, 2)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (dx + dy) < Math.pow(circleRadius, 2);
     }
 
     @Override

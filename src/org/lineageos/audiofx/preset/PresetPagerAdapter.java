@@ -79,5 +79,4 @@ public class PresetPagerAdapter extends PagerAdapter {
     }
 
 
-
 }

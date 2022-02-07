@@ -16,7 +16,6 @@
 package org.lineageos.audiofx.eq;
 
 import android.content.Context;
-import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -58,9 +57,9 @@ public class EqSwipeController extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mEq = (EqContainerView) findViewById(R.id.eq_container);
+        mEq = findViewById(R.id.eq_container);
         mPager = (InfiniteViewPager) findViewById(R.id.pager);
-        mControls = (ViewGroup) findViewById(R.id.eq_controls);
+        mControls = findViewById(R.id.eq_controls);
     }
 
     @Override
@@ -69,12 +68,8 @@ public class EqSwipeController extends LinearLayout {
         float y = event.getY();
 
         // don't intercept touches over the EQ controls
-        if (mControls.getRight() > x && mControls.getTop() < y
-                && mControls.getBottom() > y && mControls.getLeft() < x) {
-            return false;
-        }
-
-        return true;
+        return !(mControls.getRight() > x) || !(mControls.getTop() < y)
+                || !(mControls.getBottom() > y) || !(mControls.getLeft() < x);
     }
 
     @Override

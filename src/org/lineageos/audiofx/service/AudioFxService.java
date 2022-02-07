@@ -17,7 +17,6 @@ package org.lineageos.audiofx.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.media.audiofx.AudioEffect;
@@ -29,22 +28,19 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import org.lineageos.audiofx.R;
-import org.lineageos.audiofx.activity.MasterConfigControl;
 import org.lineageos.audiofx.backends.EffectSet;
 
 import java.lang.ref.WeakReference;
-import java.util.Locale;
 
 import lineageos.media.AudioSessionInfo;
 import lineageos.media.LineageAudioManager;
 
 /**
  * This service is responsible for applying all requested effects from the AudioFX UI.
- *
- * Since the AudioFX UI allows for different configurations based on the current output device,
- * the service is also responsible for applying the effects properly based on user configuration,
- * and the current device output state.
+ * <p>
+ * Since the AudioFX UI allows for different configurations based on the current output device, the
+ * service is also responsible for applying the effects properly based on user configuration, and
+ * the current device output state.
  */
 public class AudioFxService extends Service
         implements AudioOutputChangeListener.AudioOutputChangedCallback {
@@ -59,13 +55,13 @@ public class AudioFxService extends Service
     public static final String EXTRA_DEVICE = "device";
 
     // flags for updateService to minimize DSP traffic
-    public static final int EQ_CHANGED              = 0x1;
-    public static final int BASS_BOOST_CHANGED      = 0x2;
-    public static final int VIRTUALIZER_CHANGED     = 0x4;
-    public static final int TREBLE_BOOST_CHANGED    = 0x8;
-    public static final int VOLUME_BOOST_CHANGED    = 0x10;
-    public static final int REVERB_CHANGED          = 0x20;
-    public static final int ALL_CHANGED             = 0xFF;
+    public static final int EQ_CHANGED = 0x1;
+    public static final int BASS_BOOST_CHANGED = 0x2;
+    public static final int VIRTUALIZER_CHANGED = 0x4;
+    public static final int TREBLE_BOOST_CHANGED = 0x8;
+    public static final int VOLUME_BOOST_CHANGED = 0x10;
+    public static final int REVERB_CHANGED = 0x20;
+    public static final int ALL_CHANGED = 0xFF;
 
     // flags from audio.h, used by session callbacks
     static final int AUDIO_OUTPUT_FLAG_FAST = 0x4;
@@ -173,7 +169,7 @@ public class AudioFxService extends Service
 
             } else if (action.equals(LineageAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
 
-                final AudioSessionInfo info = (AudioSessionInfo) intent.getParcelableExtra(
+                final AudioSessionInfo info = intent.getParcelableExtra(
                         LineageAudioManager.EXTRA_SESSION_INFO);
                 if (info != null && info.getSessionId() > 0) {
                     boolean added = intent.getBooleanExtra(
@@ -215,8 +211,9 @@ public class AudioFxService extends Service
 
         mCurrentDevice = outputDevice;
 
-        if (DEBUG)
+        if (DEBUG) {
             Log.d(TAG, "Broadcasting device changed event");
+        }
 
         // Update the UI with the change
         Intent intent = new Intent(ACTION_DEVICE_OUTPUT_CHANGED);

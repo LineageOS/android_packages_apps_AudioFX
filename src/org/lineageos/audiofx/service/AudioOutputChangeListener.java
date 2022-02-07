@@ -39,10 +39,11 @@ public class AudioOutputChangeListener extends AudioDeviceCallback {
     private final Handler mHandler;
     private int mLastDevice = -1;
 
-    private final ArrayList<AudioOutputChangedCallback> mCallbacks = new ArrayList<AudioOutputChangedCallback>();
+    private final ArrayList<AudioOutputChangedCallback> mCallbacks =
+            new ArrayList<AudioOutputChangedCallback>();
 
     public interface AudioOutputChangedCallback {
-        public void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice);
+        void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice);
     }
 
     public AudioOutputChangeListener(Context context, Handler handler) {
@@ -72,7 +73,7 @@ public class AudioOutputChangeListener extends AudioDeviceCallback {
 
     private void callback() {
         synchronized (mCallbacks) {
-        final AudioDeviceInfo device = getCurrentDevice();
+            final AudioDeviceInfo device = getCurrentDevice();
 
             if (device == null) {
                 Log.w(TAG, "Unable to determine audio device!");
@@ -84,7 +85,7 @@ public class AudioOutputChangeListener extends AudioDeviceCallback {
                         " type: " + device.getType() +
                         " name: " + device.getProductName() +
                         " address: " + device.getAddress() +
-                        " [" + device.toString() + "]");
+                        " [" + device + "]");
                 mLastDevice = device.getId();
                 mHandler.post(new Runnable() {
                     @Override
@@ -135,7 +136,7 @@ public class AudioOutputChangeListener extends AudioDeviceCallback {
     }
 
     public AudioDeviceInfo getDeviceById(int id) {
-        for (AudioDeviceInfo ai :  mAudioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
+        for (AudioDeviceInfo ai : mAudioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
             if (ai.getId() == id) {
                 return ai;
             }

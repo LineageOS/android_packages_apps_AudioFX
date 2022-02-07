@@ -84,7 +84,7 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
 
     @Override
     public void setEqualizerBandLevel(short band, float level) {
-        setBandLevelSafe(band, (short)level);
+        setBandLevelSafe(band, (short) level);
     }
 
     @Override

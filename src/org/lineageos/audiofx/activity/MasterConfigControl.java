@@ -50,13 +50,13 @@ import java.util.List;
 
 /**
  * Master configuration class for AudioFX.
- *
- * Contains the main hub where data is stored for the current eq graph (which there should be
- * one of, thus only once instance of this class exists).
- *
+ * <p>
+ * Contains the main hub where data is stored for the current eq graph (which there should be one
+ * of, thus only once instance of this class exists).
+ * <p>
  * Anyone can obtain an instance of this class. If one does not exist, a new one is created.
- * Immediately before the new instance creation happens, some defaults are pre-populated
- * with MasterConfigControl.saveDefaults(). That method doesn't ever have to be directly called.
+ * Immediately before the new instance creation happens, some defaults are pre-populated with
+ * MasterConfigControl.saveDefaults(). That method doesn't ever have to be directly called.
  */
 public class MasterConfigControl {
 
@@ -107,7 +107,10 @@ public class MasterConfigControl {
             mServiceConnection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder binder) {
-                    if (SERVICE_DEBUG) Log.i(TAG, "onServiceConnected refCount=" + mServiceRefCount);
+                    if (SERVICE_DEBUG) {
+                        Log.i(TAG,
+                                "onServiceConnected refCount=" + mServiceRefCount);
+                    }
                     mService = ((AudioFxService.LocalBinder) binder);
                     LocalBroadcastManager.getInstance(mContext).registerReceiver(
                             mDeviceChangeReceiver,
@@ -116,7 +119,10 @@ public class MasterConfigControl {
 
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
-                    if (SERVICE_DEBUG) Log.w(TAG, "onServiceDisconnected refCount =" + mServiceRefCount);
+                    if (SERVICE_DEBUG) {
+                        Log.w(TAG,
+                                "onServiceDisconnected refCount =" + mServiceRefCount);
+                    }
                     LocalBroadcastManager.getInstance(mContext).unregisterReceiver(
                             mDeviceChangeReceiver);
                     mService = null;
@@ -124,7 +130,7 @@ public class MasterConfigControl {
             };
 
             Intent serviceIntent = new Intent(mContext, AudioFxService.class);
-            conn =  mContext.bindService(serviceIntent, mServiceConnection,
+            conn = mContext.bindService(serviceIntent, mServiceConnection,
                     Context.BIND_AUTO_CREATE);
         }
         if (conn) {
@@ -147,7 +153,7 @@ public class MasterConfigControl {
 
     public boolean checkService() {
         if (mService == null && mServiceRefCount == 0 && mShouldBindToService) {
-            Log.e(TAG,  "Service went away, rebinding");
+            Log.e(TAG, "Service went away, rebinding");
             bindService();
         }
         return mService != null;
@@ -317,7 +323,8 @@ public class MasterConfigControl {
     }
 
     public void setReverbEnabled(boolean enable) {
-        getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_REVERB_PRESET, enable ? "1" : "0").apply();
+        getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_REVERB_PRESET,
+                enable ? "1" : "0").apply();
         updateService(AudioFxService.REVERB_CHANGED);
     }
 
@@ -327,7 +334,7 @@ public class MasterConfigControl {
         }
     }
 
-    public static String getDeviceDisplayString(Context context,  AudioDeviceInfo info) {
+    public static String getDeviceDisplayString(Context context, AudioDeviceInfo info) {
         int type = info == null ? -1 : info.getType();
         switch (type) {
             case TYPE_WIRED_HEADSET:
@@ -391,6 +398,7 @@ public class MasterConfigControl {
 
     /**
      * Set whether to automatically attempt to bind to the service.
+     *
      * @param bindToService
      */
     public void setAutoBindToService(boolean bindToService) {

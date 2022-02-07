@@ -22,8 +22,9 @@ interface IEffectFactory {
 
     /**
      * Create a new EffectSet based on current stream parameters.
-     * @param context context to create the effect with
-     * @param sessionId session id to attach the effect to
+     *
+     * @param context       context to create the effect with
+     * @param sessionId     session id to attach the effect to
      * @param currentDevice current device that the effect should initially setup for
      * @return an {@link EffectSet}
      */

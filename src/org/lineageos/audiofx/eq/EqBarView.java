@@ -117,8 +117,9 @@ public class EqBarView extends FrameLayout implements StateCallbacks.EqUpdatedCa
         mUserInteracting = true;
 
         if (DEBUG) Log.d(TAG, "initial level: " + mInitialLevel);
-        mInitialLevel = (1 - (mPosY / mParentHeight)) * (mEqManager.getMinDB() - mEqManager.getMaxDB())
-                - mEqManager.getMinDB();
+        mInitialLevel =
+                (1 - (mPosY / mParentHeight)) * (mEqManager.getMinDB() - mEqManager.getMaxDB())
+                        - mEqManager.getMinDB();
 
         updateWidth((int) (mNormalWidth * 2));
     }

@@ -1,9 +1,9 @@
 package org.lineageos.audiofx.backends;
 
-import org.lineageos.audiofx.Constants;
-
 import android.content.Context;
 import android.media.AudioDeviceInfo;
+
+import org.lineageos.audiofx.Constants;
 
 /**
  * Creates an EffectSet appropriate for the current device

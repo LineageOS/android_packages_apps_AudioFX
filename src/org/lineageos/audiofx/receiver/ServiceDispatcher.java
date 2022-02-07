@@ -45,7 +45,7 @@ public class ServiceDispatcher extends BroadcastReceiver {
         } else if (action.equals(LineageAudioManager.ACTION_AUDIO_SESSIONS_CHANGED)) {
 
             // callback from LineageAudioService
-            final AudioSessionInfo info = (AudioSessionInfo) intent.getParcelableExtra(
+            final AudioSessionInfo info = intent.getParcelableExtra(
                     LineageAudioManager.EXTRA_SESSION_INFO);
             boolean added = intent.getBooleanExtra(LineageAudioManager.EXTRA_SESSION_ADDED, false);
             service.putExtra(LineageAudioManager.EXTRA_SESSION_INFO, info);

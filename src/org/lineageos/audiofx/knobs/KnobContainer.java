@@ -127,13 +127,13 @@ public class KnobContainer extends LinearLayout
         };
 
         if (MasterConfigControl.getInstance(getContext()).hasMaxxAudio()) {
-            mVirtualizerContainer = (ViewGroup) findViewById(R.id.virtualizer_knob_container);
-            mBassContainer = (ViewGroup) findViewById(R.id.bass_knob_container);
-            mTrebleContainer = (ViewGroup) findViewById(R.id.treble_knob_container);
+            mVirtualizerContainer = findViewById(R.id.virtualizer_knob_container);
+            mBassContainer = findViewById(R.id.bass_knob_container);
+            mTrebleContainer = findViewById(R.id.treble_knob_container);
         }
 
         if (mTrebleContainer != null) {
-            mTrebleKnob = (RadialKnob) mTrebleContainer.findViewById(R.id.knob);
+            mTrebleKnob = mTrebleContainer.findViewById(R.id.knob);
             mTrebleKnob.setTag(new KnobInfo(KnobCommander.KNOB_TREBLE, mTrebleKnob,
                     mTrebleContainer.findViewById(R.id.label)));
             mTrebleKnob.setOnTouchListener(knobTouchListener);
@@ -145,8 +145,9 @@ public class KnobContainer extends LinearLayout
             mTrebleKnob.setMax(100);
         }
         if (mBassContainer != null) {
-            mBassKnob = (RadialKnob) mBassContainer.findViewById(R.id.knob);
-            mBassKnob.setTag(new KnobInfo(KnobCommander.KNOB_BASS, mBassKnob, mBassContainer.findViewById(R.id.label)));
+            mBassKnob = mBassContainer.findViewById(R.id.knob);
+            mBassKnob.setTag(new KnobInfo(KnobCommander.KNOB_BASS, mBassKnob,
+                    mBassContainer.findViewById(R.id.label)));
             mBassKnob.setOnTouchListener(knobTouchListener);
             mBassKnob.setOnKnobChangeListener(
                     KnobCommander.getInstance(getContext()).getRadialKnobCallback(
@@ -158,7 +159,7 @@ public class KnobContainer extends LinearLayout
 
         }
         if (mVirtualizerContainer != null) {
-            mVirtualizerKnob = (RadialKnob) mVirtualizerContainer.findViewById(R.id.knob);
+            mVirtualizerKnob = mVirtualizerContainer.findViewById(R.id.knob);
             mVirtualizerKnob.setTag(new KnobInfo(KnobCommander.KNOB_VIRTUALIZER, mVirtualizerKnob,
                     mVirtualizerContainer.findViewById(R.id.label)));
             mVirtualizerKnob.setOnTouchListener(knobTouchListener);
@@ -179,7 +180,7 @@ public class KnobContainer extends LinearLayout
     private ViewGroup addKnob(int whichKnob) {
         ViewGroup knobContainer = (ViewGroup) LayoutInflater.from(mContext)
                 .inflate(R.layout.generic_knob_control, this, false);
-        TextView label = (TextView) knobContainer.findViewById(R.id.label);
+        TextView label = knobContainer.findViewById(R.id.label);
 
         int newContainerId = 0;
         int knobLabelRes = 0;

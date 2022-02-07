@@ -18,8 +18,7 @@ package org.lineageos.audiofx.fragment;
 import android.animation.Animator;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.widget.CompoundButton;
-import org.lineageos.audiofx.activity.ActivityMusic;
+
 import org.lineageos.audiofx.activity.MasterConfigControl;
 
 public class AudioFxBaseFragment extends Fragment {
@@ -46,15 +45,15 @@ public class AudioFxBaseFragment extends Fragment {
     }
 
     public void animateBackgroundColorTo(Integer colorTo, Animator.AnimatorListener listener,
-                                         AudioFxFragment.ColorUpdateListener updateListener) {
+            AudioFxFragment.ColorUpdateListener updateListener) {
         if (mFrag != null) {
             mFrag.animateBackgroundColorTo(colorTo, listener, updateListener);
         }
     }
 
     /**
-     * Call to change the color and propogate it up to the activity, which will call
-     * {@link #updateFragmentBackgroundColors(int)}
+     * Call to change the color and propogate it up to the activity, which will call {@link
+     * #updateFragmentBackgroundColors(int)}
      *
      * @param color
      */

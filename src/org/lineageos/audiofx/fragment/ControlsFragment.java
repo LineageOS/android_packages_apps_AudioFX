@@ -43,7 +43,7 @@ public class ControlsFragment extends AudioFxBaseFragment {
     Switch mMaxxVolumeSwitch;
     Switch mReverbSwitch;
 
-    private CompoundButton.OnCheckedChangeListener mMaxxVolumeListener
+    private final CompoundButton.OnCheckedChangeListener mMaxxVolumeListener
             = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -53,7 +53,7 @@ public class ControlsFragment extends AudioFxBaseFragment {
         }
     };
 
-    private CompoundButton.OnCheckedChangeListener mReverbListener
+    private final CompoundButton.OnCheckedChangeListener mReverbListener
             = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -72,14 +72,16 @@ public class ControlsFragment extends AudioFxBaseFragment {
 
     @Override
     public void onPause() {
-        MasterConfigControl.getInstance(getActivity()).getCallbacks().removeDeviceChangedCallback(mKnobContainer);
+        MasterConfigControl.getInstance(getActivity()).getCallbacks().removeDeviceChangedCallback(
+                mKnobContainer);
         super.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        MasterConfigControl.getInstance(getActivity()).getCallbacks().addDeviceChangedCallback(mKnobContainer);
+        MasterConfigControl.getInstance(getActivity()).getCallbacks().addDeviceChangedCallback(
+                mKnobContainer);
     }
 
     @Override
@@ -117,28 +119,28 @@ public class ControlsFragment extends AudioFxBaseFragment {
 
     private void updateSwitchColor(Switch view, int color) {
         ColorStateList thumbStates = new ColorStateList(
-                new int[][] {
-                    new int[] { -android.R.attr.state_enabled },
-                    new int[] { android.R.attr.state_checked },
-                    new int[] {}
+                new int[][]{
+                        new int[]{-android.R.attr.state_enabled},
+                        new int[]{android.R.attr.state_checked},
+                        new int[]{}
                 },
-                new int[] {
-                    color,
-                    color,
-                    Color.LTGRAY
+                new int[]{
+                        color,
+                        color,
+                        Color.LTGRAY
                 }
         );
 
         ColorStateList trackStates = new ColorStateList(
-                new int[][] {
-                    new int[] { -android.R.attr.state_enabled },
-                    new int[] { android.R.attr.state_checked },
-                    new int[] {}
+                new int[][]{
+                        new int[]{-android.R.attr.state_enabled},
+                        new int[]{android.R.attr.state_checked},
+                        new int[]{}
                 },
-                new int[] {
-                    color,
-                    color,
-                    Color.GRAY
+                new int[]{
+                        color,
+                        color,
+                        Color.GRAY
                 }
         );
 
@@ -150,7 +152,7 @@ public class ControlsFragment extends AudioFxBaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         View root = inflater.inflate(mConfig.hasMaxxAudio() ? R.layout.controls_maxx_audio
                 : R.layout.controls_generic, container, false);
         return root;
@@ -160,9 +162,9 @@ public class ControlsFragment extends AudioFxBaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mKnobContainer = (KnobContainer) view.findViewById(R.id.knob_container);
-        mMaxxVolumeSwitch = (Switch) view.findViewById(R.id.maxx_volume_switch);
-        mReverbSwitch = (Switch) view.findViewById(R.id.reverb_switch);
+        mKnobContainer = view.findViewById(R.id.knob_container);
+        mMaxxVolumeSwitch = view.findViewById(R.id.maxx_volume_switch);
+        mReverbSwitch = view.findViewById(R.id.reverb_switch);
 
         updateFragmentBackgroundColors(getCurrentBackgroundColor());
 

@@ -38,6 +38,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+
 import org.lineageos.audiofx.Compatibility;
 import org.lineageos.audiofx.Constants;
 import org.lineageos.audiofx.R;
@@ -83,7 +84,8 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
     private AudioDeviceInfo mSystemDevice;
     private AudioDeviceInfo mUserSelection;
 
-    private final Map<MenuItem, AudioDeviceInfo> mMenuItems = new ArrayMap<MenuItem, AudioDeviceInfo>();
+    private final Map<MenuItem, AudioDeviceInfo> mMenuItems =
+            new ArrayMap<MenuItem, AudioDeviceInfo>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -165,7 +167,7 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
         mCurrentBackgroundColor = !mConfig.isCurrentDeviceEnabled()
                 ? mDisabledColor
                 : mEqManager.getAssociatedPresetColorHex(
-                mEqManager.getCurrentPresetIndex());
+                        mEqManager.getCurrentPresetIndex());
         updateBackgroundColors(mCurrentBackgroundColor, false);
 
         promptIfNotDefault();
@@ -416,7 +418,7 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mInterceptLayout = (InterceptableLinearLayout) view.findViewById(R.id.interceptable_layout);
+        mInterceptLayout = view.findViewById(R.id.interceptable_layout);
     }
 
     public void animateBackgroundColorTo(int colorTo, Animator.AnimatorListener listener,
@@ -482,7 +484,7 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
         animateBackgroundColorTo(colorTo, animatorListener, null);
     }
 
-    private ValueAnimator.AnimatorUpdateListener mColorUpdateListener
+    private final ValueAnimator.AnimatorUpdateListener mColorUpdateListener
             = new ValueAnimator.AnimatorUpdateListener() {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {

@@ -111,14 +111,13 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
     }
 
     /**
-     * Callback which listens for session updates from AudioPolicyManager. This is a
-     * feature added by LineageOS which notifies when sessions are created or
-     * destroyed on a particular stream. This is independent of the standard control
-     * intents and should not conflict with them. This feature may not be available on
-     * all devices.
-     *
-     * Default logic is to do our best to only attach to music streams. We don't attach
-     * to mono streams by default since these are usually notifications/ringtones/etc.
+     * Callback which listens for session updates from AudioPolicyManager. This is a feature added
+     * by LineageOS which notifies when sessions are created or destroyed on a particular stream.
+     * This is independent of the standard control intents and should not conflict with them. This
+     * feature may not be available on all devices.
+     * <p>
+     * Default logic is to do our best to only attach to music streams. We don't attach to mono
+     * streams by default since these are usually notifications/ringtones/etc.
      */
     public boolean shouldHandleSession(AudioSessionInfo info) {
         final boolean music = info.getStream() == AudioManager.STREAM_MUSIC;
@@ -131,7 +130,8 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
         synchronized (mAudioSessionsL) {
             // Never auto-attach is someone is recording! We don't want to interfere
             // with any sort of loopback mechanisms.
-            final boolean recording = AudioSystem.isSourceActive(0) || AudioSystem.isSourceActive(6);
+            final boolean recording = AudioSystem.isSourceActive(0) || AudioSystem.isSourceActive(
+                    6);
             if (recording) {
                 Log.w(TAG, "Recording in progress, not performing auto-attach!");
                 return;
@@ -180,7 +180,7 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
 
     /**
      * Update the backend with our changed preferences.
-     *
+     * <p>
      * This must only be called from the HandlerThread!
      */
     private void updateBackendLocked(int flags, EffectSet session) {
@@ -191,7 +191,8 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
         final SharedPreferences prefs = mDevicePrefs.getCurrentDevicePrefs();
 
         if (DEBUG) {
-            Log.i(TAG, "+++ updateBackend() called with flags=[" + flags + "], session=[" + session + "]");
+            Log.i(TAG, "+++ updateBackend() called with flags=[" + flags + "], session=[" + session
+                    + "]");
         }
 
         if (session == null) {
@@ -220,7 +221,8 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                     session.enableEqualizer(true);
                     String savedPreset = prefs.getString(DEVICE_AUDIOFX_EQ_PRESET_LEVELS, null);
                     if (savedPreset != null) {
-                        session.setEqualizerLevelsDecibels(EqUtils.stringBandsToFloats(savedPreset));
+                        session.setEqualizerLevelsDecibels(
+                                EqUtils.stringBandsToFloats(savedPreset));
                     }
                 }
             } catch (Exception e) {
@@ -279,7 +281,8 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
             try {
                 if ((flags & VOLUME_BOOST_CHANGED) > 0 && session.hasVolumeBoost()) {
                     // maxx volume
-                    session.enableVolumeBoost(prefs.getBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, false));
+                    session.enableVolumeBoost(
+                            prefs.getBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, false));
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error enabling volume boost!", e);
@@ -291,7 +294,8 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
             }
         }
         if (DEBUG) {
-            Log.i(TAG, "--- updateBackend() called with flags=[" + flags + "], session=[" + session + "]");
+            Log.i(TAG, "--- updateBackend() called with flags=[" + flags + "], session=[" + session
+                    + "]");
         }
     }
 
@@ -320,7 +324,8 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                                 session = new EffectsFactory()
                                         .createEffectSet(mContext, sessionId, mCurrentDevice);
                             } catch (Exception e) {
-                                Log.e(TAG, "couldn't create effects for session id: " + sessionId, e);
+                                Log.e(TAG, "couldn't create effects for session id: " + sessionId,
+                                        e);
                                 break;
                             }
                             mAudioSessionsL.put(sessionId, session);
@@ -362,7 +367,8 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                         final int N = mAudioSessionsL.size();
                         for (int i = 0; i < N; i++) {
                             sessionId = mAudioSessionsL.keyAt(i);
-                            mHandler.obtainMessage(MSG_UPDATE_FOR_SESSION, flags, 0, sessionId).sendToTarget();
+                            mHandler.obtainMessage(MSG_UPDATE_FOR_SESSION, flags, 0,
+                                    sessionId).sendToTarget();
                         }
                         break;
 
@@ -380,8 +386,10 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                         }
 
                         String device = getCurrentDeviceIdentifier();
-                        if (DEBUG) Log.i(TAG, "updating DSP for sessionId=" + sessionId +
-                                ", device=" + device + " flags=" + flags);
+                        if (DEBUG) {
+                            Log.i(TAG, "updating DSP for sessionId=" + sessionId +
+                                    ", device=" + device + " flags=" + flags);
+                        }
 
                         session = mAudioSessionsL.get(sessionId);
                         if (session != null) {

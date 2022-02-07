@@ -83,7 +83,7 @@ public class EqContainerView extends FrameLayout
 
     private Handler mHandler;
 
-    private Runnable mVibrateRunnable = new Runnable() {
+    private final Runnable mVibrateRunnable = new Runnable() {
         @Override
         public void run() {
             Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
@@ -194,11 +194,11 @@ public class EqContainerView extends FrameLayout
 
         getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                generateAndAddBars();
-            }
-        });
+                    @Override
+                    public void onGlobalLayout() {
+                        generateAndAddBars();
+                    }
+                });
     }
 
     @Override
@@ -210,14 +210,14 @@ public class EqContainerView extends FrameLayout
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mControls = (ViewGroup) findViewById(R.id.eq_controls);
+        mControls = findViewById(R.id.eq_controls);
 
-        mLockBox = (CheckBox) findViewById(R.id.lock);
+        mLockBox = findViewById(R.id.lock);
         mLockBox.setOnCheckedChangeListener(mEqManager.getLockChangeListener());
 
-        mRenameControl = (ImageView) findViewById(R.id.rename);
-        mRemoveControl = (ImageView) findViewById(R.id.remove);
-        mSaveControl = (ImageView) findViewById(R.id.save);
+        mRenameControl = findViewById(R.id.rename);
+        mRemoveControl = findViewById(R.id.remove);
+        mSaveControl = findViewById(R.id.save);
     }
 
     @Override
@@ -352,8 +352,9 @@ public class EqContainerView extends FrameLayout
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         //---------------------------------------------------
 
-        if (mFirstLayout)
+        if (mFirstLayout) {
             return;
+        }
 
         int dashY = bottom - mPaddingBottom - (mHeight / 2);
 
@@ -434,7 +435,7 @@ public class EqContainerView extends FrameLayout
     private void updateSelectedBands() {
         for (int i = 0; i < mEqManager.getNumBands(); i++) {
             EqBandInfo tag = mBandInfo.get(i);
-            final EqBarView bar = (EqBarView) findViewWithTag(tag);
+            final EqBarView bar = findViewWithTag(tag);
             if (bar != null) {
                 final ViewPropertyAnimator barAnimation = bar.animate().withLayer();
                 if (mSelectedBands.isEmpty()) {

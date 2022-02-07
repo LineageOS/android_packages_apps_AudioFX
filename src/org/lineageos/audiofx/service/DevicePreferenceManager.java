@@ -113,8 +113,8 @@ public class DevicePreferenceManager
     /**
      * This method sets some sane defaults for presets, device defaults, etc
      * <p/>
-     * First we read presets from the system, then adjusts some setting values
-     * for some better defaults!
+     * First we read presets from the system, then adjusts some setting values for some better
+     * defaults!
      */
     private void saveAndApplyDefaults(boolean overridePrevious) {
         if (DEBUG) {
@@ -189,7 +189,8 @@ public class DevicePreferenceManager
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_REVERB, temp.hasReverb());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost());
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, temp.getBrand() == Constants.EFFECT_TYPE_MAXXAUDIO);
+        editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO,
+                temp.getBrand() == Constants.EFFECT_TYPE_MAXXAUDIO);
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_DTS, temp.getBrand() == Constants.EFFECT_TYPE_DTS);
         editor.commit();
         temp.release();
@@ -199,7 +200,7 @@ public class DevicePreferenceManager
         prefs
                 .edit()
                 .putInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT,
-                            CURRENT_PREFS_INT_VERSION)
+                        CURRENT_PREFS_INT_VERSION)
                 .putBoolean(Constants.SAVED_DEFAULTS, true)
                 .commit();
     }
@@ -214,8 +215,8 @@ public class DevicePreferenceManager
     }
 
     /**
-     * This method sets up some *persisted* defaults.
-     * Prereq: saveDefaults() must have been run before this can apply its defaults properly.
+     * This method sets up some *persisted* defaults. Prereq: saveDefaults() must have been run
+     * before this can apply its defaults properly.
      */
     private void applyDefaults(boolean overridePrevious) {
         if (DEBUG) {
@@ -300,9 +301,9 @@ public class DevicePreferenceManager
         int idx = findInList(smallSpeakers, presetNames);
         if (idx >= 0) {
             speakerPrefs.edit()
-                .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
-                .putString(DEVICE_AUDIOFX_EQ_PRESET, String.valueOf(idx))
-                .commit();
+                    .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
+                    .putString(DEVICE_AUDIOFX_EQ_PRESET, String.valueOf(idx))
+                    .commit();
         }
     }
 

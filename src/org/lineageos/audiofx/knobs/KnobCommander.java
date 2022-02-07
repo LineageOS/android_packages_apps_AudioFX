@@ -16,6 +16,7 @@
 package org.lineageos.audiofx.knobs;
 
 import android.content.Context;
+
 import org.lineageos.audiofx.Constants;
 import org.lineageos.audiofx.activity.MasterConfigControl;
 import org.lineageos.audiofx.service.AudioFxService;
@@ -28,8 +29,8 @@ public class KnobCommander {
 
     private static KnobCommander sInstance;
 
-    private Context mContext;
-    private MasterConfigControl mConfig;
+    private final Context mContext;
+    private final MasterConfigControl mConfig;
 
     private KnobCommander(Context context) {
         mContext = context;
@@ -45,10 +46,14 @@ public class KnobCommander {
 
     public RadialKnob.OnKnobChangeListener getRadialKnobCallback(int whichKnob) {
         switch (whichKnob) {
-            case KNOB_TREBLE: return mTrebleKnobCallback;
-            case KNOB_BASS: return mBassKnobCallback;
-            case KNOB_VIRTUALIZER: return mVirtualizerCallback;
-            default: return null;
+            case KNOB_TREBLE:
+                return mTrebleKnobCallback;
+            case KNOB_BASS:
+                return mBassKnobCallback;
+            case KNOB_VIRTUALIZER:
+                return mVirtualizerCallback;
+            default:
+                return null;
         }
     }
 
@@ -101,15 +106,19 @@ public class KnobCommander {
     }
 
     public int getVirtualizerStrength() {
-        return Integer.valueOf(mConfig.getPrefs().getString(Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "0")) / 10;
+        return Integer.valueOf(
+                mConfig.getPrefs().getString(Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "0"))
+                / 10;
     }
 
     public int getBassStrength() {
-        return Integer.valueOf(mConfig.getPrefs().getString(Constants.DEVICE_AUDIOFX_BASS_STRENGTH, "0")) / 10;
+        return Integer.valueOf(
+                mConfig.getPrefs().getString(Constants.DEVICE_AUDIOFX_BASS_STRENGTH, "0")) / 10;
     }
 
     public int getTrebleStrength() {
-        return Integer.valueOf(mConfig.getPrefs().getString(Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH, "0"));
+        return Integer.valueOf(
+                mConfig.getPrefs().getString(Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH, "0"));
     }
 
     public void setTrebleEnabled(boolean on) {
@@ -119,7 +128,8 @@ public class KnobCommander {
 
     public void setTrebleStrength(int value) {
         // set parameter and state
-        mConfig.getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH, String.valueOf(value)).apply();
+        mConfig.getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH,
+                String.valueOf(value)).apply();
         mConfig.updateService(AudioFxService.TREBLE_BOOST_CHANGED);
     }
 
@@ -130,63 +140,69 @@ public class KnobCommander {
 
     public void setBassStrength(int value) {
         // set parameter and state
-        mConfig.getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_BASS_STRENGTH, String.valueOf(value * 10)).apply();
+        mConfig.getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_BASS_STRENGTH,
+                String.valueOf(value * 10)).apply();
         mConfig.updateService(AudioFxService.BASS_BOOST_CHANGED);
     }
 
     public void setVirtualizerEnabled(boolean on) {
-        mConfig.getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, on).apply();
+        mConfig.getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE,
+                on).apply();
         mConfig.updateService(AudioFxService.VIRTUALIZER_CHANGED);
     }
 
     public void setVirtualiserStrength(int value) {
         // set parameter and state
-        mConfig.getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, String.valueOf(value * 10)).apply();
+        mConfig.getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH,
+                String.valueOf(value * 10)).apply();
         mConfig.updateService(AudioFxService.VIRTUALIZER_CHANGED);
     }
 
-    private RadialKnob.OnKnobChangeListener mTrebleKnobCallback = new RadialKnob.OnKnobChangeListener() {
-        @Override
-        public void onValueChanged(RadialKnob knob, int value, boolean fromUser) {
-            if (fromUser) {
-                setTrebleStrength(value);
-            }
-        }
+    private final RadialKnob.OnKnobChangeListener mTrebleKnobCallback =
+            new RadialKnob.OnKnobChangeListener() {
+                @Override
+                public void onValueChanged(RadialKnob knob, int value, boolean fromUser) {
+                    if (fromUser) {
+                        setTrebleStrength(value);
+                    }
+                }
 
-        @Override
-        public boolean onSwitchChanged(RadialKnob knob, boolean on) {
-            setTrebleEnabled(on);
-            return true;
-        }
-    };
+                @Override
+                public boolean onSwitchChanged(RadialKnob knob, boolean on) {
+                    setTrebleEnabled(on);
+                    return true;
+                }
+            };
 
-    private RadialKnob.OnKnobChangeListener mBassKnobCallback = new RadialKnob.OnKnobChangeListener() {
-        @Override
-        public void onValueChanged(RadialKnob knob, int value, boolean fromUser) {
-            if (fromUser) {
-                setBassStrength(value);
-            }
-        }
+    private final RadialKnob.OnKnobChangeListener mBassKnobCallback =
+            new RadialKnob.OnKnobChangeListener() {
+                @Override
+                public void onValueChanged(RadialKnob knob, int value, boolean fromUser) {
+                    if (fromUser) {
+                        setBassStrength(value);
+                    }
+                }
 
-        @Override
-        public boolean onSwitchChanged(RadialKnob knob, boolean on) {
-            setBassEnabled(on);
-            return true;
-        }
-    };
+                @Override
+                public boolean onSwitchChanged(RadialKnob knob, boolean on) {
+                    setBassEnabled(on);
+                    return true;
+                }
+            };
 
-    private RadialKnob.OnKnobChangeListener mVirtualizerCallback = new RadialKnob.OnKnobChangeListener() {
-        @Override
-        public void onValueChanged(RadialKnob knob, int value, boolean fromUser) {
-            if (fromUser) {
-                setVirtualiserStrength(value);
-            }
-        }
+    private final RadialKnob.OnKnobChangeListener mVirtualizerCallback =
+            new RadialKnob.OnKnobChangeListener() {
+                @Override
+                public void onValueChanged(RadialKnob knob, int value, boolean fromUser) {
+                    if (fromUser) {
+                        setVirtualiserStrength(value);
+                    }
+                }
 
-        @Override
-        public boolean onSwitchChanged(RadialKnob knob, boolean on) {
-            setVirtualizerEnabled(on);
-            return true;
-        }
-    };
+                @Override
+                public boolean onSwitchChanged(RadialKnob knob, boolean on) {
+                    setVirtualizerEnabled(on);
+                    return true;
+                }
+            };
 }

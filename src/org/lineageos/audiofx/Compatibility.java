@@ -30,19 +30,17 @@ import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+
 import org.lineageos.audiofx.activity.ActivityMusic;
 
 import java.util.List;
 
 /**
- * Provide backwards compatibility for existing control panels.
- * There are two major parts to this:
- * - a BroadcastReceiver that listens for installed or removed packages, and
- *   enables or disables control panel receivers as needed to ensure that only
- *   one control panel package will receive the broadcasts that applications end
- * - a high priority control panel activity that redirects to the currently
- *   selected control panel activity
- *
+ * Provide backwards compatibility for existing control panels. There are two major parts to this: -
+ * a BroadcastReceiver that listens for installed or removed packages, and enables or disables
+ * control panel receivers as needed to ensure that only one control panel package will receive the
+ * broadcasts that applications end - a high priority control panel activity that redirects to the
+ * currently selected control panel activity
  */
 public class Compatibility {
 
@@ -52,9 +50,8 @@ public class Compatibility {
 
 
     /**
-     * This activity has an intent filter with the highest possible priority, so
-     * it will always be chosen. It then looks up the correct control panel to
-     * use and launches that.
+     * This activity has an intent filter with the highest possible priority, so it will always be
+     * chosen. It then looks up the correct control panel to use and launches that.
      */
     public static class Redirector extends Activity {
 
@@ -88,13 +85,11 @@ public class Compatibility {
     }
 
     /**
-     * This BroadcastReceiver responds to BOOT_COMPLETED, PACKAGE_ADDED,
-     * PACKAGE_REPLACED and PACKAGE_REMOVED intents. When run, it checks
-     * to see whether the active control panel needs to be updated:
-     * - if there is no default, it picks one
-     * - if a new control panel is installed, it becomes the default
-     * It then enables the open/close receivers in the active control panel,
-     * and disables them in the others.
+     * This BroadcastReceiver responds to BOOT_COMPLETED, PACKAGE_ADDED, PACKAGE_REPLACED and
+     * PACKAGE_REMOVED intents. When run, it checks to see whether the active control panel needs to
+     * be updated: - if there is no default, it picks one - if a new control panel is installed, it
+     * becomes the default It then enables the open/close receivers in the active control panel, and
+     * disables them in the others.
      */
     public static class Receiver extends BroadcastReceiver {
 
@@ -150,13 +145,14 @@ public class Compatibility {
             ResolveInfo otherPanel = null;
             ResolveInfo thisPanel = null;
             Intent i = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
-            List<ResolveInfo> ris = mPackageManager.queryIntentActivities(i, PackageManager.GET_DISABLED_COMPONENTS);
+            List<ResolveInfo> ris = mPackageManager.queryIntentActivities(i,
+                    PackageManager.GET_DISABLED_COMPONENTS);
             log("found: " + ris.size());
             SharedPreferences pref = Constants.getMusicFxPrefs(this);
             String savedDefPackage = pref.getString(Constants.MUSICFX_DEFAULT_PACKAGE_KEY, null);
             String savedDefName = pref.getString(Constants.MUSICFX_DEFAULT_PANEL_KEY, null);
             log("saved default: " + savedDefName);
-            for (ResolveInfo foo: ris) {
+            for (ResolveInfo foo : ris) {
                 if (foo.activityInfo.name.equals(Compatibility.Redirector.class.getName())) {
                     log("skipping " + foo);
                     continue;
@@ -171,7 +167,8 @@ public class Compatibility {
                 } else if (foo.activityInfo.packageName.equals(updatedPackage)) {
                     log("choosing newly installed package " + updatedPackage);
                     otherPanel = foo;
-                } else if (otherPanel == null && !foo.activityInfo.packageName.equals(getPackageName())) {
+                } else if (otherPanel == null && !foo.activityInfo.packageName.equals(
+                        getPackageName())) {
                     otherPanel = foo;
                 } else {
                     thisPanel = foo;
@@ -200,11 +197,13 @@ public class Compatibility {
 
         private void setDefault(String defPackage, String defName) {
             Intent i = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-            List<ResolveInfo> ris = mPackageManager.queryBroadcastReceivers(i, PackageManager.GET_DISABLED_COMPONENTS);
+            List<ResolveInfo> ris = mPackageManager.queryBroadcastReceivers(i,
+                    PackageManager.GET_DISABLED_COMPONENTS);
             setupReceivers(ris, defPackage);
             // The open and close receivers are likely the same, but they may not be.
             i = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
-            ris = mPackageManager.queryBroadcastReceivers(i, PackageManager.GET_DISABLED_COMPONENTS);
+            ris = mPackageManager.queryBroadcastReceivers(i,
+                    PackageManager.GET_DISABLED_COMPONENTS);
             setupReceivers(ris, defPackage);
 
             // Write the selected default to the prefs so that the Redirector activity
@@ -222,8 +221,9 @@ public class Compatibility {
             // broadcast to newly enabled receivers, while sending "close session" to
             // receivers that are about to be disabled. We could also consider just
             // killing the process hosting the disabled components.
-            for (ResolveInfo foo: ris) {
-                ComponentName comp = new ComponentName(foo.activityInfo.packageName, foo.activityInfo.name);
+            for (ResolveInfo foo : ris) {
+                ComponentName comp = new ComponentName(foo.activityInfo.packageName,
+                        foo.activityInfo.name);
                 if (foo.activityInfo.packageName.equals(defPackage)) {
                     log("enabling receiver " + foo);
                     mPackageManager.setComponentEnabledSetting(comp,
