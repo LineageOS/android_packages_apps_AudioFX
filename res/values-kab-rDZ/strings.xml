@@ -14,13 +14,9 @@
      limitations under the License.
 -->
 <resources>
-    <string name="app_name">MusicFX</string>
-    <string name="no_effects">Effekter net disponibel.</string>
-    <string name="eq_dialog_title">Equalizer</string>
-    <string name="headset_plug">Schléiss Kopfhörer u fir dës Effekter.</string>
-    <string name="bass_boost_strength">Bassunhiewung</string>
-    <string name="virtualizer_strength">Surround-Toun</string>
-    <string name="setup">Astellen</string>
-    <string name="ci_extreme">FX-Booster</string>
-    <string name="user">Benotzer</string>
+    <string name="eq_dialog_title">Amagday</string>
+    <string name="headset_plug">Qqen amsegdal i yisemda-agi.</string>
+    <string name="bass_boost_strength">Asnas n tabbast</string>
+    <string name="setup">Sebdded</string>
+    <string name="user">Aseqdac</string>
 </resources>
