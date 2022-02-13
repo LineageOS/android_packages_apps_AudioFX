@@ -14,13 +14,9 @@
      limitations under the License.
 -->
 <resources>
-    <string name="app_name">MusicFX</string>
-    <string name="no_effects">Los efeutos nun tán disponibles.</string>
-    <string name="eq_dialog_title">Ecualizador</string>
-    <string name="headset_plug">Conecta los auriculares pa usar estos efeutos.</string>
-    <string name="bass_boost_strength">Potenciación de graves</string>
-    <string name="virtualizer_strength">Soníu envolvente</string>
-    <string name="setup">Configuración</string>
-    <string name="ci_extreme">Potenciador d\'efeutos</string>
-    <string name="user">Usuariu</string>
+    <string name="eq_dialog_title">Amagday</string>
+    <string name="headset_plug">Qqen amsegdal i yisemda-agi.</string>
+    <string name="bass_boost_strength">Asnas n tabbast</string>
+    <string name="setup">Sebdded</string>
+    <string name="user">Aseqdac</string>
 </resources>

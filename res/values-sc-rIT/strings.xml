@@ -15,12 +15,12 @@
 -->
 <resources>
     <string name="app_name">MusicFX</string>
-    <string name="no_effects">Los efeutos nun tán disponibles.</string>
-    <string name="eq_dialog_title">Ecualizador</string>
-    <string name="headset_plug">Conecta los auriculares pa usar estos efeutos.</string>
-    <string name="bass_boost_strength">Potenciación de graves</string>
-    <string name="virtualizer_strength">Soníu envolvente</string>
-    <string name="setup">Configuración</string>
-    <string name="ci_extreme">Potenciador d\'efeutos</string>
-    <string name="user">Usuariu</string>
+    <string name="no_effects">Efetos no a disponimentu.</string>
+    <string name="eq_dialog_title">Ecualizadore</string>
+    <string name="headset_plug">Inserta is cùfias pro custos efetos.</string>
+    <string name="bass_boost_strength">Bass boost</string>
+    <string name="virtualizer_strength">Sonu a fùrriu</string>
+    <string name="setup">Cunfigura</string>
+    <string name="ci_extreme">FX booster</string>
+    <string name="user">Utente</string>
 </resources>
