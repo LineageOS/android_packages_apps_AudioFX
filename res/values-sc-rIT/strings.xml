@@ -14,14 +14,13 @@
      limitations under the License.
 -->
 <resources>
-    <string name="app_name">Èifeachdan ciùil</string>
-    <string name="no_effects">Chan eil èifeachdan ri fhaighinn.</string>
-    <string name="eq_dialog_title">Cothromaiche</string>
-    <string name="headset_plug">Cuir a-steach cluais-fhònaichean airson nan èifeachdan seo.</string>
-    <string name="bass_boost_strength">Spionnadh a’ bheus</string>
-    <string name="virtualizer_strength">Fuaim cuairteachaidh</string>
-    <string name="setup">Suidheachadh</string>
-    <string name="ci_extreme">Meudachadh nan èifeachdan</string>
-    <string name="user">Cleachdaiche</string>
-    <string name="picker_title">Panail-smachd nan èifeachdan ciùil</string>
+    <string name="app_name">MusicFX</string>
+    <string name="no_effects">Efetos no a disponimentu.</string>
+    <string name="eq_dialog_title">Ecualizadore</string>
+    <string name="headset_plug">Inserta is cùfias pro custos efetos.</string>
+    <string name="bass_boost_strength">Bass boost</string>
+    <string name="virtualizer_strength">Sonu a fùrriu</string>
+    <string name="setup">Cunfigura</string>
+    <string name="ci_extreme">FX booster</string>
+    <string name="user">Utente</string>
 </resources>

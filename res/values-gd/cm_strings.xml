@@ -15,7 +15,7 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="snack_bar_not_default">Chan e AudioFX panail-smachd thùsail nan èifeachdan agad.</string>
+    <string name="snack_bar_not_default">Chan e AudioFX panail-smachd bhunaiteach nan èifeachdan agad.</string>
     <string name="snack_bar_not_default_set">Suidhich mar a’ bhun-roghainn</string>
     <string name="snack_bar_not_default_not_now">Chan ann an-dràsta</string>
     <string name="qs_tile_content_description">Toglaich AudioFX air/dheth airson an uidheim làithrich</string>
@@ -44,7 +44,7 @@
     <string name="plate">Pleat</string>
     <string name="power_on_prompt">Brùth putan na cumhachd air an taobh deas aig a’ bhàrr.</string>
     <string name="effect_unavalable_for_speaker">Chan eil an èifeachd seo ri fhaighinn sa mhodh ghlaodhaire.</string>
-    <string name="device_headset">Headset</string>
+    <string name="device_headset">Seata-cinn</string>
     <string name="device_speaker">Glaodhaire</string>
     <string name="device_usb">USB</string>
     <string name="device_bluetooth">Bluetooth</string>
