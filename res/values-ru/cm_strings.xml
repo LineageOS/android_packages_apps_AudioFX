@@ -16,9 +16,9 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="snack_bar_not_default">AudioFX не является вашей панелью управления звуковыми эффектами по умолчанию.</string>
-    <string name="snack_bar_not_default_set">Уст. по умолч.</string>
+    <string name="snack_bar_not_default_set">Установить по умолчанию</string>
     <string name="snack_bar_not_default_not_now">Не сейчас</string>
-    <string name="qs_tile_content_description">Включить или выключить AudioFX на этом устройстве</string>
+    <string name="qs_tile_content_description">Включить/выключить AudioFX на этом устройстве</string>
     <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">Стандартный</string>
     <string name="classical">Классика</string>
@@ -54,9 +54,9 @@
     <string name="eq_preset">Предуст. эквалайзера</string>
     <string name="devices">Устройства</string>
     <string name="virtualizer">Виртуализатор</string>
-    <string name="treble">Высокие</string>
+    <string name="treble">ВЧ</string>
     <string name="bass">НЧ</string>
     <string name="rename">Переименовать</string>
-    <string name="remove_custom_preset_warning_message">Действительно удалить «%1$s»?</string>
+    <string name="remove_custom_preset_warning_message">Вы уверены, что хотите удалить %1$s?</string>
     <string name="powered_by">Технологии</string>
 </resources>

@@ -42,7 +42,7 @@
     <string name="mediumhall">Mittlerer Saal</string>
     <string name="largehall">Großer Saal</string>
     <string name="plate">Hallplatte</string>
-    <string name="power_on_prompt">Drücken Sie den Einschaltknopf oben rechts.</string>
+    <string name="power_on_prompt">Drücke den Einschaltknopf oben rechts.</string>
     <string name="effect_unavalable_for_speaker">Effekt für Lautsprecher-Modus nicht verfügbar.</string>
     <string name="device_headset">Kopfhörer</string>
     <string name="device_speaker">Lautsprecher</string>
