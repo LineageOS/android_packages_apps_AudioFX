@@ -35,6 +35,8 @@ android_app {
         enabled: false,
     },
 
+    overrides: ["MusicFX"],
+
     required: ["privapp_whitelist_org.lineageos.audiofx"],
 }
 
