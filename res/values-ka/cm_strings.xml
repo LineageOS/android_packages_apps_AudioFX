@@ -16,4 +16,6 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="snack_bar_not_default_not_now">ახლა არა</string>
+    <string name="small_speakers">მცირე დინამიკები</string>
+    <string name="device_wireless">უსადენო</string>
 </resources>

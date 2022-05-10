@@ -19,8 +19,10 @@
     <string name="snack_bar_not_default_not_now">Agora non</string>
     <string name="qs_tile_content_description">Alterna la des/activación d\'AudioFX nel preséu actual</string>
     <string name="qs_tile_label">AudioFX (%1$s)</string>
+    <string name="normal">Axuste normal</string>
     <string name="classical">Música clásica</string>
     <string name="dance">Música dance</string>
+    <string name="flat">Axuste planu</string>
     <string name="folk">Folk</string>
     <string name="heavy_metal">Heavy metal</string>
     <string name="jazz">Jazz</string>
