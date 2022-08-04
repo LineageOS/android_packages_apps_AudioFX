@@ -31,7 +31,7 @@
     <string name="pop">პოპი</string>
     <string name="rock">როკი</string>
     <string name="electronic">ელექტრონული</string>
-    <string name="small_speakers">მცირე დინამიკები</string>
+    <string name="small_speakers">პატარა დინამიკები</string>
     <string name="multimedia">მულტიმედია</string>
     <string name="custom">მითითებული</string>
     <string name="custom_n">მითითებული <xliff:g id="preset_num">%1$d</xliff:g></string>
