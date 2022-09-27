@@ -31,6 +31,8 @@ android_app {
     certificate: "platform",
     system_ext_specific: true,
 
+    overrides: ["MusicFX"],
+
     optimize: {
         enabled: false,
     },
