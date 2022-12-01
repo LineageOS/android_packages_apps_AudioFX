@@ -83,6 +83,7 @@ public class EqContainerView extends FrameLayout
 
     private Handler mHandler;
 
+    private Context mContext;
     private final Runnable mVibrateRunnable = new Runnable() {
         @Override
         public void run() {
@@ -125,16 +126,19 @@ public class EqContainerView extends FrameLayout
 
     public EqContainerView(Context context) {
         super(context);
+        mContext = context;
         init();
     }
 
     public EqContainerView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
         init();
     }
 
     public EqContainerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mContext = context;
         init();
     }
 

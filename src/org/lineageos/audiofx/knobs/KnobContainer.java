@@ -58,17 +58,21 @@ public class KnobContainer extends LinearLayout
     private KnobCommander mKnobCommander;
 
     private long mLastDisabledNotifyTime = -1;
+    private Context mContext;
 
     public KnobContainer(Context context) {
         super(context);
+        mContext = context;
     }
 
     public KnobContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
     }
 
     public KnobContainer(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mContext = context;
     }
 
     @Override

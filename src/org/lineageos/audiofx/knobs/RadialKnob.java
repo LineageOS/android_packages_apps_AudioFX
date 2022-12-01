@@ -98,9 +98,11 @@ public class RadialKnob extends View {
     PathMeasure mPathMeasure = new PathMeasure();
     float[] mTmp = new float[2];
     float mStartX, mStopX, mStartY, mStopY;
+    private Context mContext;
 
     public RadialKnob(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mContext = context;
 
         Resources res = getResources();
         mBackgroundArcColor = res.getColor(R.color.radial_knob_arc_bg);
@@ -137,10 +139,12 @@ public class RadialKnob extends View {
 
     public RadialKnob(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
+        mContext = context;
     }
 
     public RadialKnob(Context context) {
         this(context, null);
+        mContext = context;
     }
 
     public void setValue(int value) {

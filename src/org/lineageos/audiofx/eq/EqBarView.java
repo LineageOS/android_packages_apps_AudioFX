@@ -44,19 +44,23 @@ public class EqBarView extends FrameLayout implements StateCallbacks.EqUpdatedCa
     private int mParentTop;
     private Integer mIndex;
     private float mInitialLevel;
+    private Context mContext;
 
     public EqBarView(Context context) {
         super(context);
+        mContext = context;
         init();
     }
 
     public EqBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
         init();
     }
 
     public EqBarView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mContext = context;
         init();
     }
 
