@@ -18,7 +18,6 @@ package org.lineageos.audiofx.fragment;
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.annotation.Nullable;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -38,6 +37,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+
+import androidx.annotation.Nullable;
 
 import org.lineageos.audiofx.Compatibility;
 import org.lineageos.audiofx.Constants;

@@ -15,7 +15,6 @@
  */
 package org.lineageos.audiofx.fragment;
 
-import android.annotation.Nullable;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -27,6 +26,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+
+import androidx.annotation.Nullable;
 
 import org.lineageos.audiofx.R;
 import org.lineageos.audiofx.activity.MasterConfigControl;
