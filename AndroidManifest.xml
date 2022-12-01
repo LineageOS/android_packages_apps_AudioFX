@@ -54,10 +54,6 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity
-                android:name=".activity.ControlPanelPicker"
-                android:theme="@*android:style/Theme.Material.Dialog.Alert"
-                android:excludeFromRecents="true"/>
 
         <receiver android:name="Compatibility$Receiver"
             android:exported="true">
