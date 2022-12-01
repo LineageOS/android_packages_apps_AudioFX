@@ -15,7 +15,6 @@
  */
 package org.lineageos.audiofx.service;
 
-import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_FILE;
 import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_BASSBOOST;
 import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_DTS;
 import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO;
@@ -100,10 +99,6 @@ public class DevicePreferenceManager
 
     public SharedPreferences prefsFor(final String name) {
         return mContext.getSharedPreferences(name, 0);
-    }
-
-    private boolean hasPrefs(final String name) {
-        return mContext.getSharedPrefsFile(name).exists();
     }
 
     public boolean isGlobalEnabled() {
@@ -223,8 +218,7 @@ public class DevicePreferenceManager
             Log.d(TAG, "applyDefaults() called with overridePrevious = [" + overridePrevious + "]");
         }
 
-        if (!(overridePrevious || !hasPrefs(DEVICE_SPEAKER) ||
-                !hasPrefs(AUDIOFX_GLOBAL_FILE))) {
+        if (!overridePrevious) {
             return;
         }
 
