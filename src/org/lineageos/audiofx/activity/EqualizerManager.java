@@ -17,6 +17,7 @@ package org.lineageos.audiofx.activity;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.widget.CompoundButton;
@@ -69,7 +70,7 @@ public class EqualizerManager {
     private static final int MSG_SAVE_PRESETS = 1;
     private static final int MSG_SEND_EQ_OVERRIDE = 2;
 
-    private final Handler mHandler = new Handler(new Handler.Callback() {
+    private final Handler mHandler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
@@ -82,7 +83,7 @@ public class EqualizerManager {
             }
             return true;
         }
-    }, true);
+    });
 
     public EqualizerManager(Context context, MasterConfigControl config) {
         mContext = context;
