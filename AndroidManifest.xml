@@ -28,8 +28,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <uses-permission android:name="lineageos.permission.OBSERVE_AUDIO_SESSIONS" />
-
     <application
             android:icon="@mipmap/ic_launcher"
             android:allowBackup="false"
