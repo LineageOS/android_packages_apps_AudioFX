@@ -23,7 +23,8 @@ android_app {
 
     static_libs: [
         "androidx.core_core",
-        "androidx.legacy_legacy-support-v4",
+        "androidx.localbroadcastmanager_localbroadcastmanager",
+        "androidx.viewpager_viewpager",
     ],
 
     platform_apis: true,
