@@ -15,13 +15,13 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="snack_bar_not_default">AudioFX не з\'яўляецца вашай панэллю кіравання гукавымі эфектамі па змаўчанні.</string>
+    <string name="snack_bar_not_default">AudioFX не з\'яўляецца вашай прадвызначанай панэллю кіравання гукавымі эфектамі.</string>
     <string name="snack_bar_not_default_set">Усталяваць па змаўчанні</string>
     <string name="snack_bar_not_default_not_now">Не зараз</string>
     <string name="qs_tile_content_description">Уключыць або выключыць AudioFX на гэтай прыладзе</string>
     <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">Звычайная</string>
-    <string name="classical">Класічная</string>
+    <string name="classical">Класіка</string>
     <string name="dance">Танцавальная</string>
     <string name="flat">Плоска</string>
     <string name="folk">Фолк</string>
@@ -34,7 +34,7 @@
     <string name="small_speakers">Малыя дынамікі</string>
     <string name="multimedia">Мультымедыя</string>
     <string name="custom">Карыстальніцкія</string>
-    <string name="custom_n">Карыст. <xliff:g id="preset_num">%1$d</xliff:g></string>
+    <string name="custom_n">Карыстальніцкае <xliff:g id="preset_num">%1$d</xliff:g></string>
     <string name="none">Няма</string>
     <string name="smallroom">Маленькі пакой</string>
     <string name="mediumroom">Сярэдні пакой</string>
@@ -43,7 +43,7 @@
     <string name="largehall">Вялікая зала</string>
     <string name="plate">Пласцінка</string>
     <string name="power_on_prompt">Націсніце кнопку сілкавання ў правым верхнім куце.</string>
-    <string name="effect_unavalable_for_speaker">Эфект недаступны для дынамікаў.</string>
+    <string name="effect_unavalable_for_speaker">Эфект недаступны для рэжыму дынамікаў.</string>
     <string name="device_headset">Навушнікі</string>
     <string name="device_speaker">Дынамік</string>
     <string name="device_usb">USB</string>
