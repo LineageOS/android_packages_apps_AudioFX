@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2014-2015 The CyanogenMod Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">AudioFX nol è il to panel predefinît pal control dai efiets.</string>
+    <string name="snack_bar_not_default_set">Met come predefinît</string>
+    <string name="snack_bar_not_default_not_now">No cumò</string>
+    <string name="qs_tile_content_description">Ative/disative AudioFX pal dispositîf corint</string>
+    <string name="qs_tile_label">AudioFX (%1$s)</string>
+    <string name="normal">Normâl</string>
+    <string name="classical">Classiche</string>
+    <string name="dance">Dance</string>
+    <string name="flat">Avuâl</string>
+    <string name="folk">Folk</string>
+    <string name="heavy_metal">Heavy Metal</string>
+    <string name="hip_hop">Hip Hop</string>
+    <string name="jazz">Jazz</string>
+    <string name="pop">Pop</string>
+    <string name="rock">Rock</string>
+    <string name="electronic">Eletroniche</string>
+    <string name="small_speakers">Cassis piçulis</string>
+    <string name="multimedia">Multimedia</string>
+    <string name="custom">Personalizât</string>
+    <string name="custom_n">Personalizât <xliff:g id="preset_num">%1$d</xliff:g></string>
+    <string name="none">Nissun</string>
+    <string name="smallroom">Stanzie piçule</string>
+    <string name="mediumroom">Stanzie medie</string>
+    <string name="largeroom">Stanzie grande</string>
+    <string name="mediumhall">Sale medie</string>
+    <string name="largehall">Sale grande</string>
+    <string name="plate">Plat</string>
+    <string name="power_on_prompt">Frache il boton par impiâ in alt a diestre.</string>
+    <string name="effect_unavalable_for_speaker">Efiet no disponibil pe modalitât Casse.</string>
+    <string name="device_headset">Scufis</string>
+    <string name="device_speaker">Casse</string>
+    <string name="device_usb">USB</string>
+    <string name="device_bluetooth">Bluetooth</string>
+    <string name="device_wireless">Cence fîi</string>
+    <string name="device_line_out">Jessude di linie</string>
+    <string name="reverb">Rivoc</string>
+    <string name="eq_preset">Ecualizadôr prestabilît</string>
+    <string name="devices">Dispositîfs</string>
+    <string name="virtualizer">Virtualizadôr</string>
+    <string name="treble">Alts</string>
+    <string name="bass">Bas</string>
+    <string name="rename">Cambie non</string>
+    <string name="remove_custom_preset_warning_message">Gjavâ pardabon %1$s?</string>
+    <string name="powered_by">cun tecnologjie</string>
+</resources>
