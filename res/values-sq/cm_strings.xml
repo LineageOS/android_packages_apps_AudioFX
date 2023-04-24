@@ -18,7 +18,7 @@
     <string name="snack_bar_not_default">AudioFX nuk është paneli i paracaktuar i kontrollit të efekteve.</string>
     <string name="snack_bar_not_default_set">Cakto si të paracaktuar</string>
     <string name="snack_bar_not_default_not_now">Jo tani</string>
-    <string name="qs_tile_content_description">Aktivizo/çaktivizo AudioFX për këtë pajisje</string>
+    <string name="qs_tile_content_description">Hap/mbyll AudioFX për këtë pajisje</string>
     <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">Normal</string>
     <string name="classical">Klasike</string>
