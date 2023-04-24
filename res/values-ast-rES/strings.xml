@@ -23,4 +23,5 @@
     <string name="setup">Configuración</string>
     <string name="ci_extreme">Potenciador d\'efeutos</string>
     <string name="user">Usuariu</string>
+    <string name="picker_title">Panel contr. efeut. musicales</string>
 </resources>
