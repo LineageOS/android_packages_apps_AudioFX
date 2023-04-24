@@ -52,7 +52,7 @@
     <string name="device_line_out">ライン出力</string>
     <string name="reverb">リバーブ</string>
     <string name="eq_preset">イコライザープリセット</string>
-    <string name="devices">デバイス</string>
+    <string name="devices">端末</string>
     <string name="virtualizer">Virtualizer</string>
     <string name="treble">Treble</string>
     <string name="bass">Bass</string>

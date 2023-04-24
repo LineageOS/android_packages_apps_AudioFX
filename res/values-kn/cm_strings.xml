@@ -15,33 +15,39 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">AudioFX ನಿಮ್ಮ ನಿಯಂತ್ರಣ ಫಲಕದ ಇದ್ದಾಯ್ಕೆಗಳಲಿಲ್ಲ.</string>
+    <string name="snack_bar_not_default_not_now">ಈಗಲ್ಲ</string>
     <string name="normal">ಸಹಜ</string>
     <string name="classical">ಶಾಸ್ತ್ರೀಯ</string>
     <string name="dance">ನೃತ್ಯ</string>
-    <string name="flat">ಫ್ಲಾಟ್</string>
+    <string name="flat">ಚಪ್ಪಟೆ</string>
     <string name="folk">ಜಾನಪದ</string>
-    <string name="heavy_metal">ಹೆವಿ ಮೆಟಲ್</string>
+    <string name="heavy_metal">ಭಾರೀ ಲೋಹ</string>
     <string name="hip_hop">ಹಿಪ್ ಹಾಪ್</string>
     <string name="jazz">ಜಾಝ್</string>
     <string name="pop">ಪಾಪ್</string>
     <string name="rock">ರಾಕ್</string>
-    <string name="electronic">ಎಲೆಕ್ಟ್ರಾನಿಕ್</string>
+    <string name="electronic">ವಿದ್ಯುಜ್ಜನಿತ</string>
     <string name="small_speakers">ಚಿಕ್ಕ ಸ್ಪೀಕರ್‍ಗಳು</string>
+    <string name="multimedia">ಬಹುಮಾಧ್ಯಮ</string>
     <string name="custom">ಕಸ್ಟಮ್</string>
+    <string name="custom_n">ವೈಯಕ್ತಿಕ <xliff:g id="preset_num">%1$d</xliff:g></string>
     <string name="none">ಶೂನ್ಯ</string>
     <string name="smallroom">ಸಣ್ಣ ಕೋಣೆ</string>
-    <string name="mediumroom">ಮಧ್ಯಮ ಕೊಣೆ</string>
+    <string name="mediumroom">ಮಧ್ಯಮ ಕೋಣೆ</string>
     <string name="largeroom">ದೊಡ್ಡ ಕೋಣೆ</string>
-    <string name="mediumhall">ಮಧ್ಯಮ ಹಾಲ್</string>
-    <string name="largehall">ದೊಡ್ಡ ಹಾಲ್</string>
+    <string name="mediumhall">ಮಧ್ಯಮ ಸಭಾಂಗಣ</string>
+    <string name="largehall">ಭಾರಿ ಸಭಾಂಗಣ</string>
     <string name="plate">ಪ್ಲೇಟ್</string>
     <string name="power_on_prompt">ಬಲ-ಮೇಲ್ಭಾಗದಲ್ಲಿರುವ ಪವರ್ ಬಟನ್ ಒತ್ತಿ.</string>
-    <string name="effect_unavalable_for_speaker">ಸ್ಪೀಕರ್ ಮೋಡ್ ಪರಿಣಾಮಗಳು ಲಭ್ಯವಿಲ್ಲ.</string>
-    <string name="device_headset">ಹೆಡ್‍ಸೆಟ್</string>
+    <string name="effect_unavalable_for_speaker">ಧ್ವನಿವರ್ಧಕ ರೀತಿಯಲ್ಲಿ ಪ್ರಭಾವ ಲಭ್ಯವಿಲ್ಲ.</string>
+    <string name="device_headset">ತಲೆಜೋಡು</string>
     <string name="device_speaker">ಸ್ಪೀಕರ್</string>
     <string name="device_usb">ಯುಎಸ್‍ಬಿ</string>
     <string name="device_bluetooth">ಬ್ಲೂಟೂತ್</string>
     <string name="device_wireless">ನಿಸ್ತಂತು</string>
     <string name="reverb">ಪ್ರತಿಫಲನ</string>
-    <string name="eq_preset">ಸಮಕಾರಕ ಪೂರ್ವನಿಗದಿ</string>
+    <string name="eq_preset">ಸಮಕಾರಕ ಇದ್ದಾಯ್ಕೆ</string>
+    <string name="devices">ಸಾಧನಗಳು</string>
+    <string name="rename">ಮರುನಾಮ</string>
 </resources>
