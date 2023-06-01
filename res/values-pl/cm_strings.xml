@@ -34,7 +34,7 @@
     <string name="small_speakers">Małe głośniki</string>
     <string name="multimedia">Multimedia</string>
     <string name="custom">Własne</string>
-    <string name="custom_n">Niestandardowy <xliff:g id="preset_num">%1$d</xliff:g></string>
+    <string name="custom_n">Własne <xliff:g id="preset_num">%1$d</xliff:g></string>
     <string name="none">Brak</string>
     <string name="smallroom">Mały pokój</string>
     <string name="mediumroom">Średni pokój</string>
@@ -57,6 +57,6 @@
     <string name="treble">Sopran</string>
     <string name="bass">Basy</string>
     <string name="rename">Zmień nazwę</string>
-    <string name="remove_custom_preset_warning_message">Jesteś pewny, że chcesz usunąć %1$s?</string>
+    <string name="remove_custom_preset_warning_message">Czy na pewno chcesz usunąć %1$s?</string>
     <string name="powered_by">wspierane przez</string>
 </resources>

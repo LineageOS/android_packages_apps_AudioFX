@@ -16,5 +16,47 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="snack_bar_not_default">AudioFX er ekki sjálfgefna stjórnborðið þitt fyrir hljómbrellur.</string>
+    <string name="snack_bar_not_default_set">Setja sjálfgefið</string>
+    <string name="snack_bar_not_default_not_now">Ekki núna</string>
+    <string name="qs_tile_content_description">Víxla AudioFX af/á fyrir þetta tæki</string>
+    <string name="qs_tile_label">AudioFX (%1$s)</string>
+    <string name="normal">Venjulegt</string>
+    <string name="classical">Klassísk tónlist</string>
+    <string name="dance">Danstónlist</string>
+    <string name="flat">Flatt</string>
+    <string name="folk">Þjóðlaga</string>
+    <string name="heavy_metal">Þungmálmur</string>
+    <string name="hip_hop">Hipp-Hopp</string>
+    <string name="jazz">Djass</string>
+    <string name="pop">Popp</string>
+    <string name="rock">Rokk</string>
+    <string name="electronic">Raftónlist</string>
+    <string name="small_speakers">Litlir hátalarar</string>
+    <string name="multimedia">Margmiðlun</string>
+    <string name="custom">Sérsniðið</string>
+    <string name="custom_n">Sérsniðið <xliff:g id="preset_num">%1$d</xliff:g></string>
+    <string name="none">Ekkert</string>
+    <string name="smallroom">Lítið herbergi</string>
+    <string name="mediumroom">Miðlungs herbergi</string>
+    <string name="largeroom">Stórt herbergi</string>
+    <string name="mediumhall">Miðlungs salur</string>
+    <string name="largehall">Stór salur</string>
+    <string name="plate">Plata</string>
+    <string name="power_on_prompt">Ýttu á aflhnappinn efst til hægri.</string>
+    <string name="effect_unavalable_for_speaker">Áhrifin eru ekki tiltæk í hátalaraham.</string>
+    <string name="device_headset">Heyrnartól með hljóðnema</string>
+    <string name="device_speaker">Hátalari</string>
+    <string name="device_usb">USB</string>
+    <string name="device_bluetooth">Blátönn</string>
+    <string name="device_wireless">Þráðlaust</string>
+    <string name="device_line_out">Lína út</string>
+    <string name="reverb">Eftirómur</string>
+    <string name="eq_preset">Forstillingar tónjafnara</string>
+    <string name="devices">Tæki</string>
     <string name="virtualizer">Sýndarhljómur</string>
+    <string name="treble">Diskantur</string>
+    <string name="bass">Bassi</string>
+    <string name="rename">Endurnefna</string>
+    <string name="remove_custom_preset_warning_message">Ertu viss um að þú viljir fjarlægja %1$s?</string>
+    <string name="powered_by">keyrt með</string>
 </resources>
