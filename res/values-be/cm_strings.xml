@@ -20,7 +20,6 @@
     <string name="snack_bar_not_default_not_now">Не зараз</string>
     <string name="qs_tile_content_description">Уключыць або выключыць AudioFX на гэтай прыладзе</string>
     <string name="qs_tile_label">AudioFX (%1$s)</string>
-    <string name="normal">Звычайная</string>
     <string name="classical">Класіка</string>
     <string name="dance">Танцавальная</string>
     <string name="flat">Плоска</string>
@@ -35,7 +34,6 @@
     <string name="multimedia">Мультымедыя</string>
     <string name="custom">Карыстальніцкія</string>
     <string name="custom_n">Карыстальніцкае <xliff:g id="preset_num">%1$d</xliff:g></string>
-    <string name="none">Няма</string>
     <string name="smallroom">Маленькі пакой</string>
     <string name="mediumroom">Сярэдні пакой</string>
     <string name="largeroom">Вялікі пакой</string>
