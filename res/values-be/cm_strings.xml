@@ -16,9 +16,11 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="snack_bar_not_default">AudioFX не з\'яўляецца вашай прадвызначанай панэллю кіравання гукавымі эфектамі.</string>
+    <string name="snack_bar_not_default_set">Задаць прадвызначана</string>
     <string name="snack_bar_not_default_not_now">Не зараз</string>
     <string name="qs_tile_content_description">Уключыць або выключыць AudioFX на гэтай прыладзе</string>
     <string name="qs_tile_label">AudioFX (%1$s)</string>
+    <string name="normal">Звычайны</string>
     <string name="classical">Класіка</string>
     <string name="dance">Танцавальная</string>
     <string name="flat">Плоска</string>
@@ -29,9 +31,11 @@
     <string name="pop">Поп</string>
     <string name="rock">Рок</string>
     <string name="electronic">Электронная</string>
+    <string name="small_speakers">Маленькія дынамікі</string>
     <string name="multimedia">Мультымедыя</string>
     <string name="custom">Карыстальніцкія</string>
     <string name="custom_n">Карыстальніцкае <xliff:g id="preset_num">%1$d</xliff:g></string>
+    <string name="none">Адсутнічае</string>
     <string name="smallroom">Маленькі пакой</string>
     <string name="mediumroom">Сярэдні пакой</string>
     <string name="largeroom">Вялікі пакой</string>
@@ -49,7 +53,7 @@
     <string name="reverb">Рэверберацыя</string>
     <string name="eq_preset">Налады эквалайзера</string>
     <string name="devices">Прылады</string>
-    <string name="virtualizer">Віртуалізацыя</string>
+    <string name="treble">Высокія частоты</string>
     <string name="bass">Бас</string>
     <string name="rename">Перайменаваць</string>
     <string name="remove_custom_preset_warning_message">Вы сапраўды хочаце выдаліць %1$s?</string>
