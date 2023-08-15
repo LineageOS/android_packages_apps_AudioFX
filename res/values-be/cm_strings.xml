@@ -53,6 +53,7 @@
     <string name="reverb">Рэверберацыя</string>
     <string name="eq_preset">Налады эквалайзера</string>
     <string name="devices">Прылады</string>
+    <string name="virtualizer">Віртуалізацыя</string>
     <string name="treble">Высокія частоты</string>
     <string name="bass">Бас</string>
     <string name="rename">Перайменаваць</string>
