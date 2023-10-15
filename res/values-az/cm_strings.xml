@@ -16,7 +16,7 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="snack_bar_not_default">AudioFX, ilkin effektlərə nəzarət paneliniz deyil.</string>
-    <string name="snack_bar_not_default_set">İlkin olaraq tənzimlə</string>
+    <string name="snack_bar_not_default_set">İlkin olaraq ayarla</string>
     <string name="snack_bar_not_default_not_now">İndi yox</string>
     <string name="qs_tile_content_description">Hazırki cihaz üçün AudioFX-i aç/bağla</string>
     <string name="qs_tile_label">AudioFX (%1$s)</string>
@@ -51,7 +51,7 @@
     <string name="device_wireless">Naqilsiz</string>
     <string name="device_line_out">Xətt çıxışı</string>
     <string name="reverb">Əks-səda</string>
-    <string name="eq_preset">Ekvalayzer hazır tənzimləmələri</string>
+    <string name="eq_preset">Ekvalayzer ön ayarı</string>
     <string name="devices">Cihazlar</string>
     <string name="virtualizer">Virtuallaşdırıcı</string>
     <string name="treble">Zil</string>
