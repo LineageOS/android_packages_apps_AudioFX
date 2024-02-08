@@ -15,13 +15,13 @@
 -->
 <resources>
     <string name="app_name">MusicFX</string>
-    <string name="no_effects">Los efeutos nun tán disponibles.</string>
-    <string name="eq_dialog_title">Ecualizador</string>
-    <string name="headset_plug">Conecta los auriculares pa usar estos efeutos.</string>
-    <string name="bass_boost_strength">Potenciación de graves</string>
-    <string name="virtualizer_strength">Soníu envolvente</string>
-    <string name="setup">Configuración</string>
-    <string name="ci_extreme">Potenciador d\'efeutos</string>
-    <string name="user">Usuariu</string>
-    <string name="picker_title">Panel contr. efeut. musicales</string>
+    <string name="no_effects">Efiets no disponibii.</string>
+    <string name="eq_dialog_title">Ecualizadôr</string>
+    <string name="headset_plug">Tache lis scufis par chescj efiets.</string>
+    <string name="bass_boost_strength">Potenziament dai bas</string>
+    <string name="virtualizer_strength">Sun surround</string>
+    <string name="setup">Configure</string>
+    <string name="ci_extreme">Potenziament efiets</string>
+    <string name="user">Utent</string>
+    <string name="picker_title">Panel di control dai efiets musicâi</string>
 </resources>

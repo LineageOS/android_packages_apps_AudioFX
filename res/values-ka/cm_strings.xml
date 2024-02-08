@@ -15,5 +15,48 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">AudioFX არაა ხმაზე ზემოქმედბის ნაგულისხმევი სამართავი.</string>
+    <string name="snack_bar_not_default_set">ნაგულისხმევად მითითება</string>
     <string name="snack_bar_not_default_not_now">ახლა არა</string>
+    <string name="qs_tile_content_description">AudioFX-ის ჩართვა/გამორთვა ამ მოწყობილობისთვის</string>
+    <string name="qs_tile_label">AudioFX (%1$s)</string>
+    <string name="normal">ჩვეულებრივი</string>
+    <string name="classical">კლასიკური</string>
+    <string name="dance">საცეკვაო</string>
+    <string name="flat">თანაბარი</string>
+    <string name="folk">ხალხური</string>
+    <string name="heavy_metal">მძიმე მეტალი</string>
+    <string name="hip_hop">ჰიპ-ჰოპი</string>
+    <string name="jazz">ჯაზი</string>
+    <string name="pop">პოპი</string>
+    <string name="rock">როკი</string>
+    <string name="electronic">ელექტრონული</string>
+    <string name="small_speakers">პატარა დინამიკები</string>
+    <string name="multimedia">მულტიმედია</string>
+    <string name="custom">მითითებული</string>
+    <string name="custom_n">მითითებული <xliff:g id="preset_num">%1$d</xliff:g></string>
+    <string name="none">არცერთი</string>
+    <string name="smallroom">მცირე ოთახი</string>
+    <string name="mediumroom">საშუალო ოთახი</string>
+    <string name="largeroom">დიდი ოთახი</string>
+    <string name="mediumhall">საშუალო დარბაზი</string>
+    <string name="largehall">დიდი დარბაზი</string>
+    <string name="plate">ფირფიტა</string>
+    <string name="power_on_prompt">დააჭირეთ ჩართვის ღილაკს მარჯვენა ზედა კუთხეში.</string>
+    <string name="effect_unavalable_for_speaker">ეფექტები მიუწვდომელია ხმამაღლამოლაპარაკეზე.</string>
+    <string name="device_headset">ყურსასმენები</string>
+    <string name="device_speaker">ხმამაღლამოლაპარაკე</string>
+    <string name="device_usb">USB</string>
+    <string name="device_bluetooth">Bluetooth</string>
+    <string name="device_wireless">უსადენო</string>
+    <string name="device_line_out">ხმის გამოსატანი</string>
+    <string name="reverb">არეკვლა</string>
+    <string name="eq_preset">მათანაბრებლის მზა პარამეტრები</string>
+    <string name="devices">მოწყობილობები</string>
+    <string name="virtualizer">სივრცითი</string>
+    <string name="treble">წვრილი</string>
+    <string name="bass">ბოხი</string>
+    <string name="rename">გადარქმევა</string>
+    <string name="remove_custom_preset_warning_message">ნამდვილად გსურთ, ამოიშალოს %1$s?</string>
+    <string name="powered_by">უზრუნველყოფს</string>
 </resources>
