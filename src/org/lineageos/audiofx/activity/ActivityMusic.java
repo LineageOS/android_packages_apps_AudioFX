@@ -16,7 +16,6 @@
 package org.lineageos.audiofx.activity;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -27,7 +26,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.CompoundButton;
-import android.widget.Switch;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import org.lineageos.audiofx.Constants;
 import org.lineageos.audiofx.R;
@@ -35,7 +37,7 @@ import org.lineageos.audiofx.fragment.AudioFxFragment;
 import org.lineageos.audiofx.service.AudioFxService;
 import org.lineageos.audiofx.service.DevicePreferenceManager;
 
-public class ActivityMusic extends Activity {
+public class ActivityMusic extends AppCompatActivity {
 
     public static final String TAG_AUDIOFX = "audiofx";
     public static final String EXTRA_CALLING_PACKAGE = "audiofx::extra_calling_package";
@@ -51,7 +53,7 @@ public class ActivityMusic extends Activity {
         }
     };
     String mCallingPackage;
-    private Switch mCurrentDeviceToggle;
+    private SwitchCompat mCurrentDeviceToggle;
     private boolean mWaitingForService = true;
     private SharedPreferences.OnSharedPreferenceChangeListener mServiceReadyObserver;
 
@@ -141,7 +143,7 @@ public class ActivityMusic extends Activity {
         mCurrentDeviceToggle.setOnCheckedChangeListener(mGlobalEnableToggleListener);
 
         if (savedInstanceState == null && findViewById(R.id.main_fragment) != null) {
-            getFragmentManager()
+            getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.main_fragment, new AudioFxFragment(), TAG_AUDIOFX)
                     .commit();
@@ -161,7 +163,7 @@ public class ActivityMusic extends Activity {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (DEBUG) {
             Log.i(TAG, "onConfigurationChanged() called with "

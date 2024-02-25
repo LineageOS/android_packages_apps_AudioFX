@@ -18,11 +18,7 @@ package org.lineageos.audiofx.fragment;
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioDeviceInfo;
@@ -38,7 +34,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import org.lineageos.audiofx.Compatibility;
 import org.lineageos.audiofx.Constants;
@@ -101,20 +100,10 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("user_device", mUserSelection == null ? -1 : mUserSelection.getId());
         outState.putInt("system_device", mSystemDevice == null ? -1 : mSystemDevice.getId());
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
     }
 
     private boolean showFragments() {
@@ -232,14 +221,14 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.devices, menu);
         mMenuDevices = menu.findItem(R.id.devices);
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
         mMenuDevices.getSubMenu().clear();
         mMenuItems.clear();
@@ -322,7 +311,7 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         AudioDeviceInfo device = mMenuItems.get(item);
 
         if (device != null) {
@@ -339,7 +328,7 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
         if (container == null) {
             Log.w(TAG, "container is null.");
@@ -395,7 +384,7 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         mInterceptLayout = view.findViewById(R.id.interceptable_layout);

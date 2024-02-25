@@ -15,29 +15,24 @@
 -->
 
 <resources>
-
-    <style name="AppTheme" parent="android:Theme.Material">
-        <item name="android:windowBackground">@color/window_background</item>
-    </style>
-
-    <style name="AppThemeV2" parent="android:Theme.Material">
+    <style name="AppThemeV2" parent="@style/Theme.AppCompat.DayNight">
         <item name="android:actionBarStyle">@style/ActionBar</item>
         <item name="android:colorAccent">@color/white</item>
     </style>
 
-    <style name="ActionBar" parent="android:Widget.Material.ActionBar.Solid">
+    <style name="ActionBar" parent="Widget.AppCompat.ActionBar.Solid">
         <item name="android:titleTextStyle">@style/AppThemeV2.ActionBar.TitleTextStyle</item>
         <item name="android:subtitleTextStyle">@style/AppThemeV2.ActionBar.SubtitleTextStyle</item>
     </style>
 
-    <style name="AppThemeV2.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Material.Widget.ActionBar.Title">
+    <style name="AppThemeV2.ActionBar.TitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="AppThemeV2.ActionBar.SubtitleTextStyle" parent="@android:style/TextAppearance.Material.Widget.ActionBar.Subtitle">
+    <style name="AppThemeV2.ActionBar.SubtitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle">
         <item name="android:textSize">10sp</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>

@@ -16,7 +16,6 @@
 
 package org.lineageos.audiofx;
 
-import android.app.Activity;
 import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -30,6 +29,8 @@ import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.lineageos.audiofx.activity.ActivityMusic;
 
@@ -58,7 +59,7 @@ public class Compatibility {
      * This activity has an intent filter with the highest possible priority, so it will always be
      * chosen. It then looks up the correct control panel to use and launches that.
      */
-    public static class Redirector extends Activity {
+    public static class Redirector extends AppCompatActivity {
 
         @Override
         public void onCreate(final Bundle savedInstanceState) {

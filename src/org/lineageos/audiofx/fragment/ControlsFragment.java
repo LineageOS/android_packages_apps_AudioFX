@@ -25,9 +25,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 
 import org.lineageos.audiofx.R;
 import org.lineageos.audiofx.activity.MasterConfigControl;
@@ -50,8 +51,8 @@ public class ControlsFragment extends AudioFxBaseFragment {
     };
     KnobCommander mKnobCommander;
     KnobContainer mKnobContainer;
-    Switch mMaxxVolumeSwitch;
-    Switch mReverbSwitch;
+    SwitchCompat mMaxxVolumeSwitch;
+    SwitchCompat mReverbSwitch;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,7 +108,7 @@ public class ControlsFragment extends AudioFxBaseFragment {
         }
     }
 
-    private void updateSwitchColor(Switch view, int color) {
+    private void updateSwitchColor(SwitchCompat view, int color) {
         ColorStateList thumbStates = new ColorStateList(
                 new int[][]{
                         new int[]{-android.R.attr.state_enabled},
@@ -148,7 +149,7 @@ public class ControlsFragment extends AudioFxBaseFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         mKnobContainer = view.findViewById(R.id.knob_container);
