@@ -2,17 +2,17 @@
 
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-          android:id="@+id/text"
+    android:id="@+id/text"
 
-          android:layout_gravity="center"
-          android:fontFamily="sans-serif"
-          android:textStyle="bold"
-          android:textSize="@dimen/preset_text_size"
-          android:gravity="center"
-          android:layout_margin="@dimen/preset_text_padding"
-          android:textColor="@color/white"
-          android:textAllCaps="true"
-          android:ellipsize="end"
-          android:maxLines="1"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"/>
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="@dimen/preset_text_padding"
+    android:ellipsize="end"
+    android:fontFamily="sans-serif"
+    android:gravity="center"
+    android:maxLines="1"
+    android:textAllCaps="true"
+    android:textColor="@color/white"
+    android:textSize="@dimen/preset_text_size"
+    android:textStyle="bold" />

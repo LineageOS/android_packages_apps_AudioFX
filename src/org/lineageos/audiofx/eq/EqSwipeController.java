@@ -36,16 +36,14 @@ public class EqSwipeController extends LinearLayout {
     private static final int X_VELOCITY_THRESH = 20;
 
     private static final int MINIMUM_TIME_HOLD_TIME = 100;
-
+    private final EqualizerManager mEqManager;
     EqContainerView mEq;
     InfiniteViewPager mPager;
-    private VelocityTracker mVelocityTracker = null;
     long mDownTime;
     EqBarView mBar;
     boolean mBarActive;
+    private VelocityTracker mVelocityTracker = null;
     private ViewGroup mControls;
-
-    private final EqualizerManager mEqManager;
     private float mDownPositionX;
     private float mDownPositionY;
 
@@ -58,7 +56,7 @@ public class EqSwipeController extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mEq = findViewById(R.id.eq_container);
-        mPager = (InfiniteViewPager) findViewById(R.id.pager);
+        mPager = findViewById(R.id.pager);
         mControls = findViewById(R.id.eq_controls);
     }
 
@@ -95,7 +93,6 @@ public class EqSwipeController extends LinearLayout {
                     mVelocityTracker.addMovement(event);
                     mVelocityTracker.computeCurrentVelocity(1000);
                     float xVelocity = mVelocityTracker.getXVelocity(pointerId);
-                    float yVelocity = mVelocityTracker.getYVelocity(pointerId);
 
                     final float deltaX = mDownPositionX - event.getRawX();
                     final float deltaY = mDownPositionY - event.getRawY();

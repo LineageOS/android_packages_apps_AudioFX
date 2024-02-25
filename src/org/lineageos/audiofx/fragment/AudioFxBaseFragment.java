@@ -45,7 +45,7 @@ public class AudioFxBaseFragment extends Fragment {
     }
 
     public void animateBackgroundColorTo(Integer colorTo, Animator.AnimatorListener listener,
-            AudioFxFragment.ColorUpdateListener updateListener) {
+                                         AudioFxFragment.ColorUpdateListener updateListener) {
         if (mFrag != null) {
             mFrag.animateBackgroundColorTo(colorTo, listener, updateListener);
         }

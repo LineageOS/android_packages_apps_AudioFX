@@ -31,24 +31,15 @@ import java.util.List;
 public class AudioOutputChangeListener extends AudioDeviceCallback {
 
     private static final String TAG = "AudioFx-" + AudioOutputChangeListener.class.getSimpleName();
-
-    private boolean mInitial = true;
-
-    private final Context mContext;
     private final AudioManager mAudioManager;
     private final Handler mHandler;
+    private final ArrayList<AudioOutputChangedCallback> mCallbacks =
+            new ArrayList<>();
+    private boolean mInitial = true;
     private int mLastDevice = -1;
 
-    private final ArrayList<AudioOutputChangedCallback> mCallbacks =
-            new ArrayList<AudioOutputChangedCallback>();
-
-    public interface AudioOutputChangedCallback {
-        void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice);
-    }
-
     public AudioOutputChangeListener(Context context, Handler handler) {
-        mContext = context;
-        mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         mHandler = handler;
     }
 
@@ -87,13 +78,10 @@ public class AudioOutputChangeListener extends AudioDeviceCallback {
                         " address: " + device.getAddress() +
                         " [" + device + "]");
                 mLastDevice = device.getId();
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        synchronized (mCallbacks) {
-                            for (AudioOutputChangedCallback callback : mCallbacks) {
-                                callback.onAudioOutputChanged(mInitial, device);
-                            }
+                mHandler.post(() -> {
+                    synchronized (mCallbacks) {
+                        for (AudioOutputChangedCallback callback : mCallbacks) {
+                            callback.onAudioOutputChanged(mInitial, device);
                         }
                     }
                 });
@@ -142,5 +130,9 @@ public class AudioOutputChangeListener extends AudioDeviceCallback {
             }
         }
         return null;
+    }
+
+    public interface AudioOutputChangedCallback {
+        void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice);
     }
 }

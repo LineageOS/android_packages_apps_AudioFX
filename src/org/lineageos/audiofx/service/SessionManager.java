@@ -54,28 +54,23 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
 
     private static final String TAG = AudioFxService.TAG;
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
-
-    private final Context mContext;
-    private final Handler mHandler;
-    private final DevicePreferenceManager mDevicePrefs;
-
-    /**
-     * All fields ending with L should be locked on {@link #mAudioSessionsL}
-     */
-    private final SparseArray<EffectSet> mAudioSessionsL = new SparseArray<EffectSet>();
-
-
-    private AudioDeviceInfo mCurrentDevice = null;
-
     // audio priority handler messages
     private static final int MSG_UPDATE_DSP = 100;
     private static final int MSG_ADD_SESSION = 101;
     private static final int MSG_REMOVE_SESSION = 102;
     private static final int MSG_UPDATE_FOR_SESSION = 103;
     private static final int MSG_UPDATE_EQ_OVERRIDE = 104;
+    private final Context mContext;
+    private final Handler mHandler;
+    private final DevicePreferenceManager mDevicePrefs;
+    /**
+     * All fields ending with L should be locked on {@link #mAudioSessionsL}
+     */
+    private final SparseArray<EffectSet> mAudioSessionsL = new SparseArray<>();
+    private AudioDeviceInfo mCurrentDevice;
 
     public SessionManager(Context context, Handler handler, DevicePreferenceManager devicePrefs,
-            AudioDeviceInfo outputDevice) {
+                          AudioDeviceInfo outputDevice) {
         mContext = context;
         mDevicePrefs = devicePrefs;
         mCurrentDevice = outputDevice;
@@ -209,7 +204,7 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                 if ((flags & BASS_BOOST_CHANGED) > 0 && session.hasBassBoost()) {
                     boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_BASS_ENABLE, false);
                     session.enableBassBoost(enable);
-                    session.setBassBoostStrength(Short.valueOf(prefs
+                    session.setBassBoostStrength(Short.parseShort(prefs
                             .getString(DEVICE_AUDIOFX_BASS_STRENGTH, "0")));
                 }
             } catch (Exception e) {
@@ -233,7 +228,7 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                 if ((flags & VIRTUALIZER_CHANGED) > 0 && session.hasVirtualizer()) {
                     boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, false);
                     session.enableVirtualizer(enable);
-                    session.setVirtualizerStrength(Short.valueOf(prefs.getString(
+                    session.setVirtualizerStrength(Short.parseShort(prefs.getString(
                             DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "0")));
                 }
             } catch (Exception e) {
@@ -246,7 +241,7 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                     // treble
                     boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_TREBLE_ENABLE, false);
                     session.enableTrebleBoost(enable);
-                    session.setTrebleBoostStrength(Short.valueOf(
+                    session.setTrebleBoostStrength(Short.parseShort(
                             prefs.getString(DEVICE_AUDIOFX_TREBLE_STRENGTH, "0")));
                 }
             } catch (Exception e) {
@@ -274,18 +269,42 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
         }
     }
 
+    /**
+     * Updates the backend and notifies the frontend when the output device has changed
+     */
+    @Override
+    public void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice) {
+        synchronized (mAudioSessionsL) {
+            if (mCurrentDevice == null ||
+                    (outputDevice != null && mCurrentDevice.getId() != outputDevice.getId())) {
+                mCurrentDevice = outputDevice;
+            }
+
+            EffectSet session;
+
+            // Update all the sessions for this output which are moving
+            final int N = mAudioSessionsL.size();
+            for (int i = 0; i < N; i++) {
+                session = mAudioSessionsL.valueAt(i);
+
+                session.setDevice(mCurrentDevice);
+                updateBackendLocked(ALL_CHANGED, session);
+            }
+        }
+    }
+
     private class AudioServiceHandler implements Handler.Callback {
 
         @Override
         public boolean handleMessage(Message msg) {
             synchronized (mAudioSessionsL) {
-                EffectSet session = null;
-                Integer sessionId = 0;
-                int flags = 0;
+                EffectSet session;
+                Integer sessionId;
+                int flags;
 
                 switch (msg.what) {
                     case MSG_ADD_SESSION:
-                        /**
+                        /*
                          * msg.obj = sessionId
                          */
                         sessionId = (Integer) msg.obj;
@@ -312,7 +331,7 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                         break;
 
                     case MSG_REMOVE_SESSION:
-                        /**
+                        /*
                          * msg.obj = sessionId
                          */
                         sessionId = (Integer) msg.obj;
@@ -331,7 +350,7 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                         break;
 
                     case MSG_UPDATE_DSP:
-                        /**
+                        /*
                          * msg.arg1 = update what flags
                          */
                         flags = msg.arg1;
@@ -348,7 +367,7 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                         break;
 
                     case MSG_UPDATE_FOR_SESSION:
-                        /**
+                        /*
                          * msg.arg1 = update what flags
                          * msg.arg2 = unused
                          * msg.obj = session id integer (for consistency)
@@ -383,30 +402,6 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                         break;
                 }
                 return true;
-            }
-        }
-    }
-
-    /**
-     * Updates the backend and notifies the frontend when the output device has changed
-     */
-    @Override
-    public void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice) {
-        synchronized (mAudioSessionsL) {
-            if (mCurrentDevice == null ||
-                    (outputDevice != null && mCurrentDevice.getId() != outputDevice.getId())) {
-                mCurrentDevice = outputDevice;
-            }
-
-            EffectSet session = null;
-
-            // Update all the sessions for this output which are moving
-            final int N = mAudioSessionsL.size();
-            for (int i = 0; i < N; i++) {
-                session = mAudioSessionsL.valueAt(i);
-
-                session.setDevice(mCurrentDevice);
-                updateBackendLocked(ALL_CHANGED, session);
             }
         }
     }

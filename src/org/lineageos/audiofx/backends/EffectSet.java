@@ -70,6 +70,10 @@ public abstract class EffectSet {
      */
     public abstract int getBrand();
 
+    public boolean isGlobalEnabled() {
+        return mGlobalEnabled;
+    }
+
     /**
      * Called when the user toggles the engine on or off. If the implementation has a built-in
      * bypass mode, this is where to use it.
@@ -80,8 +84,13 @@ public abstract class EffectSet {
         mGlobalEnabled = globalEnabled;
     }
 
-    public boolean isGlobalEnabled() {
-        return mGlobalEnabled;
+    /**
+     * Return the current active output device
+     *
+     * @return deviceInfo
+     */
+    public AudioDeviceInfo getDevice() {
+        return mDeviceInfo;
     }
 
     /**
@@ -91,15 +100,6 @@ public abstract class EffectSet {
      */
     public void setDevice(AudioDeviceInfo deviceInfo) {
         mDeviceInfo = deviceInfo;
-    }
-
-    /**
-     * Return the current active output device
-     *
-     * @return deviceInfo
-     */
-    public AudioDeviceInfo getDevice() {
-        return mDeviceInfo;
     }
 
     /**
@@ -199,26 +199,21 @@ public abstract class EffectSet {
     public abstract void setVirtualizerStrength(short strength);
 
     public void enableReverb(boolean enable) {
-        return;
     }
 
     public void setReverbPreset(short preset) {
-        return;
     }
 
     public void enableTrebleBoost(boolean enable) {
-        return;
     }
 
     /**
      * @param strength with range [0-100]
      */
     public void setTrebleBoostStrength(short strength) {
-        return;
     }
 
     public void enableVolumeBoost(boolean enable) {
-        return;
     }
 
     /**

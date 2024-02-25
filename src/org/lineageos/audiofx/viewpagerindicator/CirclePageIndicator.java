@@ -32,6 +32,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import androidx.annotation.NonNull;
 import androidx.core.view.MotionEventCompat;
 import androidx.core.view.ViewConfigurationCompat;
 import androidx.viewpager.widget.ViewPager;
@@ -44,11 +45,10 @@ import org.lineageos.audiofx.R;
  */
 public class CirclePageIndicator extends View implements PageIndicator {
     private static final int INVALID_POINTER = -1;
-
-    private float mRadius;
     private final Paint mPaintPageFill = new Paint(ANTI_ALIAS_FLAG);
     private final Paint mPaintStroke = new Paint(ANTI_ALIAS_FLAG);
     private final Paint mPaintFill = new Paint(ANTI_ALIAS_FLAG);
+    private float mRadius;
     private ViewPager mViewPager;
     private ViewPager.OnPageChangeListener mListener;
     private int mCurrentPage;
@@ -122,18 +122,12 @@ public class CirclePageIndicator extends View implements PageIndicator {
         mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
     }
 
-
-    public void setCentered(boolean centered) {
-        mCentered = centered;
-        invalidate();
-    }
-
     public boolean isCentered() {
         return mCentered;
     }
 
-    public void setPageColor(int pageColor) {
-        mPaintPageFill.setColor(pageColor);
+    public void setCentered(boolean centered) {
+        mCentered = centered;
         invalidate();
     }
 
@@ -141,13 +135,22 @@ public class CirclePageIndicator extends View implements PageIndicator {
         return mPaintPageFill.getColor();
     }
 
-    public void setFillColor(int fillColor) {
-        mPaintFill.setColor(fillColor);
+    public void setPageColor(int pageColor) {
+        mPaintPageFill.setColor(pageColor);
         invalidate();
     }
 
     public int getFillColor() {
         return mPaintFill.getColor();
+    }
+
+    public void setFillColor(int fillColor) {
+        mPaintFill.setColor(fillColor);
+        invalidate();
+    }
+
+    public int getOrientation() {
+        return mOrientation;
     }
 
     public void setOrientation(int orientation) {
@@ -164,8 +167,8 @@ public class CirclePageIndicator extends View implements PageIndicator {
         }
     }
 
-    public int getOrientation() {
-        return mOrientation;
+    public int getStrokeColor() {
+        return mPaintStroke.getColor();
     }
 
     public void setStrokeColor(int strokeColor) {
@@ -173,8 +176,8 @@ public class CirclePageIndicator extends View implements PageIndicator {
         invalidate();
     }
 
-    public int getStrokeColor() {
-        return mPaintStroke.getColor();
+    public float getStrokeWidth() {
+        return mPaintStroke.getStrokeWidth();
     }
 
     public void setStrokeWidth(float strokeWidth) {
@@ -182,8 +185,8 @@ public class CirclePageIndicator extends View implements PageIndicator {
         invalidate();
     }
 
-    public float getStrokeWidth() {
-        return mPaintStroke.getStrokeWidth();
+    public float getRadius() {
+        return mRadius;
     }
 
     public void setRadius(float radius) {
@@ -191,8 +194,8 @@ public class CirclePageIndicator extends View implements PageIndicator {
         invalidate();
     }
 
-    public float getRadius() {
-        return mRadius;
+    public boolean isSnap() {
+        return mSnap;
     }
 
     public void setSnap(boolean snap) {
@@ -200,12 +203,8 @@ public class CirclePageIndicator extends View implements PageIndicator {
         invalidate();
     }
 
-    public boolean isSnap() {
-        return mSnap;
-    }
-
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
         if (mViewPager == null) {

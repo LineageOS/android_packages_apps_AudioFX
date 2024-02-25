@@ -113,7 +113,7 @@ public class Constants {
                 0).edit();
         presetPrefs.clear();
 
-        StringBuffer presetNames = new StringBuffer();
+        StringBuilder presetNames = new StringBuilder();
         for (int i = 0; i < presets.size(); i++) {
             final Preset preset = presets.get(i);
             if (preset instanceof Preset.CustomPreset
@@ -130,7 +130,7 @@ public class Constants {
         }
 
         presetPrefs.putString("preset_names", presetNames.toString());
-        presetPrefs.commit();
+        presetPrefs.apply();
     }
 
     public static int[] getBandLevelRange(Context context) {
@@ -142,7 +142,7 @@ public class Constants {
             String[] split = savedCenterFreqs.split(";");
             int[] freqs = new int[split.length];
             for (int i = 0; i < split.length; i++) {
-                freqs[i] = Integer.valueOf(split[i]);
+                freqs[i] = Integer.parseInt(split[i]);
             }
             return freqs;
         }
@@ -155,7 +155,7 @@ public class Constants {
         String[] split = savedCenterFreqs.split(";");
         int[] freqs = new int[split.length];
         for (int i = 0; i < split.length; i++) {
-            freqs[i] = Integer.valueOf(split[i]);
+            freqs[i] = Integer.parseInt(split[i]);
         }
         return freqs;
     }

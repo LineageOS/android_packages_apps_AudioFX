@@ -63,29 +63,30 @@ public class MasterConfigControl {
     private static final String TAG = MasterConfigControl.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     private static final boolean SERVICE_DEBUG = false;
-
+    private static MasterConfigControl sInstance;
     private final Context mContext;
-
-    private AudioFxService.LocalBinder mService;
-    private ServiceConnection mServiceConnection;
-    private int mServiceRefCount = 0;
-
-    private AudioDeviceInfo mCurrentDevice;
-    private AudioDeviceInfo mUserDeviceOverride;
-
     private final StateCallbacks mCallbacks;
     private final EqualizerManager mEqManager;
     private final AudioManager mAudioManager;
-
-    private static MasterConfigControl sInstance;
-    private boolean mShouldBindToService = false;
-
-    public static MasterConfigControl getInstance(Context context) {
-        if (sInstance == null) {
-            sInstance = new MasterConfigControl(context);
+    private AudioFxService.LocalBinder mService;
+    private ServiceConnection mServiceConnection;
+    private int mServiceRefCount = 0;
+    private AudioDeviceInfo mCurrentDevice;
+    private AudioDeviceInfo mUserDeviceOverride;
+    private final BroadcastReceiver mDeviceChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int device = intent.getIntExtra("device", -1);
+            Log.d(TAG, "deviceChanged: " + device);
+            if (device > -1) {
+                AudioDeviceInfo info = getDeviceById(device);
+                if (info != null) {
+                    setCurrentDevice(info, false);
+                }
+            }
         }
-        return sInstance;
-    }
+    };
+    private boolean mShouldBindToService = false;
 
     private MasterConfigControl(Context context) {
         mContext = context.getApplicationContext();
@@ -94,6 +95,75 @@ public class MasterConfigControl {
 
         mCallbacks = new StateCallbacks(this);
         mEqManager = new EqualizerManager(context, this);
+    }
+
+    public static MasterConfigControl getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new MasterConfigControl(context);
+        }
+        return sInstance;
+    }
+
+    public static String getDeviceDisplayString(Context context, AudioDeviceInfo info) {
+        int type = info == null ? -1 : info.getType();
+        switch (type) {
+            case TYPE_WIRED_HEADSET:
+            case TYPE_WIRED_HEADPHONES:
+                return context.getString(org.lineageos.audiofx.R.string.device_headset);
+            case TYPE_LINE_ANALOG:
+            case TYPE_LINE_DIGITAL:
+                return context.getString(org.lineageos.audiofx.R.string.device_line_out);
+            case TYPE_BLUETOOTH_SCO:
+            case TYPE_BLUETOOTH_A2DP:
+            case TYPE_USB_DEVICE:
+            case TYPE_USB_ACCESSORY:
+            case TYPE_USB_HEADSET:
+            case TYPE_DOCK:
+            case TYPE_IP:
+                return info.getProductName().toString();
+            default:
+                return context.getString(org.lineageos.audiofx.R.string.device_speaker);
+        }
+    }
+
+    private static String appendProductName(AudioDeviceInfo info, String prefix) {
+        StringBuilder nm = new StringBuilder(prefix);
+        if (info != null && info.getProductName() != null) {
+            nm.append("-").append(info.getProductName().toString().replaceAll("\\W+", ""));
+        }
+        return nm.toString();
+    }
+
+    private static String appendDeviceAddress(AudioDeviceInfo info, String prefix) {
+        StringBuilder nm = new StringBuilder(prefix);
+        if (info != null && info.getAddress() != null) {
+            nm.append("-").append(info.getAddress().replace(":", ""));
+        }
+        return nm.toString();
+    }
+
+    public static String getDeviceIdentifierString(AudioDeviceInfo info) {
+        int type = info == null ? -1 : info.getType();
+        switch (type) {
+            case TYPE_WIRED_HEADSET:
+            case TYPE_WIRED_HEADPHONES:
+                return Constants.DEVICE_HEADSET;
+            case TYPE_LINE_ANALOG:
+            case TYPE_LINE_DIGITAL:
+                return Constants.DEVICE_LINE_OUT;
+            case TYPE_BLUETOOTH_SCO:
+            case TYPE_BLUETOOTH_A2DP:
+                return appendDeviceAddress(info, Constants.DEVICE_PREFIX_BLUETOOTH);
+            case TYPE_USB_DEVICE:
+            case TYPE_USB_ACCESSORY:
+            case TYPE_USB_HEADSET:
+            case TYPE_DOCK:
+                return appendProductName(info, Constants.DEVICE_PREFIX_USB);
+            case TYPE_IP:
+                return appendProductName(info, Constants.DEVICE_PREFIX_CAST);
+            default:
+                return Constants.DEVICE_SPEAKER;
+        }
     }
 
     public void onResetDefaults() {
@@ -159,20 +229,6 @@ public class MasterConfigControl {
         return mService != null;
     }
 
-    private final BroadcastReceiver mDeviceChangeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int device = intent.getIntExtra("device", -1);
-            Log.d(TAG, "deviceChanged: " + device);
-            if (device > -1) {
-                AudioDeviceInfo info = getDeviceById(device);
-                if (info != null) {
-                    setCurrentDevice(info, false);
-                }
-            }
-        }
-    };
-
     public void updateService(int flags) {
         if (checkService()) {
             mService.update(flags);
@@ -187,14 +243,14 @@ public class MasterConfigControl {
         return mEqManager;
     }
 
+    public synchronized boolean isCurrentDeviceEnabled() {
+        return getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE, false);
+    }
+
     public synchronized void setCurrentDeviceEnabled(boolean isChecked) {
         getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE, isChecked).apply();
         getCallbacks().notifyGlobalToggle(isChecked);
         updateService(AudioFxService.ALL_CHANGED);
-    }
-
-    public synchronized boolean isCurrentDeviceEnabled() {
-        return getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE, false);
     }
 
     public synchronized SharedPreferences getGlobalPrefs() {
@@ -313,13 +369,13 @@ public class MasterConfigControl {
         return getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, false);
     }
 
-    public boolean getReverbEnabled() {
-        return getPrefs().getString(Constants.DEVICE_AUDIOFX_REVERB_PRESET, "0").equals("1");
-    }
-
     public void setMaxxVolumeEnabled(boolean enable) {
         getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, enable).apply();
         updateService(AudioFxService.VOLUME_BOOST_CHANGED);
+    }
+
+    public boolean getReverbEnabled() {
+        return getPrefs().getString(Constants.DEVICE_AUDIOFX_REVERB_PRESET, "0").equals("1");
     }
 
     public void setReverbEnabled(boolean enable) {
@@ -331,68 +387,6 @@ public class MasterConfigControl {
     void overrideEqLevels(short band, short level) {
         if (checkService()) {
             mService.setOverrideLevels(band, level);
-        }
-    }
-
-    public static String getDeviceDisplayString(Context context, AudioDeviceInfo info) {
-        int type = info == null ? -1 : info.getType();
-        switch (type) {
-            case TYPE_WIRED_HEADSET:
-            case TYPE_WIRED_HEADPHONES:
-                return context.getString(org.lineageos.audiofx.R.string.device_headset);
-            case TYPE_LINE_ANALOG:
-            case TYPE_LINE_DIGITAL:
-                return context.getString(org.lineageos.audiofx.R.string.device_line_out);
-            case TYPE_BLUETOOTH_SCO:
-            case TYPE_BLUETOOTH_A2DP:
-            case TYPE_USB_DEVICE:
-            case TYPE_USB_ACCESSORY:
-            case TYPE_USB_HEADSET:
-            case TYPE_DOCK:
-            case TYPE_IP:
-                return info.getProductName().toString();
-            default:
-                return context.getString(org.lineageos.audiofx.R.string.device_speaker);
-        }
-    }
-
-    private static String appendProductName(AudioDeviceInfo info, String prefix) {
-        StringBuilder nm = new StringBuilder(prefix);
-        if (info != null && info.getProductName() != null) {
-            nm.append("-").append(info.getProductName().toString().replaceAll("\\W+", ""));
-        }
-        return nm.toString();
-    }
-
-    private static String appendDeviceAddress(AudioDeviceInfo info, String prefix) {
-        StringBuilder nm = new StringBuilder(prefix);
-        if (info != null && info.getAddress() != null) {
-            nm.append("-").append(info.getAddress().replace(":", ""));
-        }
-        return nm.toString();
-    }
-
-    public static String getDeviceIdentifierString(AudioDeviceInfo info) {
-        int type = info == null ? -1 : info.getType();
-        switch (type) {
-            case TYPE_WIRED_HEADSET:
-            case TYPE_WIRED_HEADPHONES:
-                return Constants.DEVICE_HEADSET;
-            case TYPE_LINE_ANALOG:
-            case TYPE_LINE_DIGITAL:
-                return Constants.DEVICE_LINE_OUT;
-            case TYPE_BLUETOOTH_SCO:
-            case TYPE_BLUETOOTH_A2DP:
-                return appendDeviceAddress(info, Constants.DEVICE_PREFIX_BLUETOOTH);
-            case TYPE_USB_DEVICE:
-            case TYPE_USB_ACCESSORY:
-            case TYPE_USB_HEADSET:
-            case TYPE_DOCK:
-                return appendProductName(info, Constants.DEVICE_PREFIX_USB);
-            case TYPE_IP:
-                return appendProductName(info, Constants.DEVICE_PREFIX_CAST);
-            default:
-                return Constants.DEVICE_SPEAKER;
         }
     }
 

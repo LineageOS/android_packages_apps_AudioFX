@@ -24,7 +24,7 @@ public class Biquad {
     private Complex mB0, mB1, mB2, mA0, mA1, mA2;
 
     public void setHighShelf(double centerFrequency, double samplingFrequency,
-            double dbGain, double slope) {
+                             double dbGain, double slope) {
         double w0 = 2 * Math.PI * centerFrequency / samplingFrequency;
         double a = Math.pow(10, dbGain / 40);
         double alpha = Math.sin(w0) / 2 * Math.sqrt((a + 1 / a) * (1 / slope - 1) + 2);

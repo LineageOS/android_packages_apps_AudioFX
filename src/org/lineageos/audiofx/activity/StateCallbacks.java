@@ -38,29 +38,6 @@ public class StateCallbacks {
         mConfig = config;
     }
 
-    /**
-     * Implement this callback to receive any changes called to the MasterConfigControl instance
-     */
-    public interface EqUpdatedCallback {
-        /**
-         * A band level has been changed
-         *
-         * @param band       the band index which changed
-         * @param dB         the new decibel value
-         * @param fromSystem whether the event was from the system or from the user
-         */
-        void onBandLevelChange(int band, float dB, boolean fromSystem);
-
-        /**
-         * The preset has been set
-         *
-         * @param newPresetIndex the new preset index.
-         */
-        void onPresetChanged(int newPresetIndex);
-
-        void onPresetsChanged();
-    }
-
     public void addEqUpdatedCallback(EqUpdatedCallback callback) {
         synchronized (mEqUpdateCallbacks) {
             mEqUpdateCallbacks.add(callback);
@@ -97,14 +74,6 @@ public class StateCallbacks {
         }
     }
 
-    /**
-     * Callback for changes to visibility and state of the EQ
-     */
-    public interface EqControlStateCallback {
-        void updateEqState(boolean saveVisible, boolean removeVisible,
-                boolean renameVisible, boolean unlockVisible);
-    }
-
     public void addEqControlStateCallback(EqControlStateCallback callback) {
         synchronized (mEqControlStateCallbacks) {
             mEqControlStateCallbacks.add(callback);
@@ -118,22 +87,12 @@ public class StateCallbacks {
     }
 
     void notifyEqControlStateChanged(boolean saveVisible, boolean removeVisible,
-            boolean renameVisible, boolean unlockVisible) {
+                                     boolean renameVisible, boolean unlockVisible) {
         synchronized (mEqControlStateCallbacks) {
             for (final EqControlStateCallback callback : mEqControlStateCallbacks) {
                 callback.updateEqState(saveVisible, removeVisible, renameVisible, unlockVisible);
             }
         }
-    }
-
-    /**
-     * Register this callback to receive notification when the output device changes.
-     */
-    public interface DeviceChangedCallback {
-        void onDeviceChanged(AudioDeviceInfo device, boolean userChange);
-
-        void onGlobalDeviceToggle(boolean on);
-
     }
 
     public void addDeviceChangedCallback(DeviceChangedCallback callback) {
@@ -164,5 +123,46 @@ public class StateCallbacks {
                 callback.onDeviceChanged(newDevice, fromUser);
             }
         }
+    }
+
+    /**
+     * Implement this callback to receive any changes called to the MasterConfigControl instance
+     */
+    public interface EqUpdatedCallback {
+        /**
+         * A band level has been changed
+         *
+         * @param band       the band index which changed
+         * @param dB         the new decibel value
+         * @param fromSystem whether the event was from the system or from the user
+         */
+        void onBandLevelChange(int band, float dB, boolean fromSystem);
+
+        /**
+         * The preset has been set
+         *
+         * @param newPresetIndex the new preset index.
+         */
+        void onPresetChanged(int newPresetIndex);
+
+        void onPresetsChanged();
+    }
+
+    /**
+     * Callback for changes to visibility and state of the EQ
+     */
+    public interface EqControlStateCallback {
+        void updateEqState(boolean saveVisible, boolean removeVisible,
+                           boolean renameVisible, boolean unlockVisible);
+    }
+
+    /**
+     * Register this callback to receive notification when the output device changes.
+     */
+    public interface DeviceChangedCallback {
+        void onDeviceChanged(AudioDeviceInfo device, boolean userChange);
+
+        void onGlobalDeviceToggle(boolean on);
+
     }
 }

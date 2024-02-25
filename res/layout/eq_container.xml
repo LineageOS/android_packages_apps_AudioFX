@@ -1,54 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<org.lineageos.audiofx.eq.EqContainerView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/eq_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<org.lineageos.audiofx.eq.EqContainerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/eq_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <FrameLayout
-            android:id="@+id/eq_controls"
-            android:padding="4dp"
-            android:alpha="0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        android:id="@+id/eq_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:padding="4dp">
 
         <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            <ImageView
-                    android:id="@+id/remove"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_content_clear"
-                    android:paddingRight="12dp"
-                    />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <ImageView
-                    android:id="@+id/rename"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_content_create"
-                    android:paddingRight="12dp"
-                    />
+                android:id="@+id/remove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="12dp"
+                android:src="@drawable/ic_content_clear" />
+
+            <ImageView
+                android:id="@+id/rename"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="12dp"
+                android:src="@drawable/ic_content_create" />
+
             <CheckBox
-                    android:id="@+id/lock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:button="@drawable/toggle_lock"
-                    />
+                android:id="@+id/lock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/toggle_lock" />
         </LinearLayout>
 
         <LinearLayout
-                android:layout_gravity="right"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="right">
+
             <ImageView
-                    android:id="@+id/save"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_content_add_circle_outline"
-                    />
+                android:id="@+id/save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_content_add_circle_outline" />
         </LinearLayout>
 
     </FrameLayout>

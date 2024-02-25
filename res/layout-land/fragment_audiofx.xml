@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<org.lineageos.audiofx.widget.InterceptableLinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:custom="http://schemas.android.com/apk/res/org.lineageos.audiofx"
-        android:id="@+id/interceptable_layout"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<org.lineageos.audiofx.widget.InterceptableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/interceptable_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
 
     <!-- equalizer layout -->
-    <FrameLayout class="org.lineageos.audiofx.fragment.EqualizerFragment"
-              android:id="@+id/equalizer"
-              android:layout_weight="1"
-              android:layout_width="0dp"
-              android:layout_height="match_parent"/>
+    <FrameLayout
+        android:id="@+id/equalizer"
+        class="org.lineageos.audiofx.fragment.EqualizerFragment"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
 
     <!-- knobs -->
-    <FrameLayout class="org.lineageos.audiofx.fragment.ControlsFragment"
-              android:id="@+id/controls"
-              android:layout_weight="0"
-              android:layout_width="wrap_content"
-              android:layout_height="match_parent"/>
+    <FrameLayout
+        android:id="@+id/controls"
+        class="org.lineageos.audiofx.fragment.ControlsFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="0" />
 
 </org.lineageos.audiofx.widget.InterceptableLinearLayout>

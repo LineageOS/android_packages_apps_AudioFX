@@ -38,6 +38,8 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
+import androidx.annotation.NonNull;
+
 import org.lineageos.audiofx.R;
 
 import java.util.Arrays;
@@ -45,28 +47,25 @@ import java.util.Arrays;
 public class EqualizerSurface extends SurfaceView implements ValueAnimator.AnimatorUpdateListener {
 
     private static final int SAMPLING_RATE = 44100;
-
-    private int mWidth;
-    private int mHeight;
-
-    private float mMinFreq = 10;
-    private float mMaxFreq = 21000;
-
-    private float mMinDB = -15;
-    private float mMaxDB = 15;
-
-    private int mNumBands = 6;
-
-    private float[] mLevels = new float[mNumBands];
-    private float[] mTargetLevels = new float[mNumBands];
-    private float[] mCenterFreqs = new float[mNumBands];
     private final Paint mWhite, mControlBarText, mControlBar;
     private final Paint mFrequencyResponseBg;
     private final Paint mFrequencyResponseHighlight, mFrequencyResponseHighlight2;
-
-    private BandUpdatedListener mBandUpdatedListener;
     int mBarWidth;
     int mTextSize;
+    int mPasses = 140;
+    float[] mStartLevels;
+    float[] mDeltas;
+    private int mWidth;
+    private int mHeight;
+    private float mMinFreq = 10;
+    private float mMaxFreq = 21000;
+    private float mMinDB = -15;
+    private float mMaxDB = 15;
+    private int mNumBands = 6;
+    private float[] mLevels = new float[mNumBands];
+    private float[] mTargetLevels = new float[mNumBands];
+    private float[] mCenterFreqs = new float[mNumBands];
+    private BandUpdatedListener mBandUpdatedListener;
     private ValueAnimator mAnimation;
 
     public EqualizerSurface(Context context, AttributeSet attributeSet) {
@@ -112,40 +111,20 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
     }
 
     /**
-     * Listener for bands being modified via touch events
-     * <p>
-     * Invoked with the index of the modified band, and the new value in dB. If the widget is
-     * read-only, will set changed = false.
+     * Returns a color that is assumed to be blended against black background, assuming close to
+     * sRGB behavior of screen (gamma 2.2 approximation).
+     *
+     * @param intensity desired physical intensity of color component
+     * @param alpha     alpha value of color component
      */
-    public interface BandUpdatedListener {
-        void onBandUpdated(int band, float dB);
+    private static int gamma(float intensity, float alpha) {
+        /* intensity = (component * alpha)^2.2
+         * <=>
+         * intensity^(1/2.2) / alpha = component
+         */
 
-        void onBandAnimating(int band, float dB);
-
-        void onBandAnimationCompleted();
-    }
-
-    public void setBandLevelRange(float minDB, float maxDB) {
-        mMinDB = minDB;
-        mMaxDB = maxDB;
-    }
-
-    public void setCenterFreqs(float[] centerFreqsKHz) {
-        mNumBands = centerFreqsKHz.length;
-        mLevels = new float[mNumBands];
-        mCenterFreqs = Arrays.copyOf(centerFreqsKHz, mNumBands);
-        System.arraycopy(centerFreqsKHz, 0, mCenterFreqs, 0, mNumBands);
-        mMinFreq = mCenterFreqs[0] / 2;
-        mMaxFreq = (float) Math.pow(mCenterFreqs[mNumBands - 1], 2) / mCenterFreqs[mNumBands - 2]
-                / 2;
-    }
-
-    public float[] softCopyLevels() {
-        float[] levels = new float[mNumBands];
-        for (int i = 0; i < levels.length; i++) {
-            levels[i] = mLevels[i];
-        }
-        return levels;
+        double gamma = Math.round(255 * Math.pow(intensity, 1 / 2.2) / alpha);
+        return (int) Math.min(255, Math.max(0, gamma));
     }
     /*
     @Override
@@ -164,29 +143,33 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
     }
     */
 
+    public void setBandLevelRange(float minDB, float maxDB) {
+        mMinDB = minDB;
+        mMaxDB = maxDB;
+    }
+
+    public void setCenterFreqs(float[] centerFreqsKHz) {
+        mNumBands = centerFreqsKHz.length;
+        mLevels = new float[mNumBands];
+        mCenterFreqs = Arrays.copyOf(centerFreqsKHz, mNumBands);
+        System.arraycopy(centerFreqsKHz, 0, mCenterFreqs, 0, mNumBands);
+        mMinFreq = mCenterFreqs[0] / 2;
+        mMaxFreq = (float) Math.pow(mCenterFreqs[mNumBands - 1], 2) / mCenterFreqs[mNumBands - 2]
+                / 2;
+    }
+
+    public float[] softCopyLevels() {
+        float[] levels = new float[mNumBands];
+        System.arraycopy(mLevels, 0, levels, 0, levels.length);
+        return levels;
+    }
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
         setLayerType(View.LAYER_TYPE_HARDWARE, null);
         buildLayer();
-    }
-
-    /**
-     * Returns a color that is assumed to be blended against black background, assuming close to
-     * sRGB behavior of screen (gamma 2.2 approximation).
-     *
-     * @param intensity desired physical intensity of color component
-     * @param alpha     alpha value of color component
-     */
-    private static int gamma(float intensity, float alpha) {
-        /* intensity = (component * alpha)^2.2
-         * <=>
-         * intensity^(1/2.2) / alpha = component
-         */
-
-        double gamma = Math.round(255 * Math.pow(intensity, 1 / 2.2) / alpha);
-        return (int) Math.min(255, Math.max(0, gamma));
     }
 
     @Override
@@ -231,10 +214,6 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
 //                barColors, barPositions, Shader.TileMode.CLAMP));
     }
 
-    int mPasses = 140;
-    float[] mStartLevels;
-    float[] mDeltas;
-
     public void setBands(float[] bands) {
         if (mAnimation != null) {
             mAnimation.cancel();
@@ -254,12 +233,12 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
         mAnimation.addUpdateListener(this);
         mAnimation.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animation) {
+            public void onAnimationStart(@NonNull Animator animation) {
                 mPasses = 35;
             }
 
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void onAnimationEnd(@NonNull Animator animation) {
                 mPasses = 140;
                 mLevels = mTargetLevels;
                 animation.removeAllListeners();
@@ -268,12 +247,12 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
             }
 
             @Override
-            public void onAnimationCancel(Animator animation) {
+            public void onAnimationCancel(@NonNull Animator animation) {
 
             }
 
             @Override
-            public void onAnimationRepeat(Animator animation) {
+            public void onAnimationRepeat(@NonNull Animator animation) {
 
             }
         });
@@ -492,5 +471,19 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
         }
 
         return idx;
+    }
+
+    /**
+     * Listener for bands being modified via touch events
+     * <p>
+     * Invoked with the index of the modified band, and the new value in dB. If the widget is
+     * read-only, will set changed = false.
+     */
+    public interface BandUpdatedListener {
+        void onBandUpdated(int band, float dB);
+
+        void onBandAnimating(int band, float dB);
+
+        void onBandAnimationCompleted();
     }
 }

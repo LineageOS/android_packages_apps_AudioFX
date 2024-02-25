@@ -58,32 +58,181 @@ public class EqualizerFragment extends AudioFxBaseFragment
     private final ArgbEvaluator mArgbEval = new ArgbEvaluator();
 
     public EqContainerView mEqContainer;
+    // current selected index
+    public int mSelectedPosition = 0;
     InfiniteViewPager mPresetPager;
     CirclePageIndicator mPresetPageIndicator;
     PresetPagerAdapter mDataAdapter;
     InfinitePagerAdapter mInfiniteAdapter;
     int mCurrentRealPage;
-
-    private Handler mHandler;
-
     // whether we are in the middle of animating while switching devices
     boolean mDeviceChanging;
-
+    private Handler mHandler;
     private ViewPager mFakePager;
-
     private int mAnimatingToRealPageTarget = -1;
-
     /*
      * this array can hold on to arrays which store preset levels,
      * so modifying values in here should only be done with extreme care
      */
     private float[] mSelectedPositionBands;
-
-    // current selected index
-    public int mSelectedPosition = 0;
-
     private MasterConfigControl mConfig;
     private EqualizerManager mEqManager;
+    private final ViewPager.OnPageChangeListener mViewPageChangeListener =
+            new ViewPager.OnPageChangeListener() {
+
+                int mState;
+                float mLastOffset;
+                boolean mJustGotToCustomAndSettling;
+
+                @Override
+                public void onPageScrolled(int newPosition, float positionOffset,
+                                           int positionOffsetPixels) {
+                    if (DEBUG_VIEWPAGER) {
+                        Log.i(TAG, "onPageScrolled(" + newPosition + ", " + positionOffset + ", "
+                                + positionOffsetPixels + ")");
+                    }
+                    Integer colorFrom;
+                    Integer colorTo;
+
+                    if (newPosition == mAnimatingToRealPageTarget
+                            && mEqManager.isAnimatingToCustom()) {
+                        if (DEBUG_VIEWPAGER) Log.w(TAG, "settling var set to true");
+                        mJustGotToCustomAndSettling = true;
+                        mAnimatingToRealPageTarget = -1;
+                    }
+
+                    newPosition = newPosition % mDataAdapter.getCount();
+
+
+                    if (mEqManager.isAnimatingToCustom() || mDeviceChanging) {
+                        if (DEBUG_VIEWPAGER) {
+                            Log.i(TAG,
+                                    "ignoring onPageScrolled because animating to custom or "
+                                            + "device is changing");
+                        }
+                        return;
+                    }
+
+                    int toPos;
+                    if (mLastOffset - positionOffset > 0.8) { // this is needed for flings
+                        //Log.e(TAG, "OFFSET DIFF > 0.8! Setting selected position from: " +
+                        // mSelectedPosition + " to " + newPosition);
+                        mSelectedPosition = newPosition;
+                        // mSelectedPositionBands will be reset by setPreset() below calling back
+                        // to onPresetChanged()
+
+                        mEqManager.setPreset(mSelectedPosition);
+                    }
+
+                    if (newPosition < mSelectedPosition
+                            || (newPosition == mDataAdapter.getCount() - 1)
+                            && mSelectedPosition == 0) {
+                        // scrolling left <<<<<
+                        positionOffset = (1 - positionOffset);
+                        //Log.v(TAG, "<<<<<< positionOffset: " + positionOffset + " (last offset:
+                        // " + mLastOffset + ")");
+                        toPos = newPosition;
+                        colorTo = mEqManager.getAssociatedPresetColorHex(toPos);
+                    } else {
+                        // scrolling right >>>>>
+                        //Log.v(TAG, ">>>>>>> positionOffset: " + positionOffset + " (last
+                        // offset: " + mLastOffset + ")");
+                        toPos = newPosition + 1 % mDataAdapter.getCount();
+                        if (toPos >= mDataAdapter.getCount()) {
+                            toPos = 0;
+                        }
+
+                        colorTo = mEqManager.getAssociatedPresetColorHex(toPos);
+                    }
+
+                    if (!mDeviceChanging && mConfig.isCurrentDeviceEnabled()) {
+                        colorFrom = mEqManager.getAssociatedPresetColorHex(mSelectedPosition);
+                        setBackgroundColor(
+                                (Integer) mArgbEval.evaluate(positionOffset, colorFrom, colorTo),
+                                true);
+                    }
+
+                    if (mSelectedPositionBands == null) {
+                        mSelectedPositionBands = mEqManager.getPresetLevels(mSelectedPosition);
+                    }
+                    // get current bands
+                    float[] finalPresetLevels = mEqManager.getPresetLevels(toPos);
+
+                    final int N = mEqManager.getNumBands();
+                    for (int i = 0; i < N; i++) { // animate bands
+                        float delta = finalPresetLevels[i] - mSelectedPositionBands[i];
+                        float newBandLevel = mSelectedPositionBands[i] + (delta * positionOffset);
+                        //if (DEBUG_VIEWPAGER) Log.d(TAG, i + ", delta: " + delta + ",
+                        // newBandLevel: " + newBandLevel);
+                        mEqManager.setLevel(i, newBandLevel, true);
+                    }
+                    mLastOffset = positionOffset;
+
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    if (DEBUG_VIEWPAGER) Log.i(TAG, "onPageSelected(" + position + ")");
+                    mCurrentRealPage = position;
+                    position = position % mDataAdapter.getCount();
+                    if (DEBUG_VIEWPAGER) Log.e(TAG, "onPageSelected(" + position + ")");
+                    mFakePager.setCurrentItem(position);
+                    mSelectedPosition = position;
+                    if (!mDeviceChanging) {
+                        mSelectedPositionBands = mEqManager.getPresetLevels(mSelectedPosition);
+                    }
+                }
+
+
+                @Override
+                public void onPageScrollStateChanged(int newState) {
+                    mState = newState;
+                    if (mDeviceChanging) { // avoid setting unwanted presets during custom
+                        // animations
+                        return;
+                    }
+                    if (DEBUG_VIEWPAGER) {
+                        Log.w(TAG, "onPageScrollStateChanged(" + stateToString(newState) + ")");
+                    }
+
+                    if (mJustGotToCustomAndSettling && mState == ViewPager.SCROLL_STATE_IDLE) {
+                        if (DEBUG_VIEWPAGER) {
+                            Log.w(TAG, "onPageScrollChanged() setting animating to custom = false");
+                        }
+                        mJustGotToCustomAndSettling = false;
+                        mEqManager.setChangingPresets(false);
+                        mEqManager.setAnimatingToCustom(false);
+                    } else {
+                        if (mState == ViewPager.SCROLL_STATE_IDLE) {
+                            animateBackgroundColorTo(!mConfig.isCurrentDeviceEnabled()
+                                            ? getDisabledColor()
+                                            : mEqManager.getAssociatedPresetColorHex(mSelectedPosition),
+                                    null, null);
+
+                            mEqManager.setChangingPresets(false);
+                            mEqManager.setPreset(mSelectedPosition);
+
+                        } else {
+                            // not idle
+                            mEqManager.setChangingPresets(true);
+                        }
+                    }
+                }
+
+                private String stateToString(int state) {
+                    switch (state) {
+                        case 0:
+                            return "STATE_IDLE";
+                        case 1:
+                            return "STATE_DRAGGING";
+                        case 2:
+                            return "STATE_SETTLING";
+                        default:
+                            return "STATE_WUT";
+                    }
+                }
+
+            };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -167,7 +316,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
 
             public void onClick(DialogInterface d, int which) {
                 mEqManager.renameCurrentPreset(newName.getText().toString());
-                final TextView viewWithTag = (TextView) mPresetPager
+                final TextView viewWithTag = mPresetPager
                         .findViewWithTag(mEqManager.getCurrentPreset());
                 viewWithTag.setText(newName.getText().toString());
                 mDataAdapter.notifyDataSetChanged();
@@ -204,7 +353,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.equalizer, container, false);
         return root;
     }
@@ -218,7 +367,7 @@ public class EqualizerFragment extends AudioFxBaseFragment
         mSelectedPosition = mEqManager.getCurrentPresetIndex();
 
         mEqContainer = view.findViewById(R.id.eq_container);
-        mPresetPager = (InfiniteViewPager) view.findViewById(R.id.pager);
+        mPresetPager = view.findViewById(R.id.pager);
         mPresetPageIndicator = view.findViewById(R.id.indicator);
         mFakePager = view.findViewById(R.id.fake_pager);
 
@@ -423,162 +572,4 @@ public class EqualizerFragment extends AudioFxBaseFragment
             mFakePager.setCurrentItem(mFakePager.getCurrentItem(), true);
         }
     }
-
-
-    private final ViewPager.OnPageChangeListener mViewPageChangeListener =
-            new ViewPager.OnPageChangeListener() {
-
-                int mState;
-                float mLastOffset;
-                boolean mJustGotToCustomAndSettling;
-
-                @Override
-                public void onPageScrolled(int newPosition, float positionOffset,
-                        int positionOffsetPixels) {
-                    if (DEBUG_VIEWPAGER) {
-                        Log.i(TAG, "onPageScrolled(" + newPosition + ", " + positionOffset + ", "
-                                + positionOffsetPixels + ")");
-                    }
-                    Integer colorFrom;
-                    Integer colorTo;
-
-                    if (newPosition == mAnimatingToRealPageTarget
-                            && mEqManager.isAnimatingToCustom()) {
-                        if (DEBUG_VIEWPAGER) Log.w(TAG, "settling var set to true");
-                        mJustGotToCustomAndSettling = true;
-                        mAnimatingToRealPageTarget = -1;
-                    }
-
-                    newPosition = newPosition % mDataAdapter.getCount();
-
-
-                    if (mEqManager.isAnimatingToCustom() || mDeviceChanging) {
-                        if (DEBUG_VIEWPAGER) {
-                            Log.i(TAG,
-                                    "ignoring onPageScrolled because animating to custom or "
-                                            + "device is changing");
-                        }
-                        return;
-                    }
-
-                    int toPos;
-                    if (mLastOffset - positionOffset > 0.8) { // this is needed for flings
-                        //Log.e(TAG, "OFFSET DIFF > 0.8! Setting selected position from: " +
-                        // mSelectedPosition + " to " + newPosition);
-                        mSelectedPosition = newPosition;
-                        // mSelectedPositionBands will be reset by setPreset() below calling back
-                        // to onPresetChanged()
-
-                        mEqManager.setPreset(mSelectedPosition);
-                    }
-
-                    if (newPosition < mSelectedPosition
-                            || (newPosition == mDataAdapter.getCount() - 1)
-                            && mSelectedPosition == 0) {
-                        // scrolling left <<<<<
-                        positionOffset = (1 - positionOffset);
-                        //Log.v(TAG, "<<<<<< positionOffset: " + positionOffset + " (last offset:
-                        // " + mLastOffset + ")");
-                        toPos = newPosition;
-                        colorTo = mEqManager.getAssociatedPresetColorHex(toPos);
-                    } else {
-                        // scrolling right >>>>>
-                        //Log.v(TAG, ">>>>>>> positionOffset: " + positionOffset + " (last
-                        // offset: " + mLastOffset + ")");
-                        toPos = newPosition + 1 % mDataAdapter.getCount();
-                        if (toPos >= mDataAdapter.getCount()) {
-                            toPos = 0;
-                        }
-
-                        colorTo = mEqManager.getAssociatedPresetColorHex(toPos);
-                    }
-
-                    if (!mDeviceChanging && mConfig.isCurrentDeviceEnabled()) {
-                        colorFrom = mEqManager.getAssociatedPresetColorHex(mSelectedPosition);
-                        setBackgroundColor(
-                                (Integer) mArgbEval.evaluate(positionOffset, colorFrom, colorTo),
-                                true);
-                    }
-
-                    if (mSelectedPositionBands == null) {
-                        mSelectedPositionBands = mEqManager.getPresetLevels(mSelectedPosition);
-                    }
-                    // get current bands
-                    float[] finalPresetLevels = mEqManager.getPresetLevels(toPos);
-
-                    final int N = mEqManager.getNumBands();
-                    for (int i = 0; i < N; i++) { // animate bands
-                        float delta = finalPresetLevels[i] - mSelectedPositionBands[i];
-                        float newBandLevel = mSelectedPositionBands[i] + (delta * positionOffset);
-                        //if (DEBUG_VIEWPAGER) Log.d(TAG, i + ", delta: " + delta + ",
-                        // newBandLevel: " + newBandLevel);
-                        mEqManager.setLevel(i, newBandLevel, true);
-                    }
-                    mLastOffset = positionOffset;
-
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    if (DEBUG_VIEWPAGER) Log.i(TAG, "onPageSelected(" + position + ")");
-                    mCurrentRealPage = position;
-                    position = position % mDataAdapter.getCount();
-                    if (DEBUG_VIEWPAGER) Log.e(TAG, "onPageSelected(" + position + ")");
-                    mFakePager.setCurrentItem(position);
-                    mSelectedPosition = position;
-                    if (!mDeviceChanging) {
-                        mSelectedPositionBands = mEqManager.getPresetLevels(mSelectedPosition);
-                    }
-                }
-
-
-                @Override
-                public void onPageScrollStateChanged(int newState) {
-                    mState = newState;
-                    if (mDeviceChanging) { // avoid setting unwanted presets during custom
-                        // animations
-                        return;
-                    }
-                    if (DEBUG_VIEWPAGER) {
-                        Log.w(TAG, "onPageScrollStateChanged(" + stateToString(newState) + ")");
-                    }
-
-                    if (mJustGotToCustomAndSettling && mState == ViewPager.SCROLL_STATE_IDLE) {
-                        if (DEBUG_VIEWPAGER) {
-                            Log.w(TAG, "onPageScrollChanged() setting animating to custom = false");
-                        }
-                        mJustGotToCustomAndSettling = false;
-                        mEqManager.setChangingPresets(false);
-                        mEqManager.setAnimatingToCustom(false);
-                    } else {
-                        if (mState == ViewPager.SCROLL_STATE_IDLE) {
-                            animateBackgroundColorTo(!mConfig.isCurrentDeviceEnabled()
-                                            ? getDisabledColor()
-                                            : mEqManager.getAssociatedPresetColorHex(mSelectedPosition),
-                                    null, null);
-
-                            mEqManager.setChangingPresets(false);
-                            mEqManager.setPreset(mSelectedPosition);
-
-                        } else {
-                            // not idle
-                            mEqManager.setChangingPresets(true);
-                        }
-                    }
-                }
-
-                private String stateToString(int state) {
-                    switch (state) {
-                        case 0:
-                            return "STATE_IDLE";
-                        case 1:
-                            return "STATE_DRAGGING";
-                        case 2:
-                            return "STATE_SETTLING";
-                        default:
-                            return "STATE_WUT";
-                    }
-                }
-
-            };
 }

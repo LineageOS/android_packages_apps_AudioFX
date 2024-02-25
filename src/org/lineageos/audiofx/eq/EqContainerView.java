@@ -23,7 +23,6 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -33,10 +32,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
-import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
 
 import org.lineageos.audiofx.R;
 import org.lineageos.audiofx.activity.EqualizerManager;
@@ -81,9 +81,7 @@ public class EqContainerView extends FrameLayout
     private Paint mCenterLinePaint;
     private Path mDashPath;
 
-    private Handler mHandler;
-
-    private Context mContext;
+    private final Context mContext;
     private final Runnable mVibrateRunnable = new Runnable() {
         @Override
         public void run() {
@@ -97,32 +95,6 @@ public class EqContainerView extends FrameLayout
     private int mBarWidth;
     private int mBarSeparation;
     private int mBarBottomGrabSpacePadding;
-
-    public void stopListening() {
-        for (EqBarView barView : mBarViews) {
-            barView.setTag(null);
-            mConfig.getCallbacks().removeEqUpdatedCallback(barView);
-        }
-        mConfig.getCallbacks().removeEqUpdatedCallback(this);
-    }
-
-    public void startListening() {
-        for (int i = 0; i < mBandInfo.size(); i++) {
-
-            final EqBarView eqBarView = mBarViews.get(i);
-            eqBarView.setTag(mBandInfo.get(i));
-            mConfig.getCallbacks().addEqUpdatedCallback(eqBarView);
-        }
-        mConfig.getCallbacks().addEqUpdatedCallback(this);
-    }
-
-    public static class EqBandInfo {
-        public int mIndex;
-
-        public String mFreq;
-        public String mDb;
-        public EqBarView mBar;
-    }
 
     public EqContainerView(Context context) {
         super(context);
@@ -142,10 +114,26 @@ public class EqContainerView extends FrameLayout
         init();
     }
 
+    public void stopListening() {
+        for (EqBarView barView : mBarViews) {
+            barView.setTag(null);
+            mConfig.getCallbacks().removeEqUpdatedCallback(barView);
+        }
+        mConfig.getCallbacks().removeEqUpdatedCallback(this);
+    }
+
+    public void startListening() {
+        for (int i = 0; i < mBandInfo.size(); i++) {
+
+            final EqBarView eqBarView = mBarViews.get(i);
+            eqBarView.setTag(mBandInfo.get(i));
+            mConfig.getCallbacks().addEqUpdatedCallback(eqBarView);
+        }
+        mConfig.getCallbacks().addEqUpdatedCallback(this);
+    }
+
     private void init() {
         setLayerType(LAYER_TYPE_HARDWARE, null);
-
-        mHandler = new Handler();
 
         final Resources r = getResources();
 
@@ -196,13 +184,7 @@ public class EqContainerView extends FrameLayout
         mCenterLinePaint.setStyle(Paint.Style.STROKE);
         mCenterLinePaint.setAntiAlias(true);
 
-        getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        generateAndAddBars();
-                    }
-                });
+        getViewTreeObserver().addOnGlobalLayoutListener(this::generateAndAddBars);
     }
 
     @Override
@@ -240,11 +222,6 @@ public class EqContainerView extends FrameLayout
         super.onDetachedFromWindow();
     }
 
-    @Override
-    public boolean shouldDelayChildPressedState() {
-        return false;
-    }
-
     private void generateAndAddBars() {
         if (mFirstLayout) {
             mFirstLayout = false;
@@ -258,25 +235,22 @@ public class EqContainerView extends FrameLayout
                 final EqBarView bar = new EqBarView(mContext);
                 band.mBar = bar;
                 bar.setTag(band);
-                bar.setOnTouchListener(new OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if (mEqManager.isEqualizerLocked()) {
-                            return false;
-                        }
-                        switch (event.getActionMasked()) {
-
-                            case MotionEvent.ACTION_DOWN:
-                                startBarInteraction(bar);
-                                break;
-                            case MotionEvent.ACTION_CANCEL:
-                            case MotionEvent.ACTION_UP:
-                                stopBarInteraction(bar);
-                                break;
-                        }
-
+                bar.setOnTouchListener((v, event) -> {
+                    if (mEqManager.isEqualizerLocked()) {
                         return false;
                     }
+                    switch (event.getActionMasked()) {
+
+                        case MotionEvent.ACTION_DOWN:
+                            startBarInteraction(bar);
+                            break;
+                        case MotionEvent.ACTION_CANCEL:
+                        case MotionEvent.ACTION_UP:
+                            stopBarInteraction(bar);
+                            break;
+                    }
+
+                    return false;
                 });
 
                 // set correct initial alpha
@@ -293,9 +267,8 @@ public class EqContainerView extends FrameLayout
                 bar.setParentHeight(mHeight, getTop());
 
                 final float freq = mEqManager.getCenterFreq(i);
-                String frequencyText = String.format(freq < 1000 ? "%.0f" : "%.0fk",
+                band.mFreq = String.format(freq < 1000 ? "%.0f" : "%.0fk",
                         freq < 1000 ? freq : freq / 1000);
-                band.mFreq = frequencyText;
                 mBarViews.add(bar);
             }
             updateSelectedBands();
@@ -395,8 +368,8 @@ public class EqContainerView extends FrameLayout
         if (changed || mDashPath == null) {
             mDashPath = new Path();
             mDashPath.reset();
-            mDashPath.moveTo(freeSpace / 2, dashY);
-            mDashPath.lineTo(widthOfBars + (freeSpace / 2), dashY);
+            mDashPath.moveTo((float) freeSpace / 2, dashY);
+            mDashPath.lineTo(widthOfBars + ((float) freeSpace / 2), dashY);
         }
 
         mControls.layout(
@@ -408,9 +381,8 @@ public class EqContainerView extends FrameLayout
         );
     }
 
-
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
         canvas.drawPath(mDashPath, mCenterLinePaint);
@@ -418,7 +390,7 @@ public class EqContainerView extends FrameLayout
         for (int i = 0; i < mBandInfo.size(); i++) {
             EqBandInfo info = mBandInfo.get(i);
 
-            final float x = info.mBar.getX() + (info.mBar.getWidth() / 2);
+            final float x = info.mBar.getX() + ((float) info.mBar.getWidth() / 2);
             final boolean userInteracting = info.mBar.isUserInteracting();
             if (userInteracting) {
                 canvas.drawText(
@@ -483,7 +455,7 @@ public class EqContainerView extends FrameLayout
 
     @Override
     public void updateEqState(boolean saveVisible, boolean removeVisible,
-            boolean renameVisible, boolean unlockVisible) {
+                              boolean renameVisible, boolean unlockVisible) {
         mControlsVisible = mEqManager.isUserPreset() || mEqManager.isCustomPreset();
         mSaveVisible = saveVisible;
         mRemoveVisible = removeVisible;
@@ -512,12 +484,7 @@ public class EqContainerView extends FrameLayout
             v.animate()
                     .alpha(0f)
                     .setDuration(350)
-                    .withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            v.setVisibility(View.INVISIBLE);
-                        }
-                    });
+                    .withEndAction(() -> v.setVisibility(View.INVISIBLE));
         }
     }
 
@@ -533,6 +500,14 @@ public class EqContainerView extends FrameLayout
         if (mControls != null) {
             animateControl(mControls, visible);
         }
+    }
+
+    public static class EqBandInfo {
+        public int mIndex;
+
+        public String mFreq;
+        public String mDb;
+        public EqBarView mBar;
     }
 
 }

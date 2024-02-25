@@ -48,16 +48,16 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 
+import androidx.annotation.NonNull;
+
 import org.lineageos.audiofx.R;
 
 public class RadialKnob extends View {
 
+    public static final float REGULAR_SCALE = 0.8f;
+    public static final float TOUCHING_SCALE = 1f;
     private static final String TAG = RadialKnob.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
-
-    public static final float REGULAR_SCALE = 0.8f;
-
-    public static final float TOUCHING_SCALE = 1f;
     private static final int DO_NOT_VIBRATE_THRESHOLD = 100;
 
     private static final int DEGREE_OFFSET = -225;
@@ -65,12 +65,23 @@ public class RadialKnob extends View {
     private static final int MAX_DEGREES = 270;
 
     private final Paint mPaint, mTextPaint;
-
+    private final RectF mOuterRect = new RectF();
+    private final RectF mInnerRect = new RectF();
+    private final int mBackgroundArcColor;
+    private final int mBackgroundArcColorDisabled;
+    private final int mRectPadding;
+    private final int mStrokeWidth;
+    private final float mHandleWidth; // little square indicator where user touches
+    private final float mTextOffset;
     ValueAnimator mAnimator;
     float mOffProgress;
     boolean mAnimating = false;
     long mDownTime;
     long mUpTime;
+    Path mPath = new Path();
+    PathMeasure mPathMeasure = new PathMeasure();
+    float[] mTmp = new float[2];
+    float mStartX, mStopX, mStartY, mStopY;
     private OnKnobChangeListener mOnKnobChangeListener = null;
     private float mProgress = 0.0f;
     private float mTouchProgress = 0.0f;
@@ -82,22 +93,9 @@ public class RadialKnob extends View {
     private boolean mMoved;
     private int mWidth = 0;
     private RectF mRectF;
-    private final RectF mOuterRect = new RectF();
-    private final RectF mInnerRect = new RectF();
     private float mLastAngle;
     private Long mLastVibrateTime;
     private int mHighlightColor;
-    private final int mBackgroundArcColor;
-    private final int mBackgroundArcColorDisabled;
-    private final int mRectPadding;
-    private final int mStrokeWidth;
-    private final float mHandleWidth; // little square indicator where user touches
-    private final float mTextOffset;
-
-    Path mPath = new Path();
-    PathMeasure mPathMeasure = new PathMeasure();
-    float[] mTmp = new float[2];
-    float mStartX, mStopX, mStartY, mStopY;
     private Context mContext;
 
     public RadialKnob(Context context, AttributeSet attrs, int defStyle) {
@@ -145,6 +143,14 @@ public class RadialKnob extends View {
     public RadialKnob(Context context) {
         this(context, null);
         mContext = context;
+    }
+
+    private static boolean inCircle(float x, float y, float circleCenterX, float circleCenterY,
+                                    float circleRadius) {
+        double dx = Math.pow(x - circleCenterX, 2);
+        double dy = Math.pow(y - circleCenterY, 2);
+
+        return (dx + dy) < Math.pow(circleRadius, 2);
     }
 
     public void setValue(int value) {
@@ -212,7 +218,7 @@ public class RadialKnob extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
         mPaint.setStrokeWidth(mStrokeWidth);
@@ -269,8 +275,7 @@ public class RadialKnob extends View {
     protected void onSizeChanged(int w, int h, int oldW, int oldH) {
         super.onSizeChanged(w, h, oldW, oldH);
 
-        int size = w > h ? h : w;
-        mWidth = size;
+        mWidth = Math.min(w, h);
         int diff;
         if (w > h) {
             diff = (w - h) / 2;
@@ -301,45 +306,42 @@ public class RadialKnob extends View {
         mAnimator.setInterpolator(new AccelerateInterpolator());
         mAnimator.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animation) {
+            public void onAnimationStart(@NonNull Animator animation) {
                 mAnimating = true;
             }
 
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void onAnimationEnd(@NonNull Animator animation) {
                 mAnimating = false;
                 postInvalidate();
             }
 
             @Override
-            public void onAnimationCancel(Animator animation) {
+            public void onAnimationCancel(@NonNull Animator animation) {
                 mAnimating = false;
                 postInvalidate();
             }
 
             @Override
-            public void onAnimationRepeat(Animator animation) {
+            public void onAnimationRepeat(@NonNull Animator animation) {
 
             }
         });
-        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float progress = (Float) animation.getAnimatedValue();
-                mProgress = progress;
-                mLastAngle = mProgress * MAX_DEGREES;
-                if (DEBUG) {
-                    Log.i(TAG, "onAnimationUpdate(): mProgress: "
-                            + mProgress + ", mLastAngle: " + mLastAngle);
-                }
-
-                setProgress(mProgress);
-                if (mOnKnobChangeListener != null) {
-                    mOnKnobChangeListener.onValueChanged(RadialKnob.this,
-                            (int) (progress * mMax), true);
-                }
-                postInvalidate();
+        mAnimator.addUpdateListener(animation -> {
+            float progress1 = (Float) animation.getAnimatedValue();
+            mProgress = progress1;
+            mLastAngle = mProgress * MAX_DEGREES;
+            if (DEBUG) {
+                Log.i(TAG, "onAnimationUpdate(): mProgress: "
+                        + mProgress + ", mLastAngle: " + mLastAngle);
             }
+
+            setProgress(mProgress);
+            if (mOnKnobChangeListener != null) {
+                mOnKnobChangeListener.onValueChanged(RadialKnob.this,
+                        (int) (progress1 * mMax), true);
+            }
+            postInvalidate();
         });
         mAnimator.start();
     }
@@ -368,7 +370,7 @@ public class RadialKnob extends View {
                 if (mAnimating) {
                     return true;
                 }
-                final float center = getWidth() / 2;
+                final float center = (float) getWidth() / 2;
                 final float radius = (center / 2) - (mRectPadding * 2);
 
                 final boolean inDeadzone = inCircle(x, y, center, center, radius);
@@ -382,7 +384,7 @@ public class RadialKnob extends View {
                 if (mOn) {
                     if (isUserSelected() && (!inDeadzone)) {
                         float angleDiff = Math.abs(mLastAngle - angle);
-                        if (mProgress == 1 && angle < (MAX_DEGREES / 2)) {
+                        if (mProgress == 1 && angle < ((float) MAX_DEGREES / 2)) {
                             // oh jeez. no jumping from 100!
                             return true;
                         }
@@ -422,7 +424,7 @@ public class RadialKnob extends View {
                                     ", mOffProgress: " + mOffProgress + ", delta " + delta);
                         }
                         // we want at least 1%, how many degrees = 1%? + a little padding
-                        final float onePercentInDegrees = (MAX_DEGREES / 100) + 1f;
+                        final float onePercentInDegrees = ((float) MAX_DEGREES / 100) + 1f;
                         if (mOffProgress > 15 && angle < MAX_DEGREES
                                 && angle >= onePercentInDegrees) {
                             if (DEBUG) Log.w(TAG, "delta: " + delta);
@@ -543,15 +545,6 @@ public class RadialKnob extends View {
             angle += (360 + degreeOffset);
         }
         return angle;
-    }
-
-
-    private static boolean inCircle(float x, float y, float circleCenterX, float circleCenterY,
-            float circleRadius) {
-        double dx = Math.pow(x - circleCenterX, 2);
-        double dy = Math.pow(y - circleCenterY, 2);
-
-        return (dx + dy) < Math.pow(circleRadius, 2);
     }
 
     @Override

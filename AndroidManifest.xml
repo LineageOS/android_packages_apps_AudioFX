@@ -13,13 +13,14 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<manifest
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        package="org.lineageos.audiofx"
-        android:versionName="2.2.0"
-        android:versionCode="20200">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.lineageos.audiofx"
+    android:versionCode="20200"
+    android:versionName="2.2.0">
 
-    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="33" />
+    <uses-sdk
+        android:minSdkVersion="26"
+        android:targetSdkVersion="33" />
 
     <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE" />
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
@@ -29,81 +30,89 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-            android:icon="@mipmap/ic_launcher"
-            android:allowBackup="false"
-            android:label="@string/app_name_lineage"
-            android:supportsRtl="true"
-            android:persistent="true"
-            android:appCategory="audio"
-            android:hardwareAccelerated="true"
-            android:name=".AudioFxApplication"
-            android:theme="@android:style/Theme.NoTitleBar">
+        android:name=".AudioFxApplication"
+        android:allowBackup="false"
+        android:appCategory="audio"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name_lineage"
+        android:persistent="true"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.NoTitleBar">
+
         <activity
-                android:name=".activity.ActivityMusic"
-                android:theme="@style/AppThemeV2"
-                android:label="@string/app_name_lineage"
-                android:exported="true"
-                android:launchMode="singleInstance"
-                android:configChanges="locale|orientation">
+            android:name=".activity.ActivityMusic"
+            android:configChanges="locale|orientation"
+            android:exported="true"
+            android:label="@string/app_name_lineage"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppThemeV2">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-                android:name=".activity.ControlPanelPicker"
-                android:theme="@*android:style/Theme.Material.Dialog.Alert"
-                android:excludeFromRecents="true"/>
 
-        <receiver android:name="Compatibility$Receiver"
+        <activity
+            android:name=".activity.ControlPanelPicker"
+            android:excludeFromRecents="true"
+            android:theme="@*android:style/Theme.Material.Dialog.Alert" />
+
+        <receiver
+            android:name="Compatibility$Receiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_ADDED"/>
-                <data android:scheme="package"/>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <data android:scheme="package" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REPLACED"/>
-                <data android:scheme="package"/>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
-                <data android:scheme="package"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <data android:scheme="package" />
             </intent-filter>
         </receiver>
 
-        <service android:name="Compatibility$Service"
-            android:exported="false"/>
+        <service
+            android:name="Compatibility$Service"
+            android:exported="false" />
 
-        <activity android:name="Compatibility$Redirector"
+        <activity
+            android:name="Compatibility$Redirector"
             android:exported="true">
-            <intent-filter
-                    android:priority="2147483647">
-                <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+            <intent-filter android:priority="2147483647">
+                <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
-        <service android:name=".service.AudioFxService"/>
+        <service android:name=".service.AudioFxService" />
 
-        <receiver android:name=".receiver.ServiceDispatcher"
+        <receiver
+            android:name=".receiver.ServiceDispatcher"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.media.action.OPEN_AUDIO_EFFECT_CONTROL_SESSION"/>
-                <action android:name="android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION"/>
+                <action android:name="android.media.action.OPEN_AUDIO_EFFECT_CONTROL_SESSION" />
+                <action android:name="android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".service.BootReceiver"
+        <receiver
+            android:name=".service.BootReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
     </application>
+
 </manifest>

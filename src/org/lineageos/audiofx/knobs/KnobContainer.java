@@ -58,7 +58,7 @@ public class KnobContainer extends LinearLayout
     private KnobCommander mKnobCommander;
 
     private long mLastDisabledNotifyTime = -1;
-    private Context mContext;
+    private final Context mContext;
 
     public KnobContainer(Context context) {
         super(context);
@@ -106,28 +106,25 @@ public class KnobContainer extends LinearLayout
 
         if (DEBUG) Log.d(TAG, "onFinishInflate()");
 
-        OnTouchListener knobTouchListener = new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Message message;
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        message = mHandler.obtainMessage(MSG_EXPAND, v.getTag());
-                        mHandler.sendMessageDelayed(message, 0);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        mHandler.removeMessages(MSG_EXPAND);
-                        message = mHandler.obtainMessage(MSG_CONTRACT, v.getTag());
-                        mHandler.sendMessageDelayed(message, 10);
-                        break;
-                }
-                if (!v.isEnabled()) {
-                    notifyDisabled();
-                    return true;
-                }
-                return false;
+        OnTouchListener knobTouchListener = (v, event) -> {
+            Message message;
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    message = mHandler.obtainMessage(MSG_EXPAND, v.getTag());
+                    mHandler.sendMessageDelayed(message, 0);
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    mHandler.removeMessages(MSG_EXPAND);
+                    message = mHandler.obtainMessage(MSG_CONTRACT, v.getTag());
+                    mHandler.sendMessageDelayed(message, 10);
+                    break;
             }
+            if (!v.isEnabled()) {
+                notifyDisabled();
+                return true;
+            }
+            return false;
         };
 
         if (MasterConfigControl.getInstance(getContext()).hasMaxxAudio()) {
@@ -285,11 +282,6 @@ public class KnobContainer extends LinearLayout
             Toast.makeText(mContext, R.string.effect_unavalable_for_speaker,
                     Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    public boolean shouldDelayChildPressedState() {
-        return false;
     }
 
     @Override

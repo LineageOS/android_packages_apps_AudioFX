@@ -1,42 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<org.lineageos.audiofx.eq.EqSwipeController
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/swipe_interceptor"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<org.lineageos.audiofx.eq.EqSwipeController xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_interceptor"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <include
-            layout="@layout/eq_container"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"/>
+        layout="@layout/eq_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <LinearLayout
-            android:orientation="vertical"
-            android:id="@+id/preset_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        android:id="@+id/preset_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <org.lineageos.audiofx.preset.InfiniteViewPager
-                android:id="@+id/pager"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-        />
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <org.lineageos.audiofx.viewpagerindicator.CirclePageIndicator
-                android:id="@+id/indicator"
-                android:padding="10dip"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-        />
+            android:id="@+id/indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dip" />
 
         <androidx.viewpager.widget.ViewPager
-                android:layout_height="0dp"
-                android:layout_width="0dp"
-                android:visibility="gone"
-                android:id="@+id/fake_pager"
-        />
+            android:id="@+id/fake_pager"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 </org.lineageos.audiofx.eq.EqSwipeController>

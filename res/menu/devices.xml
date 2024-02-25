@@ -15,13 +15,12 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-            android:title="@string/devices"
-            android:id="@+id/devices"
-            android:icon="@drawable/ic_action_dsp_icons_speaker"
-            android:showAsAction="ifRoom">
+        android:id="@+id/devices"
+        android:icon="@drawable/ic_action_dsp_icons_speaker"
+        android:showAsAction="ifRoom"
+        android:title="@string/devices">
         <menu>
-            <group android:id="@+id/device_group">
-            </group>
+            <group android:id="@+id/device_group"></group>
         </menu>
     </item>
 </menu>

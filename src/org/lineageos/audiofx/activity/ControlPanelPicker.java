@@ -45,6 +45,16 @@ public class ControlPanelPicker extends AlertActivity implements OnClickListener
         OnPrepareListViewListener {
 
 
+    private final DialogInterface.OnClickListener mItemClickListener =
+            new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    // Save the position of most recently clicked item
+                    mAlertParams.mCheckedItem = which;
+                }
+
+            };
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,16 +108,6 @@ public class ControlPanelPicker extends AlertActivity implements OnClickListener
     private int getCancelStringResId() {
         return getResources().getIdentifier("cancel", "string", "android");
     }
-
-    private final DialogInterface.OnClickListener mItemClickListener =
-            new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int which) {
-                    // Save the position of most recently clicked item
-                    mAlertParams.mCheckedItem = which;
-                }
-
-            };
 
     @Override
     public void onClick(DialogInterface dialog, int which) {

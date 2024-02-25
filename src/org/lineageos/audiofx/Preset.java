@@ -18,19 +18,47 @@ package org.lineageos.audiofx;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import org.lineageos.audiofx.eq.EqUtils;
 
 public class Preset implements Parcelable {
 
-    protected String mName;
+    public static final Parcelable.Creator<Preset> CREATOR = new Parcelable.Creator<Preset>() {
+        @Override
+        public Preset createFromParcel(Parcel in) {
+            return new Preset(in);
+        }
+
+        @Override
+        public Preset[] newArray(int size) {
+            return new Preset[size];
+        }
+    };
     protected final float[] mLevels;
+    protected String mName;
 
     private Preset(String name, float[] levels) {
         this.mName = name;
         mLevels = new float[levels.length];
-        for (int i = 0; i < levels.length; i++) {
-            mLevels[i] = levels[i];
+        System.arraycopy(levels, 0, mLevels, 0, levels.length);
+    }
+
+    private Preset(Parcel in) {
+        if (in.readInt() == 1) {
+            mName = in.readString();
         }
+        mLevels = new float[in.readInt()];
+        in.readFloatArray(mLevels);
+    }
+
+    private static Preset fromString(String input) {
+        final String[] split = input.split("\\|");
+        if (split.length != 2) {
+            return null;
+        }
+        float[] levels = EqUtils.stringBandsToFloats(split[1]);
+        return new Preset(split[0], levels);
     }
 
     public float[] getLevels() {
@@ -41,18 +69,10 @@ public class Preset implements Parcelable {
         return mLevels[band];
     }
 
+    @NonNull
     @Override
     public String toString() {
         return mName + "|" + EqUtils.floatLevelsToString(mLevels);
-    }
-
-    private static Preset fromString(String input) {
-        final String[] split = input.split("\\|");
-        if (split == null || split.length != 2) {
-            return null;
-        }
-        float[] levels = EqUtils.stringBandsToFloats(split[1]);
-        return new Preset(split[0], levels);
     }
 
     @Override
@@ -75,14 +95,6 @@ public class Preset implements Parcelable {
         return super.equals(o);
     }
 
-    private Preset(Parcel in) {
-        if (in.readInt() == 1) {
-            mName = in.readString();
-        }
-        mLevels = new float[in.readInt()];
-        in.readFloatArray(mLevels);
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -98,18 +110,6 @@ public class Preset implements Parcelable {
         dest.writeFloatArray(mLevels);
     }
 
-    public static final Parcelable.Creator<Preset> CREATOR = new Parcelable.Creator<Preset>() {
-        @Override
-        public Preset createFromParcel(Parcel in) {
-            return new Preset(in);
-        }
-
-        @Override
-        public Preset[] newArray(int size) {
-            return new Preset[size];
-        }
-    };
-
     public String getName() {
         return mName;
     }
@@ -122,11 +122,37 @@ public class Preset implements Parcelable {
 
     public static class CustomPreset extends Preset {
 
+        public static final Parcelable.Creator<CustomPreset> CREATOR
+                = new Parcelable.Creator<CustomPreset>() {
+            @Override
+            public CustomPreset createFromParcel(Parcel in) {
+                return new CustomPreset(in);
+            }
+
+            @Override
+            public CustomPreset[] newArray(int size) {
+                return new CustomPreset[size];
+            }
+        };
         private boolean mLocked;
 
         public CustomPreset(String name, float[] levels, boolean locked) {
             super(name, levels);
             mLocked = locked;
+        }
+
+        protected CustomPreset(Parcel in) {
+            super(in);
+            mLocked = in.readInt() == 1;
+        }
+
+        public static CustomPreset fromString(String input) {
+            final String[] split = input.split("\\|");
+            if (split.length != 3) {
+                return null;
+            }
+            float[] levels = EqUtils.stringBandsToFloats(split[1]);
+            return new CustomPreset(split[0], levels, Boolean.parseBoolean(split[2]));
         }
 
         public boolean isLocked() {
@@ -146,9 +172,7 @@ public class Preset implements Parcelable {
         }
 
         public void setLevels(float[] levels) {
-            for (int i = 0; i < levels.length; i++) {
-                mLevels[i] = levels[i];
-            }
+            System.arraycopy(levels, 0, mLevels, 0, levels.length);
         }
 
         public float getLevel(int band) {
@@ -163,32 +187,11 @@ public class Preset implements Parcelable {
             return false;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return super.toString() + "|" + mLocked;
         }
-
-        public static CustomPreset fromString(String input) {
-            final String[] split = input.split("\\|");
-            if (split == null || split.length != 3) {
-                return null;
-            }
-            float[] levels = EqUtils.stringBandsToFloats(split[1]);
-            return new CustomPreset(split[0], levels, Boolean.valueOf(split[2]));
-        }
-
-        public static final Parcelable.Creator<CustomPreset> CREATOR
-                = new Parcelable.Creator<CustomPreset>() {
-            @Override
-            public CustomPreset createFromParcel(Parcel in) {
-                return new CustomPreset(in);
-            }
-
-            @Override
-            public CustomPreset[] newArray(int size) {
-                return new CustomPreset[size];
-            }
-        };
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
@@ -196,46 +199,9 @@ public class Preset implements Parcelable {
             dest.writeInt(mLocked ? 1 : 0);
         }
 
-        protected CustomPreset(Parcel in) {
-            super(in);
-            mLocked = in.readInt() == 1;
-        }
-
     }
 
     public static class PermCustomPreset extends CustomPreset {
-
-        public PermCustomPreset(String name, float[] levels) {
-            super(name, levels, false);
-        }
-
-        @Override
-        public String toString() {
-            return mName + "|" + EqUtils.floatLevelsToString(mLevels);
-        }
-
-        public static PermCustomPreset fromString(String input) {
-            final String[] split = input.split("\\|");
-            if (split == null || split.length != 2) {
-                return null;
-            }
-            float[] levels = EqUtils.stringBandsToFloats(split[1]);
-            return new PermCustomPreset(split[0], levels);
-        }
-
-        protected PermCustomPreset(Parcel in) {
-            super(in);
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-        }
 
         public static final Creator<PermCustomPreset> CREATOR = new Creator<PermCustomPreset>() {
             @Override
@@ -248,5 +214,33 @@ public class Preset implements Parcelable {
                 return new PermCustomPreset[size];
             }
         };
+
+        public PermCustomPreset(String name, float[] levels) {
+            super(name, levels, false);
+        }
+
+        protected PermCustomPreset(Parcel in) {
+            super(in);
+        }
+
+        public static PermCustomPreset fromString(String input) {
+            final String[] split = input.split("\\|");
+            if (split.length != 2) {
+                return null;
+            }
+            float[] levels = EqUtils.stringBandsToFloats(split[1]);
+            return new PermCustomPreset(split[0], levels);
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return mName + "|" + EqUtils.floatLevelsToString(mLevels);
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+        }
     }
 }

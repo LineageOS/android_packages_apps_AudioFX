@@ -1,146 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:background="@color/knob_container_background"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="200dp"
-              android:elevation="8dp"
-              android:padding="4dp">
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:background="@color/knob_container_background"
+    android:elevation="8dp"
+    android:orientation="vertical"
+    android:padding="4dp">
 
     <LinearLayout
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:minHeight="?android:listPreferredItemHeightSmall"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:minHeight="?android:listPreferredItemHeightSmall"
+        android:orientation="horizontal"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp">
 
         <ImageView
-                android:layout_width="83dp"
-                android:layout_height="22dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/maxvolume_white"
-                android:scaleType="fitCenter"/>
+            android:layout_width="83dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center_vertical"
+            android:scaleType="fitCenter"
+            android:src="@drawable/maxvolume_white" />
 
         <Space
-                android:layout_width="12dp"
-                android:layout_height="match_parent"/>
+            android:layout_width="12dp"
+            android:layout_height="match_parent" />
 
         <Switch
-                android:id="@+id/maxx_volume_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:layout_gravity="center_vertical"/>
+            android:id="@+id/maxx_volume_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical" />
 
     </LinearLayout>
 
     <org.lineageos.audiofx.knobs.KnobContainer
-            android:id="@+id/knob_container"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:gravity="top|center_horizontal"
-            android:orientation="horizontal"
-            android:animateLayoutChanges="true"
-            android:layout_weight="1">
+        android:id="@+id/knob_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:animateLayoutChanges="true"
+        android:gravity="top|center_horizontal"
+        android:orientation="horizontal">
 
         <Space
-                android:layout_weight="0.1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"/>
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1" />
 
         <FrameLayout
-                android:id="@+id/treble_knob_container"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="0"
-                android:layout_gravity="center_horizontal"
-                android:paddingBottom="@dimen/knob_container_padding_bottom">
+            android:id="@+id/treble_knob_container"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0"
+            android:paddingBottom="@dimen/knob_container_padding_bottom">
 
             <org.lineageos.audiofx.knobs.RadialKnob
-                    android:id="@+id/knob"
-                    android:layout_width="@dimen/knob_width"
-                    android:layout_gravity="top|center_horizontal"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"/>
+                android:id="@+id/knob"
+                android:layout_width="@dimen/knob_width"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="top|center_horizontal" />
 
             <ImageView
-                    android:id="@+id/label"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_width="76dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/maxxreble_white"
-                    android:scaleType="fitCenter"/>
+                android:id="@+id/label"
+                android:layout_width="76dp"
+                android:layout_height="22dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:scaleType="fitCenter"
+                android:src="@drawable/maxxreble_white" />
 
         </FrameLayout>
 
         <Space
-                android:layout_weight="0.1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"/>
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1" />
 
         <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="0"
-                android:id="@+id/bass_knob_container"
-                android:paddingBottom="@dimen/knob_container_padding_bottom">
+            android:id="@+id/bass_knob_container"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0"
+            android:paddingBottom="@dimen/knob_container_padding_bottom">
 
             <org.lineageos.audiofx.knobs.RadialKnob
-                    android:id="@+id/knob"
-                    android:layout_gravity="top|center_horizontal"
-                    android:layout_width="@dimen/knob_width"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"/>
+                android:id="@+id/knob"
+                android:layout_width="@dimen/knob_width"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="top|center_horizontal" />
 
             <ImageView
-                    android:id="@+id/label"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_width="68dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/maxxbass_white"
-                    android:scaleType="fitCenter"/>
+                android:id="@+id/label"
+                android:layout_width="68dp"
+                android:layout_height="22dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:scaleType="fitCenter"
+                android:src="@drawable/maxxbass_white" />
 
         </FrameLayout>
 
         <Space
-                android:layout_weight="0.1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"/>
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1" />
 
         <FrameLayout
-                android:visibility="gone"
-                android:id="@+id/virtualizer_knob_container"
-                android:layout_width="wrap_content"
-                android:layout_weight="0"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:paddingBottom="@dimen/knob_container_padding_bottom">
+            android:id="@+id/virtualizer_knob_container"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0"
+            android:paddingBottom="@dimen/knob_container_padding_bottom"
+            android:visibility="gone">
 
             <org.lineageos.audiofx.knobs.RadialKnob
-                    android:id="@+id/knob"
-                    android:layout_gravity="top|center_horizontal"
-                    android:layout_width="@dimen/knob_width"
-                    android:layout_height="wrap_content"/>
+                android:id="@+id/knob"
+                android:layout_width="@dimen/knob_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal" />
 
 
             <ImageView
-                    android:id="@+id/label"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_width="69dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/maxxspace_white"
-                    android:scaleType="fitCenter"/>
+                android:id="@+id/label"
+                android:layout_width="69dp"
+                android:layout_height="22dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:scaleType="fitCenter"
+                android:src="@drawable/maxxspace_white" />
         </FrameLayout>
 
         <Space
-                android:visibility="gone"
-                android:layout_weight="0.1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"/>
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:visibility="gone" />
 
     </org.lineageos.audiofx.knobs.KnobContainer>
 

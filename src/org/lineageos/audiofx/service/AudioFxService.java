@@ -41,15 +41,9 @@ import java.lang.ref.WeakReference;
 public class AudioFxService extends Service
         implements AudioOutputChangeListener.AudioOutputChangedCallback {
 
-    static final String TAG = AudioFxService.class.getSimpleName();
-
-    public static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
-
     public static final String ACTION_DEVICE_OUTPUT_CHANGED
             = "org.lineageos.audiofx.ACTION_DEVICE_OUTPUT_CHANGED";
-
     public static final String EXTRA_DEVICE = "device";
-
     // flags for updateService to minimize DSP traffic
     public static final int EQ_CHANGED = 0x1;
     public static final int BASS_BOOST_CHANGED = 0x2;
@@ -58,48 +52,14 @@ public class AudioFxService extends Service
     public static final int VOLUME_BOOST_CHANGED = 0x10;
     public static final int REVERB_CHANGED = 0x20;
     public static final int ALL_CHANGED = 0xFF;
-
+    static final String TAG = AudioFxService.class.getSimpleName();
+    public static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     private AudioOutputChangeListener mOutputListener;
     private DevicePreferenceManager mDevicePrefs;
     private SessionManager mSessionManager;
     private Handler mHandler;
 
     private AudioDeviceInfo mCurrentDevice;
-
-    public static class LocalBinder extends Binder {
-
-        final WeakReference<AudioFxService> mService;
-
-        public LocalBinder(AudioFxService service) {// added a constructor for Stub here
-            mService = new WeakReference<AudioFxService>(service);
-        }
-
-        private boolean checkService() {
-            if (mService.get() == null) {
-                Log.e("AudioFx-LocalBinder", "Service was null!");
-            }
-            return mService.get() != null;
-        }
-
-        public void update(int flags) {
-            if (checkService()) {
-                mService.get().update(flags);
-            }
-        }
-
-        public void setOverrideLevels(short band, float level) {
-            if (checkService()) {
-                mService.get().mSessionManager.setOverrideLevels(band, level);
-            }
-        }
-
-        public EffectSet getEffect(Integer id) {
-            if (checkService()) {
-                return mService.get().mSessionManager.getEffectForSession(id);
-            }
-            return null;
-        }
-    }
 
     @Override
     public void onCreate() {
@@ -149,7 +109,7 @@ public class AudioFxService extends Service
 
     @Override
     public synchronized void onAudioOutputChanged(boolean firstChange,
-            AudioDeviceInfo outputDevice) {
+                                                  AudioDeviceInfo outputDevice) {
         if (outputDevice == null) {
             return;
         }
@@ -210,5 +170,40 @@ public class AudioFxService extends Service
      */
     private void update(int flags) {
         mSessionManager.update(flags);
+    }
+
+    public static class LocalBinder extends Binder {
+
+        final WeakReference<AudioFxService> mService;
+
+        public LocalBinder(AudioFxService service) {// added a constructor for Stub here
+            mService = new WeakReference<AudioFxService>(service);
+        }
+
+        private boolean checkService() {
+            if (mService.get() == null) {
+                Log.e("AudioFx-LocalBinder", "Service was null!");
+            }
+            return mService.get() != null;
+        }
+
+        public void update(int flags) {
+            if (checkService()) {
+                mService.get().update(flags);
+            }
+        }
+
+        public void setOverrideLevels(short band, float level) {
+            if (checkService()) {
+                mService.get().mSessionManager.setOverrideLevels(band, level);
+            }
+        }
+
+        public EffectSet getEffect(Integer id) {
+            if (checkService()) {
+                return mService.get().mSessionManager.getEffectForSession(id);
+            }
+            return null;
+        }
     }
 }
