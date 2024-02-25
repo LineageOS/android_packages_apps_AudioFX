@@ -22,6 +22,7 @@ android_app {
     resource_dirs: ["res"],
 
     static_libs: [
+        // DO NOT EDIT THIS SECTION MANUALLY
         "androidx.core_core",
         "androidx.localbroadcastmanager_localbroadcastmanager",
         "androidx.viewpager_viewpager",

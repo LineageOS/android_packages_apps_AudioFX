@@ -1,2 +1,10 @@
+*.iml
+.gradle
+/local.properties
+/.idea
 .DS_Store
-src_effects_priv
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
