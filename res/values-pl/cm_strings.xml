@@ -22,9 +22,9 @@
     <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">Normalna</string>
     <string name="classical">Klasyczna</string>
-    <string name="dance">Taneczna</string>
+    <string name="dance">Dance</string>
     <string name="flat">Płaska</string>
-    <string name="folk">Folk</string>
+    <string name="folk">Ludowa</string>
     <string name="heavy_metal">Heavy Metal</string>
     <string name="hip_hop">Hip Hop</string>
     <string name="jazz">Jazz</string>
