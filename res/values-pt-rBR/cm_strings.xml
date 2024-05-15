@@ -22,7 +22,7 @@
     <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">Normal</string>
     <string name="classical">Clássica</string>
-    <string name="dance">Dance</string>
+    <string name="dance">Dança</string>
     <string name="flat">Plano</string>
     <string name="folk">Folk</string>
     <string name="heavy_metal">Heavy metal</string>
@@ -31,7 +31,7 @@
     <string name="pop">Pop</string>
     <string name="rock">Rock</string>
     <string name="electronic">Eletrônica</string>
-    <string name="small_speakers">Falantes pequenos</string>
+    <string name="small_speakers">Alto-falantes pequenos</string>
     <string name="multimedia">Multimídia</string>
     <string name="custom">Personalizado</string>
     <string name="custom_n">Personalizado <xliff:g id="preset_num">%1$d</xliff:g></string>
@@ -42,7 +42,7 @@
     <string name="mediumhall">Salão médio</string>
     <string name="largehall">Salão grande</string>
     <string name="plate">Placa</string>
-    <string name="power_on_prompt">Pressione o botão de energia na parte superior direita.</string>
+    <string name="power_on_prompt">Pressione o botão liga/desliga no canto superior direito.</string>
     <string name="effect_unavalable_for_speaker">Efeito não disponível no modo de alto-falante.</string>
     <string name="device_headset">Fone de ouvido</string>
     <string name="device_speaker">Alto-falante</string>
