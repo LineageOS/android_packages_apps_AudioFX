@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dadf0e97_edea82ff",
+        "filename": "tests/Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 10067
+      },
+      "writtenOn": "2024-10-18T15:30:02Z",
+      "side": 1,
+      "message": "maybe current instead of 34? or unset?",
+      "revId": "b5288ac0c5ad67b03c97f17d133d6b5028001718",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
