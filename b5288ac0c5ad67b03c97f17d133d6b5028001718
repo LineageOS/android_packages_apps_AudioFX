@@ -16,6 +16,24 @@
       "message": "maybe current instead of 34? or unset?",
       "revId": "b5288ac0c5ad67b03c97f17d133d6b5028001718",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc4f28e5_0bf363af",
+        "filename": "tests/Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2024-10-21T23:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dadf0e97_edea82ff",
+      "revId": "b5288ac0c5ad67b03c97f17d133d6b5028001718",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
