@@ -26,6 +26,7 @@ android_app {
     overrides: ["MusicFX"],
 
     optimize: {
-        enabled: false,
+        optimize: true,
+        shrink_resources: true,
     },
 }
