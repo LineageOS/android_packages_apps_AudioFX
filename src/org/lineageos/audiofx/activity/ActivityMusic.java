@@ -28,6 +28,8 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.CompoundButton;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.lineageos.audiofx.Constants;
@@ -166,7 +168,7 @@ public class ActivityMusic extends Activity {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (DEBUG) {
             Log.i(TAG, "onConfigurationChanged() called with "

@@ -18,6 +18,8 @@ package org.lineageos.audiofx;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import org.lineageos.audiofx.eq.EqUtils;
 
 public class Preset implements Parcelable {
@@ -37,22 +39,10 @@ public class Preset implements Parcelable {
         return mLevels;
     }
 
-    public float getBandLevel(int band) {
-        return mLevels[band];
-    }
-
+    @NonNull
     @Override
     public String toString() {
         return mName + "|" + EqUtils.floatLevelsToString(mLevels);
-    }
-
-    private static Preset fromString(String input) {
-        final String[] split = input.split("\\|");
-        if (split == null || split.length != 2) {
-            return null;
-        }
-        float[] levels = EqUtils.stringBandsToFloats(split[1]);
-        return new Preset(split[0], levels);
     }
 
     @Override
@@ -163,6 +153,7 @@ public class Preset implements Parcelable {
             return false;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return super.toString() + "|" + mLocked;
@@ -170,7 +161,7 @@ public class Preset implements Parcelable {
 
         public static CustomPreset fromString(String input) {
             final String[] split = input.split("\\|");
-            if (split == null || split.length != 3) {
+            if (split.length != 3) {
                 return null;
             }
             float[] levels = EqUtils.stringBandsToFloats(split[1]);
@@ -209,27 +200,14 @@ public class Preset implements Parcelable {
             super(name, levels, false);
         }
 
+        @NonNull
         @Override
         public String toString() {
             return mName + "|" + EqUtils.floatLevelsToString(mLevels);
         }
 
-        public static PermCustomPreset fromString(String input) {
-            final String[] split = input.split("\\|");
-            if (split == null || split.length != 2) {
-                return null;
-            }
-            float[] levels = EqUtils.stringBandsToFloats(split[1]);
-            return new PermCustomPreset(split[0], levels);
-        }
-
         protected PermCustomPreset(Parcel in) {
             super(in);
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
         }
 
         @Override

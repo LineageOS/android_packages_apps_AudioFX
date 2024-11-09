@@ -45,24 +45,10 @@ public class ControlsFragment extends AudioFxBaseFragment {
     MaterialSwitch mReverbSwitch;
 
     private final CompoundButton.OnCheckedChangeListener mMaxxVolumeListener
-            = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (mConfig.getMaxxVolumeEnabled() != isChecked) {
-            }
-            mConfig.setMaxxVolumeEnabled(isChecked);
-        }
-    };
+            = (buttonView, isChecked) -> mConfig.setMaxxVolumeEnabled(isChecked);
 
     private final CompoundButton.OnCheckedChangeListener mReverbListener
-            = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (mConfig.getReverbEnabled() != isChecked) {
-            }
-            mConfig.setReverbEnabled(isChecked);
-        }
-    };
+            = (buttonView, isChecked) -> mConfig.setReverbEnabled(isChecked);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -139,9 +125,8 @@ public class ControlsFragment extends AudioFxBaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
             Bundle savedInstanceState) {
-        View root = inflater.inflate(mConfig.hasMaxxAudio() ? R.layout.controls_maxx_audio
+        return inflater.inflate(mConfig.hasMaxxAudio() ? R.layout.controls_maxx_audio
                 : R.layout.controls_generic, container, false);
-        return root;
     }
 
     @Override

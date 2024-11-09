@@ -20,7 +20,7 @@
             android:icon="@drawable/ic_action_dsp_icons_speaker"
             android:showAsAction="ifRoom">
         <menu>
-            <group android:id="@+id/device_group">
+            <group>
             </group>
         </menu>
     </item>
