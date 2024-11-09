@@ -37,14 +37,6 @@ public class EqUtils {
         return floatLevelsToString(levels, DEFAULT_DELIMITER);
     }
 
-    public static short[] stringBandsToShorts(String input) {
-        return stringBandsToShorts(input, DEFAULT_DELIMITER);
-    }
-
-    public static String shortLevelsToString(short[] levels) {
-        return shortLevelsToString(levels, DEFAULT_DELIMITER);
-    }
-
     public static String getZeroedBandsString(int length, final String delimiter) {
         StringBuilder buff = new StringBuilder();
         for (int i = 0; i < length; i++) {
@@ -64,51 +56,6 @@ public class EqUtils {
         builder.deleteCharAt(builder.length() - 1);
         return builder.toString();
     }
-
-
-    public static String shortLevelsToString(short[] levels, final String delimiter) {
-        // save
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < levels.length; i++) {
-            builder.append(levels[i]);
-            builder.append(delimiter);
-        }
-        builder.deleteCharAt(builder.length() - 1);
-        return builder.toString();
-    }
-
-    public static String intLevelsToString(int[] levels, final String delimiter) {
-        // save
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < levels.length; i++) {
-            builder.append(levels[i]);
-            builder.append(delimiter);
-        }
-        builder.deleteCharAt(builder.length() - 1);
-        return builder.toString();
-    }
-
-    public static <T> String levelsToString(T[] levels, final String delimiter) {
-        // save
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < levels.length; i++) {
-            builder.append(levels[i]);
-            builder.append(delimiter);
-        }
-        builder.deleteCharAt(builder.length() - 1);
-        return builder.toString();
-    }
-
-    public static short[] stringBandsToShorts(String input, final String delimiter) {
-        String[] levels = input.split(delimiter);
-
-        short[] equalizerLevels = new short[levels.length];
-        for (int i = 0; i < levels.length; i++) {
-            equalizerLevels[i] = (short) (Float.parseFloat(levels[i]));
-        }
-        return equalizerLevels;
-    }
-
 
     public static float[] stringBandsToFloats(String input, final String delimiter) {
         String[] levels = input.split(delimiter);

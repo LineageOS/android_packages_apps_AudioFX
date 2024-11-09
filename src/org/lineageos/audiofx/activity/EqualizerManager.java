@@ -22,6 +22,8 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.CompoundButton;
 
+import androidx.annotation.ColorInt;
+
 import org.lineageos.audiofx.Constants;
 import org.lineageos.audiofx.Preset;
 import org.lineageos.audiofx.R;
@@ -168,12 +170,9 @@ public class EqualizerManager {
 
     public CompoundButton.OnCheckedChangeListener getLockChangeListener() {
         if (mLockChangeListener == null) {
-            mLockChangeListener = new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isUserPreset()) {
-                        ((Preset.CustomPreset) mEqPresets.get(mCurrentPreset)).setLocked(isChecked);
-                    }
+            mLockChangeListener = (buttonView, isChecked) -> {
+                if (isUserPreset()) {
+                    ((Preset.CustomPreset) mEqPresets.get(mCurrentPreset)).setLocked(isChecked);
                 }
             };
         }
@@ -501,50 +500,31 @@ public class EqualizerManager {
      */
     public int getAssociatedPresetColorHex(int index) {
         int r = -1;
+
+        int[] colors = {
+                R.color.preset_normal,
+                R.color.preset_classical,
+                R.color.preset_dance,
+                R.color.preset_flat,
+                R.color.preset_folk,
+                R.color.preset_metal,
+                R.color.preset_hiphop,
+                R.color.preset_jazz,
+                R.color.preset_pop,
+                R.color.preset_rock,
+                R.color.preset_electronic,
+                R.color.preset_small_speakers
+        };
+
         index = index % mEqPresets.size();
         if (mEqPresets.get(index) instanceof Preset.CustomPreset) {
             r = R.color.preset_custom;
         } else {
-            switch (index) {
-                case 0:
-                    r = R.color.preset_normal;
-                    break;
-                case 1:
-                    r = R.color.preset_classical;
-                    break;
-                case 2:
-                    r = R.color.preset_dance;
-                    break;
-                case 3:
-                    r = R.color.preset_flat;
-                    break;
-                case 4:
-                    r = R.color.preset_folk;
-                    break;
-                case 5:
-                    r = R.color.preset_metal;
-                    break;
-                case 6:
-                    r = R.color.preset_hiphop;
-                    break;
-                case 7:
-                    r = R.color.preset_jazz;
-                    break;
-                case 8:
-                    r = R.color.preset_pop;
-                    break;
-                case 9:
-                    r = R.color.preset_rock;
-                    break;
-                case 10:
-                    r = R.color.preset_electronic;
-                    break;
-                case 11:
-                    r = R.color.preset_small_speakers;
-                    break;
-                default:
-                    return r;
+            if (index >= colors.length) {
+                return r;
             }
+
+            r = colors[index];
         }
         return mContext.getResources().getColor(r);
     }

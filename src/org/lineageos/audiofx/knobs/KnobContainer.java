@@ -303,20 +303,6 @@ public class KnobContainer extends LinearLayout
                     .alpha(makeBig ? 0 : 1)
                     .setInterpolator(new AccelerateInterpolator())
                     .setDuration(100);
-
-            /*
-            if (makeBig) {
-                ResizeAnimation resizeAnimation = new ResizeAnimation(this);
-                resizeAnimation.setHeightParams(getHeight(), mExpandedHeight);
-                resizeAnimation.setDuration(100);
-                startAnimation(resizeAnimation);
-            } else {
-                ResizeAnimation resizeAnimation = new ResizeAnimation(this);
-                resizeAnimation.setHeightParams(getHeight(), mRegularHeight);
-                resizeAnimation.setDuration(100);
-                startAnimation(resizeAnimation);
-            }
-            */
             knob.resize(makeBig);
         }
     }
