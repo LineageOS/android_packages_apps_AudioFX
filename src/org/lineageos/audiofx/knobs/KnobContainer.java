@@ -15,6 +15,7 @@
  */
 package org.lineageos.audiofx.knobs;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.media.AudioDeviceInfo;
@@ -98,6 +99,7 @@ public class KnobContainer extends LinearLayout
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -106,28 +108,25 @@ public class KnobContainer extends LinearLayout
 
         if (DEBUG) Log.d(TAG, "onFinishInflate()");
 
-        OnTouchListener knobTouchListener = new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Message message;
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        message = mHandler.obtainMessage(MSG_EXPAND, v.getTag());
-                        mHandler.sendMessageDelayed(message, 0);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        mHandler.removeMessages(MSG_EXPAND);
-                        message = mHandler.obtainMessage(MSG_CONTRACT, v.getTag());
-                        mHandler.sendMessageDelayed(message, 10);
-                        break;
-                }
-                if (!v.isEnabled()) {
-                    notifyDisabled();
-                    return true;
-                }
-                return false;
+        OnTouchListener knobTouchListener = (v, event) -> {
+            Message message;
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    message = mHandler.obtainMessage(MSG_EXPAND, v.getTag());
+                    mHandler.sendMessageDelayed(message, 0);
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    mHandler.removeMessages(MSG_EXPAND);
+                    message = mHandler.obtainMessage(MSG_CONTRACT, v.getTag());
+                    mHandler.sendMessageDelayed(message, 10);
+                    break;
             }
+            if (!v.isEnabled()) {
+                notifyDisabled();
+                return true;
+            }
+            return false;
         };
 
         if (MasterConfigControl.getInstance(getContext()).hasMaxxAudio()) {
@@ -303,20 +302,6 @@ public class KnobContainer extends LinearLayout
                     .alpha(makeBig ? 0 : 1)
                     .setInterpolator(new AccelerateInterpolator())
                     .setDuration(100);
-
-            /*
-            if (makeBig) {
-                ResizeAnimation resizeAnimation = new ResizeAnimation(this);
-                resizeAnimation.setHeightParams(getHeight(), mExpandedHeight);
-                resizeAnimation.setDuration(100);
-                startAnimation(resizeAnimation);
-            } else {
-                ResizeAnimation resizeAnimation = new ResizeAnimation(this);
-                resizeAnimation.setHeightParams(getHeight(), mRegularHeight);
-                resizeAnimation.setDuration(100);
-                startAnimation(resizeAnimation);
-            }
-            */
             knob.resize(makeBig);
         }
     }

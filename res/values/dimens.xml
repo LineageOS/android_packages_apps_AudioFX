@@ -15,9 +15,6 @@
 -->
 
 <resources>
-    <dimen name="eq_slider_margin">5dip</dimen>
-    <dimen name="eq_slider_height">180dip</dimen>
-
     <!-- size of frequency labels below bars -->
     <dimen name="eq_label_text_size">9sp</dimen>
 
@@ -33,18 +30,10 @@
     <dimen name="preset_text_size">30sp</dimen>
     <dimen name="preset_text_padding">4dp</dimen>
 
-    <dimen name="action_bar_button_width">96dip</dimen>
-    <dimen name="action_bar_button_height">34dip</dimen>
-
-
     <dimen name="eq_bar_width">24dp</dimen>
     <dimen name="separator_width">4dp</dimen>
 
-    <dimen name="knob_height">150dp</dimen>
     <dimen name="knob_width">100dp</dimen>
-    <dimen name="knob_container_height_small">180dp</dimen>
-    <dimen name="knob_container_height_expanded">200dp</dimen>
-    <dimen name="drag_area_max">200dp</dimen>
     <dimen name="knob_container_padding_bottom">8dp</dimen>
 
     <dimen name="radial_rect_padding">11dp</dimen>
