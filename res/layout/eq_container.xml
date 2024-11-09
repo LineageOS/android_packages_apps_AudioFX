@@ -21,7 +21,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_content_clear"
-                    android:paddingRight="12dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="12dp"
                     />
 
             <ImageView
@@ -29,7 +30,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_content_create"
-                    android:paddingRight="12dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="12dp"
                     />
             <CheckBox
                     android:id="@+id/lock"
@@ -40,7 +42,7 @@
         </LinearLayout>
 
         <LinearLayout
-                android:layout_gravity="right"
+                android:layout_gravity="end"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent">
             <ImageView

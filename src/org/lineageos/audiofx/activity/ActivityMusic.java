@@ -28,6 +28,8 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.CompoundButton;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.lineageos.audiofx.Constants;
@@ -138,7 +140,7 @@ public class ActivityMusic extends Activity {
         final View extraView = LayoutInflater.from(this)
                 .inflate(R.layout.action_bar_custom_components, null);
         ActionBar.LayoutParams lp = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT,
-                ActionBar.LayoutParams.WRAP_CONTENT, Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+                ActionBar.LayoutParams.WRAP_CONTENT, Gravity.END | Gravity.CENTER_VERTICAL);
         ab.setCustomView(extraView, lp);
         ab.setDisplayShowCustomEnabled(true);
 
@@ -166,7 +168,7 @@ public class ActivityMusic extends Activity {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (DEBUG) {
             Log.i(TAG, "onConfigurationChanged() called with "

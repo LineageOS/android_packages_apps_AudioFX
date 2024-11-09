@@ -22,12 +22,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioDeviceInfo;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -60,7 +58,6 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
     public static final String TAG_EQUALIZER = "equalizer";
     public static final String TAG_CONTROLS = "controls";
 
-    Handler mHandler;
     int mCurrentBackgroundColor;
 
     // whether we are in the middle of animating while switching devices
@@ -102,7 +99,6 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
             mSystemDevice = mConfig.getDeviceById(system);
         }
 
-        mHandler = new Handler();
         mDisabledColor = getResources().getColor(R.color.disabled_eq);
 
         setHasOptionsMenu(true);
@@ -186,23 +182,15 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
             new AlertDialog.Builder(getActivity())
                     .setMessage(R.string.snack_bar_not_default)
                     .setNegativeButton(R.string.snack_bar_not_default_not_now,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    getActivity().finish();
-                                }
-                            })
+                            (dialog, which) -> getActivity().finish())
                     .setPositiveButton(R.string.snack_bar_not_default_set,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent updateIntent = new Intent(getActivity(),
-                                            Compatibility.Service.class);
-                                    updateIntent.putExtra("defPackage", audioFxPackageName);
-                                    updateIntent.putExtra("defName", ActivityMusic.class.getName());
-                                    getActivity().startService(updateIntent);
-                                    dialog.dismiss();
-                                }
+                            (dialog, which) -> {
+                                Intent updateIntent = new Intent(getActivity(),
+                                        Compatibility.Service.class);
+                                updateIntent.putExtra("defPackage", audioFxPackageName);
+                                updateIntent.putExtra("defName", ActivityMusic.class.getName());
+                                getActivity().startService(updateIntent);
+                                dialog.dismiss();
                             })
                     .setCancelable(false)
                     .create()
@@ -348,12 +336,7 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
             }
             mSystemDevice = mConfig.getSystemDevice();
             mUserSelection = device;
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mConfig.setCurrentDevice(mUserSelection, true);
-                }
-            });
+            getActivity().runOnUiThread(() -> mConfig.setCurrentDevice(mUserSelection, true));
             return true;
         }
         return super.onOptionsItemSelected(item);

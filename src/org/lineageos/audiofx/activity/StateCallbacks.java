@@ -28,11 +28,9 @@ public class StateCallbacks {
 
     private final List<EqUpdatedCallback> mEqUpdateCallbacks = new ArrayList<EqUpdatedCallback>();
 
-    private final List<DeviceChangedCallback> mDeviceChangedCallbacks =
-            new ArrayList<DeviceChangedCallback>();
+    private final List<DeviceChangedCallback> mDeviceChangedCallbacks = new ArrayList<>();
 
-    private final List<EqControlStateCallback> mEqControlStateCallbacks =
-            new ArrayList<EqControlStateCallback>();
+    private final List<EqControlStateCallback> mEqControlStateCallbacks = new ArrayList<>();
 
     StateCallbacks(MasterConfigControl config) {
         mConfig = config;
