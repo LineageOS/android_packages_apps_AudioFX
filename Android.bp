@@ -25,6 +25,7 @@ android_app {
         "androidx.core_core",
         "androidx.localbroadcastmanager_localbroadcastmanager",
         "androidx.viewpager_viewpager",
+        "com.google.android.material_material"
     ],
 
     platform_apis: true,

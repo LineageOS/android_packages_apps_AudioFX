@@ -11,11 +11,12 @@
             android:layout_height="wrap_content"
     />
 
-    <Switch
+    <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/global_toggle"
             android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:theme="@style/Theme.Material3.DynamicColors.DayNight"
     />
 
 </LinearLayout>
