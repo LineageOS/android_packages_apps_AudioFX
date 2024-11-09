@@ -39,8 +39,7 @@ public class AudioOutputChangeListener extends AudioDeviceCallback {
     private final Handler mHandler;
     private int mLastDevice = -1;
 
-    private final ArrayList<AudioOutputChangedCallback> mCallbacks =
-            new ArrayList<AudioOutputChangedCallback>();
+    private final ArrayList<AudioOutputChangedCallback> mCallbacks = new ArrayList<>();
 
     public interface AudioOutputChangedCallback {
         void onAudioOutputChanged(boolean firstChange, AudioDeviceInfo outputDevice);
@@ -87,13 +86,10 @@ public class AudioOutputChangeListener extends AudioDeviceCallback {
                         " address: " + device.getAddress() +
                         " [" + device + "]");
                 mLastDevice = device.getId();
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        synchronized (mCallbacks) {
-                            for (AudioOutputChangedCallback callback : mCallbacks) {
-                                callback.onAudioOutputChanged(mInitial, device);
-                            }
+                mHandler.post(() -> {
+                    synchronized (mCallbacks) {
+                        for (AudioOutputChangedCallback callback : mCallbacks) {
+                            callback.onAudioOutputChanged(mInitial, device);
                         }
                     }
                 });
@@ -103,10 +99,6 @@ public class AudioOutputChangeListener extends AudioDeviceCallback {
                 }
             }
         }
-    }
-
-    public void refresh() {
-        callback();
     }
 
     @Override
@@ -120,7 +112,7 @@ public class AudioOutputChangeListener extends AudioDeviceCallback {
     }
 
     public List<AudioDeviceInfo> getConnectedOutputs() {
-        final List<AudioDeviceInfo> outputs = new ArrayList<AudioDeviceInfo>();
+        final List<AudioDeviceInfo> outputs = new ArrayList<>();
         final int forMusic = mAudioManager.getDevicesForStream(AudioManager.STREAM_MUSIC);
         for (AudioDeviceInfo ai : mAudioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
             if ((convertDeviceTypeToInternalDevice(ai.getType()) & forMusic) > 0) {
@@ -133,14 +125,5 @@ public class AudioOutputChangeListener extends AudioDeviceCallback {
     public AudioDeviceInfo getCurrentDevice() {
         final List<AudioDeviceInfo> devices = getConnectedOutputs();
         return devices.size() > 0 ? devices.get(0) : null;
-    }
-
-    public AudioDeviceInfo getDeviceById(int id) {
-        for (AudioDeviceInfo ai : mAudioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
-            if (ai.getId() == id) {
-                return ai;
-            }
-        }
-        return null;
     }
 }

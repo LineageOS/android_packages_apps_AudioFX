@@ -81,7 +81,7 @@ public class DevicePreferenceManager
             saveAndApplyDefaults(false);
         } catch (Exception e) {
             SharedPreferences prefs = Constants.getGlobalPrefs(mContext);
-            prefs.edit().clear().commit();
+            prefs.edit().clear().apply();
             Log.e(TAG, "Failed to initialize defaults!", e);
             return false;
         }
@@ -192,7 +192,7 @@ public class DevicePreferenceManager
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO,
                 temp.getBrand() == Constants.EFFECT_TYPE_MAXXAUDIO);
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_DTS, temp.getBrand() == Constants.EFFECT_TYPE_DTS);
-        editor.commit();
+        editor.apply();
         temp.release();
 
         applyDefaults(needsPrefsUpdate);
@@ -202,7 +202,7 @@ public class DevicePreferenceManager
                 .putInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT,
                         CURRENT_PREFS_INT_VERSION)
                 .putBoolean(Constants.SAVED_DEFAULTS, true)
-                .commit();
+                .apply();
     }
 
     private static int findInList(String needle, List<String> haystack) {
@@ -237,7 +237,7 @@ public class DevicePreferenceManager
 
         // set up the builtin speaker configuration
         final String smallSpeakers = getNonLocalizedString(R.string.small_speakers);
-        final List<String> presetNames = new ArrayList<String>(Arrays.asList(
+        final List<String> presetNames = new ArrayList<>(Arrays.asList(
                 globalPrefs.getString(EQUALIZER_PRESET_NAMES, "").split("\\|")));
         final SharedPreferences speakerPrefs = prefsFor(DEVICE_SPEAKER);
 
@@ -251,7 +251,7 @@ public class DevicePreferenceManager
                     .putString(DEVICE_AUDIOFX_BASS_STRENGTH, "400")
                     .putBoolean(DEVICE_AUDIOFX_TREBLE_ENABLE, true)
                     .putString(DEVICE_AUDIOFX_TREBLE_STRENGTH, "32")
-                    .commit();
+                    .apply();
 
             // Defaults for headphones
             // maxxvolume: on  maxxbass: 20%  maxxtreble: 40%  maxxspace: 20%
@@ -264,7 +264,7 @@ public class DevicePreferenceManager
                     .putString(DEVICE_AUDIOFX_TREBLE_STRENGTH, "40")
                     .putBoolean(DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, true)
                     .putString(DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "200")
-                    .commit();
+                    .apply();
         } else {
             // Defaults for headphones
             // bass boost: 15%  virtualizer: 20%  preset: FLAT
@@ -276,7 +276,7 @@ public class DevicePreferenceManager
                     .putBoolean(DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, true)
                     .putString(DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "200")
                     .putString(DEVICE_AUDIOFX_EQ_PRESET, (flat >= 0 ? String.valueOf(flat) : "0"))
-                    .commit();
+                    .apply();
         }
 
         // for 5 band configs, let's add a `Small Speaker` configuration if one
@@ -293,7 +293,7 @@ public class DevicePreferenceManager
                     .putString(EQUALIZER_PRESET + currentPresets, "-170;270;50;-220;200")
                     .putString(EQUALIZER_PRESET_NAMES, newPresetNames)
                     .putString(EQUALIZER_NUMBER_OF_PRESETS, Integer.toString(++currentPresets))
-                    .commit();
+                    .apply();
 
         }
 
@@ -303,7 +303,7 @@ public class DevicePreferenceManager
             speakerPrefs.edit()
                     .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
                     .putString(DEVICE_AUDIOFX_EQ_PRESET, String.valueOf(idx))
-                    .commit();
+                    .apply();
         }
     }
 

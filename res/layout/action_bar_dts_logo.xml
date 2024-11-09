@@ -15,7 +15,6 @@
     />
 
     <ImageView
-            android:id="@+id/dts_logo"
             android:src="@drawable/logo_dts_fc"
             android:layout_weight="1"
             android:layout_width="wrap_content"

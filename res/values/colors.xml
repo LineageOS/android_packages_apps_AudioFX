@@ -29,39 +29,10 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <resources>
-    <color name="action_bar_background">#ff2e2e2e</color>
-    <color name="audiofx_background_color">#cc191919</color>
-    <color name="eq_preset_label_text_color">#ff808080</color>
-    <color name="reverb_label_text_color">#ff808080</color>
 
     <color name="highlight">#cc8f8f8f</color>
-    <color name="lowlight">#558f8f8f</color>
-    <color name="grey">#80e7e7e7</color>
-    <color name="disabled">#80525252</color>
-    <color name="disabled_gallery">#888888</color>
-    <color name="disabled_knob">#575757</color>
 
     <color name="white">#ffffffff</color>
-    <color name="color_grey">#90dedede</color>
-    <color name="black">#ff000000</color>
-    <color name="grid_lines">#22ffffff</color>
-    <color name="cb">#88ffffff</color>
-    <color name="freq_hl">#2000ddff</color>
-    <color name="freq_hl2">#4033b5e5</color>
-    <color name="eq_red">#80ff0000</color>
-    <color name="eq_green">#80aaeaaa</color>
-    <color name="eq_yellow">#80f0ff00</color>
-    <color name="eq_holo_bright">#8000ddff</color>
-    <color name="eq_holo_blue">#8033b5e5</color>
-    <color name="eq_holo_dark">#800099cc</color>
-    <color name="cb_shader">#ffffffff</color>
-    <color name="cb_shader_alpha">#22ffffff</color>
-
-    <color name="window_background">#ff000000</color>
-
-    <color name="band_freq_label">#ffffffff</color>
-    <color name="band_bar_color_1">#FFCCCCCC</color>
-    <color name="band_bar_color_2">#FFDDDDDD</color>
 
     <color name="preset_custom">#CE5B4C</color>
     <color name="preset_normal">#CB6139</color>
