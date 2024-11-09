@@ -33,6 +33,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <color name="highlight">#cc8f8f8f</color>
 
     <color name="white">#ffffffff</color>
+    <color name="transparent">#00000000</color>
 
     <color name="preset_custom">#CE5B4C</color>
     <color name="preset_normal">#CB6139</color>
