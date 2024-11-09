@@ -38,13 +38,12 @@ public class EqBarView extends FrameLayout implements StateCallbacks.EqUpdatedCa
     private float mParentHeight = -1;
     private float mLastTouchX;
     private float mLastTouchY;
-    private float mPosX;
     private float mPosY = -1;
     private boolean mUserInteracting;
     private int mParentTop;
     private Integer mIndex;
     private float mInitialLevel;
-    private Context mContext;
+    private final Context mContext;
 
     public EqBarView(Context context) {
         super(context);
@@ -167,7 +166,6 @@ public class EqBarView extends FrameLayout implements StateCallbacks.EqUpdatedCa
                 final float dx = x - mLastTouchX;
                 final float dy = y - mLastTouchY;
 
-                mPosX += dx;
                 mPosY -= dy;
 
                 // Remember this touch position for the next move event
@@ -201,10 +199,6 @@ public class EqBarView extends FrameLayout implements StateCallbacks.EqUpdatedCa
         }
 
         return true;
-    }
-
-    public float getPosY() {
-        return mPosY;
     }
 
     @Override

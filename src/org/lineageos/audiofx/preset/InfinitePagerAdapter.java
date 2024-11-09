@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 /**
@@ -61,7 +62,7 @@ public class InfinitePagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         int virtualPosition = position % getRealCount();
         debug("destroyItem: real position: " + position);
         debug("destroyItem: virtual position: " + virtualPosition);
@@ -75,12 +76,12 @@ public class InfinitePagerAdapter extends PagerAdapter {
      */
 
     @Override
-    public void finishUpdate(ViewGroup container) {
+    public void finishUpdate(@NonNull ViewGroup container) {
         adapter.finishUpdate(container);
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return adapter.isViewFromObject(view, object);
     }
 
@@ -95,7 +96,7 @@ public class InfinitePagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void startUpdate(ViewGroup container) {
+    public void startUpdate(@NonNull ViewGroup container) {
         adapter.startUpdate(container);
     }
 
