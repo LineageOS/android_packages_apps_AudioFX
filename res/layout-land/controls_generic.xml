@@ -28,11 +28,12 @@
             android:textColor="@color/white"
             android:textSize="@dimen/reverb_switch_label_size" />
 
-        <Switch
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/reverb_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:theme="@style/Theme.Material3.Dark"/>
 
     </LinearLayout>
 
