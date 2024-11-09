@@ -36,8 +36,6 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PathMeasure;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Vibrator;
@@ -91,13 +89,8 @@ public class RadialKnob extends View {
     private final int mBackgroundArcColorDisabled;
     private final int mRectPadding;
     private final int mStrokeWidth;
-    private final float mHandleWidth; // little square indicator where user touches
     private final float mTextOffset;
 
-    Path mPath = new Path();
-    PathMeasure mPathMeasure = new PathMeasure();
-    float[] mTmp = new float[2];
-    float mStartX, mStopX, mStartY, mStopY;
     private Context mContext;
 
     public RadialKnob(Context context, AttributeSet attrs, int defStyle) {
@@ -120,13 +113,10 @@ public class RadialKnob extends View {
         mTextOffset = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2,
                 getResources().getDisplayMetrics());
 
-        mHandleWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5,
-                getResources().getDisplayMetrics());
-
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(mHighlightColor);
         mPaint.setStrokeWidth(mStrokeWidth = res.getDimensionPixelSize(R.dimen.radial_knob_stroke));
-        mPaint.setStrokeCap(Paint.Cap.BUTT);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStyle(Paint.Style.STROKE);
 
         setScaleX(REGULAR_SCALE);
@@ -224,31 +214,6 @@ public class RadialKnob extends View {
             mPaint.setColor(mHighlightColor);
             canvas.drawArc(mRectF, START_ANGLE, sweepAngle, false, mPaint);
         }
-
-        final float indicatorSweepAngle = Math.max(1f, sweepAngle);
-
-        // render the indicator
-        mPath.reset();
-        mPath.arcTo(mInnerRect, START_ANGLE, indicatorSweepAngle, true);
-
-        mPathMeasure.setPath(mPath, false);
-        mPathMeasure.getPosTan(mPathMeasure.getLength(), mTmp, null);
-
-        mStartX = mTmp[0];
-        mStartY = mTmp[1];
-
-        mPath.reset();
-        mPath.arcTo(mOuterRect, START_ANGLE, indicatorSweepAngle, true);
-
-        mPathMeasure.setPath(mPath, false);
-        mPathMeasure.getPosTan(mPathMeasure.getLength(), mTmp, null);
-
-        mStopX = mTmp[0];
-        mStopY = mTmp[1];
-
-        mPaint.setStrokeWidth(mHandleWidth);
-        mPaint.setColor(Color.WHITE);
-        canvas.drawLine(mStartX, mStartY, mStopX, mStopY, mPaint);
 
         canvas.drawText(getProgressText(),
                 mOuterRect.centerX(),
