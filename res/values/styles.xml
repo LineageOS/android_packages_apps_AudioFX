@@ -22,6 +22,7 @@
     <style name="AppThemeV2" parent="android:Theme.Material">
         <item name="android:actionBarStyle">@style/ActionBar</item>
         <item name="android:colorAccent">@color/white</item>
+        <item name="android:popupTheme">@style/AppThemeV2.Popup</item>
     </style>
 
     <style name="ActionBar" parent="android:Widget.Material.ActionBar.Solid">
@@ -39,6 +40,11 @@
     <style name="AppThemeV2.ActionBar.SubtitleTextStyle" parent="@android:style/TextAppearance.Material.Widget.ActionBar.Subtitle">
         <item name="android:textSize">10sp</item>
         <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="AppThemeV2.Popup" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:background">@drawable/popup_background</item>
+        <item name="android:colorBackground">@android:color/transparent</item>
     </style>
 
 </resources>
