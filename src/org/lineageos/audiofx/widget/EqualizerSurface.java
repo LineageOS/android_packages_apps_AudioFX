@@ -83,14 +83,12 @@ public class EqualizerSurface extends SurfaceView implements ValueAnimator.Anima
 
         mControlBarText = new Paint(mWhite);
         mControlBarText.setTextAlign(Paint.Align.CENTER);
-        mControlBarText.setShadowLayer(2, 0, 0, getResources().getColor(R.color.cb));
 
         mControlBar = new Paint();
         mControlBar.setStyle(Style.FILL);
         mControlBar.setColor(getResources().getColor(R.color.cb));
         mControlBar.setAntiAlias(true);
         mControlBar.setStrokeCap(Cap.SQUARE);
-        mControlBar.setShadowLayer(2, 0, 0, getResources().getColor(R.color.black));
         mBarWidth = context.getResources().getDimensionPixelSize(R.dimen.eq_bar_width);
 //        mControlBar.setStrokeWidth(mBarWidth);
 
