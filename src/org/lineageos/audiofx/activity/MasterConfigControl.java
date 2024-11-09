@@ -366,7 +366,7 @@ public class MasterConfigControl {
 
     private static String appendDeviceAddress(AudioDeviceInfo info, String prefix) {
         StringBuilder nm = new StringBuilder(prefix);
-        if (info != null && info.getAddress() != null) {
+        if (info != null) {
             nm.append("-").append(info.getAddress().replace(":", ""));
         }
         return nm.toString();
@@ -398,8 +398,6 @@ public class MasterConfigControl {
 
     /**
      * Set whether to automatically attempt to bind to the service.
-     *
-     * @param bindToService
      */
     public void setAutoBindToService(boolean bindToService) {
         mShouldBindToService = bindToService;

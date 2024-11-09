@@ -192,15 +192,16 @@ public class AudioFxService extends Service
             case TRIM_MEMORY_RUNNING_MODERATE:
             case TRIM_MEMORY_COMPLETE:
                 if (DEBUG) Log.d(TAG, "killing service if no effects active.");
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!mSessionManager.hasActiveSessions()) {
-                            stopSelf();
-                            Log.w(TAG, "self destructing, no sessions active and nothing to do.");
-                        }
+                mHandler.postDelayed(() -> {
+                    if (!mSessionManager.hasActiveSessions()) {
+                        stopSelf();
+                        Log.w(TAG, "self destructing, no sessions active and nothing to do.");
                     }
                 }, 1000);
+                break;
+            case android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL:
+            case android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW:
+            case android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:
                 break;
         }
     }

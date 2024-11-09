@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import org.lineageos.audiofx.Preset;
@@ -50,8 +51,9 @@ public class PresetPagerAdapter extends PagerAdapter {
         }
     }
 
+    @NonNull
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
         View view = LayoutInflater.from(mContext)
                 .inflate(R.layout.preset_adapter_row, container, false);
         TextView tv = (TextView) view;
@@ -62,7 +64,7 @@ public class PresetPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         if (object instanceof View) {
             container.removeView((View) object);
         }
@@ -74,7 +76,7 @@ public class PresetPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object o) {
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object o) {
         return view == o;
     }
 
