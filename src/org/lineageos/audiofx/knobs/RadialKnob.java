@@ -128,7 +128,6 @@ public class RadialKnob extends View {
         mPaint.setStrokeWidth(mStrokeWidth = res.getDimensionPixelSize(R.dimen.radial_knob_stroke));
         mPaint.setStrokeCap(Paint.Cap.BUTT);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setShadowLayer(2, 1, -2, getResources().getColor(R.color.black));
 
         setScaleX(REGULAR_SCALE);
         setScaleY(REGULAR_SCALE);

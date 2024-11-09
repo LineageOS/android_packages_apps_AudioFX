@@ -286,8 +286,6 @@ public class EqContainerView extends FrameLayout
                     bar.setAlpha(0.8f);
                 }
                 bar.setBackgroundColor(Color.WHITE);
-                bar.setElevation(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2,
-                        getResources().getDisplayMetrics()));
 
                 addView(bar, getFrameParams(i));
                 bar.setParentHeight(mHeight, getTop());
