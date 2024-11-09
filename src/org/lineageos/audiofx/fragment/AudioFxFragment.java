@@ -186,23 +186,15 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
             new AlertDialog.Builder(getActivity())
                     .setMessage(R.string.snack_bar_not_default)
                     .setNegativeButton(R.string.snack_bar_not_default_not_now,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    getActivity().finish();
-                                }
-                            })
+                            (dialog, which) -> getActivity().finish())
                     .setPositiveButton(R.string.snack_bar_not_default_set,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent updateIntent = new Intent(getActivity(),
-                                            Compatibility.Service.class);
-                                    updateIntent.putExtra("defPackage", audioFxPackageName);
-                                    updateIntent.putExtra("defName", ActivityMusic.class.getName());
-                                    getActivity().startService(updateIntent);
-                                    dialog.dismiss();
-                                }
+                            (dialog, which) -> {
+                                Intent updateIntent = new Intent(getActivity(),
+                                        Compatibility.Service.class);
+                                updateIntent.putExtra("defPackage", audioFxPackageName);
+                                updateIntent.putExtra("defName", ActivityMusic.class.getName());
+                                getActivity().startService(updateIntent);
+                                dialog.dismiss();
                             })
                     .setCancelable(false)
                     .create()
@@ -348,12 +340,7 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
             }
             mSystemDevice = mConfig.getSystemDevice();
             mUserSelection = device;
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mConfig.setCurrentDevice(mUserSelection, true);
-                }
-            });
+            getActivity().runOnUiThread(() -> mConfig.setCurrentDevice(mUserSelection, true));
             return true;
         }
         return super.onOptionsItemSelected(item);
