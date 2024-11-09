@@ -63,8 +63,7 @@
                     android:id="@+id/knob"
                     android:layout_width="@dimen/knob_width"
                     android:layout_gravity="top|center_horizontal"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"/>
+                    android:layout_height="wrap_content" />
 
             <ImageView
                     android:id="@+id/label"
@@ -93,8 +92,7 @@
                     android:id="@+id/knob"
                     android:layout_gravity="top|center_horizontal"
                     android:layout_width="@dimen/knob_width"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"/>
+                    android:layout_height="wrap_content" />
 
             <ImageView
                     android:id="@+id/label"

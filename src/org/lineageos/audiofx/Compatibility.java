@@ -212,7 +212,7 @@ public class Compatibility {
             Editor ed = pref.edit();
             ed.putString(Constants.MUSICFX_DEFAULT_PACKAGE_KEY, defPackage);
             ed.putString(Constants.MUSICFX_DEFAULT_PANEL_KEY, defName);
-            ed.commit();
+            ed.apply();
             log("wrote " + defPackage + "/" + defName + " as default");
         }
 

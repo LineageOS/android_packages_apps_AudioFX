@@ -2,7 +2,6 @@
 
 <org.lineageos.audiofx.widget.InterceptableLinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:custom="http://schemas.android.com/apk/res/org.lineageos.audiofx"
         android:id="@+id/interceptable_layout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
