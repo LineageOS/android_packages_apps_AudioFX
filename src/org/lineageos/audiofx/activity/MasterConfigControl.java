@@ -270,10 +270,9 @@ public class MasterConfigControl {
             if (filter.length == 0) {
                 devices.add(ai);
             } else {
-                for (int i = 0; i < filter.length; i++) {
-                    if (ai.getType() == filter[i]) {
+                for (int j : filter) {
+                    if (ai.getType() == j) {
                         devices.add(ai);
-                        continue;
                     }
                 }
             }
@@ -366,7 +365,7 @@ public class MasterConfigControl {
 
     private static String appendDeviceAddress(AudioDeviceInfo info, String prefix) {
         StringBuilder nm = new StringBuilder(prefix);
-        if (info != null && info.getAddress() != null) {
+        if (info != null) {
             nm.append("-").append(info.getAddress().replace(":", ""));
         }
         return nm.toString();
@@ -398,8 +397,6 @@ public class MasterConfigControl {
 
     /**
      * Set whether to automatically attempt to bind to the service.
-     *
-     * @param bindToService
      */
     public void setAutoBindToService(boolean bindToService) {
         mShouldBindToService = bindToService;

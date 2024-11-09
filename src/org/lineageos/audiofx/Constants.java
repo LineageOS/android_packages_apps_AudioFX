@@ -42,9 +42,7 @@ public class Constants {
 
     public static final String SAVED_DEFAULTS = "saved_defaults";
 
-    public static final String AUDIOFX_GLOBAL_USE_DTS = "audiofx.global.use_dts";
     public static final String AUDIOFX_GLOBAL_HAS_DTS = "audiofx.global.has_dts";
-    public static final String AUDIOFX_GLOBAL_ENABLE_DTS = "audiofx.global.dts.enable";
     public static final String AUDIOFX_GLOBAL_HAS_MAXXAUDIO = "audiofx.global.hasmaxxaudio";
     public static final String AUDIOFX_GLOBAL_HAS_BASSBOOST = "audiofx.global.hasbassboost";
     public static final String AUDIOFX_GLOBAL_HAS_REVERB = "audiofx.global.hasreverb";
@@ -130,7 +128,7 @@ public class Constants {
         }
 
         presetPrefs.putString("preset_names", presetNames.toString());
-        presetPrefs.commit();
+        presetPrefs.apply();
     }
 
     public static int[] getBandLevelRange(Context context) {
@@ -142,7 +140,7 @@ public class Constants {
             String[] split = savedCenterFreqs.split(";");
             int[] freqs = new int[split.length];
             for (int i = 0; i < split.length; i++) {
-                freqs[i] = Integer.valueOf(split[i]);
+                freqs[i] = Integer.parseInt(split[i]);
             }
             return freqs;
         }
@@ -155,7 +153,7 @@ public class Constants {
         String[] split = savedCenterFreqs.split(";");
         int[] freqs = new int[split.length];
         for (int i = 0; i < split.length; i++) {
-            freqs[i] = Integer.valueOf(split[i]);
+            freqs[i] = Integer.parseInt(split[i]);
         }
         return freqs;
     }

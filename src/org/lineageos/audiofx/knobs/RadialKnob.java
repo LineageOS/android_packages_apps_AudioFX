@@ -46,6 +46,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 
+import androidx.annotation.NonNull;
+
 import org.lineageos.audiofx.R;
 
 public class RadialKnob extends View {
@@ -201,7 +203,7 @@ public class RadialKnob extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
         mPaint.setStrokeWidth(mStrokeWidth);
@@ -233,8 +235,7 @@ public class RadialKnob extends View {
     protected void onSizeChanged(int w, int h, int oldW, int oldH) {
         super.onSizeChanged(w, h, oldW, oldH);
 
-        int size = w > h ? h : w;
-        mWidth = size;
+        mWidth = Math.min(w, h);
         int diff;
         if (w > h) {
             diff = (w - h) / 2;
@@ -265,45 +266,42 @@ public class RadialKnob extends View {
         mAnimator.setInterpolator(new AccelerateInterpolator());
         mAnimator.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animation) {
+            public void onAnimationStart(@NonNull Animator animation) {
                 mAnimating = true;
             }
 
             @Override
-            public void onAnimationEnd(Animator animation) {
+            public void onAnimationEnd(@NonNull Animator animation) {
                 mAnimating = false;
                 postInvalidate();
             }
 
             @Override
-            public void onAnimationCancel(Animator animation) {
+            public void onAnimationCancel(@NonNull Animator animation) {
                 mAnimating = false;
                 postInvalidate();
             }
 
             @Override
-            public void onAnimationRepeat(Animator animation) {
+            public void onAnimationRepeat(@NonNull Animator animation) {
 
             }
         });
-        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float progress = (Float) animation.getAnimatedValue();
-                mProgress = progress;
-                mLastAngle = mProgress * MAX_DEGREES;
-                if (DEBUG) {
-                    Log.i(TAG, "onAnimationUpdate(): mProgress: "
-                            + mProgress + ", mLastAngle: " + mLastAngle);
-                }
-
-                setProgress(mProgress);
-                if (mOnKnobChangeListener != null) {
-                    mOnKnobChangeListener.onValueChanged(RadialKnob.this,
-                            (int) (progress * mMax), true);
-                }
-                postInvalidate();
+        mAnimator.addUpdateListener(animation -> {
+            float progress1 = (Float) animation.getAnimatedValue();
+            mProgress = progress1;
+            mLastAngle = mProgress * MAX_DEGREES;
+            if (DEBUG) {
+                Log.i(TAG, "onAnimationUpdate(): mProgress: "
+                        + mProgress + ", mLastAngle: " + mLastAngle);
             }
+
+            setProgress(mProgress);
+            if (mOnKnobChangeListener != null) {
+                mOnKnobChangeListener.onValueChanged(RadialKnob.this,
+                        (int) (progress1 * mMax), true);
+            }
+            postInvalidate();
         });
         mAnimator.start();
     }

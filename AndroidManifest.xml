@@ -41,7 +41,6 @@
         <activity
                 android:name=".activity.ActivityMusic"
                 android:theme="@style/AppThemeV2"
-                android:label="@string/app_name_lineage"
                 android:exported="true"
                 android:launchMode="singleInstance"
                 android:configChanges="locale|orientation">
