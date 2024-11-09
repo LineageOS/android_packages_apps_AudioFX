@@ -17,7 +17,6 @@ package org.lineageos.audiofx.fragment;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.media.AudioDeviceInfo;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,9 +24,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 
 import androidx.annotation.Nullable;
+
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.lineageos.audiofx.R;
 import org.lineageos.audiofx.activity.MasterConfigControl;
@@ -41,8 +41,8 @@ public class ControlsFragment extends AudioFxBaseFragment {
 
     KnobCommander mKnobCommander;
     KnobContainer mKnobContainer;
-    Switch mMaxxVolumeSwitch;
-    Switch mReverbSwitch;
+    MaterialSwitch mMaxxVolumeSwitch;
+    MaterialSwitch mReverbSwitch;
 
     private final CompoundButton.OnCheckedChangeListener mMaxxVolumeListener
             = new CompoundButton.OnCheckedChangeListener() {
@@ -118,20 +118,7 @@ public class ControlsFragment extends AudioFxBaseFragment {
         }
     }
 
-    private void updateSwitchColor(Switch view, int color) {
-        ColorStateList thumbStates = new ColorStateList(
-                new int[][]{
-                        new int[]{-android.R.attr.state_enabled},
-                        new int[]{android.R.attr.state_checked},
-                        new int[]{}
-                },
-                new int[]{
-                        color,
-                        color,
-                        Color.LTGRAY
-                }
-        );
-
+    private void updateSwitchColor(MaterialSwitch view, int color) {
         ColorStateList trackStates = new ColorStateList(
                 new int[][]{
                         new int[]{-android.R.attr.state_enabled},
@@ -145,9 +132,7 @@ public class ControlsFragment extends AudioFxBaseFragment {
                 }
         );
 
-        view.setThumbTintList(thumbStates);
         view.setTrackTintList(trackStates);
-        view.setTrackTintMode(PorterDuff.Mode.OVERLAY);
         view.invalidate();
     }
 

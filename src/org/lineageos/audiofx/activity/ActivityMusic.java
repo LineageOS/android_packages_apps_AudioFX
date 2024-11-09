@@ -27,7 +27,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.CompoundButton;
-import android.widget.Switch;
+
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.lineageos.audiofx.Constants;
 import org.lineageos.audiofx.R;
@@ -43,7 +44,7 @@ public class ActivityMusic extends Activity {
     public static final String TAG_AUDIOFX = "audiofx";
     public static final String EXTRA_CALLING_PACKAGE = "audiofx::extra_calling_package";
 
-    private Switch mCurrentDeviceToggle;
+    private MaterialSwitch mCurrentDeviceToggle;
     MasterConfigControl mConfig;
     String mCallingPackage;
 
