@@ -19,7 +19,6 @@ public class Constants {
     // effect type identifiers
     public static final int EFFECT_TYPE_ANDROID = 1;
     public static final int EFFECT_TYPE_MAXXAUDIO = 2;
-    public static final int EFFECT_TYPE_DTS = 3;
 
     // global settings
     public static final String AUDIOFX_GLOBAL_FILE = "global";
@@ -33,7 +32,6 @@ public class Constants {
 
     public static final String SAVED_DEFAULTS = "saved_defaults";
 
-    public static final String AUDIOFX_GLOBAL_HAS_DTS = "audiofx.global.has_dts";
     public static final String AUDIOFX_GLOBAL_HAS_MAXXAUDIO = "audiofx.global.hasmaxxaudio";
     public static final String AUDIOFX_GLOBAL_HAS_BASSBOOST = "audiofx.global.hasbassboost";
     public static final String AUDIOFX_GLOBAL_HAS_REVERB = "audiofx.global.hasreverb";
