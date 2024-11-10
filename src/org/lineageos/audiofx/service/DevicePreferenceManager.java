@@ -8,16 +8,12 @@ package org.lineageos.audiofx.service;
 
 import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_FILE;
 import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_BASSBOOST;
-import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO;
 import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_REVERB;
 import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_VIRTUALIZER;
 import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_BASS_ENABLE;
 import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_BASS_STRENGTH;
 import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_EQ_PRESET;
 import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE;
-import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE;
-import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_ENABLE;
-import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH;
 import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE;
 import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH;
 import static org.lineageos.audiofx.Constants.DEVICE_HEADSET;
@@ -179,8 +175,6 @@ public class DevicePreferenceManager
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_VIRTUALIZER, temp.hasVirtualizer());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_REVERB, temp.hasReverb());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost());
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO,
-                temp.getBrand() == Constants.EFFECT_TYPE_MAXXAUDIO);
         editor.apply();
         temp.release();
 
@@ -225,43 +219,17 @@ public class DevicePreferenceManager
                 globalPrefs.getString(EQUALIZER_PRESET_NAMES, "").split("\\|")));
         final SharedPreferences speakerPrefs = prefsFor(DEVICE_SPEAKER);
 
-        if (globalPrefs.getBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false)) {
-            // MaxxAudio defaults for builtin speaker:
-            // maxxvolume: on  maxxbass: 40%  maxxtreble: 32%
-            speakerPrefs.edit()
-                    .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
-                    .putBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, true)
-                    .putBoolean(DEVICE_AUDIOFX_BASS_ENABLE, true)
-                    .putString(DEVICE_AUDIOFX_BASS_STRENGTH, "400")
-                    .putBoolean(DEVICE_AUDIOFX_TREBLE_ENABLE, true)
-                    .putString(DEVICE_AUDIOFX_TREBLE_STRENGTH, "32")
-                    .apply();
-
-            // Defaults for headphones
-            // maxxvolume: on  maxxbass: 20%  maxxtreble: 40%  maxxspace: 20%
-            prefsFor(DEVICE_HEADSET).edit()
-                    .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
-                    .putBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, true)
-                    .putBoolean(DEVICE_AUDIOFX_BASS_ENABLE, true)
-                    .putString(DEVICE_AUDIOFX_BASS_STRENGTH, "200")
-                    .putBoolean(DEVICE_AUDIOFX_TREBLE_ENABLE, true)
-                    .putString(DEVICE_AUDIOFX_TREBLE_STRENGTH, "40")
-                    .putBoolean(DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, true)
-                    .putString(DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "200")
-                    .apply();
-        } else {
-            // Defaults for headphones
-            // bass boost: 15%  virtualizer: 20%  preset: FLAT
-            int flat = findInList(getNonLocalizedString(R.string.flat), presetNames);
-            prefsFor(DEVICE_HEADSET).edit()
-                    .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
-                    .putBoolean(DEVICE_AUDIOFX_BASS_ENABLE, true)
-                    .putString(DEVICE_AUDIOFX_BASS_STRENGTH, "150")
-                    .putBoolean(DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, true)
-                    .putString(DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "200")
-                    .putString(DEVICE_AUDIOFX_EQ_PRESET, (flat >= 0 ? String.valueOf(flat) : "0"))
-                    .apply();
-        }
+        // Defaults for headphones
+        // bass boost: 15%  virtualizer: 20%  preset: FLAT
+        int flat = findInList(getNonLocalizedString(R.string.flat), presetNames);
+        prefsFor(DEVICE_HEADSET).edit()
+                .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
+                .putBoolean(DEVICE_AUDIOFX_BASS_ENABLE, true)
+                .putString(DEVICE_AUDIOFX_BASS_STRENGTH, "150")
+                .putBoolean(DEVICE_AUDIOFX_VIRTUALIZER_ENABLE, true)
+                .putString(DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH, "200")
+                .putString(DEVICE_AUDIOFX_EQ_PRESET, (flat >= 0 ? String.valueOf(flat) : "0"))
+                .apply();
 
         // for 5 band configs, let's add a `Small Speaker` configuration if one
         // doesn't exist ( from oss AudioFX: -170;270;50;-220;200 )

@@ -38,10 +38,8 @@ public class KnobContainer extends LinearLayout
     private static final int MSG_EXPAND = 0;
     private static final int MSG_CONTRACT = 1;
 
-    private ViewGroup mTrebleContainer;
     private ViewGroup mBassContainer;
     private ViewGroup mVirtualizerContainer;
-    private RadialKnob mTrebleKnob;
     private RadialKnob mBassKnob;
     private RadialKnob mVirtualizerKnob;
 
@@ -76,17 +74,12 @@ public class KnobContainer extends LinearLayout
         mKnobCommander = KnobCommander.getInstance(mContext);
         mHandler = new H();
 
-        if (!MasterConfigControl.getInstance(mContext).hasMaxxAudio()) {
-            // we must add the proper knobs dynamically.
-            if (mKnobCommander.hasBassBoost()) {
-                mBassContainer = addKnob(KnobCommander.KNOB_BASS);
-            }
-            if (mKnobCommander.hasTreble()) {
-                mTrebleContainer = addKnob(KnobCommander.KNOB_TREBLE);
-            }
-            if (mKnobCommander.hasVirtualizer()) {
-                mVirtualizerContainer = addKnob(KnobCommander.KNOB_VIRTUALIZER);
-            }
+        // we must add the proper knobs dynamically.
+        if (mKnobCommander.hasBassBoost()) {
+            mBassContainer = addKnob(KnobCommander.KNOB_BASS);
+        }
+        if (mKnobCommander.hasVirtualizer()) {
+            mVirtualizerContainer = addKnob(KnobCommander.KNOB_VIRTUALIZER);
         }
     }
 
@@ -120,24 +113,6 @@ public class KnobContainer extends LinearLayout
             return false;
         };
 
-        if (MasterConfigControl.getInstance(getContext()).hasMaxxAudio()) {
-            mVirtualizerContainer = findViewById(R.id.virtualizer_knob_container);
-            mBassContainer = findViewById(R.id.bass_knob_container);
-            mTrebleContainer = findViewById(R.id.treble_knob_container);
-        }
-
-        if (mTrebleContainer != null) {
-            mTrebleKnob = mTrebleContainer.findViewById(R.id.knob);
-            mTrebleKnob.setTag(new KnobInfo(KnobCommander.KNOB_TREBLE, mTrebleKnob,
-                    mTrebleContainer.findViewById(R.id.label)));
-            mTrebleKnob.setOnTouchListener(knobTouchListener);
-            mTrebleKnob.setOnKnobChangeListener(
-                    KnobCommander.getInstance(getContext()).getRadialKnobCallback(
-                            KnobCommander.KNOB_TREBLE
-                    )
-            );
-            mTrebleKnob.setMax(100);
-        }
         if (mBassContainer != null) {
             mBassKnob = mBassContainer.findViewById(R.id.knob);
             mBassKnob.setTag(new KnobInfo(KnobCommander.KNOB_BASS, mBassKnob,
@@ -166,9 +141,7 @@ public class KnobContainer extends LinearLayout
         }
         updateKnobs(MasterConfigControl.getInstance(mContext).getCurrentDevice());
 
-        if (!MasterConfigControl.getInstance(mContext).hasMaxxAudio()) {
-            setLayoutTransition(null);
-        }
+        setLayoutTransition(null);
     }
 
     private ViewGroup addKnob(int whichKnob) {
@@ -176,21 +149,13 @@ public class KnobContainer extends LinearLayout
                 .inflate(R.layout.generic_knob_control, this, false);
         TextView label = knobContainer.findViewById(R.id.label);
 
-        int newContainerId = 0;
-        int knobLabelRes = 0;
+        int knobLabelRes;
         switch (whichKnob) {
             case KnobCommander.KNOB_BASS:
-                newContainerId = R.id.bass_knob_container;
                 knobLabelRes = R.string.bass;
                 break;
 
-            case KnobCommander.KNOB_TREBLE:
-                newContainerId = R.id.treble_knob_container;
-                knobLabelRes = R.string.treble;
-                break;
-
             case KnobCommander.KNOB_VIRTUALIZER:
-                newContainerId = R.id.virtualizer_knob_container;
                 knobLabelRes = R.string.virtualizer;
                 break;
 
@@ -198,7 +163,6 @@ public class KnobContainer extends LinearLayout
                 return null;
         }
 
-        knobContainer.setId(newContainerId);
         label.setText(knobLabelRes);
 
         addView(knobContainer, getKnobParams());
@@ -224,9 +188,6 @@ public class KnobContainer extends LinearLayout
             case KnobCommander.KNOB_BASS:
                 v = mBassContainer;
                 break;
-            case KnobCommander.KNOB_TREBLE:
-                v = mTrebleContainer;
-                break;
         }
         if (v == null && visible) {
             throw new UnsupportedOperationException("no knob container for knob: " + knob);
@@ -237,29 +198,9 @@ public class KnobContainer extends LinearLayout
         }
         Log.d(TAG, "setKnobVisible() knob=" + knob + " visible=" + visible);
         v.setVisibility(newMode);
-
-        // only used on maxx audio layout
-        if (MasterConfigControl.getInstance(mContext).hasMaxxAudio()) {
-            /* ensure spacing looks ok!
-             *
-             * it goes like, Space, knob layout, Space, knob layout, Space, etc.....
-             * starting with the first knob (skipping the first space), ensure the pairs have the
-             * same visibility so there's no extra space at the end.
-             */
-            for (int i = 1; i < getChildCount() - 1; i += 2) {
-                View layout = getChildAt(i);
-                View space = getChildAt(i + 1);
-                if (space.getVisibility() != layout.getVisibility()) {
-                    space.setVisibility(layout.getVisibility());
-                }
-            }
-        }
     }
 
     public void updateKnobHighlights(int color) {
-        if (mTrebleKnob != null) {
-            mTrebleKnob.setHighlightColor(color);
-        }
         if (mBassKnob != null) {
             mBassKnob.setHighlightColor(color);
         }
@@ -314,18 +255,10 @@ public class KnobContainer extends LinearLayout
             return;
         }
         final boolean speaker = device.getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER;
-        final boolean maxxAudio = MasterConfigControl.getInstance(mContext).hasMaxxAudio();
-        final boolean effectsEnabled = !speaker || maxxAudio;
 
-        mKnobCommander.updateTrebleKnob(mTrebleKnob, effectsEnabled);
-        mKnobCommander.updateBassKnob(mBassKnob, effectsEnabled);
-        mKnobCommander.updateVirtualizerKnob(mVirtualizerKnob, effectsEnabled);
-        if (maxxAudio) {
-            // speaker? hide virtualizer
-            setKnobVisible(KnobCommander.KNOB_VIRTUALIZER, !speaker);
-        } else {
-            setKnobVisible(KnobCommander.KNOB_VIRTUALIZER, true);
-        }
+        mKnobCommander.updateBassKnob(mBassKnob, !speaker);
+        mKnobCommander.updateVirtualizerKnob(mVirtualizerKnob, !speaker);
+        setKnobVisible(KnobCommander.KNOB_VIRTUALIZER, true);
     }
 
     public static class KnobInfo {
