@@ -8,7 +8,6 @@ package org.lineageos.audiofx.service;
 
 import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_FILE;
 import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_BASSBOOST;
-import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_DTS;
 import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO;
 import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_REVERB;
 import static org.lineageos.audiofx.Constants.AUDIOFX_GLOBAL_HAS_VIRTUALIZER;
@@ -182,7 +181,6 @@ public class DevicePreferenceManager
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_BASSBOOST, temp.hasBassBoost());
         editor.putBoolean(AUDIOFX_GLOBAL_HAS_MAXXAUDIO,
                 temp.getBrand() == Constants.EFFECT_TYPE_MAXXAUDIO);
-        editor.putBoolean(AUDIOFX_GLOBAL_HAS_DTS, temp.getBrand() == Constants.EFFECT_TYPE_DTS);
         editor.apply();
         temp.release();
 
@@ -220,11 +218,6 @@ public class DevicePreferenceManager
         }
 
         final SharedPreferences globalPrefs = Constants.getGlobalPrefs(mContext);
-
-        // Nothing to see here for EFFECT_TYPE_DTS
-        if (globalPrefs.getBoolean(AUDIOFX_GLOBAL_HAS_DTS, false)) {
-            return;
-        }
 
         // set up the builtin speaker configuration
         final String smallSpeakers = getNonLocalizedString(R.string.small_speakers);
