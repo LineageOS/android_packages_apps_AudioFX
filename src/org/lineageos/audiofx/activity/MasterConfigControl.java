@@ -279,10 +279,6 @@ public class MasterConfigControl {
         return mContext.getSharedPreferences(getCurrentDeviceIdentifier(), 0);
     }
 
-    public boolean hasDts() {
-        return getGlobalPrefs().getBoolean(Constants.AUDIOFX_GLOBAL_HAS_DTS, false);
-    }
-
     public boolean hasMaxxAudio() {
         return getGlobalPrefs().getBoolean(Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false);
     }
