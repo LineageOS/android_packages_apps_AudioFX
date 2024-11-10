@@ -1,6 +1,6 @@
 /*
  * SPDX-FileCopyrightText: 2016 The CyanogenMod Project
- * SPDX-FileCopyrightText: 2017-2022 The LineageOS Project
+ * SPDX-FileCopyrightText: 2017-2024 The LineageOS Project
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -10,10 +10,7 @@ import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_BASS_ENABLE;
 import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_BASS_STRENGTH;
 import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS;
 import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_GLOBAL_ENABLE;
-import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE;
 import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_REVERB_PRESET;
-import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_ENABLE;
-import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH;
 import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_ENABLE;
 import static org.lineageos.audiofx.Constants.DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH;
 import static org.lineageos.audiofx.Constants.DEVICE_DEFAULT_GLOBAL_ENABLE;
@@ -22,9 +19,7 @@ import static org.lineageos.audiofx.service.AudioFxService.ALL_CHANGED;
 import static org.lineageos.audiofx.service.AudioFxService.BASS_BOOST_CHANGED;
 import static org.lineageos.audiofx.service.AudioFxService.EQ_CHANGED;
 import static org.lineageos.audiofx.service.AudioFxService.REVERB_CHANGED;
-import static org.lineageos.audiofx.service.AudioFxService.TREBLE_BOOST_CHANGED;
 import static org.lineageos.audiofx.service.AudioFxService.VIRTUALIZER_CHANGED;
-import static org.lineageos.audiofx.service.AudioFxService.VOLUME_BOOST_CHANGED;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -229,29 +224,6 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error enabling virtualizer!");
-            }
-
-            // extended audio effects
-            try {
-                if ((flags & TREBLE_BOOST_CHANGED) > 0 && session.hasTrebleBoost()) {
-                    // treble
-                    boolean enable = prefs.getBoolean(DEVICE_AUDIOFX_TREBLE_ENABLE, false);
-                    session.enableTrebleBoost(enable);
-                    session.setTrebleBoostStrength(Short.valueOf(
-                            prefs.getString(DEVICE_AUDIOFX_TREBLE_STRENGTH, "0")));
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error enabling treble boost!", e);
-            }
-
-            try {
-                if ((flags & VOLUME_BOOST_CHANGED) > 0 && session.hasVolumeBoost()) {
-                    // maxx volume
-                    session.enableVolumeBoost(
-                            prefs.getBoolean(DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, false));
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error enabling volume boost!", e);
             }
 
             // mic drop
