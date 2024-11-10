@@ -38,11 +38,8 @@
     <string name="devices">Devices</string>
 
     <string name="virtualizer">Virtualizer</string>
-    <string name="treble">Treble</string>
     <string name="bass">Bass</string>
 
     <string name="rename">Rename</string>
     <string name="remove_custom_preset_warning_message">Are you sure you want to remove %1$s?</string>
-
-    <string name="powered_by_maxx_audio" translatable="false">Powered by MaxxAudio</string>
 </resources>
