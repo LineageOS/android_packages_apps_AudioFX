@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!--
+     SPDX-FileCopyrightText: 2015-2016 The CyanogenMod Project
+     SPDX-FileCopyrightText: 2017 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
 <org.lineageos.audiofx.eq.EqContainerView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/eq_container"
