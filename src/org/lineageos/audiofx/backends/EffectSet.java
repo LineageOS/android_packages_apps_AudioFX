@@ -121,14 +121,6 @@ public abstract class EffectSet {
     public abstract boolean hasBassBoost();
 
     // optional effects
-    public boolean hasTrebleBoost() {
-        return false;
-    }
-
-    public boolean hasVolumeBoost() {
-        return false;
-    }
-
     public boolean hasReverb() {
         return false;
     }
@@ -183,18 +175,6 @@ public abstract class EffectSet {
     }
 
     public void setReverbPreset(short preset) {
-    }
-
-    public void enableTrebleBoost(boolean enable) {
-    }
-
-    /**
-     * @param strength with range [0-100]
-     */
-    public void setTrebleBoostStrength(short strength) {
-    }
-
-    public void enableVolumeBoost(boolean enable) {
     }
 
     /**

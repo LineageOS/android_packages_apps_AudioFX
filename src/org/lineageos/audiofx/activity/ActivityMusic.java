@@ -144,14 +144,6 @@ public class ActivityMusic extends Activity {
                     .add(R.id.main_fragment, new AudioFxFragment(), TAG_AUDIOFX)
                     .commit();
         }
-        applyOemDecor();
-    }
-
-    private void applyOemDecor() {
-        ActionBar ab = getActionBar();
-        if (mConfig.hasMaxxAudio()) {
-            ab.setSubtitle(R.string.powered_by_maxx_audio);
-        }
     }
 
     @Override
