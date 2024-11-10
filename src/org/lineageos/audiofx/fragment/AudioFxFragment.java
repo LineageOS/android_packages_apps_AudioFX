@@ -342,9 +342,7 @@ public class AudioFxFragment extends Fragment implements StateCallbacks.DeviceCh
             return null;
         }
 
-        View root = inflater.inflate(mConfig.hasMaxxAudio()
-                ? R.layout.fragment_audiofx_maxxaudio
-                : R.layout.fragment_audiofx, container, false);
+        View root = inflater.inflate(R.layout.fragment_audiofx, container, false);
 
         final FragmentTransaction fragmentTransaction = getChildFragmentManager()
                 .beginTransaction();

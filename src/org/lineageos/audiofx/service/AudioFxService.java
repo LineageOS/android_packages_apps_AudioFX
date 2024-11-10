@@ -45,7 +45,6 @@ public class AudioFxService extends Service
     public static final int EQ_CHANGED = 0x1;
     public static final int BASS_BOOST_CHANGED = 0x2;
     public static final int VIRTUALIZER_CHANGED = 0x4;
-    public static final int TREBLE_BOOST_CHANGED = 0x8;
     public static final int VOLUME_BOOST_CHANGED = 0x10;
     public static final int REVERB_CHANGED = 0x20;
     public static final int ALL_CHANGED = 0xFF;

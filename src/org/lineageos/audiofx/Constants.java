@@ -18,7 +18,6 @@ public class Constants {
 
     // effect type identifiers
     public static final int EFFECT_TYPE_ANDROID = 1;
-    public static final int EFFECT_TYPE_MAXXAUDIO = 2;
 
     // global settings
     public static final String AUDIOFX_GLOBAL_FILE = "global";
@@ -32,7 +31,6 @@ public class Constants {
 
     public static final String SAVED_DEFAULTS = "saved_defaults";
 
-    public static final String AUDIOFX_GLOBAL_HAS_MAXXAUDIO = "audiofx.global.hasmaxxaudio";
     public static final String AUDIOFX_GLOBAL_HAS_BASSBOOST = "audiofx.global.hasbassboost";
     public static final String AUDIOFX_GLOBAL_HAS_REVERB = "audiofx.global.hasreverb";
     public static final String AUDIOFX_GLOBAL_HAS_VIRTUALIZER = "audiofx.global.hasvirtualizer";
@@ -50,9 +48,6 @@ public class Constants {
     public static final String DEVICE_AUDIOFX_REVERB_PRESET = "audiofx.reverb.preset";
     public static final String DEVICE_AUDIOFX_VIRTUALIZER_ENABLE = "audiofx.virtualizer.enable";
     public static final String DEVICE_AUDIOFX_VIRTUALIZER_STRENGTH = "audiofx.virtualizer.strength";
-    public static final String DEVICE_AUDIOFX_TREBLE_ENABLE = "audiofx.treble.enable";
-    public static final String DEVICE_AUDIOFX_TREBLE_STRENGTH = "audiofx.treble.strength";
-    public static final String DEVICE_AUDIOFX_MAXXVOLUME_ENABLE = "audiofx.maxxvolume.enable";
 
     public static final String DEVICE_AUDIOFX_EQ_PRESET = "audiofx.eq.preset";
     public static final String DEVICE_AUDIOFX_EQ_PRESET_LEVELS = "audiofx.eq.preset.levels";

@@ -279,10 +279,6 @@ public class MasterConfigControl {
         return mContext.getSharedPreferences(getCurrentDeviceIdentifier(), 0);
     }
 
-    public boolean hasMaxxAudio() {
-        return getGlobalPrefs().getBoolean(Constants.AUDIOFX_GLOBAL_HAS_MAXXAUDIO, false);
-    }
-
     public boolean hasBassBoost() {
         return getGlobalPrefs().getBoolean(Constants.AUDIOFX_GLOBAL_HAS_BASSBOOST, false);
     }
@@ -295,17 +291,8 @@ public class MasterConfigControl {
         return getGlobalPrefs().getBoolean(Constants.AUDIOFX_GLOBAL_HAS_VIRTUALIZER, false);
     }
 
-    public boolean getMaxxVolumeEnabled() {
-        return getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, false);
-    }
-
     public boolean getReverbEnabled() {
         return getPrefs().getString(Constants.DEVICE_AUDIOFX_REVERB_PRESET, "0").equals("1");
-    }
-
-    public void setMaxxVolumeEnabled(boolean enable) {
-        getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_MAXXVOLUME_ENABLE, enable).apply();
-        updateService(AudioFxService.VOLUME_BOOST_CHANGED);
     }
 
     public void setReverbEnabled(boolean enable) {

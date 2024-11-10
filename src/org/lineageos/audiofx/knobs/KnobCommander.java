@@ -14,7 +14,6 @@ import org.lineageos.audiofx.service.AudioFxService;
 
 public class KnobCommander {
 
-    public static final int KNOB_TREBLE = 0;
     public static final int KNOB_BASS = 1;
     public static final int KNOB_VIRTUALIZER = 2;
 
@@ -37,22 +36,12 @@ public class KnobCommander {
 
     public RadialKnob.OnKnobChangeListener getRadialKnobCallback(int whichKnob) {
         switch (whichKnob) {
-            case KNOB_TREBLE:
-                return mTrebleKnobCallback;
             case KNOB_BASS:
                 return mBassKnobCallback;
             case KNOB_VIRTUALIZER:
                 return mVirtualizerCallback;
             default:
                 return null;
-        }
-    }
-
-    public void updateTrebleKnob(RadialKnob trebleKnob, boolean enabled) {
-        if (trebleKnob != null) {
-            trebleKnob.setValue(getTrebleStrength());
-            trebleKnob.setOn(isTrebleEffectEnabled());
-            trebleKnob.setEnabled(enabled);
         }
     }
 
@@ -76,20 +65,12 @@ public class KnobCommander {
         return mConfig.hasBassBoost();
     }
 
-    public boolean hasTreble() {
-        return mConfig.hasMaxxAudio();
-    }
-
     public boolean hasVirtualizer() {
         return mConfig.hasVirtualizer();
     }
 
     public boolean isBassEffectEnabled() {
         return mConfig.getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_BASS_ENABLE, false);
-    }
-
-    public boolean isTrebleEffectEnabled() {
-        return mConfig.getPrefs().getBoolean(Constants.DEVICE_AUDIOFX_TREBLE_ENABLE, false);
     }
 
     public boolean isVirtualizerEffectEnabled() {
@@ -105,23 +86,6 @@ public class KnobCommander {
     public int getBassStrength() {
         return Integer.valueOf(
                 mConfig.getPrefs().getString(Constants.DEVICE_AUDIOFX_BASS_STRENGTH, "0")) / 10;
-    }
-
-    public int getTrebleStrength() {
-        return Integer.valueOf(
-                mConfig.getPrefs().getString(Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH, "0"));
-    }
-
-    public void setTrebleEnabled(boolean on) {
-        mConfig.getPrefs().edit().putBoolean(Constants.DEVICE_AUDIOFX_TREBLE_ENABLE, on).apply();
-        mConfig.updateService(AudioFxService.TREBLE_BOOST_CHANGED);
-    }
-
-    public void setTrebleStrength(int value) {
-        // set parameter and state
-        mConfig.getPrefs().edit().putString(Constants.DEVICE_AUDIOFX_TREBLE_STRENGTH,
-                String.valueOf(value)).apply();
-        mConfig.updateService(AudioFxService.TREBLE_BOOST_CHANGED);
     }
 
     public void setBassEnabled(boolean on) {
@@ -148,22 +112,6 @@ public class KnobCommander {
                 String.valueOf(value * 10)).apply();
         mConfig.updateService(AudioFxService.VIRTUALIZER_CHANGED);
     }
-
-    private final RadialKnob.OnKnobChangeListener mTrebleKnobCallback =
-            new RadialKnob.OnKnobChangeListener() {
-                @Override
-                public void onValueChanged(RadialKnob knob, int value, boolean fromUser) {
-                    if (fromUser) {
-                        setTrebleStrength(value);
-                    }
-                }
-
-                @Override
-                public boolean onSwitchChanged(RadialKnob knob, boolean on) {
-                    setTrebleEnabled(on);
-                    return true;
-                }
-            };
 
     private final RadialKnob.OnKnobChangeListener mBassKnobCallback =
             new RadialKnob.OnKnobChangeListener() {
