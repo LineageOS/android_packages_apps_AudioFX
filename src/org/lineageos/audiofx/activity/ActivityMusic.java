@@ -151,10 +151,6 @@ public class ActivityMusic extends Activity {
         ActionBar ab = getActionBar();
         if (mConfig.hasMaxxAudio()) {
             ab.setSubtitle(R.string.powered_by_maxx_audio);
-        } else if (mConfig.hasDts()) {
-            final ViewStub stub = ab.getCustomView().findViewById(R.id.logo_stub);
-            stub.setLayoutResource(R.layout.action_bar_dts_logo);
-            stub.inflate();
         }
     }
 
