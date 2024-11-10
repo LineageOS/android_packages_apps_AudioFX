@@ -45,6 +45,4 @@
     <string name="remove_custom_preset_warning_message">Are you sure you want to remove %1$s?</string>
 
     <string name="powered_by_maxx_audio" translatable="false">Powered by MaxxAudio</string>
-    <string name="powered_by">powered by</string>
-
 </resources>
