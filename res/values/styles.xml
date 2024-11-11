@@ -16,6 +16,7 @@
     <style name="ActionBar" parent="android:Widget.Material.ActionBar.Solid">
         <item name="android:titleTextStyle">@style/AppThemeV2.ActionBar.TitleTextStyle</item>
         <item name="android:subtitleTextStyle">@style/AppThemeV2.ActionBar.SubtitleTextStyle</item>
+        <item name="android:background">@color/knob_container_background</item>
     </style>
 
     <style name="AppThemeV2.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Material.Widget.ActionBar.Title">
