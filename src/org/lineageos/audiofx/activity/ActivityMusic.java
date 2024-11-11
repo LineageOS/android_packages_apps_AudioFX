@@ -20,6 +20,9 @@ import android.view.ViewStub;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 
@@ -61,6 +64,18 @@ public class ActivityMusic extends Activity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_fragment),
+                (view, insets) -> {
+            Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            view.setPadding(
+                    view.getPaddingLeft(),
+                    systemInsets.top,
+                    view.getPaddingRight(),
+                    systemInsets.bottom
+            );
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         mCallingPackage = getIntent().getStringExtra(EXTRA_CALLING_PACKAGE);
         Log.i(TAG, "calling package: " + mCallingPackage);

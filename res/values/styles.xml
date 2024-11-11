@@ -10,6 +10,7 @@
         <item name="android:actionBarStyle">@style/ActionBar</item>
         <item name="android:colorAccent">@color/white</item>
         <item name="android:popupTheme">@style/AppThemeV2.Popup</item>
+        <item name="android:navigationBarColor">@color/knob_container_background</item>
     </style>
 
     <style name="ActionBar" parent="android:Widget.Material.ActionBar.Solid">
