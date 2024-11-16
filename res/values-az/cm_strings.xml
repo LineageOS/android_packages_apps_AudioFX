@@ -18,7 +18,7 @@
     <string name="snack_bar_not_default">AudioFX, ilkin effektlərə nəzarət paneliniz deyil.</string>
     <string name="snack_bar_not_default_set">İlkin olaraq ayarla</string>
     <string name="snack_bar_not_default_not_now">İndi yox</string>
-    <string name="qs_tile_content_description">Hazırki cihaz üçün AudioFX-i aç/bağla</string>
+    <string name="qs_tile_content_description">Hazırkı cihaz üçün AudioFX-i aç/bağla</string>
     <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">Normal</string>
     <string name="classical">Klassik</string>
