@@ -31,7 +31,7 @@
     <string name="pop">பாப்</string>
     <string name="rock">ராக்</string>
     <string name="electronic">மின்னணு</string>
-    <string name="small_speakers">சிறிய ஒலிபெருக்கிகள்</string>
+    <string name="small_speakers">சிறு ஒலிபெருக்கிகள்</string>
     <string name="multimedia">பல்லூடகம்</string>
     <string name="custom">தனிப்பயன்</string>
     <string name="custom_n">தனிப்பயன் <xliff:g id="preset_num">%1$d</xliff:g></string>
