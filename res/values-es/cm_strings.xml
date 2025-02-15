@@ -29,8 +29,8 @@
     <string name="device_line_out">Salida de línea</string>
     <string name="reverb">Reverberación</string>
     <string name="devices">Dispositivos</string>
-    <string name="virtualizer">Virtualizar</string>
+    <string name="virtualizer">Virtualizador</string>
     <string name="bass">Bajos</string>
     <string name="rename">Renombrar</string>
-    <string name="remove_custom_preset_warning_message">¿Está seguro que desea eliminar %1$s?</string>
+    <string name="remove_custom_preset_warning_message">¿Estás seguro de que quieres eliminar %1$s?</string>
 </resources>
