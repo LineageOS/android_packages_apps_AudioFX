@@ -18,7 +18,7 @@
     <string name="snack_bar_not_default">AudioFX no es su controlador de efectos predefinido.</string>
     <string name="snack_bar_not_default_set">Establecer como predefinido</string>
     <string name="snack_bar_not_default_not_now">Ahora no</string>
-    <string name="qs_tile_content_description">Encender/apagar AudioFX para el dispositivo actual</string>
+    <string name="qs_tile_content_description">Activar/Desactivar AudioFX para el dispositivo actual</string>
     <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">Normal</string>
     <string name="classical">Clásica</string>
@@ -38,9 +38,9 @@
     <string name="none">Ninguno</string>
     <string name="smallroom">Habitación pequeña</string>
     <string name="mediumroom">Habitación mediana</string>
-    <string name="largeroom">Gran habitación</string>
+    <string name="largeroom">Habitación grande</string>
     <string name="mediumhall">Sala mediana</string>
-    <string name="largehall">Gran sala</string>
+    <string name="largehall">Sala grande</string>
     <string name="plate">Vinilo</string>
     <string name="power_on_prompt">Pulsa el botón de encendido en la parte superior derecha.</string>
     <string name="effect_unavalable_for_speaker">Efecto no disponible para el modo altavoz.</string>
@@ -53,10 +53,10 @@
     <string name="reverb">Reverberación</string>
     <string name="eq_preset">Ecualizador preestablecido</string>
     <string name="devices">Dispositivos</string>
-    <string name="virtualizer">Virtualizar</string>
+    <string name="virtualizer">Virtualizador</string>
     <string name="treble">Agudos</string>
     <string name="bass">Bajos</string>
     <string name="rename">Renombrar</string>
-    <string name="remove_custom_preset_warning_message">¿Está seguro que desea eliminar %1$s?</string>
+    <string name="remove_custom_preset_warning_message">¿Estás seguro de que quieres eliminar %1$s?</string>
     <string name="powered_by">funciona con</string>
 </resources>
