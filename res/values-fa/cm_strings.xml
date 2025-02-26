@@ -15,6 +15,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">AudioFX مرکز کنترل افکت پیش فرض شما نیست.</string>
+    <string name="snack_bar_not_default_set">تنظیم به‌عنوان پیش‌فرض</string>
+    <string name="snack_bar_not_default_not_now">اکنون نه</string>
+    <string name="qs_tile_content_description">تغییر وضعیت AudioFX روشن/خاموش برای دستگاه فعلی</string>
+    <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">عادی</string>
     <string name="classical">کلاسیک</string>
     <string name="dance">رقص</string>
@@ -27,7 +32,9 @@
     <string name="rock">راک</string>
     <string name="electronic">الکترونیک</string>
     <string name="small_speakers">بلندگوهای کوچک</string>
+    <string name="multimedia">چند رسانه‌ای</string>
     <string name="custom">سفارشی</string>
+    <string name="custom_n">سفارشی <xliff:g id="preset_num">%1$d </xliff:g></string>
     <string name="none">هیچ‌کدام</string>
     <string name="smallroom">اتاق کوچک</string>
     <string name="mediumroom">اتاق متوسط</string>
@@ -42,6 +49,14 @@
     <string name="device_usb">یواس‌بی</string>
     <string name="device_bluetooth">بلوتوث</string>
     <string name="device_wireless">بی‌سیم</string>
+    <string name="device_line_out">خارج از خط</string>
     <string name="reverb">طنین</string>
     <string name="eq_preset">اکولایزر تنظیم شده</string>
+    <string name="devices">دستگاه‌ها</string>
+    <string name="virtualizer">مجازی ساز</string>
+    <string name="treble">زیر</string>
+    <string name="bass">بم</string>
+    <string name="rename">تغییرنام</string>
+    <string name="remove_custom_preset_warning_message">آیا مطمئن هستید که می خواهید %1$s را حذف کنید؟</string>
+    <string name="powered_by">قدرت گرفته از</string>
 </resources>

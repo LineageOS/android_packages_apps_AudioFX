@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2014-2015 The CyanogenMod Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">Ní hé AudioFX do phainéal rialaithe éifeachtaí réamhshocraithe.</string>
+    <string name="snack_bar_not_default_set">Socraigh réamhshocraithe</string>
+    <string name="snack_bar_not_default_not_now">Ní anois</string>
+    <string name="qs_tile_content_description">Scoránaigh AudioFX ann/as don ghléas reatha</string>
+    <string name="qs_tile_label">AudioFX (%1$s)</string>
+    <string name="normal">Gnáth</string>
+    <string name="classical">Clasaiceach</string>
+    <string name="dance">Damhsa</string>
+    <string name="flat">Maol</string>
+    <string name="folk">Ceol tíre</string>
+    <string name="heavy_metal">Miotal trom</string>
+    <string name="hip_hop">Hip Hop</string>
+    <string name="jazz">Snagcheol</string>
+    <string name="pop">Popcheol</string>
+    <string name="rock">Carraig</string>
+    <string name="electronic">Leictreonach</string>
+    <string name="small_speakers">Cainteoirí beaga</string>
+    <string name="multimedia">Ilmheáin</string>
+    <string name="custom">Saincheaptha</string>
+    <string name="custom_n">Saincheap <xliff:g id="preset_num">%1$d</xliff:g></string>
+    <string name="none">Dada</string>
+    <string name="smallroom">Seomra beag</string>
+    <string name="mediumroom">Seomra meánach</string>
+    <string name="largeroom">Seomra mór</string>
+    <string name="mediumhall">Halla meánach</string>
+    <string name="largehall">Halla mór</string>
+    <string name="plate">Pláta</string>
+    <string name="power_on_prompt">Brúigh an cnaipe cumhachta ar an mbarr ar dheis.</string>
+    <string name="effect_unavalable_for_speaker">Níl an éifeacht ar fáil don mhód Cainteoir.</string>
+    <string name="device_headset">Cluasán</string>
+    <string name="device_speaker">Cainteoir</string>
+    <string name="device_usb">USB</string>
+    <string name="device_bluetooth">Bluetooth</string>
+    <string name="device_wireless">Gan sreang</string>
+    <string name="device_line_out">Líne amach</string>
+    <string name="reverb">Aisfhuaimniú</string>
+    <string name="eq_preset">Réamhshocraithe cothromóir</string>
+    <string name="devices">Gléasanna</string>
+    <string name="virtualizer">Fíorúileoir</string>
+    <string name="treble">Tríble</string>
+    <string name="bass">Dord</string>
+    <string name="rename">Athainmnigh</string>
+    <string name="remove_custom_preset_warning_message">An bhfuil tú cinnte gur mhaith leat %1$s a bhaint?</string>
+    <string name="powered_by">cumhachtaithe ag</string>
+</resources>
