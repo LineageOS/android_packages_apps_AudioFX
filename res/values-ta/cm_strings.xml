@@ -15,7 +15,7 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="snack_bar_not_default">ஒலிவிளைவு உங்கள் இயல்புநிலை விளைவுகள் கட்டுப்பாட்டு பலகம் அல்ல.</string>
+    <string name="snack_bar_not_default">ஒலிவிளைவு உங்கள் இயல்புநிலை விளைவுகள் கட்டுப்பாட்டு பலகம் அன்று.</string>
     <string name="snack_bar_not_default_set">இயல்புநிலை அமைக்க</string>
     <string name="snack_bar_not_default_not_now">இப்போது இல்லை</string>
     <string name="qs_tile_content_description">நடப்புக்கருவியில் ஒலிவிளைவை இருநிலைமாற்ற இயக்க/அணைக்க</string>
