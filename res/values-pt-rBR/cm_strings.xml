@@ -15,18 +15,18 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="snack_bar_not_default">AudioFX não é seu painel de controle de efeitos padrão.</string>
+    <string name="snack_bar_not_default">O AudioFX não é seu painel de controle de efeitos padrão.</string>
     <string name="snack_bar_not_default_set">Definir como padrão</string>
     <string name="snack_bar_not_default_not_now">Agora não</string>
-    <string name="qs_tile_content_description">Ligar/desligar o AudioFX neste dispositivo</string>
+    <string name="qs_tile_content_description">Desativar/ativar o AudioFX no dispositivo atual</string>
     <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">Normal</string>
     <string name="classical">Clássica</string>
     <string name="dance">Dança</string>
     <string name="flat">Plano</string>
-    <string name="folk">Folk</string>
-    <string name="heavy_metal">Heavy metal</string>
-    <string name="hip_hop">Hip-hop</string>
+    <string name="folk">Popular</string>
+    <string name="heavy_metal">Heavy Metal</string>
+    <string name="hip_hop">Hip Hop</string>
     <string name="jazz">Jazz</string>
     <string name="pop">Pop</string>
     <string name="rock">Rock</string>
@@ -39,8 +39,8 @@
     <string name="smallroom">Sala pequena</string>
     <string name="mediumroom">Sala média</string>
     <string name="largeroom">Sala grande</string>
-    <string name="mediumhall">Salão médio</string>
-    <string name="largehall">Salão grande</string>
+    <string name="mediumhall">Corredor médio</string>
+    <string name="largehall">Corredor grande</string>
     <string name="plate">Placa</string>
     <string name="power_on_prompt">Pressione o botão liga/desliga no canto superior direito.</string>
     <string name="effect_unavalable_for_speaker">Efeito não disponível no modo de alto-falante.</string>
@@ -50,7 +50,7 @@
     <string name="device_bluetooth">Bluetooth</string>
     <string name="device_wireless">Sem fio</string>
     <string name="device_line_out">Saída de linha</string>
-    <string name="reverb">Reverb</string>
+    <string name="reverb">Reverberação</string>
     <string name="eq_preset">Predefinição do equalizador</string>
     <string name="devices">Dispositivos</string>
     <string name="virtualizer">Virtualizador</string>
@@ -58,5 +58,5 @@
     <string name="bass">Grave</string>
     <string name="rename">Renomear</string>
     <string name="remove_custom_preset_warning_message">Tem certeza que deseja remover %1$s?</string>
-    <string name="powered_by">desenvolvido por</string>
+    <string name="powered_by">feito possível por</string>
 </resources>
