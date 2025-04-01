@@ -5,16 +5,16 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="snack_bar_not_default">AudioFX não é seu painel de controle de efeitos padrão.</string>
+    <string name="snack_bar_not_default">O AudioFX não é seu painel de controle de efeitos padrão.</string>
     <string name="snack_bar_not_default_set">Definir como padrão</string>
     <string name="snack_bar_not_default_not_now">Agora não</string>
     <string name="normal">Normal</string>
     <string name="classical">Clássica</string>
     <string name="dance">Dança</string>
     <string name="flat">Plano</string>
-    <string name="folk">Folk</string>
-    <string name="heavy_metal">Heavy metal</string>
-    <string name="hip_hop">Hip-hop</string>
+    <string name="folk">Popular</string>
+    <string name="heavy_metal">Heavy Metal</string>
+    <string name="hip_hop">Hip Hop</string>
     <string name="jazz">Jazz</string>
     <string name="pop">Pop</string>
     <string name="rock">Rock</string>
@@ -27,7 +27,7 @@
     <string name="device_headset">Fone de ouvido</string>
     <string name="device_speaker">Alto-falante</string>
     <string name="device_line_out">Saída de linha</string>
-    <string name="reverb">Reverb</string>
+    <string name="reverb">Reverberação</string>
     <string name="devices">Dispositivos</string>
     <string name="virtualizer">Virtualizador</string>
     <string name="bass">Grave</string>
