@@ -16,12 +16,12 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="snack_bar_not_default">ஒலிவிளைவு உங்கள் இயல்புநிலை விளைவுகள் கட்டுப்பாட்டு பலகம் அன்று.</string>
-    <string name="snack_bar_not_default_set">இயல்புநிலை அமைக்க</string>
+    <string name="snack_bar_not_default_set">இயல்புநிலையாக அமைக்க</string>
     <string name="snack_bar_not_default_not_now">இப்போது இல்லை</string>
     <string name="qs_tile_content_description">நடப்புக்கருவியில் ஒலிவிளைவை இருநிலைமாற்ற இயக்க/அணைக்க</string>
     <string name="qs_tile_label">ஒலிவிளைவு (%1$s)</string>
     <string name="normal">இயல்பு</string>
-    <string name="classical">செவ்வியல்</string>
+    <string name="classical">தொன்மை</string>
     <string name="dance">ஆடல்</string>
     <string name="flat">தட்டை</string>
     <string name="folk">நாட்டார்</string>
@@ -39,10 +39,10 @@
     <string name="smallroom">சிறிய அறை</string>
     <string name="mediumroom">நடுத்தர அறை</string>
     <string name="largeroom">பெரிய அறை</string>
-    <string name="mediumhall">நடுத்தரக் கூடம்</string>
+    <string name="mediumhall">நடுத்தர கூடம்</string>
     <string name="largehall">பெரிய கூடம்</string>
     <string name="plate">தட்டு</string>
-    <string name="power_on_prompt">மேல் வலப்புறாத்தில் உள்ள ஆற்றல் பொத்தானை அழுத்துக.</string>
+    <string name="power_on_prompt">மேல் வலப்புறத்தில் உள்ள ஆற்றல் பொத்தானை அழுத்துக.</string>
     <string name="effect_unavalable_for_speaker">ஒலிபெருக்கி பயன்முறையில் விளைவு கிடைக்கவில்லை.</string>
     <string name="device_headset">தலையணி</string>
     <string name="device_speaker">ஒலிபெருக்கி</string>
