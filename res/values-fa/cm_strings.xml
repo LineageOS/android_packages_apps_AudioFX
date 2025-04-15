@@ -51,10 +51,10 @@
     <string name="device_wireless">بی‌سیم</string>
     <string name="device_line_out">خارج از خط</string>
     <string name="reverb">طنین</string>
-    <string name="eq_preset">اکولایزر تنظیم شده</string>
+    <string name="eq_preset">پیش‌تنظیم اکولایزر</string>
     <string name="devices">دستگاه‌ها</string>
     <string name="virtualizer">مجازی ساز</string>
-    <string name="treble">زیر</string>
+    <string name="treble">تریبل</string>
     <string name="bass">بم</string>
     <string name="rename">تغییرنام</string>
     <string name="remove_custom_preset_warning_message">آیا مطمئن هستید که می خواهید %1$s را حذف کنید؟</string>
