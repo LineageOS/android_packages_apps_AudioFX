@@ -23,7 +23,7 @@
     <string name="multimedia">Мултимедия</string>
     <string name="custom">По избор</string>
     <string name="custom_n">По избор <xliff:g id="preset_num">%1$d </xliff:g></string>
-    <string name="effect_unavalable_for_speaker">Ефекта не е достъпен за високоговорителя.</string>
+    <string name="effect_unavalable_for_speaker">Ефектът не е достъпен за високоговорителя.</string>
     <string name="device_headset">Слушалки</string>
     <string name="device_speaker">Говорител</string>
     <string name="device_line_out">Линеен изход</string>
