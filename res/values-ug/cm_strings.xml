@@ -5,6 +5,9 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">AudioFX كۆڭۈلدىكى ئۈنۈم تىزگىنلەش تاختىسى ئەمەس.</string>
+    <string name="snack_bar_not_default_set">كۆڭۈلدىكىگە تەڭشە</string>
+    <string name="snack_bar_not_default_not_now">ھازىرچە ياق</string>
     <string name="normal">ئادەتتىكى</string>
     <string name="classical">كىلاسسىك</string>
     <string name="dance">ئۇسسۇل</string>
@@ -17,10 +20,17 @@
     <string name="rock">تولغىما ئۇسسۇل</string>
     <string name="electronic">ئېلېكتىرونلۇق</string>
     <string name="small_speakers">كىچىك ياڭراتقۇلار</string>
+    <string name="multimedia">كۆپ ۋاسىتە</string>
     <string name="custom">ئىختىيارىي</string>
+    <string name="custom_n">ئىختىيارى <xliff:g id="preset_num">%1$d</xliff:g></string>
     <string name="effect_unavalable_for_speaker">ياڭراتقۇ ھالىتىدە ئۈنۈمنى ئىشلەتكىلى بولمايدۇ.</string>
     <string name="device_headset">تىڭشىغۇچ</string>
     <string name="device_speaker">ياڭراتقۇ</string>
     <string name="device_line_out">سىمنى چىقىرىش</string>
     <string name="reverb">ئارىلاش ئاۋاز</string>
+    <string name="devices">ئۈسكۈنە </string>
+    <string name="virtualizer">مەۋھۇملاشتۇرغۇچ</string>
+    <string name="bass">تۆۋەن ئاۋاز</string>
+    <string name="rename">ئات ئۆزگەرت</string>
+    <string name="remove_custom_preset_warning_message">راستتىنلا %1$s نى چىقىرىۋېتەمسىز؟</string>
 </resources>
