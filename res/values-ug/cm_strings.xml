@@ -15,6 +15,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">AudioFX كۆڭۈلدىكى ئۈنۈم تىزگىنلەش تاختىسى ئەمەس.</string>
+    <string name="snack_bar_not_default_set">كۆڭۈلدىكىگە تەڭشە</string>
+    <string name="snack_bar_not_default_not_now">ھازىرچە ياق</string>
+    <string name="qs_tile_content_description">نۆۋەتتىكى ئۈسكۈنىنىڭ AudioFX نى ئاچ/تاقانى ئالماشتۇرىدۇ</string>
+    <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">ئادەتتىكى</string>
     <string name="classical">كىلاسسىك</string>
     <string name="dance">ئۇسسۇل</string>
@@ -27,7 +32,9 @@
     <string name="rock">تولغىما ئۇسسۇل</string>
     <string name="electronic">ئېلېكتىرونلۇق</string>
     <string name="small_speakers">كىچىك ياڭراتقۇلار</string>
+    <string name="multimedia">كۆپ ۋاسىتە</string>
     <string name="custom">ئىختىيارىي</string>
+    <string name="custom_n">ئىختىيارى <xliff:g id="preset_num">%1$d</xliff:g></string>
     <string name="none">يوق</string>
     <string name="smallroom">كىچىك ئۆي</string>
     <string name="mediumroom">ئوتتۇرىھال ئۆي</string>
@@ -45,4 +52,11 @@
     <string name="device_line_out">سىمنى چىقىرىش</string>
     <string name="reverb">ئارىلاش ئاۋاز</string>
     <string name="eq_preset">تەڭشىگۈچنى ئالدىن تەڭشەش</string>
+    <string name="devices">ئۈسكۈنە </string>
+    <string name="virtualizer">مەۋھۇملاشتۇرغۇچ</string>
+    <string name="treble">ئۈچ ھەسسە يۇقىرى ئاۋاز</string>
+    <string name="bass">تۆۋەن ئاۋاز</string>
+    <string name="rename">ئات ئۆزگەرت</string>
+    <string name="remove_custom_preset_warning_message">راستتىنلا %1$s نى چىقىرىۋېتەمسىز؟</string>
+    <string name="powered_by">تەمىنلىگۈچى</string>
 </resources>
