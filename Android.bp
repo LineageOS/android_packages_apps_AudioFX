@@ -1,5 +1,5 @@
 //
-// SPDX-FileCopyrightText: 2020 The LineageOS Project
+// SPDX-FileCopyrightText: 2020-2025 The LineageOS Project
 // SPDX-License-Identifier: Apache-2.0
 //
 
@@ -19,6 +19,7 @@ android_app {
 
     platform_apis: true,
     privileged: true,
+    privapp_allowlist: "org.lineageos.audiofx.xml",
     certificate: "platform",
     system_ext_specific: true,
 
@@ -29,12 +30,4 @@ android_app {
     },
 
     required: ["privapp_whitelist_org.lineageos.audiofx"],
-}
-
-prebuilt_etc {
-    name: "privapp_whitelist_org.lineageos.audiofx",
-    src: "privapp_whitelist_org.lineageos.audiofx.xml",
-    system_ext_specific: true,
-    sub_dir: "permissions",
-    filename_from_src: true,
 }
