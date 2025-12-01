@@ -16,7 +16,7 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="snack_bar_not_default">O AudioFX não é seu painel de controle de efeitos padrão.</string>
-    <string name="snack_bar_not_default_set">Definir como padrão</string>
+    <string name="snack_bar_not_default_set">Configurar como padrão</string>
     <string name="snack_bar_not_default_not_now">Agora não</string>
     <string name="qs_tile_content_description">Desativar/ativar o AudioFX no dispositivo atual</string>
     <string name="qs_tile_label">AudioFX (%1$s)</string>
@@ -51,7 +51,7 @@
     <string name="device_wireless">Sem fio</string>
     <string name="device_line_out">Saída de linha</string>
     <string name="reverb">Reverberação</string>
-    <string name="eq_preset">Predefinição do equalizador</string>
+    <string name="eq_preset">Pré-configuração do equalizador</string>
     <string name="devices">Dispositivos</string>
     <string name="virtualizer">Virtualizador</string>
     <string name="treble">Agudo</string>
