@@ -7,7 +7,7 @@ SPDX-PackageSupplier = "The LineageOS Project"
 SPDX-PackageDownloadLocation = "https://github.com/LineageOS/android_packages_apps_AudioFX"
 
 [[annotations]]
-path = ["tests/README.md"]
+path = [".github/workflows/**", ".pre-commit-config.yaml", "tests/README.md"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = ["2016 The CyanogenMod Project", "The LineageOS Project"]
 SPDX-License-Identifier = "Apache-2.0"
