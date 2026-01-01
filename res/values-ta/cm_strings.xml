@@ -5,7 +5,7 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="snack_bar_not_default">ஒலிவிளைவு உங்கள் இயல்புநிலை விளைவுகள் கட்டுப்பாட்டு பலகம் அன்று.</string>
+    <string name="snack_bar_not_default">ஒலிவிளைவு உமது இயல்புநிலை விளைவுகள் கட்டுப்பாட்டுப் பலகம் அல்ல.</string>
     <string name="snack_bar_not_default_set">இயல்புநிலையாக அமைக்க</string>
     <string name="snack_bar_not_default_not_now">இப்போது இல்லை</string>
     <string name="normal">இயல்பு</string>

@@ -5,6 +5,30 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default_set">Cunfigura comente predefinidu</string>
+    <string name="snack_bar_not_default_not_now">Immoe nono</string>
+    <string name="normal">Normale</string>
+    <string name="classical">Clàssica</string>
+    <string name="dance">Dance</string>
+    <string name="flat">Prana</string>
+    <string name="folk">Folk</string>
+    <string name="heavy_metal">Heavy Metal</string>
+    <string name="hip_hop">Hip Hop</string>
+    <string name="jazz">Jazz</string>
+    <string name="pop">Pop</string>
+    <string name="rock">Rock</string>
+    <string name="electronic">Eletrònica</string>
+    <string name="small_speakers">Altoparlantes piticos</string>
+    <string name="multimedia">Multimediale</string>
     <string name="custom">Personalizadu</string>
+    <string name="custom_n">Personalizadu <xliff:g id="preset_num">%1$d</xliff:g></string>
+    <string name="effect_unavalable_for_speaker">Custu efetu no est a disponimentu in sa modalidade Altoparlante.</string>
+    <string name="device_headset">Auricolares</string>
     <string name="device_speaker">Altoparlante</string>
+    <string name="device_line_out">Essida de lìnia</string>
+    <string name="devices">Dispositivos</string>
+    <string name="virtualizer">Virtualizadore</string>
+    <string name="bass">Bàscios</string>
+    <string name="rename">Torra a nominare</string>
+    <string name="remove_custom_preset_warning_message">Seguru chi boles cantzellare %1$s?</string>
 </resources>
