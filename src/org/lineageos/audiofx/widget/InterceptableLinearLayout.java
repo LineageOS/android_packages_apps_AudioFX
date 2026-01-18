@@ -1,7 +1,7 @@
 /*
  * SPDX-FileCopyrightText: 2013 The Linux Foundation
  * SPDX-FileCopyrightText: 2014-2016 The CyanogenMod Project
- * SPDX-FileCopyrightText: 2017 The LineageOS Project
+ * SPDX-FileCopyrightText: The LineageOS Project
  * SPDX-License-Identifier: BSD-3-Clause
  */
 

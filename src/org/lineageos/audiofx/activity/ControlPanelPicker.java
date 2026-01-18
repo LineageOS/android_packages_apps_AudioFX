@@ -1,7 +1,7 @@
 /*
  * SPDX-FileCopyrightText: 2011 The Android Open Source Project
  * SPDX-FileCopyrightText: 2015-2016 The Cyanogenmod Project
- * SPDX-FileCopyrightText: 2017-2024 The LineageOS Project
+ * SPDX-FileCopyrightText: The LineageOS Project
  * SPDX-License-Identifier: Apache-2.0
  */
 

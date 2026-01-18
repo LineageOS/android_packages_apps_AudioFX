@@ -2,7 +2,7 @@
  * SPDX-FileCopyrightText: 2011 Patrik Akerfeldt
  * SPDX-FileCopyrightText: 2011 Jake Wharton
  * SPDX-FileCopyrightText: 2015-2016 The CyanogenMod Project
- * SPDX-FileCopyrightText: 2017-2022 The LineageOS Project
+ * SPDX-FileCopyrightText: The LineageOS Project
  * SPDX-License-Identifier: Apache-2.0
  */
 
