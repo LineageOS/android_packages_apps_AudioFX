@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2014-2016 The CyanogenMod Project
+     SPDX-FileCopyrightText: 2017-2024 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">AudioFX er ikkje standard kontrollpanel for lydeffektar.</string>
+    <string name="snack_bar_not_default_set">Set som standard</string>
+    <string name="snack_bar_not_default_not_now">Ikkje no</string>
+    <string name="normal">Normal</string>
+    <string name="classical">Klassisk</string>
+    <string name="dance">Dans</string>
+    <string name="flat">Flat</string>
+    <string name="folk">Folk</string>
+    <string name="heavy_metal">Heavy Metal</string>
+    <string name="hip_hop">Hip-hop</string>
+    <string name="jazz">Jazz</string>
+    <string name="pop">Pop</string>
+    <string name="rock">Rock</string>
+    <string name="electronic">Elektronisk</string>
+    <string name="small_speakers">Små høgtalarar</string>
+    <string name="multimedia">Multimedia</string>
+    <string name="custom">Eigeoppsett</string>
+    <string name="custom_n">Eige <xliff:g id="preset_num">%1$d</xliff:g></string>
+    <string name="effect_unavalable_for_speaker">Effekten er ikkje tilgjengeleg for høgtalarmodus.</string>
+    <string name="device_headset">Hovudsett</string>
+    <string name="device_speaker">Høgtalar</string>
+    <string name="device_line_out">Linje ut</string>
+    <string name="reverb">Romklang</string>
+    <string name="devices">Einingar</string>
+    <string name="virtualizer">Virtualisering</string>
+    <string name="bass">Bass</string>
+    <string name="rename">Gje nytt namn</string>
+    <string name="remove_custom_preset_warning_message">Er du viss på at du vil fjerna %1$s?</string>
+</resources>
