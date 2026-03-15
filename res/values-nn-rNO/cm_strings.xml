@@ -21,7 +21,7 @@
     <string name="electronic">Elektronisk</string>
     <string name="small_speakers">Små høgtalarar</string>
     <string name="multimedia">Multimedia</string>
-    <string name="custom">Eigeoppsett</string>
+    <string name="custom">Eige oppsett</string>
     <string name="custom_n">Eige <xliff:g id="preset_num">%1$d</xliff:g></string>
     <string name="effect_unavalable_for_speaker">Effekten er ikkje tilgjengeleg for høgtalarmodus.</string>
     <string name="device_headset">Hovudsett</string>
