@@ -45,7 +45,12 @@ class AndroidEffects extends EffectSetWithAndroidEq {
 
         mBassBoost = new BassBoost(100, mSessionId);
         mVirtualizer = new Virtualizer(100, mSessionId);
-        mPresetReverb = new PresetReverb(100, mSessionId);
+        try {
+            mPresetReverb = new PresetReverb(100, mSessionId);
+        } catch (Exception e) {
+            Log.w(TAG, "PresetReverb not available, continuing without it", e);
+            mPresetReverb = null;
+        }
     }
 
     @Override
