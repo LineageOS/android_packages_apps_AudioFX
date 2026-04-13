@@ -7,7 +7,10 @@
 package org.lineageos.audiofx.service;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioDeviceInfo;
 import android.media.audiofx.AudioEffect;
 import android.os.Binder;
@@ -53,6 +56,7 @@ public class AudioFxService extends Service
     private DevicePreferenceManager mDevicePrefs;
     private SessionManager mSessionManager;
     private Handler mHandler;
+    private BroadcastReceiver mSessionReceiver;
 
     private AudioDeviceInfo mCurrentDevice;
 
@@ -114,6 +118,19 @@ public class AudioFxService extends Service
         mSessionManager = new SessionManager(getApplicationContext(), mHandler, mDevicePrefs,
                 mCurrentDevice);
         mOutputListener.addCallback(mDevicePrefs, mSessionManager);
+
+        // Register dynamic receiver for audio effect session broadcasts.
+        // A16 blocks implicit broadcasts to manifest-registered receivers.
+        mSessionReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                onStartCommand(intent, 0, 0);
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
+        filter.addAction(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
+        registerReceiver(mSessionReceiver, filter, Context.RECEIVER_EXPORTED);
     }
 
     @Override
@@ -160,6 +177,9 @@ public class AudioFxService extends Service
     public void onDestroy() {
         if (DEBUG) Log.i(TAG, "Stopping service.");
 
+        if (mSessionReceiver != null) {
+            unregisterReceiver(mSessionReceiver);
+        }
         mOutputListener.removeCallback(this, mSessionManager, mDevicePrefs);
         if (mSessionManager != null) {
             mSessionManager.onDestroy();
