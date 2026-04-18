@@ -93,21 +93,24 @@ class AndroidEffects extends EffectSetWithAndroidEq {
         super.setGlobalEnabled(globalEnabled);
 
         if (!globalEnabled) {
-            // disable everything. it will get explictly enabled
-            // individually when necessary.
-            try {
-                if (mVirtualizer != null) {
-                    mVirtualizer.setEnabled(false);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Unable to disable virtualizer!", e);
-            }
+            // Set effects to neutral instead of disabling them.
+            // Calling setEnabled(false) removes the effect from
+            // AudioFlinger's chain, causing a buffer of unprocessed
+            // audio at full volume before the next effect is removed.
+            // Leaving effects enabled at zero strength avoids this.
             try {
                 if (mBassBoost != null) {
-                    mBassBoost.setEnabled(false);
+                    setParameterSafe(mBassBoost, BassBoost.PARAM_STRENGTH, (short) 0);
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Unable to disable bass boost!", e);
+                Log.e(TAG, "Unable to zero bass boost!", e);
+            }
+            try {
+                if (mVirtualizer != null) {
+                    setParameterSafe(mVirtualizer, Virtualizer.PARAM_STRENGTH, (short) 0);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Unable to zero virtualizer!", e);
             }
             try {
                 if (mPresetReverb != null) {
