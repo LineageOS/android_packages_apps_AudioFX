@@ -45,7 +45,20 @@ public abstract class EffectSetWithAndroidEq extends EffectSet {
     public void setGlobalEnabled(boolean globalEnabled) {
         super.setGlobalEnabled(globalEnabled);
 
-        enableEqualizer(globalEnabled);
+        if (!globalEnabled) {
+            // Flatten EQ to 0 dB but leave enabled. Disabling removes
+            // the effect from the AudioFlinger chain causing a pop.
+            try {
+                short bands = mEqualizer.getNumberOfBands();
+                for (short i = 0; i < bands; i++) {
+                    mEqualizer.setBandLevel(i, (short) 0);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Unable to flatten EQ", e);
+            }
+        } else {
+            enableEqualizer(true);
+        }
     }
 
     @Override
