@@ -12,12 +12,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioDeviceInfo;
+import android.media.AudioManager;
+import android.media.AudioPlaybackConfiguration;
 import android.media.audiofx.AudioEffect;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.util.Log;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -57,6 +63,9 @@ public class AudioFxService extends Service
     private SessionManager mSessionManager;
     private Handler mHandler;
     private BroadcastReceiver mSessionReceiver;
+    private AudioManager mAudioManager;
+    private AudioManager.AudioPlaybackCallback mPlaybackCallback;
+    private final Set<Integer> mTrackedSessions = new HashSet<>();
 
     private AudioDeviceInfo mCurrentDevice;
 
@@ -131,6 +140,41 @@ public class AudioFxService extends Service
         filter.addAction(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
         filter.addAction(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
         registerReceiver(mSessionReceiver, filter, Context.RECEIVER_EXPORTED);
+
+        // Monitor active playback sessions directly. On A16 with AIDL audio
+        // HALs, many apps no longer send OPEN/CLOSE session broadcasts.
+        mAudioManager = getSystemService(AudioManager.class);
+        mPlaybackCallback = new AudioManager.AudioPlaybackCallback() {
+            @Override
+            public void onPlaybackConfigChanged(List<AudioPlaybackConfiguration> configs) {
+                updateActiveSessions(configs);
+            }
+        };
+        mAudioManager.registerAudioPlaybackCallback(mPlaybackCallback, mHandler);
+        updateActiveSessions(mAudioManager.getActivePlaybackConfigurations());
+    }
+
+    private void updateActiveSessions(List<AudioPlaybackConfiguration> configs) {
+        for (AudioPlaybackConfiguration config : configs) {
+            if (!config.isActive()) continue;
+            int sessionId = getSessionId(config);
+            if (sessionId > 0 && mTrackedSessions.add(sessionId)) {
+                Log.i(TAG, "Auto-discovered audio session " + sessionId);
+                mSessionManager.addSession(sessionId);
+            }
+        }
+    }
+
+    private int getSessionId(AudioPlaybackConfiguration config) {
+        try {
+            // AudioPlaybackConfiguration.getSessionId() is @hide but
+            // accessible to platform apps (sharedUserId=system).
+            return (int) config.getClass()
+                    .getDeclaredMethod("getSessionId")
+                    .invoke(config);
+        } catch (ReflectiveOperationException e) {
+            return 0;
+        }
     }
 
     @Override
@@ -179,6 +223,9 @@ public class AudioFxService extends Service
 
         if (mSessionReceiver != null) {
             unregisterReceiver(mSessionReceiver);
+        }
+        if (mPlaybackCallback != null) {
+            mAudioManager.unregisterAudioPlaybackCallback(mPlaybackCallback);
         }
         mOutputListener.removeCallback(this, mSessionManager, mDevicePrefs);
         if (mSessionManager != null) {
