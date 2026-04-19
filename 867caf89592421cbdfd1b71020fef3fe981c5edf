@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f68ccb2e_31fdcb98",
+        "filename": "src/org/lineageos/audiofx/backends/AndroidEffects.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 13028
+      },
+      "writtenOn": "2026-04-19T11:04:00Z",
+      "side": 1,
+      "message": "Leave the virtualizer section above bassboost one to minimize the diff",
+      "revId": "867caf89592421cbdfd1b71020fef3fe981c5edf",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
