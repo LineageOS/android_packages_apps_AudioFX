@@ -16,6 +16,23 @@
       "message": "pretty useless line since the patch content already clearly shows this",
       "revId": "3b49818f37ec89d772176a52eb068c31e7f5bd0b",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7281e847_bea95020",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 11883
+      },
+      "writtenOn": "2026-04-20T13:36:30Z",
+      "side": 1,
+      "message": "Migrate to android.permission.MODIFY_AUDIO_SETTINGS_PRIVILEGED instead as we are already a priv-app",
+      "revId": "3b49818f37ec89d772176a52eb068c31e7f5bd0b",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
