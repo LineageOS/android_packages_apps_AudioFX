@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4550cc43_896904e6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 11883
+      },
+      "writtenOn": "2026-04-20T13:34:18Z",
+      "side": 1,
+      "message": "I understand the rationale, but removing effects from the chain is the expected behavior, even if zero there\u0027s noticeable delays and possible still post-processing that may happen in software",
+      "revId": "05045a7977ae07fd1892cc1c6060361cc9de278f",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
