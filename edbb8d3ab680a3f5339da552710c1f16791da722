@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "827b590a_beeb003a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 11883
+      },
+      "writtenOn": "2026-04-20T13:40:14Z",
+      "side": 1,
+      "message": "Now this is a change I can get behind, I know AIDL has been broken since forever so this makes sense.\n\nIdeally you\u0027d point me where this has actually been broken because afaik the SESSION intents are sent by apps as broadcast to the FX app so this should work?\n\nOn top of that you\u0027re using reflection, that shouldn\u0027t be needed for system apps",
+      "revId": "edbb8d3ab680a3f5339da552710c1f16791da722",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
