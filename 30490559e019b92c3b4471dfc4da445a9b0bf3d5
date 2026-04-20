@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "701c5b1b_ea2e17f5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 11883
+      },
+      "writtenOn": "2026-04-20T13:29:15Z",
+      "side": 1,
+      "message": "I\u0027m glad someone is looking at audiofx but that\u0027s just an LLM hallucination\n\n    \u003callow-implicit-broadcast action\u003d\"android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION\" /\u003e\n    \u003callow-implicit-broadcast action\u003d\"android.media.action.OPEN_AUDIO_EFFECT_CONTROL_SESSION\" /\u003e\n\nhttps://cs.android.com/android/platform/superproject/+/android-latest-release:frameworks/base/data/etc/framework-sysconfig.xml;l\u003d28?q\u003dCLOSE_AUDIO_EFFECT_CONTROL_SESSION\u0026ss\u003dandroid%2Fplatform%2Fsuperproject",
+      "revId": "30490559e019b92c3b4471dfc4da445a9b0bf3d5",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
