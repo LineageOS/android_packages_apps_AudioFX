@@ -15,7 +15,7 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="snack_bar_not_default">ئەپی AudioFX پانێڵی بنەڕەتیی کۆنتڕۆڵکردنی دەنگ نییە.</string>
+    <string name="snack_bar_not_default">بەرنامەی AudioFX پانێڵی بنەڕەتیی کۆنتڕۆڵکردنی دەنگ نییە.</string>
     <string name="snack_bar_not_default_set">دانان وەک بنەڕەتی</string>
     <string name="snack_bar_not_default_not_now">ئێستا نا</string>
     <string name="qs_tile_content_description">هەڵکردن/تەقاندنی AudioFX بۆ ئامێری ئێستا</string>
@@ -34,7 +34,7 @@
     <string name="small_speakers">بڵندگۆ بچووکەکان</string>
     <string name="multimedia">مەڵتیمیدیا</string>
     <string name="custom">تایبەت</string>
-    <string name="custom_n">دەستکردی %1$d</string>
+    <string name="custom_n"><xliff:g id="preset_num">%1$d</xliff:g> دەستکرد </string>
     <string name="none">هیچ</string>
     <string name="smallroom">ژووری بچووک</string>
     <string name="mediumroom">ژووری مامناوەند</string>
