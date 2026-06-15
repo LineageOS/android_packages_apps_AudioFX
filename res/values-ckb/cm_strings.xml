@@ -5,7 +5,7 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="snack_bar_not_default">بەرنامەی AudioFX پانێڵی بنەڕەتیی کۆنتڕۆڵکردنی دەنگ نییە.</string>
+    <string name="snack_bar_not_default">بەرنامەی AudioFX پەڕەی بنەڕەتیی کۆنتڕۆڵکردنی دەنگ نییە.</string>
     <string name="snack_bar_not_default_set">دانان وەک بنەڕەتی</string>
     <string name="snack_bar_not_default_not_now">ئێستا نا</string>
     <string name="normal">ئاسایی</string>
