@@ -18,7 +18,7 @@
     <string name="snack_bar_not_default">AudioFX הוא אינו לוח בקרת האפקטים המוגדר כברירת המחדל שלך.</string>
     <string name="snack_bar_not_default_set">הגדרה כברירת מחדל</string>
     <string name="snack_bar_not_default_not_now">לא עכשיו</string>
-    <string name="qs_tile_content_description">הפעלה או כיבוי AudioFX בהתקן הנוכחי</string>
+    <string name="qs_tile_content_description">הפעלה או כיבוי של AudioFX בהתקן הנוכחי</string>
     <string name="qs_tile_label">AudioFX (%1$s)</string>
     <string name="normal">רגיל</string>
     <string name="classical">קלאסי</string>
