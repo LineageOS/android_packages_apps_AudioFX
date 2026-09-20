@@ -265,4 +265,3 @@ public class DevicePreferenceManager
         return mContext.createConfigurationContext(config).getString(res);
     }
 }
-
