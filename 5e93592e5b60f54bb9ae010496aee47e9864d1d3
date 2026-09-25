@@ -34,6 +34,24 @@
       "parentUuid": "815187c6_6eca0ca6",
       "revId": "5e93592e5b60f54bb9ae010496aee47e9864d1d3",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "36c21529_c4bf2c80",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 11883
+      },
+      "writtenOn": "2026-09-25T19:08:16Z",
+      "side": 1,
+      "message": "Comment removed by: Luca Stefani; Reason: meh",
+      "parentUuid": "60d36621_f8892ad8",
+      "revId": "5e93592e5b60f54bb9ae010496aee47e9864d1d3",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
