@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5f92d86_10edb94a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4550
+      },
+      "writtenOn": "2026-09-25T19:08:33Z",
+      "side": 1,
+      "message": "Fix newlines/extra lines at the end of files and you\u0027re missing copyrights, you can check other apps regarding how to handle that. You can also add reuse check for copyrights in ci so it would catch that like the other apps.",
+      "revId": "7d4fdffb3ac8ef07efd8204e8eaed20a6f2265a2",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
