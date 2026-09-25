@@ -16,6 +16,24 @@
       "message": "add REUSE ci too",
       "revId": "5e93592e5b60f54bb9ae010496aee47e9864d1d3",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "60d36621_f8892ad8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 28798
+      },
+      "writtenOn": "2026-09-25T19:07:44Z",
+      "side": 1,
+      "message": "REUSE is broken, no LICENSE in a lot of strings",
+      "parentUuid": "815187c6_6eca0ca6",
+      "revId": "5e93592e5b60f54bb9ae010496aee47e9864d1d3",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
