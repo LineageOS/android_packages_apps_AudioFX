@@ -6,9 +6,10 @@
 android_app {
     name: "AudioFX",
 
-    srcs: ["src/**/*.java"],
+    srcs: ["src/main/java/**/*.java"],
 
-    resource_dirs: ["res"],
+    resource_dirs: ["src/main/res"],
+    manifest: "src/main/AndroidManifest.xml",
 
     static_libs: [
         "androidx.core_core",
