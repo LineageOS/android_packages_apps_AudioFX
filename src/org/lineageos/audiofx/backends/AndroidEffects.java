@@ -43,9 +43,21 @@ class AndroidEffects extends EffectSetWithAndroidEq {
     protected void onCreate() {
         super.onCreate();
 
-        mBassBoost = new BassBoost(100, mSessionId);
-        mVirtualizer = new Virtualizer(100, mSessionId);
-        mPresetReverb = new PresetReverb(100, mSessionId);
+        try {
+            mBassBoost = new BassBoost(100, mSessionId);
+        } catch (Exception e) {
+            // ignored;
+        }
+        try {
+            mVirtualizer = new Virtualizer(100, mSessionId);
+        } catch (Exception e) {
+            // ignored;
+        }
+        try {
+            mPresetReverb = new PresetReverb(100, mSessionId);
+        } catch (Exception e) {
+            // ignored;
+        }
     }
 
     @Override
