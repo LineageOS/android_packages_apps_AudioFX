@@ -20,5 +20,8 @@
     <string name="headset_plug">بۇ ئۈنۈمدىن ھۇزۇرلىنىش ئۈچۈن تىڭشىغۇچنى قىستۇرۇڭ.</string>
     <string name="bass_boost_strength">تۆۋەن ئاۋازنى يۇقىرىلىتىش</string>
     <string name="virtualizer_strength">مۇھىت ئاۋازى</string>
+    <string name="setup">تەڭشەك</string>
     <string name="ci_extreme">FX ياردەمچى</string>
+    <string name="user">ئىشلەتكۈچى</string>
+    <string name="picker_title">نەغمە ئۈنۈمى تىزگىن تاختا</string>
 </resources>

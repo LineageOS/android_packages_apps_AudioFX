@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  Copyright (C) 2010-2011 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2010-2011 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -12,18 +12,16 @@
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
      limitations under the License.
- -->
-
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name" msgid="5717136097222561957">"MusicFX"</string>
-    <string name="no_effects" msgid="5067916002004255814">"Efek tidak tersedia."</string>
-    <string name="eq_dialog_title" msgid="2020244436368289652">"Ekualizer"</string>
-    <string name="headset_plug" msgid="4505819850289423141">"Pasang headphone untuk efek ini."</string>
-    <string name="bass_boost_strength" msgid="882301530007752270">"Peningkatan bass"</string>
-    <string name="virtualizer_strength" msgid="106561253469770096">"Suara surround"</string>
-    <string name="setup" msgid="1103677904576339192">"Penyiapan"</string>
-    <string name="ci_extreme" msgid="1736938429763948084">"Penguat FX"</string>
-    <string name="user" msgid="3949460956502898057">"Pengguna"</string>
-    <string name="picker_title" msgid="8464126693702817261">"Panel kontrol efek musik"</string>
+-->
+<resources>
+    <string name="app_name">MusicFX</string>
+    <string name="no_effects">Efek tidak tersedia.</string>
+    <string name="eq_dialog_title">Ekualizer</string>
+    <string name="headset_plug">Pasang headphone untuk efek ini.</string>
+    <string name="bass_boost_strength">Peningkatan bass</string>
+    <string name="virtualizer_strength">Suara surround</string>
+    <string name="setup">Penyiapan</string>
+    <string name="ci_extreme">Penguat FX</string>
+    <string name="user">Pengguna</string>
+    <string name="picker_title">Panel kontrol efek musik</string>
 </resources>
