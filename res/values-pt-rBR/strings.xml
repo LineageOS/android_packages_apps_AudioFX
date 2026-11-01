@@ -21,5 +21,7 @@
     <string name="bass_boost_strength">Reforço de graves</string>
     <string name="virtualizer_strength">Som surround</string>
     <string name="setup">Configuração</string>
+    <string name="ci_extreme">Amplificador FX</string>
     <string name="user">Usuário</string>
+    <string name="picker_title">Painel de controle de efeitos de som</string>
 </resources>
