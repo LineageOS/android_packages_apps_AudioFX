@@ -5,6 +5,9 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="snack_bar_not_default">AudioFX 並非您預設的音效控制面板。</string>
+    <string name="snack_bar_not_default_set">設為預設</string>
+    <string name="snack_bar_not_default_not_now">稍後</string>
     <string name="normal">正常</string>
     <string name="classical">古典音樂</string>
     <string name="dance">舞曲</string>
@@ -17,9 +20,12 @@
     <string name="rock">搖滾</string>
     <string name="electronic">電子音樂</string>
     <string name="small_speakers">小型喇叭</string>
+    <string name="multimedia">多媒體</string>
     <string name="custom">自訂</string>
+    <string name="custom_n">自訂 <xliff:g id="preset_num">%1$d</xliff:g></string>
     <string name="effect_unavalable_for_speaker">效果不適用於喇叭模式。</string>
     <string name="device_headset">耳機</string>
     <string name="device_speaker">喇叭</string>
     <string name="reverb">混響效果</string>
+    <string name="devices">裝置</string>
 </resources>
