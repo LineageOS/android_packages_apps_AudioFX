@@ -50,6 +50,7 @@ public class DevicePreferenceManager
 
     // Current pref version, bump to rebuild prefs
     public static final int CURRENT_PREFS_INT_VERSION = 4;
+    private static final String AUDIOFX_GLOBAL_BRAND = "audiofx.global.brand";
 
     private static final String TAG = AudioFxService.TAG;
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
@@ -111,8 +112,10 @@ public class DevicePreferenceManager
         SharedPreferences prefs = Constants.getGlobalPrefs(mContext);
 
         final int currentPrefVer = prefs.getInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT, 0);
+        final int brand = EffectsFactory.getBrand();
         boolean needsPrefsUpdate = currentPrefVer < CURRENT_PREFS_INT_VERSION
-                || overridePrevious;
+                || overridePrevious
+                || prefs.getInt(AUDIOFX_GLOBAL_BRAND, Constants.EFFECT_TYPE_ANDROID) != brand;
 
         if (needsPrefsUpdate) {
             Log.d(TAG, "rebuilding presets due to preference upgrade from " + currentPrefVer
@@ -191,6 +194,7 @@ public class DevicePreferenceManager
                 .edit()
                 .putInt(Constants.AUDIOFX_GLOBAL_PREFS_VERSION_INT,
                         CURRENT_PREFS_INT_VERSION)
+                .putInt(AUDIOFX_GLOBAL_BRAND, brand)
                 .putBoolean(Constants.SAVED_DEFAULTS, true)
                 .apply();
     }
@@ -292,6 +296,9 @@ public class DevicePreferenceManager
                     .putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true)
                     .putString(DEVICE_AUDIOFX_EQ_PRESET, String.valueOf(idx))
                     .apply();
+        } else if (EffectsFactory.getBrand() == Constants.EFFECT_TYPE_DOLBY) {
+            // there is no "small speakers" preset here, but the speaker is where Dolby matters
+            speakerPrefs.edit().putBoolean(DEVICE_AUDIOFX_GLOBAL_ENABLE, true).apply();
         }
     }
 

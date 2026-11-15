@@ -18,6 +18,7 @@ public class Constants {
 
     // effect type identifiers
     public static final int EFFECT_TYPE_ANDROID = 1;
+    public static final int EFFECT_TYPE_DOLBY = 2;
 
     // global settings
     public static final String AUDIOFX_GLOBAL_FILE = "global";

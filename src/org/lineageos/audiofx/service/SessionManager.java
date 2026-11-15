@@ -32,6 +32,7 @@ import android.os.Message;
 import android.util.Log;
 import android.util.SparseArray;
 
+import org.lineageos.audiofx.Constants;
 import org.lineageos.audiofx.backends.EffectSet;
 import org.lineageos.audiofx.backends.EffectsFactory;
 import org.lineageos.audiofx.eq.EqUtils;
@@ -59,6 +60,10 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
     private static final int MSG_REMOVE_SESSION = 102;
     private static final int MSG_UPDATE_FOR_SESSION = 103;
     private static final int MSG_UPDATE_EQ_OVERRIDE = 104;
+    private static final int MSG_ADD_GLOBAL = 105;
+
+    // Dolby is a single global effect on the output mix, not one per app session
+    private static final int GLOBAL_SESSION = 0;
 
     public SessionManager(Context context, Handler handler, DevicePreferenceManager devicePrefs,
             AudioDeviceInfo outputDevice) {
@@ -66,6 +71,13 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
         mDevicePrefs = devicePrefs;
         mCurrentDevice = outputDevice;
         mHandler = new Handler(handler.getLooper(), new AudioServiceHandler());
+        if (isDolby()) {
+            mHandler.obtainMessage(MSG_ADD_GLOBAL).sendToTarget();
+        }
+    }
+
+    private static boolean isDolby() {
+        return EffectsFactory.getBrand() == Constants.EFFECT_TYPE_DOLBY;
     }
 
     public void onDestroy() {
@@ -91,6 +103,9 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
     }
 
     public void addSession(int stream) {
+        if (isDolby()) {
+            return;
+        }
         synchronized (mAudioSessionsL) {
             // Never auto-attach is someone is recording! We don't want to interfere
             // with any sort of loopback mechanisms.
@@ -109,6 +124,9 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
     }
 
     public void removeSession(int stream) {
+        if (isDolby()) {
+            return;
+        }
         synchronized (mAudioSessionsL) {
             if (!mHandler.hasMessages(MSG_REMOVE_SESSION, stream)) {
                 final EffectSet effects = mAudioSessionsL.get(stream);
@@ -237,6 +255,28 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
         }
     }
 
+    /**
+     * Creates the one Dolby effect set. If it turns out to be unavailable the factory switches the
+     * brand back to Android, and regular per-session handling takes over from the next session.
+     */
+    private void addGlobalSessionL() {
+        if (mAudioSessionsL.get(GLOBAL_SESSION) != null) {
+            return;
+        }
+        try {
+            final EffectSet set = new EffectsFactory()
+                    .createEffectSet(mContext, GLOBAL_SESSION, mCurrentDevice);
+            if (set.getBrand() != Constants.EFFECT_TYPE_DOLBY) {
+                set.release();
+                return;
+            }
+            mAudioSessionsL.put(GLOBAL_SESSION, set);
+            updateBackendLocked(ALL_CHANGED, set);
+        } catch (Exception e) {
+            Log.e(TAG, "couldn't create the global Dolby effect", e);
+        }
+    }
+
     private class AudioServiceHandler implements Handler.Callback {
 
         @Override
@@ -247,6 +287,10 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                 int flags = 0;
 
                 switch (msg.what) {
+                    case MSG_ADD_GLOBAL:
+                        addGlobalSessionL();
+                        break;
+
                     case MSG_ADD_SESSION:
                         /**
                          * msg.obj = sessionId
@@ -319,7 +363,8 @@ class SessionManager implements AudioOutputChangeListener.AudioOutputChangedCall
                         sessionId = (Integer) msg.obj;
                         flags = msg.arg1;
 
-                        if (sessionId == null || sessionId <= 0) {
+                        if (sessionId == null || sessionId < 0
+                                || (sessionId == 0 && !isDolby())) {
                             break;
                         }
 
