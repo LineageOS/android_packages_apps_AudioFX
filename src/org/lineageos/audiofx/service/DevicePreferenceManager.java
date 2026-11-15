@@ -39,6 +39,7 @@ import org.lineageos.audiofx.activity.MasterConfigControl;
 import org.lineageos.audiofx.backends.EffectSet;
 import org.lineageos.audiofx.backends.EffectsFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -128,6 +129,12 @@ public class DevicePreferenceManager
 
         final int numBands = temp.getNumEqualizerBands();
         final int numPresets = temp.getNumEqualizerPresets();
+
+        // saved levels only make sense for the band count they were made with
+        final int oldNumBands = Integer.parseInt(prefs.getString(EQUALIZER_NUMBER_OF_BANDS, "0"));
+        if (oldNumBands != 0 && oldNumBands != numBands) {
+            resetSavedEqualizerLevels();
+        }
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(EQUALIZER_NUMBER_OF_PRESETS, String.valueOf(numPresets));
         editor.putString(EQUALIZER_NUMBER_OF_BANDS, String.valueOf(numBands));
@@ -186,6 +193,35 @@ public class DevicePreferenceManager
                         CURRENT_PREFS_INT_VERSION)
                 .putBoolean(Constants.SAVED_DEFAULTS, true)
                 .apply();
+    }
+
+    /**
+     * Drops everything that stores equalizer levels: the user's custom presets, the "custom"
+     * levels, and the selected preset and levels of every device.
+     */
+    private void resetSavedEqualizerLevels() {
+        Log.w(TAG, "equalizer band count changed, dropping saved levels");
+        mContext.getSharedPreferences("custom_presets", 0).edit().clear().apply();
+        Constants.getGlobalPrefs(mContext).edit().remove("custom").apply();
+
+        final String[] files = new File(mContext.getDataDir(), "shared_prefs").list();
+        if (files == null) {
+            return;
+        }
+        for (String file : files) {
+            if (!file.endsWith(".xml")) {
+                continue;
+            }
+            final SharedPreferences devicePrefs =
+                    mContext.getSharedPreferences(file.substring(0, file.length() - 4), 0);
+            if (devicePrefs.contains(DEVICE_AUDIOFX_EQ_PRESET)
+                    || devicePrefs.contains(Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS)) {
+                devicePrefs.edit()
+                        .remove(DEVICE_AUDIOFX_EQ_PRESET)
+                        .remove(Constants.DEVICE_AUDIOFX_EQ_PRESET_LEVELS)
+                        .apply();
+            }
+        }
     }
 
     private static int findInList(String needle, List<String> haystack) {
