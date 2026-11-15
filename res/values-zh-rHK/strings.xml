@@ -22,6 +22,6 @@
     <string name="virtualizer_strength">環迴音響</string>
     <string name="setup">設定</string>
     <string name="ci_extreme">FX 輔助器</string>
-    <string name="user">用戶</string>
+    <string name="user">使用者</string>
     <string name="picker_title">音樂效果控制台</string>
 </resources>
